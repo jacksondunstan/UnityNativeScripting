@@ -128,7 +128,7 @@ namespace NativeScript
 			// Load JSON
 			string jsonPath = Path.Combine(
 				Application.dataPath,
-				BindingConstants.BindingsJsonPath);
+				NativeScriptConstants.BindingsJsonPath);
 			string json = File.ReadAllText(jsonPath);
 			JsonDocument doc = JsonUtility.FromJson<JsonDocument>(json);
 			

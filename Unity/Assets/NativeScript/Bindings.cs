@@ -215,7 +215,7 @@ namespace NativeScript
 
 			// Open native library
 			libraryHandle = OpenLibrary(
-				Application.dataPath + BindingConstants.PluginPath);
+				Application.dataPath + NativeScriptConstants.PluginPath);
 			InitDelegate Init = GetDelegate<InitDelegate>(
 				libraryHandle,
 				"Init");
@@ -226,9 +226,9 @@ namespace NativeScript
 	#endif
 
 			// Init C++ library
-			ObjectStore.Init(BindingConstants.MaxManagedObjects);
+			ObjectStore.Init(NativeScriptConstants.MaxManagedObjects);
 			Init(
-				BindingConstants.MaxManagedObjects,
+				NativeScriptConstants.MaxManagedObjects,
 				Marshal.GetFunctionPointerForDelegate(new ReleaseObjectDelegate(ReleaseObject)),
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
 				/*BEGIN INIT CALL*/
