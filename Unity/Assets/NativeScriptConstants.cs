@@ -32,7 +32,7 @@ public static class NativeScriptConstants
 	public const int MaxManagedObjects = 1024;
 	
 	/// <summary>
-	/// Path within the Unity project to the Bindings JSON file
+	/// Path within the Unity project to the exposed types JSON file
 	/// </summary>
-	public const string BindingsJsonPath = "Bindings.json";
+	public const string ExposedTypesJsonPath = "NativeScriptTypes.json";
 }
