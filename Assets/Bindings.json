@@ -1,0 +1,68 @@
+{
+	"CsharpSource": "Bindings.cs",
+	"CppHeader": "Bindings.h",
+	"CppSource": "Bindings.cpp",
+	"Assemblies": [
+		{
+			"Path": "/Applications/Unity/Unity.app/Contents/Managed/UnityEngine.dll",
+			"Types": [
+				{
+					"Name": "UnityEngine.Object",
+					"Constructors": [],
+					"Methods": [],
+					"Properties": [ "name" ],
+					"Fields": []
+				},
+				{
+					"Name": "UnityEngine.GameObject",
+					"Constructors": [
+						{
+							"Types": []
+						}
+					],
+					"Methods": [
+						{
+							"Name": "Find",
+							"Types": [ "System.String" ]
+						}
+					],
+					"Properties": [ "transform" ],
+					"Fields": []
+				},
+				{
+					"Name": "UnityEngine.Component",
+					"Constructors": [],
+					"Methods": [],
+					"Properties": [ "transform" ],
+					"Fields": []
+				},
+				{
+					"Name": "UnityEngine.Transform",
+					"Constructors": [],
+					"Methods": [],
+					"Properties": [ "position" ],
+					"Fields": []
+				},
+				{
+					"Name": "UnityEngine.Debug",
+					"Constructors": [],
+					"Methods": [
+						{
+							"Name": "Log",
+							"Types": [ "System.Object" ]
+						}
+					],
+					"Properties": [],
+					"Fields": []
+				},
+				{
+					"Name": "UnityEngine.Assertions.Assert",
+					"Constructors": [],
+					"Methods": [],
+					"Properties": [],
+					"Fields": [ "raiseExceptions" ]
+				}
+			]
+		}
+	]
+}
