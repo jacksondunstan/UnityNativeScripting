@@ -31,6 +31,10 @@ namespace NativeScript
 			IntPtr releaseObject,
 			IntPtr stringNew,
 			/*BEGIN INIT PARAMS*/
+			IntPtr stopwatchConstructor,
+			IntPtr stopwatchPropertyGetElapsedMilliseconds,
+			IntPtr stopwatchMethodStart,
+			IntPtr stopwatchMethodReset,
 			IntPtr objectPropertyGetName,
 			IntPtr objectPropertySetName,
 			IntPtr gameObjectConstructor,
@@ -147,6 +151,10 @@ namespace NativeScript
 			IntPtr releaseObject,
 			IntPtr stringNew,
 			/*BEGIN INIT PARAMS*/
+			IntPtr stopwatchConstructor,
+			IntPtr stopwatchPropertyGetElapsedMilliseconds,
+			IntPtr stopwatchMethodStart,
+			IntPtr stopwatchMethodReset,
 			IntPtr objectPropertyGetName,
 			IntPtr objectPropertySetName,
 			IntPtr gameObjectConstructor,
@@ -170,6 +178,14 @@ namespace NativeScript
 		delegate int StringNewDelegate(string chars);
 		
 		/*BEGIN DELEGATE TYPES*/
+		delegate int StopwatchConstructorDelegate();
+		
+		delegate long StopwatchPropertyGetElapsedMillisecondsDelegate(int thisHandle);
+		
+		delegate void StopwatchMethodStartDelegate(int thisHandle);
+		
+		delegate void StopwatchMethodResetDelegate(int thisHandle);
+		
 		delegate int ObjectPropertyGetNameDelegate(int thisHandle);
 		
 		delegate void ObjectPropertySetNameDelegate(int thisHandle, int valueHandle);
@@ -216,6 +232,10 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new ReleaseObjectDelegate(ReleaseObject)),
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
 				/*BEGIN INIT CALL*/
+				Marshal.GetFunctionPointerForDelegate(new StopwatchConstructorDelegate(StopwatchConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new StopwatchPropertyGetElapsedMillisecondsDelegate(StopwatchPropertyGetElapsedMilliseconds)),
+				Marshal.GetFunctionPointerForDelegate(new StopwatchMethodStartDelegate(StopwatchMethodStart)),
+				Marshal.GetFunctionPointerForDelegate(new StopwatchMethodResetDelegate(StopwatchMethodReset)),
 				Marshal.GetFunctionPointerForDelegate(new ObjectPropertyGetNameDelegate(ObjectPropertyGetName)),
 				Marshal.GetFunctionPointerForDelegate(new ObjectPropertySetNameDelegate(ObjectPropertySetName)),
 				Marshal.GetFunctionPointerForDelegate(new GameObjectConstructorDelegate(GameObjectConstructor)),
@@ -262,6 +282,35 @@ namespace NativeScript
 		}
 		
 		/*BEGIN FUNCTIONS*/
+		[MonoPInvokeCallback(typeof(StopwatchConstructorDelegate))]
+		static int StopwatchConstructor()
+		{
+			int obj = ObjectStore.Store(new System.Diagnostics.Stopwatch());
+			return obj;
+		}
+		
+		[MonoPInvokeCallback(typeof(StopwatchPropertyGetElapsedMillisecondsDelegate))]
+		static long StopwatchPropertyGetElapsedMilliseconds(int thisHandle)
+		{
+			System.Diagnostics.Stopwatch thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			long obj = thiz.ElapsedMilliseconds;
+			return obj;
+		}
+		
+		[MonoPInvokeCallback(typeof(StopwatchMethodStartDelegate))]
+		static void StopwatchMethodStart(int thisHandle)
+		{
+			System.Diagnostics.Stopwatch thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			thiz.Start();
+		}
+		
+		[MonoPInvokeCallback(typeof(StopwatchMethodResetDelegate))]
+		static void StopwatchMethodReset(int thisHandle)
+		{
+			System.Diagnostics.Stopwatch thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			thiz.Reset();
+		}
+		
 		[MonoPInvokeCallback(typeof(ObjectPropertyGetNameDelegate))]
 		static int ObjectPropertyGetName(int thisHandle)
 		{
@@ -281,7 +330,7 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(GameObjectConstructorDelegate))]
 		static int GameObjectConstructor()
 		{
-			int obj = ObjectStore.Store(new GameObject());
+			int obj = ObjectStore.Store(new UnityEngine.GameObject());
 			return obj;
 		}
 		

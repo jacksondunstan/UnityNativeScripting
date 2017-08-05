@@ -1,6 +1,31 @@
 {
 	"Assemblies": [
 		{
+			"Path": "/Applications/Unity/Unity.app/Contents/Mono/lib/mono/unity/System.dll",
+			"Types": [
+				{
+					"Name": "System.Diagnostics.Stopwatch",
+					"Constructors": [
+						{
+							"Types": []
+						}
+					],
+					"Methods": [
+						{
+							"Name": "Start",
+							"Types": []
+						},
+						{
+							"Name": "Reset",
+							"Types": []
+						}
+					],
+					"Properties": [ "ElapsedMilliseconds" ],
+					"Fields": []
+				}
+			]
+		},
+		{
 			"Path": "/Applications/Unity/Unity.app/Contents/Managed/UnityEngine.dll",
 			"Types": [
 				{

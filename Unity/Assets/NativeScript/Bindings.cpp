@@ -42,6 +42,14 @@ namespace Plugin
 	int32_t (*StringNew)(const char* chars);
 	
 	/*BEGIN FUNCTION POINTERS*/
+	int32_t (*StopwatchConstructor)();
+	
+	int64_t (*StopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle);
+	
+	void (*StopwatchMethodStart)(int32_t thisHandle);
+	
+	void (*StopwatchMethodReset)(int32_t thisHandle);
+	
 	int32_t (*ObjectPropertyGetName)(int32_t thisHandle);
 	
 	void (*ObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle);
@@ -169,6 +177,34 @@ namespace System
 }
 
 /*BEGIN METHOD DEFINITIONS*/
+namespace System
+{
+	namespace Diagnostics
+	{
+		SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Stopwatch, System::Object)
+		
+		Stopwatch::Stopwatch()
+			: Stopwatch(Stopwatch(Plugin::StopwatchConstructor()))
+	{
+	}
+	
+		int64_t Stopwatch::GetElapsedMilliseconds()
+		{
+			return Plugin::StopwatchPropertyGetElapsedMilliseconds(Handle);
+		}
+		
+		void Stopwatch::Start()
+		{
+			Plugin::StopwatchMethodStart(Handle);
+		}
+	
+		void Stopwatch::Reset()
+		{
+			Plugin::StopwatchMethodReset(Handle);
+		}
+	}
+}
+
 namespace UnityEngine
 {
 	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Object, System::Object)
@@ -278,6 +314,10 @@ DLLEXPORT void Init(
 	int32_t (*stringNew)(
 		const char* chars),
 	/*BEGIN INIT PARAMS*/
+	int32_t (*stopwatchConstructor)(),
+	int64_t (*stopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
+	void (*stopwatchMethodStart)(int32_t thisHandle),
+	void (*stopwatchMethodReset)(int32_t thisHandle),
 	int32_t (*objectPropertyGetName)(int32_t thisHandle),
 	void (*objectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
 	int32_t (*gameObjectConstructor)(),
@@ -303,6 +343,10 @@ DLLEXPORT void Init(
 	StringNew = stringNew;
 	ReleaseObject = releaseObject;
 	/*BEGIN INIT BODY*/
+	StopwatchConstructor = stopwatchConstructor;
+	StopwatchPropertyGetElapsedMilliseconds = stopwatchPropertyGetElapsedMilliseconds;
+	StopwatchMethodStart = stopwatchMethodStart;
+	StopwatchMethodReset = stopwatchMethodReset;
 	ObjectPropertyGetName = objectPropertyGetName;
 	ObjectPropertySetName = objectPropertySetName;
 	GameObjectConstructor = gameObjectConstructor;

@@ -104,6 +104,14 @@ namespace System
 }
 
 /*BEGIN TYPE DECLARATIONS*/
+namespace System
+{
+	namespace Diagnostics
+	{
+		struct Stopwatch;
+	}
+}
+
 namespace UnityEngine
 {
 	struct Object;
@@ -141,6 +149,21 @@ namespace UnityEngine
 /*END TYPE DECLARATIONS*/
 
 /*BEGIN TYPE DEFINITIONS*/
+namespace System
+{
+	namespace Diagnostics
+	{
+		struct Stopwatch : System::Object
+		{
+			SYSTEM_OBJECT_LIFECYCLE_DECLARATION(Stopwatch, System::Object)
+			Stopwatch();
+			int64_t GetElapsedMilliseconds();
+			void Start();
+			void Reset();
+		};
+	}
+}
+
 namespace UnityEngine
 {
 	struct Object : System::Object

@@ -294,7 +294,7 @@ namespace NativeScript
 							csharpFunctions);
 						csharpFunctions.Append("ObjectStore.Store(");
 						csharpFunctions.Append("new ");
-						csharpFunctions.Append(type.Name);
+						AppendCsharpTypeName(type, csharpFunctions);
 						AppendCsharpFunctionCallParameters(
 							true,
 							parameters,
@@ -1211,14 +1211,6 @@ namespace NativeScript
 			StringBuilder output)
 		{
 			output.Append('(');
-			if (!isStatic)
-			{
-				output.Append("thisHandle");
-				if (parameters.Length > 0)
-				{
-					output.Append(", ");
-				}
-			}
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo parameter = parameters[i];
