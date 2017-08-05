@@ -1,7 +1,4 @@
 {
-	"CsharpSource": "Bindings.cs",
-	"CppHeader": "Bindings.h",
-	"CppSource": "Bindings.cpp",
 	"Assemblies": [
 		{
 			"Path": "/Applications/Unity/Unity.app/Contents/Managed/UnityEngine.dll",
