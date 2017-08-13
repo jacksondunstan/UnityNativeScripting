@@ -1,0 +1,4 @@
+# Typical location for CMake build files and Visual Studio 2017 generated directories
+/cmake
+/NativeScript.dir
+/x64
