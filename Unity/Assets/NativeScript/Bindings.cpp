@@ -43,33 +43,21 @@ namespace Plugin
 	
 	/*BEGIN FUNCTION POINTERS*/
 	int32_t (*StopwatchConstructor)();
-	
 	int64_t (*StopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle);
-	
 	void (*StopwatchMethodStart)(int32_t thisHandle);
-	
 	void (*StopwatchMethodReset)(int32_t thisHandle);
-	
 	int32_t (*ObjectPropertyGetName)(int32_t thisHandle);
-	
 	void (*ObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle);
-	
 	int32_t (*GameObjectConstructor)();
-	
+	int32_t (*GameObjectConstructorSystemString)(int32_t nameHandle);
 	int32_t (*GameObjectPropertyGetTransform)(int32_t thisHandle);
-	
 	int32_t (*GameObjectMethodFindSystemString)(int32_t nameHandle);
-	
+	int32_t (*GameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle);
 	int32_t (*ComponentPropertyGetTransform)(int32_t thisHandle);
-	
 	UnityEngine::Vector3 (*TransformPropertyGetPosition)(int32_t thisHandle);
-	
 	void (*TransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value);
-	
 	void (*DebugMethodLogSystemObject)(int32_t messageHandle);
-	
 	System::Boolean (*AssertFieldGetRaiseExceptions)();
-	
 	void (*AssertFieldSetRaiseExceptions)(System::Boolean value);
 	/*END FUNCTION POINTERS*/
 }
@@ -185,9 +173,9 @@ namespace System
 		
 		Stopwatch::Stopwatch()
 			: Stopwatch(Stopwatch(Plugin::StopwatchConstructor()))
-	{
-	}
-	
+		{
+		}
+		
 		int64_t Stopwatch::GetElapsedMilliseconds()
 		{
 			return Plugin::StopwatchPropertyGetElapsedMilliseconds(Handle);
@@ -229,6 +217,11 @@ namespace UnityEngine
 	{
 	}
 	
+	GameObject::GameObject(System::String name)
+		: GameObject(GameObject(Plugin::GameObjectConstructorSystemString(name.Handle)))
+	{
+	}
+	
 	UnityEngine::Transform GameObject::GetTransform()
 	{
 		return UnityEngine::Transform(Plugin::GameObjectPropertyGetTransform(Handle));
@@ -237,6 +230,11 @@ namespace UnityEngine
 	UnityEngine::GameObject GameObject::Find(System::String name)
 	{
 		return UnityEngine::GameObject(Plugin::GameObjectMethodFindSystemString(name.Handle));
+	}
+	
+	template<> MyGame::MonoBehaviours::TestScript GameObject::AddComponent<MyGame::MonoBehaviours::TestScript>()
+	{
+		return MyGame::MonoBehaviours::TestScript(Plugin::GameObjectMethodAddComponentMyGameMonoBehavioursTestScript(Handle));
 	}
 }
 
@@ -290,6 +288,29 @@ namespace UnityEngine
 		}
 	}
 }
+
+namespace UnityEngine
+{
+	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Collision, System::Object)
+}
+
+namespace UnityEngine
+{
+	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Behaviour, UnityEngine::Component)
+}
+
+namespace UnityEngine
+{
+	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(MonoBehaviour, UnityEngine::Behaviour)
+}
+
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		SYSTEM_OBJECT_LIFECYCLE_DEFINITION(TestScript, UnityEngine::MonoBehaviour)
+	}
+}
 /*END METHOD DEFINITIONS*/
 
 ////////////////////////////////////////////////////////////////
@@ -299,9 +320,6 @@ namespace UnityEngine
 // Called when the plugin is initialized
 extern void PluginMain();
 
-// Called for MonoBehaviour.Update
-extern void PluginUpdate();
-
 ////////////////////////////////////////////////////////////////
 // C++ functions for C# to call
 ////////////////////////////////////////////////////////////////
@@ -309,10 +327,8 @@ extern void PluginUpdate();
 // Init the plugin
 DLLEXPORT void Init(
 	int32_t maxManagedObjects,
-	void (*releaseObject)(
-		int32_t handle),
-	int32_t (*stringNew)(
-		const char* chars),
+	void (*releaseObject)(int32_t handle),
+	int32_t (*stringNew)(const char* chars),
 	/*BEGIN INIT PARAMS*/
 	int32_t (*stopwatchConstructor)(),
 	int64_t (*stopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
@@ -321,8 +337,10 @@ DLLEXPORT void Init(
 	int32_t (*objectPropertyGetName)(int32_t thisHandle),
 	void (*objectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
 	int32_t (*gameObjectConstructor)(),
+	int32_t (*gameObjectConstructorSystemString)(int32_t nameHandle),
 	int32_t (*gameObjectPropertyGetTransform)(int32_t thisHandle),
 	int32_t (*gameObjectMethodFindSystemString)(int32_t nameHandle),
+	int32_t (*gameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle),
 	int32_t (*componentPropertyGetTransform)(int32_t thisHandle),
 	UnityEngine::Vector3 (*transformPropertyGetPosition)(int32_t thisHandle),
 	void (*transformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value),
@@ -350,8 +368,10 @@ DLLEXPORT void Init(
 	ObjectPropertyGetName = objectPropertyGetName;
 	ObjectPropertySetName = objectPropertySetName;
 	GameObjectConstructor = gameObjectConstructor;
+	GameObjectConstructorSystemString = gameObjectConstructorSystemString;
 	GameObjectPropertyGetTransform = gameObjectPropertyGetTransform;
 	GameObjectMethodFindSystemString = gameObjectMethodFindSystemString;
+	GameObjectMethodAddComponentMyGameMonoBehavioursTestScript = gameObjectMethodAddComponentMyGameMonoBehavioursTestScript;
 	ComponentPropertyGetTransform = componentPropertyGetTransform;
 	TransformPropertyGetPosition = transformPropertyGetPosition;
 	TransformPropertySetPosition = transformPropertySetPosition;
@@ -363,8 +383,29 @@ DLLEXPORT void Init(
 	PluginMain();
 }
 
-// Called by MonoBehaviour.Update
-DLLEXPORT void MonoBehaviourUpdate()
+/*BEGIN MONOBEHAVIOUR MESSAGES*/
+DLLEXPORT void TestScriptAwake(int32_t thisHandle)
 {
-	PluginUpdate();
+	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
+	thiz.Awake();
 }
+
+DLLEXPORT void TestScriptOnAnimatorIK(int32_t thisHandle, int32_t param0)
+{
+	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
+	thiz.OnAnimatorIK(param0);
+}
+
+DLLEXPORT void TestScriptOnCollisionEnter(int32_t thisHandle, int32_t param0Handle)
+{
+	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
+	UnityEngine::Collision param0(param0Handle);
+	thiz.OnCollisionEnter(param0);
+}
+
+DLLEXPORT void TestScriptUpdate(int32_t thisHandle)
+{
+	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
+	thiz.Update();
+}
+/*END MONOBEHAVIOUR MESSAGES*/

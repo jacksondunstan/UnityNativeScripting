@@ -17,10 +17,26 @@ using namespace UnityEngine;
 void PluginMain()
 {
 	Debug::Log(String("Game booted up"));
+	GameObject go(String("GameObject with a TestScript"));
+	go.AddComponent<MyGame::MonoBehaviours::TestScript>();
 }
 
-// Called for MonoBehaviour.Update
-void PluginUpdate()
+void MyGame::MonoBehaviours::TestScript::Awake()
+{
+	Debug::Log(String("C++ TestScript Awake"));
+}
+
+void MyGame::MonoBehaviours::TestScript::OnAnimatorIK(int32_t param0)
+{
+	Debug::Log(String("C++ TestScript OnAnimatorIK"));
+}
+
+void MyGame::MonoBehaviours::TestScript::OnCollisionEnter(UnityEngine::Collision param0)
+{
+	Debug::Log(String("C++ TestScript OnCollisionEnter"));
+}
+
+void MyGame::MonoBehaviours::TestScript::Update()
 {
 	static int32_t numCreated = 0;
 	if (numCreated < 10)

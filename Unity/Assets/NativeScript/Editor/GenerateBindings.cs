@@ -49,10 +49,19 @@ namespace NativeScript
 		}
 		
 		[Serializable]
+		private class JsonGenericType
+		{
+			public string Name;
+			public string Type;
+		}
+		
+		[Serializable]
 		private class JsonMethod
 		{
 			public string Name;
-			public string[] Types;
+			public string ReturnType;
+			public string[] ParamTypes;
+			public JsonGenericType[] GenericTypes;
 		}
 		
 		[Serializable]
@@ -73,9 +82,18 @@ namespace NativeScript
 		}
 		
 		[Serializable]
+		private class JsonMonoBehaviour
+		{
+			public string Name;
+			public string Namespace;
+			public string[] Messages;
+		}
+		
+		[Serializable]
 		private class JsonDocument
 		{
 			public JsonAssembly[] Assemblies;
+			public JsonMonoBehaviour[] MonoBehaviours;
 		}
 		
 		private class StringBuilders
@@ -84,12 +102,17 @@ namespace NativeScript
 			public StringBuilder CsharpDelegateTypes = new StringBuilder();
 			public StringBuilder CsharpInitCall = new StringBuilder();
 			public StringBuilder CsharpFunctions = new StringBuilder();
+			public StringBuilder CsharpMonoBehaviours = new StringBuilder();
+			public StringBuilder CsharpMonoBehaviourDelegates = new StringBuilder();
+			public StringBuilder CsharpMonoBehaviourImports = new StringBuilder();
+			public StringBuilder CsharpMonoBehaviourGetDelegateCalls = new StringBuilder();
 			public StringBuilder CppFunctionPointers = new StringBuilder();
 			public StringBuilder CppTypeDeclarations = new StringBuilder();
 			public StringBuilder CppTypeDefinitions = new StringBuilder();
 			public StringBuilder CppMethodDefinitions = new StringBuilder();
 			public StringBuilder CppInitParams = new StringBuilder();
 			public StringBuilder CppInitBody = new StringBuilder();
+			public StringBuilder CppMonoBehaviourMessages = new StringBuilder();
 			public StringBuilder TempStrBuilder = new StringBuilder();
 		}
 		
@@ -98,6 +121,107 @@ namespace NativeScript
 			public string Name;
 			public Type ParameterType;
 		}
+		
+		private class MessageInfo
+		{
+			public string Name;
+			public Type[] ParameterTypes;
+			public bool Selected;
+			
+			public MessageInfo(
+				string name,
+				params Type[] parameterTypes)
+			{
+				Name = name;
+				ParameterTypes = parameterTypes;
+			}
+		}
+		
+		private static readonly MessageInfo[] messageInfos = new[] {
+			new MessageInfo("Awake"),
+			new MessageInfo("FixedUpdate"),
+			new MessageInfo("LateUpdate"),
+			new MessageInfo("OnAnimatorIK",typeof(int)),
+			new MessageInfo("OnAnimatorMove"),
+			new MessageInfo("OnApplicationFocus",typeof(bool)),
+			new MessageInfo("OnApplicationPause",typeof(bool)),
+			new MessageInfo("OnApplicationQuit"),
+			// TODO re-enable when arrays are supported
+			// new MessageInfo("OnAudioFilterRead", typeof(float[]), typeof(int)),
+			new MessageInfo("OnBecameInvisible"),
+			new MessageInfo("OnBecameVisible"),
+			new MessageInfo("OnCollisionEnter", typeof(Collision)),
+			new MessageInfo("OnCollisionEnter2D", typeof(Collision2D)),
+			new MessageInfo("OnCollisionExit", typeof(Collision)),
+			new MessageInfo("OnCollisionExit2D", typeof(Collision2D)),
+			new MessageInfo("OnCollisionStay", typeof(Collision)),
+			new MessageInfo("OnCollisionStay2D", typeof(Collision2D)),
+			new MessageInfo("OnConnectedToServer"),
+			new MessageInfo("OnControllerColliderHit", typeof(ControllerColliderHit)),
+			new MessageInfo("OnDestroy"),
+			new MessageInfo("OnDisable"),
+			new MessageInfo("OnDisconnectedFromServer", typeof(NetworkDisconnection)),
+			new MessageInfo("OnDrawGizmos"),
+			new MessageInfo("OnDrawGizmosSelected"),
+			new MessageInfo("OnEnable"),
+			new MessageInfo("OnFailedToConnect", typeof(NetworkConnectionError)),
+			new MessageInfo("OnFailedToConnectToMasterServer", typeof(NetworkConnectionError)),
+			new MessageInfo("OnGUI"),
+			new MessageInfo("OnJointBreak", typeof(float)),
+			new MessageInfo("OnJointBreak2D", typeof(Joint2D)),
+			new MessageInfo("OnMasterServerEvent", typeof(MasterServerEvent)),
+			new MessageInfo("OnMouseDown"),
+			new MessageInfo("OnMouseDrag"),
+			new MessageInfo("OnMouseEnter"),
+			new MessageInfo("OnMouseExit"),
+			new MessageInfo("OnMouseOver"),
+			new MessageInfo("OnMouseUp"),
+			new MessageInfo("OnMouseUpAsButton"),
+			new MessageInfo("OnNetworkInstantiate", typeof(NetworkMessageInfo)),
+			new MessageInfo("OnParticleCollision", typeof(GameObject)),
+			new MessageInfo("OnParticleTrigger"),
+			new MessageInfo("OnPlayerConnected", typeof(NetworkPlayer)),
+			new MessageInfo("OnPlayerDisconnected", typeof(NetworkPlayer)),
+			new MessageInfo("OnPostRender"),
+			new MessageInfo("OnPreCull"),
+			new MessageInfo("OnPreRender"),
+			new MessageInfo("OnRenderImage", typeof(RenderTexture), typeof(RenderTexture)),
+			new MessageInfo("OnRenderObject"),
+			new MessageInfo("OnSerializeNetworkView", typeof(BitStream), typeof(NetworkMessageInfo)),
+			new MessageInfo("OnServerInitialized"),
+			new MessageInfo("OnTransformChildrenChanged"),
+			new MessageInfo("OnTransformParentChanged"),
+			new MessageInfo("OnTriggerEnter", typeof(Collider)),
+			new MessageInfo("OnTriggerEnter2D", typeof(Collider2D)),
+			new MessageInfo("OnTriggerExit", typeof(Collider)),
+			new MessageInfo("OnTriggerExit2D", typeof(Collider2D)),
+			new MessageInfo("OnTriggerStay", typeof(Collider)),
+			new MessageInfo("OnTriggerStay2D", typeof(Collider2D)),
+			new MessageInfo("OnValidate"),
+			new MessageInfo("OnWillRenderObject"),
+			new MessageInfo("Reset"),
+			new MessageInfo("Start"),
+			new MessageInfo("Update"),
+		};
+		
+		const string PostCompileWorkPref = "NativeScriptGenerateBindingsPostCompileWork";
+		const string DryRunPref = "NativeScriptGenerateBindingsDryRun";
+		
+		static readonly string CsharpPath = Path.Combine(
+			Application.dataPath,
+			Path.Combine(
+				"NativeScript",
+				"Bindings.cs"));
+		static readonly string CppHeaderPath = Path.Combine(
+			Application.dataPath,
+			Path.Combine(
+				"NativeScript",
+				"Bindings.h"));
+		static readonly string CppSourcePath = Path.Combine(
+			Application.dataPath,
+			Path.Combine(
+				"NativeScript",
+				"Bindings.cpp"));
 		
 		// Restore unused field types
 		#pragma warning restore CS0649
@@ -116,21 +240,75 @@ namespace NativeScript
 		
 		static void Generate(bool dryRun)
 		{
-			// Clear console
-	#if UNITY_2017
-			Assembly
-				.GetAssembly(typeof(SceneView))
-				.GetType("UnityEditor.LogEntries")
-				.GetMethod("Clear")
-				.Invoke(new object(), null);
-	#endif
+			EditorPrefs.DeleteKey(PostCompileWorkPref);
+			EditorPrefs.SetBool(DryRunPref, dryRun);
+			if (dryRun)
+			{
+				DoPostCompileWork();
+			}
+			else
+			{
+				JsonDocument doc = LoadJson();
+				
+				// Generate stub classes extending MonoBehaviour
+				// We'll need to be able to get these via reflection later
+				StringBuilder output = new StringBuilder(1024*5);
+				string timestamp = DateTime.Now.ToLongTimeString();
+				foreach (JsonMonoBehaviour monoBehaviour in doc.MonoBehaviours)
+				{
+					int csharpIndent = AppendNamespaceBeginning(
+						monoBehaviour.Namespace,
+						output);
+					AppendIndent(csharpIndent, output);
+					output.Append("public class ");
+					output.Append(monoBehaviour.Name);
+					output.Append(" : UnityEngine.MonoBehaviour\n");
+					AppendIndent(csharpIndent, output);
+					output.Append("{\n");
+					AppendIndent(csharpIndent + 1, output);
+					output.Append("// Stub version. GenerateBindings is still in progress. ");
+					output.Append(timestamp);
+					output.Append('\n');
+					AppendIndent(csharpIndent, output);
+					output.Append("}\n");
+					AppendNamespaceEnding(csharpIndent, output);
+				}
+				
+				// Inject
+				File.WriteAllText(
+					CsharpPath,
+					InjectIntoString(
+						File.ReadAllText(CsharpPath),
+						"/*BEGIN MONOBEHAVIOURS*/\n",
+						"\n/*END MONOBEHAVIOURS*/",
+						output.ToString()));
+				
+				// Compile and continue after scripts are refreshed
+				Debug.Log("Waiting for compile...");
+				AssetDatabase.Refresh();
+				EditorPrefs.SetBool(PostCompileWorkPref, true);
+			}
+		}
+		
+		[UnityEditor.Callbacks.DidReloadScripts]
+		private static void OnScriptsReloaded()
+		{
+			// Scripts get reloaded for many reasons, not just our work
+			// Check if this reload is due to us refreshing the asset DB
+			bool doWork = EditorPrefs.GetBool(PostCompileWorkPref, false);
+			EditorPrefs.DeleteKey(PostCompileWorkPref);
+			if (doWork)
+			{
+				DoPostCompileWork();
+			}
+		}
+		
+		static void DoPostCompileWork()
+		{
+			bool dryRun = EditorPrefs.GetBool(DryRunPref);
+			EditorPrefs.DeleteKey(DryRunPref);
 			
-			// Load JSON
-			string jsonPath = Path.Combine(
-				Application.dataPath,
-				NativeScriptConstants.ExposedTypesJsonPath);
-			string json = File.ReadAllText(jsonPath);
-			JsonDocument doc = JsonUtility.FromJson<JsonDocument>(json);
+			JsonDocument doc = LoadJson();
 			
 			// Build binding strings
 			StringBuilders builders = new StringBuilders();
@@ -138,12 +316,17 @@ namespace NativeScript
 			StringBuilder csharpDelegateTypes = builders.CsharpDelegateTypes;
 			StringBuilder csharpInitCall = builders.CsharpInitCall;
 			StringBuilder csharpFunctions = builders.CsharpFunctions;
+			StringBuilder csharpMonoBehaviours = builders.CsharpMonoBehaviours;
+			StringBuilder csharpMonoBehaviourDelegates = builders.CsharpMonoBehaviourDelegates;
+			StringBuilder csharpMonoBehaviourImports = builders.CsharpMonoBehaviourImports;
+			StringBuilder csharpMonoBehaviourGetDelegateCalls = builders.CsharpMonoBehaviourGetDelegateCalls;
 			StringBuilder cppFunctionPointers = builders.CppFunctionPointers;
 			StringBuilder cppTypeDeclarations = builders.CppTypeDeclarations;
 			StringBuilder cppTypeDefinitions = builders.CppTypeDefinitions;
 			StringBuilder cppMethodDefinitions = builders.CppMethodDefinitions;
 			StringBuilder cppInitParams = builders.CppInitParams;
 			StringBuilder cppInitBody = builders.CppInitBody;
+			StringBuilder cppMonoBehaviourMessages = builders.CppMonoBehaviourMessages;
 			StringBuilder tempStrBuilder = builders.TempStrBuilder;
 			foreach (JsonAssembly jsonAssembly in doc.Assemblies)
 			{
@@ -153,100 +336,34 @@ namespace NativeScript
 					Type type = assembly.GetType(jsonType.Name);
 					string typeNameLower = char.ToLower(type.Name[0])
 						+ type.Name.Substring(1);
-					bool hasMethodDefinitions = (jsonType.Constructors.Length
-						+ jsonType.Properties.Length
-						+ jsonType.Fields.Length
-						+ jsonType.Methods.Length) > 0;
 					bool isStatic = type.IsAbstract && type.IsSealed;
 					
 					// C++ type declaration
-					int indent = AppendNamespaceBeginning(
+					int indent = AppendCppTypeDeclaration(
 						type.Namespace,
+						type.Name,
+						isStatic,
 						cppTypeDeclarations);
-					AppendIndent(indent, cppTypeDeclarations);
-					if (isStatic)
-					{
-						cppTypeDeclarations.Append("namespace ");
-						cppTypeDeclarations.Append(type.Name);
-						cppTypeDeclarations.Append('\n');
-						AppendIndent(indent, cppTypeDeclarations);
-						cppTypeDeclarations.Append("{\n");
-						AppendIndent(indent, cppTypeDeclarations);
-						cppTypeDeclarations.Append('}');
-					}
-					else
-					{
-						cppTypeDeclarations.Append("struct ");
-						cppTypeDeclarations.Append(type.Name);
-						cppTypeDeclarations.Append(";");
-					}
-					cppTypeDeclarations.Append('\n');
-					AppendNamespaceEnding(
-						indent,
-						cppTypeDeclarations);
-					cppTypeDeclarations.Append('\n');
 					
 					// C++ type definition (beginning)
-					AppendNamespaceBeginning(
+					AppendCppTypeDefinitionBegin(
 						type.Namespace,
-						cppTypeDefinitions);
-					AppendIndent(
+						type.Name,
+						type.BaseType.Namespace,
+						type.BaseType.Name,
+						isStatic,
 						indent,
 						cppTypeDefinitions);
-					if (isStatic)
-					{
-						cppTypeDefinitions.Append("namespace ");
-						cppTypeDefinitions.Append(type.Name);
-					}
-					else
-					{
-						cppTypeDefinitions.Append("struct ");
-						cppTypeDefinitions.Append(type.Name);
-						cppTypeDefinitions.Append(" : ");
-						cppTypeDefinitions.Append(type.BaseType.Namespace);
-						cppTypeDefinitions.Append("::");
-						cppTypeDefinitions.Append(type.BaseType.Name);
-					}
-					cppTypeDefinitions.Append('\n');
-					AppendIndent(
-						indent,
-						cppTypeDefinitions);
-					cppTypeDefinitions.Append("{\n");
-					if (!isStatic)
-					{
-						AppendIndent(
-							indent + 1,
-							cppTypeDefinitions);
-						AppendSystemObjectLifecycleCall(
-							"SYSTEM_OBJECT_LIFECYCLE_DECLARATION",
-							type,
-							cppTypeDefinitions);
-						cppTypeDefinitions.Append('\n');
-					}
 					
 					// C++ method definition
-					int cppMethodDefinitionsIndent;
-					if (hasMethodDefinitions)
-					{
-						cppMethodDefinitionsIndent = AppendNamespaceBeginning(
-							type.Namespace,
-							cppMethodDefinitions);
-						if (!isStatic)
-						{
-							AppendIndent(indent, cppMethodDefinitions);
-							AppendSystemObjectLifecycleCall(
-								"SYSTEM_OBJECT_LIFECYCLE_DEFINITION",
-								type,
-								cppMethodDefinitions);
-							cppMethodDefinitions.Append('\n');
-							AppendIndent(indent, cppMethodDefinitions);
-							cppMethodDefinitions.Append('\n');
-						}
-					}
-					else
-					{
-						cppMethodDefinitionsIndent = 0;
-					}
+					int cppMethodDefinitionsIndent = AppendCppMethodDefinitionBegin(
+						type.Namespace,
+						type.Name,
+						type.BaseType.Namespace,
+						type.BaseType.Name,
+						isStatic,
+						indent,
+						cppMethodDefinitions);
 					
 					// Constructors
 					foreach (JsonConstructor jsonCtor in jsonType.Constructors)
@@ -290,11 +407,14 @@ namespace NativeScript
 							funcName,
 							true,
 							typeof(int),
+							null,
 							parameters,
 							csharpFunctions);
 						csharpFunctions.Append("ObjectStore.Store(");
 						csharpFunctions.Append("new ");
-						AppendCsharpTypeName(type, csharpFunctions);
+						AppendCsharpTypeName(
+							type,
+							csharpFunctions);
 						AppendCsharpFunctionCallParameters(
 							true,
 							parameters,
@@ -320,6 +440,7 @@ namespace NativeScript
 							type.Name,
 							false,
 							null,
+							null,
 							parameters,
 							cppTypeDefinitions);
 						
@@ -328,6 +449,7 @@ namespace NativeScript
 							type,
 							null,
 							type.Name,
+							null,
 							parameters,
 							indent,
 							cppMethodDefinitions);
@@ -343,7 +465,13 @@ namespace NativeScript
 							funcName,
 							parameters,
 							cppMethodDefinitions);
-						cppMethodDefinitions.Append(")\n\t{\n\t}\n\t\n");
+						cppMethodDefinitions.Append(")\n");
+						AppendIndent(indent, cppMethodDefinitions);
+						cppMethodDefinitions.Append("{\n");
+						AppendIndent(indent, cppMethodDefinitions);
+						cppMethodDefinitions.Append("}\n");
+						AppendIndent(indent, cppMethodDefinitions);
+						cppMethodDefinitions.Append("\n");
 
 						// C++ init params
 						AppendCppInitParam(
@@ -365,7 +493,7 @@ namespace NativeScript
 						MethodInfo getMethod = property.GetGetMethod();
 						if (getMethod != null && getMethod.IsPublic)
 						{
-							GenerateGetter(
+							AppendGetter(
 								property.Name,
 								typeNameLower,
 								"Property",
@@ -379,7 +507,7 @@ namespace NativeScript
 						MethodInfo setMethod = property.GetSetMethod();
 						if (setMethod != null && setMethod.IsPublic)
 						{
-							GenerateSetter(
+							AppendSetter(
 								property.Name,
 								"Property",
 								typeNameLower,
@@ -396,7 +524,7 @@ namespace NativeScript
 					foreach (string jsonFieldName in jsonType.Fields)
 					{
 						FieldInfo field = type.GetField(jsonFieldName);
-						GenerateGetter(
+						AppendGetter(
 							field.Name,
 							typeNameLower,
 							"Field",
@@ -409,11 +537,12 @@ namespace NativeScript
 						ParameterInfo setParam = new ParameterInfo();
 						setParam.Name = "value";
 						setParam.ParameterType = field.FieldType;
-						GenerateSetter(
+						ParameterInfo[] parameters = new []{ setParam };
+						AppendSetter(
 							field.Name,
 							"Field",
 							typeNameLower,
-							new []{ setParam },
+							parameters,
 							field.IsStatic,
 							type,
 							field.FieldType,
@@ -424,148 +553,412 @@ namespace NativeScript
 					// Methods
 					foreach (JsonMethod jsonMethod in jsonType.Methods)
 					{
-						Type[] paramTypes = GetTypes(
-							jsonMethod.Types,
-							assembly);
-						MethodInfo method = type.GetMethod(
+						MethodInfo method = GetMethod(
+							type,
 							jsonMethod.Name,
-							paramTypes);
+							jsonMethod.ReturnType,
+							jsonMethod.ParamTypes);
 						ParameterInfo[] parameters = ConvertParameters(
 							method.GetParameters());
+						Type[] paramTypes = GetTypes(
+							jsonMethod.ParamTypes,
+							assembly);
 						
-						// Build uppercase function name
-						tempStrBuilder.Length = 0;
-						tempStrBuilder.Append(type.Name);
-						tempStrBuilder.Append("Method");
-						tempStrBuilder.Append(method.Name);
-						AppendTypeNames(paramTypes, tempStrBuilder);
-						string funcName = tempStrBuilder.ToString();
-						
-						// Build lowercase function name
-						tempStrBuilder.Length = 0;
-						tempStrBuilder.Append(typeNameLower);
-						tempStrBuilder.Append("Method");
-						tempStrBuilder.Append(method.Name);
-						AppendTypeNames(paramTypes, tempStrBuilder);
-						string funcNameLower = tempStrBuilder.ToString();
-						
-						// C# init param declaration
-						AppendCsharpInitParam(funcNameLower, csharpInitParams);
-
-						// C# delegate type
-						AppendCsharpDelegateType(
-							funcName,
-							method.IsStatic,
-							method.ReturnType,
-							parameters,
-							csharpDelegateTypes);
-
-						// C# init call param
-						AppendCsharpInitCallArg(funcName, csharpInitCall);
-
-						// C# function
-						AppendCsharpFunctionBeginning(
-							type,
-							funcName,
-							method.IsStatic,
-							method.ReturnType,
-							parameters,
-							csharpFunctions);
-						AppendCsharpFunctionCallSubject(
-							type,
-							method.IsStatic,
-							csharpFunctions);
-						csharpFunctions.Append(method.Name);
-						AppendCsharpFunctionCallParameters(
-							method.IsStatic,
-							parameters,
-							csharpFunctions);
-						csharpFunctions.Append(';');
-						AppendCsharpFunctionReturn(
-							method.ReturnType,
-							csharpFunctions);
-						
-						// C++ function pointer
-						AppendCppFunctionPointerDefinition(
-							funcName,
-							method.IsStatic,
-							parameters,
-							method.ReturnType,
-							cppFunctionPointers);
-						
-						// C++ method declaration
-						AppendIndent(
-							indent + 1,
-							cppTypeDefinitions);
-						AppendCppMethodDeclaration(
-							method.Name,
-							method.IsStatic,
-							method.ReturnType,
-							parameters,
-							cppTypeDefinitions);
-						
-						// C++ method definition
-						AppendCppMethodDefinition(
-							type,
-							method.ReturnType,
-							method.Name,
-							parameters,
-							indent,
-							cppMethodDefinitions);
-						AppendIndent(indent, cppMethodDefinitions);
-						cppMethodDefinitions.Append("{\n");
-						AppendIndent(indent + 1, cppMethodDefinitions);
-						AppendCppMethodReturn(
-							method.ReturnType,
-							cppMethodDefinitions);
-						AppendCppPluginFunctionCall(
-							method.IsStatic,
-							method.ReturnType,
-							funcName,
-							parameters,
-							cppMethodDefinitions);
-						cppMethodDefinitions.Append(";\n");
-						AppendIndent(indent, cppMethodDefinitions);
-						cppMethodDefinitions.Append("}\n\t\n");
-						
-						// C++ init params
-						AppendCppInitParam(
-							funcNameLower,
-							method.IsStatic,
-							parameters,
-							method.ReturnType,
-							cppInitParams);
-						
-						// C++ init body
-						AppendCppInitBody(funcName, funcNameLower, cppInitBody);
+						if (jsonMethod.GenericTypes != null)
+						{
+							foreach (JsonGenericType genericType in jsonMethod.GenericTypes)
+							{
+								Type returnType;
+								if (genericType.Name == method.ReturnType.Name)
+								{
+									returnType = GetType(genericType.Type, assembly);
+								}
+								else
+								{
+									returnType = method.ReturnType;
+								}
+								Type[] typeParams = new[] { returnType };
+								
+								AppendMethod(
+									type,
+									typeNameLower,
+									method.Name,
+									method.IsStatic,
+									returnType,
+									typeParams,
+									parameters,
+									paramTypes,
+									indent,
+									builders);
+							}
+						}
+						else
+						{
+							AppendMethod(
+								type,
+								typeNameLower,
+								method.Name,
+								method.IsStatic,
+								method.ReturnType,
+								null,
+								parameters,
+								paramTypes,
+								indent,
+								builders);
+						}
 					}
 					
 					// C++ type definition (ending)
-					AppendIndent(
+					AppendCppTypeDefinitionEnd(
+						isStatic,
 						indent,
 						cppTypeDefinitions);
-					cppTypeDefinitions.Append('}');
-					if (!isStatic)
-					{
-						cppTypeDefinitions.Append(';');
-					}
-					cppTypeDefinitions.Append('\n');
-					AppendNamespaceEnding(
-						indent,
-						cppTypeDefinitions);
-					cppTypeDefinitions.Append('\n');
 					
 					// C++ method definition (ending)
-					if (hasMethodDefinitions)
-					{
-						RemoveTrailingChars(cppMethodDefinitions);
-						cppMethodDefinitions.Append('\n');
-						AppendNamespaceEnding(
-							cppMethodDefinitionsIndent,
-							cppMethodDefinitions);
-						cppMethodDefinitions.Append('\n');
-					}
+					AppendCppMethodDefinitionEnd(
+						cppMethodDefinitionsIndent,
+						cppMethodDefinitions);
 				}
+			}
+			foreach (JsonMonoBehaviour monoBehaviour in doc.MonoBehaviours)
+			{
+				// C++ Type Declaration
+				int cppIndent = AppendCppTypeDeclaration(
+					monoBehaviour.Namespace,
+					monoBehaviour.Name,
+					false,
+					cppTypeDeclarations);
+				
+				// C++ Type Definition (begin)
+				AppendCppTypeDefinitionBegin(
+					monoBehaviour.Namespace,
+					monoBehaviour.Name,
+					"UnityEngine",
+					"MonoBehaviour",
+					false,
+					cppIndent,
+					cppTypeDefinitions
+				);
+				
+				// C++ method definition
+				int cppMethodDefinitionsIndent = AppendCppMethodDefinitionBegin(
+					monoBehaviour.Namespace,
+					monoBehaviour.Name,
+					"UnityEngine",
+					"MonoBehaviour",
+					false,
+					cppIndent,
+					cppMethodDefinitions);
+				AppendCppMethodDefinitionEnd(
+					cppMethodDefinitionsIndent,
+					cppMethodDefinitions);
+				
+				// C# Class extending MonoBehaviour
+				int csharpIndent = AppendNamespaceBeginning(
+					monoBehaviour.Namespace,
+					csharpMonoBehaviours);
+				AppendIndent(csharpIndent, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("public class ");
+				csharpMonoBehaviours.Append(monoBehaviour.Name);
+				csharpMonoBehaviours.Append(" : UnityEngine.MonoBehaviour\n");
+				AppendIndent(csharpIndent, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("{\n");
+				AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("private int thisHandle;\n");
+				AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append('\n');
+				AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("public ");
+				csharpMonoBehaviours.Append(monoBehaviour.Name);
+				csharpMonoBehaviours.Append("()\n");
+				AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("{\n");
+				AppendIndent(csharpIndent + 2, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("thisHandle = NativeScript.ObjectStore.Store(this);\n");
+				AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("}\n");
+				if (monoBehaviour.Messages.Length > 0)
+				{
+					AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+					csharpMonoBehaviours.Append('\n');
+				}
+				for (int messageIndex = 0; messageIndex < monoBehaviour.Messages.Length; ++messageIndex)
+				{
+					string message = monoBehaviour.Messages[messageIndex];
+					MessageInfo messageInfo = null;
+					foreach (MessageInfo mi in messageInfos)
+					{
+						if (mi.Name == message)
+						{
+							messageInfo = mi;
+							break;
+						}
+					}
+					Type[] paramTypes = messageInfo.ParameterTypes;
+					int numParams = paramTypes.Length;
+					ParameterInfo[] parameters = ConvertParameters(
+						paramTypes);
+					
+					// C++ Method Declaration
+					AppendIndent(
+						cppIndent + 1,
+						cppTypeDefinitions);
+					AppendCppMethodDeclaration(
+						messageInfo.Name,
+						false,
+						typeof(void),
+						null,
+						parameters,
+						cppTypeDefinitions);
+					
+					AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+					csharpMonoBehaviours.Append("public ");
+					AppendCsharpTypeName(
+						typeof(void),
+						csharpMonoBehaviours);
+					csharpMonoBehaviours.Append(' ');
+					csharpMonoBehaviours.Append(messageInfo.Name);
+					csharpMonoBehaviours.Append('(');
+					for (int i = 0; i < numParams; ++i)
+					{
+						Type paramType = paramTypes[i];
+						AppendCsharpTypeName(
+							paramType,
+							csharpMonoBehaviours);
+						csharpMonoBehaviours.Append(' ');
+						csharpMonoBehaviours.Append("param");
+						csharpMonoBehaviours.Append(i);
+						if (i != numParams - 1)
+						{
+							csharpMonoBehaviours.Append(", ");
+						}
+					}
+					csharpMonoBehaviours.Append(")\n");
+					AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+					csharpMonoBehaviours.Append("{\n");
+					for (int i = 0; i < numParams; ++i)
+					{
+						Type paramType = paramTypes[i];
+						if (!paramType.IsValueType)
+						{
+							AppendIndent(csharpIndent + 2, csharpMonoBehaviours);
+							csharpMonoBehaviours.Append("int param");
+							csharpMonoBehaviours.Append(i);
+							csharpMonoBehaviours.Append("Handle = NativeScript.ObjectStore.Store(");
+							csharpMonoBehaviours.Append("param");
+							csharpMonoBehaviours.Append(i);
+							csharpMonoBehaviours.Append(");\n");
+						}
+					}
+					AppendIndent(csharpIndent + 2, csharpMonoBehaviours);
+					csharpMonoBehaviours.Append("NativeScript.Bindings.");
+					csharpMonoBehaviours.Append(monoBehaviour.Name);
+					csharpMonoBehaviours.Append(messageInfo.Name);
+					csharpMonoBehaviours.Append("(thisHandle");
+					if (numParams > 0)
+					{
+						csharpMonoBehaviours.Append(", ");
+					}
+					for (int i = 0; i < numParams; ++i)
+					{
+						csharpMonoBehaviours.Append("param");
+						csharpMonoBehaviours.Append(i);
+						Type paramType = paramTypes[i];
+						if (!paramType.IsValueType)
+						{
+							csharpMonoBehaviours.Append("Handle");
+						}
+						if (i != numParams - 1)
+						{
+							csharpMonoBehaviours.Append(", ");
+						}
+					}
+					csharpMonoBehaviours.Append(");\n");
+					for (int i = 0; i < numParams; ++i)
+					{
+						Type paramType = paramTypes[i];
+						if (!paramType.IsValueType)
+						{
+							AppendIndent(csharpIndent + 2, csharpMonoBehaviours);
+							csharpMonoBehaviours.Append("NativeScript.ObjectStore.Remove(param");
+							csharpMonoBehaviours.Append(i);
+							if (!paramType.IsValueType)
+							{
+								csharpMonoBehaviours.Append("Handle");
+							}
+							csharpMonoBehaviours.Append(");\n");
+						}
+					}
+					AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+					csharpMonoBehaviours.Append("}\n");
+					if (messageIndex != monoBehaviour.Messages.Length - 1)
+					{
+						AppendIndent(csharpIndent + 1, csharpMonoBehaviours);
+						csharpMonoBehaviours.Append('\n');
+					}
+					
+					// C# Delegate
+					csharpMonoBehaviourDelegates.Append("\t\tpublic delegate void ");
+					csharpMonoBehaviourDelegates.Append(monoBehaviour.Name);
+					csharpMonoBehaviourDelegates.Append(messageInfo.Name);
+					csharpMonoBehaviourDelegates.Append("Delegate(int thisHandle");
+					if (numParams > 0)
+					{
+						csharpMonoBehaviourDelegates.Append(", ");
+					}
+					for (int i = 0; i < numParams; ++i)
+					{
+						Type paramType = paramTypes[i];
+						if (paramType.IsValueType)
+						{
+							AppendCsharpTypeName(
+								paramType,
+								csharpMonoBehaviourDelegates);
+							csharpMonoBehaviourDelegates.Append(" param");
+							csharpMonoBehaviourDelegates.Append(i);
+						}
+						else
+						{
+							csharpMonoBehaviourDelegates.Append("int param");
+							csharpMonoBehaviourDelegates.Append(i);
+						}
+						if (i != numParams-1)
+						{
+							csharpMonoBehaviourDelegates.Append(", ");
+						}
+					}
+					csharpMonoBehaviourDelegates.Append(");\n");
+					csharpMonoBehaviourDelegates.Append("\t\tpublic static ");
+					csharpMonoBehaviourDelegates.Append(monoBehaviour.Name);
+					csharpMonoBehaviourDelegates.Append(messageInfo.Name);
+					csharpMonoBehaviourDelegates.Append("Delegate ");
+					csharpMonoBehaviourDelegates.Append(monoBehaviour.Name);
+					csharpMonoBehaviourDelegates.Append(messageInfo.Name);
+					csharpMonoBehaviourDelegates.Append(";\n\t\t\n");
+					
+					// C# Import
+					csharpMonoBehaviourImports.Append("\t\t[DllImport(Constants.PluginName)]\n");
+					csharpMonoBehaviourImports.Append("\t\tpublic static extern void ");
+					csharpMonoBehaviourImports.Append(monoBehaviour.Name);
+					csharpMonoBehaviourImports.Append(messageInfo.Name);
+					csharpMonoBehaviourImports.Append("(int thisHandle");
+					if (numParams > 0)
+					{
+						csharpMonoBehaviourImports.Append(", ");
+					}
+					for (int i = 0; i < numParams; ++i)
+					{
+						Type paramType = paramTypes[i];
+						if (paramType.IsValueType)
+						{
+							AppendCsharpTypeName(
+								paramType,
+								csharpMonoBehaviourImports);
+							csharpMonoBehaviourImports.Append(" param");
+							csharpMonoBehaviourImports.Append(i);
+						}
+						else
+						{
+							csharpMonoBehaviourImports.Append("int param");
+							csharpMonoBehaviourImports.Append(i);
+						}
+						if (i != numParams-1)
+						{
+							csharpMonoBehaviourImports.Append(", ");
+						}
+					}
+					csharpMonoBehaviourImports.Append(");\n\t\t\n");
+					
+					// C# GetDelegate Call
+					csharpMonoBehaviourGetDelegateCalls.Append("\t\t\t");
+					csharpMonoBehaviourGetDelegateCalls.Append(monoBehaviour.Name);
+					csharpMonoBehaviourGetDelegateCalls.Append(messageInfo.Name);
+					csharpMonoBehaviourGetDelegateCalls.Append(" = GetDelegate<");
+					csharpMonoBehaviourGetDelegateCalls.Append(monoBehaviour.Name);
+					csharpMonoBehaviourGetDelegateCalls.Append(messageInfo.Name);
+					csharpMonoBehaviourGetDelegateCalls.Append("Delegate>(libraryHandle, \"");
+					csharpMonoBehaviourGetDelegateCalls.Append(monoBehaviour.Name);
+					csharpMonoBehaviourGetDelegateCalls.Append(messageInfo.Name);
+					csharpMonoBehaviourGetDelegateCalls.Append("\");\n");
+					
+					// C++ Message
+					cppMonoBehaviourMessages.Append("DLLEXPORT void ");
+					cppMonoBehaviourMessages.Append(monoBehaviour.Name);
+					cppMonoBehaviourMessages.Append(messageInfo.Name);
+					cppMonoBehaviourMessages.Append("(int32_t thisHandle");
+					if (numParams > 0)
+					{
+						cppMonoBehaviourMessages.Append(", ");
+					}
+					for (int i = 0; i < numParams; ++i)
+					{
+						Type paramType = paramTypes[i];
+						if (paramType.IsValueType)
+						{
+							AppendCppTypeName(
+								paramType,
+								cppMonoBehaviourMessages);
+							cppMonoBehaviourMessages.Append(" param");
+							cppMonoBehaviourMessages.Append(i);
+						}
+						else
+						{
+							cppMonoBehaviourMessages.Append("int32_t param");
+							cppMonoBehaviourMessages.Append(i);
+							cppMonoBehaviourMessages.Append("Handle");
+						}
+						if (i != numParams-1)
+						{
+							cppMonoBehaviourMessages.Append(", ");
+						}
+					}
+					cppMonoBehaviourMessages.Append(")\n{\n\t");
+					AppendCppTypeName(
+						monoBehaviour.Namespace,
+						monoBehaviour.Name,
+						cppMonoBehaviourMessages);
+					cppMonoBehaviourMessages.Append(" thiz(thisHandle);\n");
+					for (int i = 0; i < numParams; ++i)
+					{
+						Type paramType = paramTypes[i];
+						if (!paramType.IsValueType)
+						{
+							cppMonoBehaviourMessages.Append('\t');
+							AppendCppTypeName(
+								paramType,
+								cppMonoBehaviourMessages);
+							cppMonoBehaviourMessages.Append(" param");
+							cppMonoBehaviourMessages.Append(i);
+							cppMonoBehaviourMessages.Append("(param");
+							cppMonoBehaviourMessages.Append(i);
+							cppMonoBehaviourMessages.Append("Handle);\n");
+						}
+					}
+					cppMonoBehaviourMessages.Append("\tthiz.");
+					cppMonoBehaviourMessages.Append(messageInfo.Name);
+					cppMonoBehaviourMessages.Append("(");
+					for (int i = 0; i < numParams; ++i)
+					{
+						cppMonoBehaviourMessages.Append("param");
+						cppMonoBehaviourMessages.Append(i);
+						if (i != numParams-1)
+						{
+							cppMonoBehaviourMessages.Append(", ");
+						}
+					}
+					cppMonoBehaviourMessages.Append(");\n}\n\n");
+				}
+				
+				// C# Class extending MonoBehaviour (end)
+				AppendIndent(csharpIndent, csharpMonoBehaviours);
+				csharpMonoBehaviours.Append("}\n");
+				AppendNamespaceEnding(csharpIndent, csharpMonoBehaviours);
+				
+				// C++ Type Definition (end)
+				AppendCppTypeDefinitionEnd(
+					false,
+					cppIndent,
+					cppTypeDefinitions);
 			}
 			
 			// Remove trailing chars (e.g. commas) for last elements
@@ -573,12 +966,17 @@ namespace NativeScript
 			RemoveTrailingChars(csharpDelegateTypes);
 			RemoveTrailingChars(csharpInitCall);
 			RemoveTrailingChars(csharpFunctions);
+			RemoveTrailingChars(csharpMonoBehaviours);
+			RemoveTrailingChars(csharpMonoBehaviourDelegates);
+			RemoveTrailingChars(csharpMonoBehaviourImports);
+			RemoveTrailingChars(csharpMonoBehaviourGetDelegateCalls);
 			RemoveTrailingChars(cppFunctionPointers);
 			RemoveTrailingChars(cppTypeDeclarations);
 			RemoveTrailingChars(cppMethodDefinitions);
 			RemoveTrailingChars(cppTypeDefinitions);
 			RemoveTrailingChars(cppInitParams);
 			RemoveTrailingChars(cppInitBody);
+			RemoveTrailingChars(cppMonoBehaviourMessages);
 			
 			if (dryRun)
 			{
@@ -586,34 +984,24 @@ namespace NativeScript
 				LogStringBuilder("C# delegates", csharpDelegateTypes);
 				LogStringBuilder("C# init call", csharpInitCall);
 				LogStringBuilder("C# functions", csharpFunctions);
+				LogStringBuilder("C# MonoBehaviours", csharpMonoBehaviours);
+				LogStringBuilder("C# MonoBehaviour Delegates", csharpMonoBehaviourDelegates);
+				LogStringBuilder("C# MonoBehaviour Imports", csharpMonoBehaviourImports);
+				LogStringBuilder("C# MonoBehaviour GetDelegate Calls", csharpMonoBehaviourGetDelegateCalls);
 				LogStringBuilder("C++ function pointers", cppFunctionPointers);
 				LogStringBuilder("C++ type declarations", cppTypeDeclarations);
 				LogStringBuilder("C++ type definitions", cppTypeDefinitions);
 				LogStringBuilder("C++ method definitions", cppMethodDefinitions);
 				LogStringBuilder("C++ init params", cppInitParams);
 				LogStringBuilder("C++ init body", cppInitBody);
+				LogStringBuilder("C++ MonoBehaviour messages", cppMonoBehaviourMessages);
 			}
 			else
 			{
 				// Inject into source files
-				string csharpPath = Path.Combine(
-					Application.dataPath,
-					Path.Combine(
-						"NativeScript",
-						"Bindings.cs"));
-				string cppHeaderPath = Path.Combine(
-					Application.dataPath,
-					Path.Combine(
-						"NativeScript",
-						"Bindings.h"));
-				string cppSourcePath = Path.Combine(
-					Application.dataPath,
-					Path.Combine(
-						"NativeScript",
-						"Bindings.cpp"));
-				string csharpContents = File.ReadAllText(csharpPath);
-				string cppHeaderContents = File.ReadAllText(cppHeaderPath);
-				string cppSourceContents = File.ReadAllText(cppSourcePath);
+				string csharpContents = File.ReadAllText(CsharpPath);
+				string cppHeaderContents = File.ReadAllText(CppHeaderPath);
+				string cppSourceContents = File.ReadAllText(CppSourcePath);
 				csharpContents = InjectIntoString(
 					csharpContents,
 					"/*BEGIN INIT PARAMS*/\n",
@@ -634,6 +1022,26 @@ namespace NativeScript
 					"/*BEGIN FUNCTIONS*/\n",
 					"\n\t\t/*END FUNCTIONS*/",
 					csharpFunctions.ToString());
+				csharpContents = InjectIntoString(
+					csharpContents,
+					"/*BEGIN MONOBEHAVIOURS*/\n",
+					"\n/*END MONOBEHAVIOURS*/",
+					csharpMonoBehaviours.ToString());
+				csharpContents = InjectIntoString(
+					csharpContents,
+					"/*BEGIN MONOBEHAVIOUR DELEGATES*/\n",
+					"\n\t\t/*END MONOBEHAVIOUR DELEGATES*/",
+					csharpMonoBehaviourDelegates.ToString());
+				csharpContents = InjectIntoString(
+					csharpContents,
+					"/*BEGIN MONOBEHAVIOUR IMPORTS*/\n",
+					"\n\t\t/*END MONOBEHAVIOUR IMPORTS*/",
+					csharpMonoBehaviourImports.ToString());
+				csharpContents = InjectIntoString(
+					csharpContents,
+					"/*BEGIN MONOBEHAVIOUR GETDELEGATE CALLS*/\n",
+					"\n\t\t\t/*END MONOBEHAVIOUR GETDELEGATE CALLS*/",
+					csharpMonoBehaviourGetDelegateCalls.ToString());
 				cppSourceContents = InjectIntoString(
 					cppSourceContents,
 					"/*BEGIN FUNCTION POINTERS*/\n",
@@ -664,12 +1072,28 @@ namespace NativeScript
 					"/*BEGIN INIT BODY*/\n",
 					"\n\t/*END INIT BODY*/",
 					cppInitBody.ToString());
-				File.WriteAllText(csharpPath, csharpContents);
-				File.WriteAllText(cppHeaderPath, cppHeaderContents);
-				File.WriteAllText(cppSourcePath, cppSourceContents);
-				AssetDatabase.Refresh();
-				Debug.Log("Done");
+				cppSourceContents = InjectIntoString(
+					cppSourceContents,
+					"/*BEGIN MONOBEHAVIOUR MESSAGES*/\n",
+					"\n/*END MONOBEHAVIOUR MESSAGES*/",
+					cppMonoBehaviourMessages.ToString());
+				
+				File.WriteAllText(CsharpPath, csharpContents);
+				File.WriteAllText(CppHeaderPath, cppHeaderContents);
+				File.WriteAllText(CppSourcePath, cppSourceContents);
+				Debug.Log(
+					"Can't auto-refresh due to a bug in Unity. " +
+					"Please manually refresh assets with Assets -> Refresh.");
 			}
+		}
+		
+		static JsonDocument LoadJson()
+		{
+			string jsonPath = Path.Combine(
+				Application.dataPath,
+				NativeScriptConstants.ExposedTypesJsonPath);
+			string json = File.ReadAllText(jsonPath);
+			return JsonUtility.FromJson<JsonDocument>(json);
 		}
 		
 		static Type[] GetTypes(
@@ -680,26 +1104,118 @@ namespace NativeScript
 			Type[] types = new Type[typeNames.Length];
 			for (int i = 0; i < typeNames.Length; ++i)
 			{
-				string typeName = typeNames[i];
-				types[i] = assembly.GetType(typeName)
-					?? systemAssembly.GetType(typeName);
+				types[i] = GetType(typeNames[i], assembly);
 			}
 			return types;
+		}
+		
+		static Type GetType(
+			string typeName,
+			Assembly assembly)
+		{
+			return assembly.GetType(typeName)
+				?? typeof(string).Assembly.GetType(typeName)
+				?? typeof(Bindings).Assembly.GetType(typeName);
+		}
+		
+		static MethodInfo GetMethod(
+			Type type,
+			string methodName,
+			string returnTypeName,
+			string[] paramTypeNames)
+		{
+			foreach (MethodInfo method in type.GetMethods())
+			{
+				if (method.Name == methodName)
+				{
+					if (returnTypeName != null)
+					{
+						if (string.IsNullOrEmpty(method.ReturnType.Namespace))
+						{
+							if (method.ReturnType.Name != returnTypeName)
+							{
+								continue;
+							}
+						}
+						else
+						{
+							if (method.ReturnType.Namespace + "." + method.ReturnType.Name != returnTypeName)
+							{
+								continue;
+							}
+						}
+					}
+					System.Reflection.ParameterInfo[] parameters = method.GetParameters();
+					for (int i = 0; i < parameters.Length; ++i)
+					{
+						Type paramType = parameters[i].ParameterType;
+						if (string.IsNullOrEmpty(paramType.Namespace))
+						{
+							if (paramType.Name != paramTypeNames[i])
+							{
+								goto mismatch;
+							}
+						}
+						else
+						{
+							if (paramType.Namespace + "." + paramType.Name != paramTypeNames[i])
+							{
+								goto mismatch;
+							}
+						}
+					}
+					return method;
+					mismatch:;
+				}
+			}
+			return null;
 		}
 		
 		static void AppendTypeNames(
 			Type[] types,
 			StringBuilder output)
 		{
-			for (int i = 0; i < types.Length; ++i)
+			for (int i = 0, len = types.Length; i < len; ++i)
 			{
 				Type type = types[i];
-				output.Append(type.Namespace);
+				AppendNamespace(type.Namespace, string.Empty, output);
 				output.Append(type.Name);
-				if (i != types.Length - 1)
+				if (i != len - 1)
 				{
 					output.Append('_');
 				}
+			}
+		}
+		
+		static void AppendNamespace(
+			string namespaceName,
+			string separator,
+			StringBuilder output)
+		{
+			int startIndex = 0;
+			if (!string.IsNullOrEmpty(namespaceName))
+			{
+				do
+				{
+					int dotIndex = namespaceName.IndexOf(
+						'.',
+						startIndex);
+					if (dotIndex < 0)
+					{
+						break;
+					}
+					output.Append(
+						namespaceName,
+						startIndex,
+						dotIndex - startIndex);
+					output.Append(separator);
+					startIndex = dotIndex + 1;
+				}
+				while (true);
+				output.Append(
+					namespaceName,
+					startIndex,
+					namespaceName.Length - startIndex);
 			}
 		}
 		
@@ -719,7 +1235,23 @@ namespace NativeScript
 			return parameters;
 		}
 		
-		static void GenerateGetter(
+		static ParameterInfo[] ConvertParameters(
+			Type[] paramTypes)
+		{
+			int num = paramTypes.Length;
+			ParameterInfo[] parameters = new ParameterInfo[num];
+			for (int i = 0; i < num; ++i)
+			{
+				Type paramType = paramTypes[i];
+				ParameterInfo info = new ParameterInfo();
+				info.Name = "param" + i;
+				info.ParameterType = paramType;
+				parameters[i] = info;
+			}
+			return parameters;
+		}
+		
+		static void AppendGetter(
 			string fieldName,
 			string enclosingTypeNameLower,
 			string syntaxType,
@@ -785,6 +1317,7 @@ namespace NativeScript
 				funcName,
 				isStatic,
 				fieldType,
+				null,
 				parameters,
 				stringBuilders.CsharpFunctions);
 			AppendCsharpFunctionCallSubject(
@@ -811,6 +1344,7 @@ namespace NativeScript
 				methodName,
 				isStatic,
 				fieldType,
+				null,
 				parameters,
 				stringBuilders.CppTypeDefinitions);
 			
@@ -819,6 +1353,7 @@ namespace NativeScript
 				enclosingType,
 				fieldType,
 				methodName,
+				null,
 				parameters,
 				indent,
 				stringBuilders.CppMethodDefinitions);
@@ -855,7 +1390,7 @@ namespace NativeScript
 				stringBuilders.CppInitBody);
 		}
 		
-		static void GenerateSetter(
+		static void AppendSetter(
 			string fieldName,
 			string syntaxType,
 			string enclosingTypeNameLower,
@@ -921,6 +1456,7 @@ namespace NativeScript
 				funcName,
 				isStatic,
 				typeof(void),
+				null,
 				parameters,
 				stringBuilders.CsharpFunctions);
 			AppendCsharpFunctionCallSubject(
@@ -960,6 +1496,7 @@ namespace NativeScript
 				methodName,
 				isStatic,
 				typeof(void),
+				null,
 				parameters,
 				stringBuilders.CppTypeDefinitions);
 			
@@ -968,6 +1505,7 @@ namespace NativeScript
 				enclosingType,
 				typeof(void),
 				methodName,
+				null,
 				parameters,
 				indent,
 				stringBuilders.CppMethodDefinitions);
@@ -1001,18 +1539,339 @@ namespace NativeScript
 				stringBuilders.CppInitBody);
 		}
 		
+		static void AppendMethod(
+			Type type,
+			string typeNameLower,
+			string methodName,
+			bool isStatic,
+			Type returnType,
+			Type[] typeParameters,
+			ParameterInfo[] parameters,
+			Type[] paramTypes,
+			int indent,
+			StringBuilders stringBuilders)
+		{
+			// Build uppercase function name
+			stringBuilders.TempStrBuilder.Length = 0;
+			stringBuilders.TempStrBuilder.Append(type.Name);
+			stringBuilders.TempStrBuilder.Append("Method");
+			stringBuilders.TempStrBuilder.Append(methodName);
+			AppendTypeNames(paramTypes, stringBuilders.TempStrBuilder);
+			if (typeParameters != null)
+			{
+				foreach (Type typeParam in typeParameters)
+				{
+					AppendNamespace(
+						typeParam.Namespace,
+						string.Empty,
+						stringBuilders.TempStrBuilder);
+					stringBuilders.TempStrBuilder.Append(typeParam.Name);
+				}
+			}
+			string funcName = stringBuilders.TempStrBuilder.ToString();
+			
+			// Build lowercase function name
+			stringBuilders.TempStrBuilder.Length = 0;
+			stringBuilders.TempStrBuilder.Append(typeNameLower);
+			stringBuilders.TempStrBuilder.Append("Method");
+			stringBuilders.TempStrBuilder.Append(methodName);
+			AppendTypeNames(paramTypes, stringBuilders.TempStrBuilder);
+			if (typeParameters != null)
+			{
+				foreach (Type typeParam in typeParameters)
+				{
+					AppendNamespace(
+						typeParam.Namespace,
+						string.Empty,
+						stringBuilders.TempStrBuilder);
+					stringBuilders.TempStrBuilder.Append(typeParam.Name);
+				}
+			}
+			string funcNameLower = stringBuilders.TempStrBuilder.ToString();
+			
+			// C# init param declaration
+			AppendCsharpInitParam(
+				funcNameLower,
+				stringBuilders.CsharpInitParams);
+
+			// C# delegate type
+			AppendCsharpDelegateType(
+				funcName,
+				isStatic,
+				returnType,
+				parameters,
+				stringBuilders.CsharpDelegateTypes);
+
+			// C# init call param
+			AppendCsharpInitCallArg(
+				funcName,
+				stringBuilders.CsharpInitCall);
+
+			// C# function
+			AppendCsharpFunctionBeginning(
+				type,
+				funcName,
+				isStatic,
+				returnType,
+				typeParameters,
+				parameters,
+				stringBuilders.CsharpFunctions);
+			AppendCsharpFunctionCallSubject(
+				type,
+				isStatic,
+				stringBuilders.CsharpFunctions);
+			stringBuilders.CsharpFunctions.Append(methodName);
+			if (typeParameters != null)
+			{
+				stringBuilders.CsharpFunctions.Append('<');
+				for (int i = 0; i < typeParameters.Length; ++i)
+				{
+					Type typeParam = typeParameters[i];
+					AppendCsharpTypeName(
+						typeParam,
+						stringBuilders.CsharpFunctions);
+					if (i != typeParameters.Length - 1)
+					{
+						stringBuilders.CsharpFunctions.Append(", ");
+					}
+				}
+				stringBuilders.CsharpFunctions.Append('>');
+			}
+			AppendCsharpFunctionCallParameters(
+				isStatic,
+				parameters,
+				stringBuilders.CsharpFunctions);
+			stringBuilders.CsharpFunctions.Append(';');
+			AppendCsharpFunctionReturn(
+				returnType,
+				stringBuilders.CsharpFunctions);
+			
+			// C++ function pointer
+			AppendCppFunctionPointerDefinition(
+				funcName,
+				isStatic,
+				parameters,
+				returnType,
+				stringBuilders.CppFunctionPointers);
+			
+			// C++ method declaration
+			AppendIndent(
+				indent + 1,
+				stringBuilders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				methodName,
+				isStatic,
+				returnType,
+				typeParameters,
+				parameters,
+				stringBuilders.CppTypeDefinitions);
+			
+			// C++ method definition
+			AppendCppMethodDefinition(
+				type,
+				returnType,
+				methodName,
+				typeParameters,
+				parameters,
+				indent,
+				stringBuilders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				stringBuilders.CppMethodDefinitions);
+			stringBuilders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				stringBuilders.CppMethodDefinitions);
+			AppendCppMethodReturn(
+				returnType,
+				stringBuilders.CppMethodDefinitions);
+			AppendCppPluginFunctionCall(
+				isStatic,
+				returnType,
+				funcName,
+				parameters,
+				stringBuilders.CppMethodDefinitions);
+			stringBuilders.CppMethodDefinitions.Append(";\n");
+			AppendIndent(
+				indent,
+				stringBuilders.CppMethodDefinitions);
+			stringBuilders.CppMethodDefinitions.Append("}\n\t\n");
+			
+			// C++ init params
+			AppendCppInitParam(
+				funcNameLower,
+				isStatic,
+				parameters,
+				returnType,
+				stringBuilders.CppInitParams);
+			
+			// C++ init body
+			AppendCppInitBody(
+				funcName,
+				funcNameLower,
+				stringBuilders.CppInitBody);
+		}
+		
+		static int AppendCppTypeDeclaration(
+			string typeNamespace,
+			string typeName,
+			bool isStatic,
+			StringBuilder output
+		)
+		{
+			int indent = AppendNamespaceBeginning(
+				typeNamespace,
+				output);
+			AppendIndent(indent, output);
+			if (isStatic)
+			{
+				output.Append("namespace ");
+				output.Append(typeName);
+				output.Append('\n');
+				AppendIndent(indent, output);
+				output.Append("{\n");
+				AppendIndent(indent, output);
+				output.Append('}');
+			}
+			else
+			{
+				output.Append("struct ");
+				output.Append(typeName);
+				output.Append(";");
+			}
+			output.Append('\n');
+			AppendNamespaceEnding(
+				indent,
+				output);
+			output.Append('\n');
+			return indent;
+		}
+		
+		static void AppendCppTypeDefinitionBegin(
+			string typeNamespace,
+			string typeName,
+			string baseTypeNamespace,
+			string baseTypeName,
+			bool isStatic,
+			int indent,
+			StringBuilder output
+		)
+		{
+			AppendNamespaceBeginning(
+				typeNamespace,
+				output);
+			AppendIndent(
+				indent,
+				output);
+			if (isStatic)
+			{
+				output.Append("namespace ");
+				output.Append(typeName);
+			}
+			else
+			{
+				output.Append("struct ");
+				output.Append(typeName);
+				output.Append(" : ");
+				output.Append(baseTypeNamespace);
+				output.Append("::");
+				output.Append(baseTypeName);
+			}
+			output.Append('\n');
+			AppendIndent(
+				indent,
+				output);
+			output.Append("{\n");
+			if (!isStatic)
+			{
+				AppendIndent(
+					indent + 1,
+					output);
+				AppendSystemObjectLifecycleCall(
+					"SYSTEM_OBJECT_LIFECYCLE_DECLARATION",
+					typeName,
+					baseTypeNamespace,
+					baseTypeName,
+					output);
+				output.Append('\n');
+			}
+		}
+		
+		static void AppendCppTypeDefinitionEnd(
+			bool isStatic,
+			int indent,
+			StringBuilder cppTypeDefinitions
+		)
+		{
+			AppendIndent(
+				indent,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append('}');
+			if (!isStatic)
+			{
+				cppTypeDefinitions.Append(';');
+			}
+			cppTypeDefinitions.Append('\n');
+			AppendNamespaceEnding(
+				indent,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append('\n');
+		}
+		
+		static int AppendCppMethodDefinitionBegin(
+			string typeNamespace,
+			string typeName,
+			string baseTypeNamespace,
+			string baseTypeName,
+			bool isStatic,
+			int indent,
+			StringBuilder output)
+		{
+			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
+				typeNamespace,
+				output);
+			if (!isStatic)
+			{
+				AppendIndent(indent, output);
+				AppendSystemObjectLifecycleCall(
+					"SYSTEM_OBJECT_LIFECYCLE_DEFINITION",
+					typeName,
+					baseTypeNamespace,
+					baseTypeName,
+					output);
+				output.Append('\n');
+				AppendIndent(indent, output);
+				output.Append('\n');
+			}
+			return cppMethodDefinitionsIndent;
+		}
+		
+		static void AppendCppMethodDefinitionEnd(
+			int indent,
+			StringBuilder output)
+		{
+			RemoveTrailingChars(output);
+			output.Append('\n');
+			AppendNamespaceEnding(
+				indent,
+				output);
+			output.Append('\n');
+		}
+		
 		static void AppendSystemObjectLifecycleCall(
 			string macroName,
-			Type enclosingType,
+			string typeName,
+			string baseTypeNamespace,
+			string baseTypeName,
 			StringBuilder output)
 		{
 			output.Append(macroName);
 			output.Append('(');
-			output.Append(enclosingType.Name);
+			output.Append(typeName);
 			output.Append(", ");
-			output.Append(enclosingType.BaseType.Namespace);
+			output.Append(baseTypeNamespace);
 			output.Append("::");
-			output.Append(enclosingType.BaseType.Name);
+			output.Append(baseTypeName);
 			output.Append(")");
 		}
 		
@@ -1100,7 +1959,9 @@ namespace NativeScript
 			// Return type
 			if (returnType.IsValueType)
 			{
-				AppendCsharpTypeName(returnType, output);
+				AppendCsharpTypeName(
+					returnType,
+					output);
 			}
 			else
 			{
@@ -1123,7 +1984,7 @@ namespace NativeScript
 				"int",
 				AppendCsharpTypeName,
 				output);
-			output.Append(");\n\t\t\n");
+			output.Append(");\n");
 		}
 		
 		static void AppendCsharpFunctionBeginning(
@@ -1131,6 +1992,7 @@ namespace NativeScript
 			string funcName,
 			bool isStatic,
 			Type returnType,
+			Type[] typeParameters,
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
@@ -1143,7 +2005,9 @@ namespace NativeScript
 			{
 				if (returnType.IsValueType)
 				{
-					AppendCsharpTypeName(returnType, output);
+					AppendCsharpTypeName(
+						returnType,
+						output);
 				}
 				else
 				{
@@ -1152,9 +2016,10 @@ namespace NativeScript
 				output.Append(' ');
 			}
 			
+			// Function name
 			output.Append(funcName);
 			
-			// Paramters
+			// Parameters
 			output.Append("(");
 			if (!isStatic)
 			{
@@ -1174,9 +2039,10 @@ namespace NativeScript
 			// Get "this"
 			if (!isStatic)
 			{
-				AppendCsharpTypeName(enclosingType, output);
-				output.Append(" thiz = (");
-				AppendCsharpTypeName(enclosingType, output);
+				output.Append("var thiz = (");
+				AppendCsharpTypeName(
+					enclosingType,
+					output);
 				output.Append(
 					")ObjectStore.Get(thisHandle);\n\t\t\t");
 			}
@@ -1184,8 +2050,7 @@ namespace NativeScript
 			// Save return value as local variable
 			if (!returnType.Equals(typeof(void)))
 			{
-				AppendCsharpTypeName(returnType, output);
-				output.Append(" obj = ");
+				output.Append("var obj = ");
 			};
 		}
 		
@@ -1196,7 +2061,9 @@ namespace NativeScript
 		{
 			if (isStatic)
 			{
-				AppendCsharpTypeName(enclosingType, output);
+				AppendCsharpTypeName(
+					enclosingType,
+					output);
 			}
 			else
 			{
@@ -1327,11 +2194,16 @@ namespace NativeScript
 			Type enclosingType,
 			Type returnType,
 			string methodName,
+			Type[] typeParameters,
 			ParameterInfo[] parameters,
 			int indent,
 			StringBuilder output)
 		{
 			AppendIndent(indent, output);
+			if (typeParameters != null)
+			{
+				output.Append("template<> ");
+			}
 			if (returnType != null)
 			{
 				AppendCppTypeName(returnType, output);
@@ -1340,6 +2212,20 @@ namespace NativeScript
 			output.Append(enclosingType.Name);
 			output.Append("::");
 			output.Append(methodName);
+			if (typeParameters != null)
+			{
+				output.Append("<");
+				for (int i = 0; i < typeParameters.Length; ++i)
+				{
+					Type typeParam = typeParameters[i];
+					AppendCppTypeName(typeParam, output);
+					if (i != typeParameters.Length - 1)
+					{
+						output.Append(", ");
+					}
+				}
+				output.Append(">");
+			}
 			output.Append('(');
 			AppendParameterDeclaration(
 				parameters,
@@ -1442,7 +2328,7 @@ namespace NativeScript
 				';',
 				output
 			);
-			output.Append("\n\t\n");
+			output.Append('\n');
 		}
 		
 		static void AppendCppFunctionPointer(
@@ -1488,16 +2374,36 @@ namespace NativeScript
 			string methodName,
 			bool isStatic,
 			Type returnType,
+			Type[] typeParameters,
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
+			if (typeParameters != null)
+			{
+				output.Append("template<typename ");
+				for (int i = 0; i < typeParameters.Length; ++i)
+				{
+					output.Append('T');
+					output.Append(i);
+					if (i != typeParameters.Length - 1)
+					{
+						output.Append(", typename ");
+					}
+				}
+				output.Append("> ");
+			}
+			
 			if (isStatic)
 			{
 				output.Append("static ");
 			}
 			
 			// Return type
-			if (returnType != null)
+			if (typeParameters != null)
+			{
+				output.Append("T0 ");
+			}
+			else if (returnType != null)
 			{
 				AppendCppTypeName(returnType, output);
 				output.Append(' ');
@@ -1621,10 +2527,21 @@ namespace NativeScript
 			}
 			else
 			{
-				output.Append(type.Namespace);
-				output.Append("::");
-				output.Append(type.Name);
+				AppendCppTypeName(
+					type.Namespace,
+					type.Name,
+					output);
 			}
+		}
+		
+		static void AppendCppTypeName(
+			string namespaceName,
+			string name,
+			StringBuilder output)
+		{
+			AppendNamespace(namespaceName, "::", output);
+			output.Append("::");
+			output.Append(name);
 		}
 		
 		static void LogStringBuilder(

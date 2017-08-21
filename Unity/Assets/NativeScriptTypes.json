@@ -13,11 +13,11 @@
 					"Methods": [
 						{
 							"Name": "Start",
-							"Types": []
+							"ParamTypes": []
 						},
 						{
 							"Name": "Reset",
-							"Types": []
+							"ParamTypes": []
 						}
 					],
 					"Properties": [ "ElapsedMilliseconds" ],
@@ -40,12 +40,27 @@
 					"Constructors": [
 						{
 							"Types": []
+						},
+						{
+							"Types": [ "System.String" ]
 						}
 					],
 					"Methods": [
 						{
 							"Name": "Find",
-							"Types": [ "System.String" ]
+							"ReturnType": "UnityEngine.GameObject",
+							"ParamTypes": [ "System.String" ]
+						},
+						{
+							"Name": "AddComponent",
+							"ReturnType": "T",
+							"ParamTypes": [],
+							"GenericTypes": [
+								{
+									"Name": "T",
+									"Type": "MyGame.MonoBehaviours.TestScript"
+								}
+							]
 						}
 					],
 					"Properties": [ "transform" ],
@@ -71,7 +86,7 @@
 					"Methods": [
 						{
 							"Name": "Log",
-							"Types": [ "System.Object" ]
+							"ParamTypes": [ "System.Object" ]
 						}
 					],
 					"Properties": [],
@@ -83,7 +98,40 @@
 					"Methods": [],
 					"Properties": [],
 					"Fields": [ "raiseExceptions" ]
+				},
+				{
+					"Name": "UnityEngine.Collision",
+					"Constructors": [],
+					"Methods": [],
+					"Properties": [],
+					"Fields": []
+				},
+				{
+					"Name": "UnityEngine.Behaviour",
+					"Constructors": [],
+					"Methods": [],
+					"Properties": [],
+					"Fields": []
+				},
+				{
+					"Name": "UnityEngine.MonoBehaviour",
+					"Constructors": [],
+					"Methods": [],
+					"Properties": [],
+					"Fields": []
 				}
+			]
+		}
+	],
+	"MonoBehaviours": [
+		{
+			"Name": "TestScript",
+			"Namespace": "MyGame.MonoBehaviours",
+			"Messages": [
+				"Awake",
+				"OnAnimatorIK",
+				"OnCollisionEnter",
+				"Update"
 			]
 		}
 	]

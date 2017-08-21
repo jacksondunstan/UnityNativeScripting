@@ -146,6 +146,29 @@ namespace UnityEngine
 		}
 	}
 }
+
+namespace UnityEngine
+{
+	struct Collision;
+}
+
+namespace UnityEngine
+{
+	struct Behaviour;
+}
+
+namespace UnityEngine
+{
+	struct MonoBehaviour;
+}
+
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		struct TestScript;
+	}
+}
 /*END TYPE DECLARATIONS*/
 
 /*BEGIN TYPE DEFINITIONS*/
@@ -180,8 +203,10 @@ namespace UnityEngine
 	{
 		SYSTEM_OBJECT_LIFECYCLE_DECLARATION(GameObject, UnityEngine::Object)
 		GameObject();
+		GameObject(System::String name);
 		UnityEngine::Transform GetTransform();
 		static UnityEngine::GameObject Find(System::String name);
+		template<typename T0> T0 AddComponent();
 	};
 }
 
@@ -222,6 +247,45 @@ namespace UnityEngine
 			static System::Boolean GetRaiseExceptions();
 			static void SetRaiseExceptions(System::Boolean value);
 		}
+	}
+}
+
+namespace UnityEngine
+{
+	struct Collision : System::Object
+	{
+		SYSTEM_OBJECT_LIFECYCLE_DECLARATION(Collision, System::Object)
+	};
+}
+
+namespace UnityEngine
+{
+	struct Behaviour : UnityEngine::Component
+	{
+		SYSTEM_OBJECT_LIFECYCLE_DECLARATION(Behaviour, UnityEngine::Component)
+	};
+}
+
+namespace UnityEngine
+{
+	struct MonoBehaviour : UnityEngine::Behaviour
+	{
+		SYSTEM_OBJECT_LIFECYCLE_DECLARATION(MonoBehaviour, UnityEngine::Behaviour)
+	};
+}
+
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		struct TestScript : UnityEngine::MonoBehaviour
+		{
+			SYSTEM_OBJECT_LIFECYCLE_DECLARATION(TestScript, UnityEngine::MonoBehaviour)
+			void Awake();
+			void OnAnimatorIK(int32_t param0);
+			void OnCollisionEnter(UnityEngine::Collision param0);
+			void Update();
+		};
 	}
 }
 /*END TYPE DEFINITIONS*/

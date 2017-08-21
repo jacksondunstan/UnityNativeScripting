@@ -13,23 +13,15 @@ namespace NativeScript
 	/// </license>
 	class BootScript : MonoBehaviour
 	{
-		Bindings bindings;
-		
 		void Awake()
 		{
 			DontDestroyOnLoad(gameObject);
-			bindings = new Bindings();
-			bindings.Open();
+			Bindings.Open();
 		}
 		
-		void Update()
-		{
-			bindings.MonoBehaviourUpdate();
-		}
-
 		void OnApplicationQuit()
 		{
-			bindings.Close();
+			Bindings.Close();
 		}
 	}
 }

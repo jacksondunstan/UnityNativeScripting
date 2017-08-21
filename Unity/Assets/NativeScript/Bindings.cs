@@ -19,12 +19,12 @@ namespace NativeScript
 	/// <license>
 	/// MIT
 	/// </license>
-	class Bindings
+	public static class Bindings
 	{
 	#if UNITY_EDITOR
 
 		// Handle to the C++ DLL
-		public IntPtr libraryHandle;
+		public static IntPtr libraryHandle;
 
 		public delegate void InitDelegate(
 			int maxManagedObjects,
@@ -38,8 +38,10 @@ namespace NativeScript
 			IntPtr objectPropertyGetName,
 			IntPtr objectPropertySetName,
 			IntPtr gameObjectConstructor,
+			IntPtr gameObjectConstructorSystemString,
 			IntPtr gameObjectPropertyGetTransform,
 			IntPtr gameObjectMethodFindSystemString,
+			IntPtr gameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
 			IntPtr componentPropertyGetTransform,
 			IntPtr transformPropertyGetPosition,
 			IntPtr transformPropertySetPosition,
@@ -48,8 +50,19 @@ namespace NativeScript
 			IntPtr assertFieldSetRaiseExceptions
 			/*END INIT PARAMS*/);
 
-		public delegate void MonoBehaviourUpdateDelegate();
-		public MonoBehaviourUpdateDelegate MonoBehaviourUpdate;
+		/*BEGIN MONOBEHAVIOUR DELEGATES*/
+		public delegate void TestScriptAwakeDelegate(int thisHandle);
+		public static TestScriptAwakeDelegate TestScriptAwake;
+		
+		public delegate void TestScriptOnAnimatorIKDelegate(int thisHandle, int param0);
+		public static TestScriptOnAnimatorIKDelegate TestScriptOnAnimatorIK;
+		
+		public delegate void TestScriptOnCollisionEnterDelegate(int thisHandle, int param0);
+		public static TestScriptOnCollisionEnterDelegate TestScriptOnCollisionEnter;
+		
+		public delegate void TestScriptUpdateDelegate(int thisHandle);
+		public static TestScriptUpdateDelegate TestScriptUpdate;
+		/*END MONOBEHAVIOUR DELEGATES*/
 
 	#endif
 
@@ -145,7 +158,7 @@ namespace NativeScript
 
 	#else
 
-		[DllImport(Constants.PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		static extern void Init(
 			int maxManagedObjects,
 			IntPtr releaseObject,
@@ -158,8 +171,10 @@ namespace NativeScript
 			IntPtr objectPropertyGetName,
 			IntPtr objectPropertySetName,
 			IntPtr gameObjectConstructor,
+			IntPtr gameObjectConstructorSystemString,
 			IntPtr gameObjectPropertyGetTransform,
 			IntPtr gameObjectMethodFindSystemString,
+			IntPtr gameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
 			IntPtr componentPropertyGetTransform,
 			IntPtr transformPropertyGetPosition,
 			IntPtr transformPropertySetPosition,
@@ -168,8 +183,19 @@ namespace NativeScript
 			IntPtr assertFieldSetRaiseExceptions
 			/*END INIT PARAMS*/);
 
+		/*BEGIN MONOBEHAVIOUR IMPORTS*/
 		[DllImport(Constants.PluginName)]
-		static extern void MonoBehaviourUpdate();
+		public static extern void TestScriptAwake(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void TestScriptOnAnimatorIK(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void TestScriptOnCollisionEnter(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void TestScriptUpdate(int thisHandle);
+		/*END MONOBEHAVIOUR IMPORTS*/
 
 	#endif
 
@@ -179,37 +205,25 @@ namespace NativeScript
 		
 		/*BEGIN DELEGATE TYPES*/
 		delegate int StopwatchConstructorDelegate();
-		
 		delegate long StopwatchPropertyGetElapsedMillisecondsDelegate(int thisHandle);
-		
 		delegate void StopwatchMethodStartDelegate(int thisHandle);
-		
 		delegate void StopwatchMethodResetDelegate(int thisHandle);
-		
 		delegate int ObjectPropertyGetNameDelegate(int thisHandle);
-		
 		delegate void ObjectPropertySetNameDelegate(int thisHandle, int valueHandle);
-		
 		delegate int GameObjectConstructorDelegate();
-		
+		delegate int GameObjectConstructorSystemStringDelegate(int nameHandle);
 		delegate int GameObjectPropertyGetTransformDelegate(int thisHandle);
-		
 		delegate int GameObjectMethodFindSystemStringDelegate(int nameHandle);
-		
+		delegate int GameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(int thisHandle);
 		delegate int ComponentPropertyGetTransformDelegate(int thisHandle);
-		
 		delegate UnityEngine.Vector3 TransformPropertyGetPositionDelegate(int thisHandle);
-		
 		delegate void TransformPropertySetPositionDelegate(int thisHandle, UnityEngine.Vector3 value);
-		
 		delegate void DebugMethodLogSystemObjectDelegate(int messageHandle);
-		
 		delegate bool AssertFieldGetRaiseExceptionsDelegate();
-		
 		delegate void AssertFieldSetRaiseExceptionsDelegate(bool value);
 		/*END DELEGATE TYPES*/
 
-		public void Open()
+		public static void Open()
 		{
 	#if UNITY_EDITOR
 
@@ -219,9 +233,12 @@ namespace NativeScript
 			InitDelegate Init = GetDelegate<InitDelegate>(
 				libraryHandle,
 				"Init");
-			MonoBehaviourUpdate = GetDelegate<MonoBehaviourUpdateDelegate>(
-				libraryHandle,
-				"MonoBehaviourUpdate");
+			/*BEGIN MONOBEHAVIOUR GETDELEGATE CALLS*/
+			TestScriptAwake = GetDelegate<TestScriptAwakeDelegate>(libraryHandle, "TestScriptAwake");
+			TestScriptOnAnimatorIK = GetDelegate<TestScriptOnAnimatorIKDelegate>(libraryHandle, "TestScriptOnAnimatorIK");
+			TestScriptOnCollisionEnter = GetDelegate<TestScriptOnCollisionEnterDelegate>(libraryHandle, "TestScriptOnCollisionEnter");
+			TestScriptUpdate = GetDelegate<TestScriptUpdateDelegate>(libraryHandle, "TestScriptUpdate");
+			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
 	#endif
 
@@ -239,8 +256,10 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new ObjectPropertyGetNameDelegate(ObjectPropertyGetName)),
 				Marshal.GetFunctionPointerForDelegate(new ObjectPropertySetNameDelegate(ObjectPropertySetName)),
 				Marshal.GetFunctionPointerForDelegate(new GameObjectConstructorDelegate(GameObjectConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new GameObjectConstructorSystemStringDelegate(GameObjectConstructorSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new GameObjectPropertyGetTransformDelegate(GameObjectPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new GameObjectMethodFindSystemStringDelegate(GameObjectMethodFindSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new GameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(GameObjectMethodAddComponentMyGameMonoBehavioursTestScript)),
 				Marshal.GetFunctionPointerForDelegate(new ComponentPropertyGetTransformDelegate(ComponentPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new TransformPropertyGetPositionDelegate(TransformPropertyGetPosition)),
 				Marshal.GetFunctionPointerForDelegate(new TransformPropertySetPositionDelegate(TransformPropertySetPosition)),
@@ -251,7 +270,7 @@ namespace NativeScript
 				);
 		}
 		
-		public void Close()
+		public static void Close()
 		{
 	#if UNITY_EDITOR
 			CloseLibrary(libraryHandle);
@@ -285,37 +304,37 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(StopwatchConstructorDelegate))]
 		static int StopwatchConstructor()
 		{
-			int obj = ObjectStore.Store(new System.Diagnostics.Stopwatch());
+			var obj = ObjectStore.Store(new System.Diagnostics.Stopwatch());
 			return obj;
 		}
 		
 		[MonoPInvokeCallback(typeof(StopwatchPropertyGetElapsedMillisecondsDelegate))]
 		static long StopwatchPropertyGetElapsedMilliseconds(int thisHandle)
 		{
-			System.Diagnostics.Stopwatch thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
-			long obj = thiz.ElapsedMilliseconds;
+			var thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			var obj = thiz.ElapsedMilliseconds;
 			return obj;
 		}
 		
 		[MonoPInvokeCallback(typeof(StopwatchMethodStartDelegate))]
 		static void StopwatchMethodStart(int thisHandle)
 		{
-			System.Diagnostics.Stopwatch thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			var thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
 			thiz.Start();
 		}
 		
 		[MonoPInvokeCallback(typeof(StopwatchMethodResetDelegate))]
 		static void StopwatchMethodReset(int thisHandle)
 		{
-			System.Diagnostics.Stopwatch thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			var thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
 			thiz.Reset();
 		}
 		
 		[MonoPInvokeCallback(typeof(ObjectPropertyGetNameDelegate))]
 		static int ObjectPropertyGetName(int thisHandle)
 		{
-			UnityEngine.Object thiz = (UnityEngine.Object)ObjectStore.Get(thisHandle);
-			string obj = thiz.name;
+			var thiz = (UnityEngine.Object)ObjectStore.Get(thisHandle);
+			var obj = thiz.name;
 			int handle = ObjectStore.Store(obj);
 			return handle;
 		}
@@ -323,22 +342,29 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(ObjectPropertySetNameDelegate))]
 		static void ObjectPropertySetName(int thisHandle, int valueHandle)
 		{
-			UnityEngine.Object thiz = (UnityEngine.Object)ObjectStore.Get(thisHandle);
+			var thiz = (UnityEngine.Object)ObjectStore.Get(thisHandle);
 			thiz.name = (string)ObjectStore.Get(valueHandle);
 		}
 		
 		[MonoPInvokeCallback(typeof(GameObjectConstructorDelegate))]
 		static int GameObjectConstructor()
 		{
-			int obj = ObjectStore.Store(new UnityEngine.GameObject());
+			var obj = ObjectStore.Store(new UnityEngine.GameObject());
+			return obj;
+		}
+		
+		[MonoPInvokeCallback(typeof(GameObjectConstructorSystemStringDelegate))]
+		static int GameObjectConstructorSystemString(int nameHandle)
+		{
+			var obj = ObjectStore.Store(new UnityEngine.GameObject((System.String)ObjectStore.Get(nameHandle)));
 			return obj;
 		}
 		
 		[MonoPInvokeCallback(typeof(GameObjectPropertyGetTransformDelegate))]
 		static int GameObjectPropertyGetTransform(int thisHandle)
 		{
-			UnityEngine.GameObject thiz = (UnityEngine.GameObject)ObjectStore.Get(thisHandle);
-			UnityEngine.Transform obj = thiz.transform;
+			var thiz = (UnityEngine.GameObject)ObjectStore.Get(thisHandle);
+			var obj = thiz.transform;
 			int handle = ObjectStore.Store(obj);
 			return handle;
 		}
@@ -346,7 +372,16 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(GameObjectMethodFindSystemStringDelegate))]
 		static int GameObjectMethodFindSystemString(int nameHandle)
 		{
-			UnityEngine.GameObject obj = UnityEngine.GameObject.Find((System.String)ObjectStore.Get(nameHandle));
+			var obj = UnityEngine.GameObject.Find((System.String)ObjectStore.Get(nameHandle));
+			int handle = ObjectStore.Store(obj);
+			return handle;
+		}
+		
+		[MonoPInvokeCallback(typeof(GameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate))]
+		static int GameObjectMethodAddComponentMyGameMonoBehavioursTestScript(int thisHandle)
+		{
+			var thiz = (UnityEngine.GameObject)ObjectStore.Get(thisHandle);
+			var obj = thiz.AddComponent<MyGame.MonoBehaviours.TestScript>();
 			int handle = ObjectStore.Store(obj);
 			return handle;
 		}
@@ -354,8 +389,8 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(ComponentPropertyGetTransformDelegate))]
 		static int ComponentPropertyGetTransform(int thisHandle)
 		{
-			UnityEngine.Component thiz = (UnityEngine.Component)ObjectStore.Get(thisHandle);
-			UnityEngine.Transform obj = thiz.transform;
+			var thiz = (UnityEngine.Component)ObjectStore.Get(thisHandle);
+			var obj = thiz.transform;
 			int handle = ObjectStore.Store(obj);
 			return handle;
 		}
@@ -363,15 +398,15 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(TransformPropertyGetPositionDelegate))]
 		static UnityEngine.Vector3 TransformPropertyGetPosition(int thisHandle)
 		{
-			UnityEngine.Transform thiz = (UnityEngine.Transform)ObjectStore.Get(thisHandle);
-			UnityEngine.Vector3 obj = thiz.position;
+			var thiz = (UnityEngine.Transform)ObjectStore.Get(thisHandle);
+			var obj = thiz.position;
 			return obj;
 		}
 		
 		[MonoPInvokeCallback(typeof(TransformPropertySetPositionDelegate))]
 		static void TransformPropertySetPosition(int thisHandle, UnityEngine.Vector3 value)
 		{
-			UnityEngine.Transform thiz = (UnityEngine.Transform)ObjectStore.Get(thisHandle);
+			var thiz = (UnityEngine.Transform)ObjectStore.Get(thisHandle);
 			thiz.position = value;
 		}
 		
@@ -384,7 +419,7 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(AssertFieldGetRaiseExceptionsDelegate))]
 		static bool AssertFieldGetRaiseExceptions()
 		{
-			bool obj = UnityEngine.Assertions.Assert.raiseExceptions;
+			var obj = UnityEngine.Assertions.Assert.raiseExceptions;
 			return obj;
 		}
 		
@@ -396,3 +431,43 @@ namespace NativeScript
 		/*END FUNCTIONS*/
 	}
 }
+
+/*BEGIN MONOBEHAVIOURS*/
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		public class TestScript : UnityEngine.MonoBehaviour
+		{
+			private int thisHandle;
+			
+			public TestScript()
+			{
+				thisHandle = NativeScript.ObjectStore.Store(this);
+			}
+			
+			public void Awake()
+			{
+				NativeScript.Bindings.TestScriptAwake(thisHandle);
+			}
+			
+			public void OnAnimatorIK(int param0)
+			{
+				NativeScript.Bindings.TestScriptOnAnimatorIK(thisHandle, param0);
+			}
+			
+			public void OnCollisionEnter(UnityEngine.Collision param0)
+			{
+				int param0Handle = NativeScript.ObjectStore.Store(param0);
+				NativeScript.Bindings.TestScriptOnCollisionEnter(thisHandle, param0Handle);
+				NativeScript.ObjectStore.Remove(param0Handle);
+			}
+			
+			public void Update()
+			{
+				NativeScript.Bindings.TestScriptUpdate(thisHandle);
+			}
+		}
+	}
+}
+/*END MONOBEHAVIOURS*/
