@@ -28,6 +28,7 @@ This project aims to give you a viable alternative to C#. Scripting in C++ isn't
 
 # Features
 
+* Supports Windows, macOS, iOS, and Android (editor and standalone)
 * Object-oriented API just like in C#
 
 >
@@ -46,6 +47,7 @@ This project aims to give you a viable alternative to C#. Scripting in C++ isn't
 		Debug::Log(String("MyScript has started"));
 	}
 
+* Platform-dependent compilation via the [usual flags](https://docs.unity3d.com/Manual/PlatformDependentCompilation.html) (e.g. `#if UNITY_EDITOR`)
 * [CMake](https://cmake.org/) build system sets up any IDE project or command-line build
 
 # Performance
@@ -87,7 +89,13 @@ One of the project's goals is to make it just as easy to work with C++ as it is 
 
 ## iOS
 
-There's nothing to do for iOS!
+1. Install [CMake](https://cmake.org/) version 3.6 or greater
+2. Create a directory for build files. Anywhere is fine.
+3. Open the Terminal app in `/Applications/Utilities`
+4. Execute `cd /path/to/your/build/directory`
+5. Execute `cmake -G MyGenerator -DCMAKE_TOOLCHAIN_FILE=/path/to/your/project/Assets/iOS.cmake /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. Common choices include "Unix Makefiles" to build from command line or "Xcode" to use Apple's IDE.
+6. The build scripts or IDE project files are now generated in your build directory
+7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator or open `NativeScript.xcodeproj` and click `Product > Build` if you chose Xcode.
 
 ## macOS (Editor and Standalone)
 
@@ -95,7 +103,7 @@ There's nothing to do for iOS!
 2. Create a directory for build files. Anywhere is fine.
 3. Open the Terminal app in `/Applications/Utilities`
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "MyGenerator" /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. Common choices include "Unix Makefiles" to build from command line or "Xcode" to use Apple's IDE.
+5. Execute `cmake -G "MyGenerator" -DEDITOR=TRUE /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. Common choices include "Unix Makefiles" to build from command line or "Xcode" to use Apple's IDE. Remove `-DEDITOR=TRUE` for standalone builds.
 6. The build scripts or IDE project files are now generated in your build directory
 7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator or open `NativeScript.xcodeproj` and click `Product > Build` if you chose Xcode.
 
@@ -105,7 +113,7 @@ There's nothing to do for iOS!
 2. Create a directory for build files. Anywhere is fine.
 3. Open a Command Prompt by clicking the Start button, typing "Command Prompt", then clicking the app
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" /path/to/your/project/Assets`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"`Visual Studio 15 2017 Win64` for Visual Studio 2017. Any version, including Community, works just fine.
+5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" -DEDITOR=TRUE /path/to/your/project/Assets`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"`Visual Studio 15 2017 Win64` for Visual Studio 2017. Any version, including Community, works just fine. Remove `-DEDITOR=TRUE` for standalone builds.
 6. The project files are now generated in your build directory
 7. Open `NativeScript.sln` and click `Build > Build Solution`.
 
@@ -115,7 +123,7 @@ There's nothing to do for iOS!
 2. Create a directory for build files. Anywhere is fine.
 3. Open a terminal as appropriate for your Linux distribution
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "MyGenerator" /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. The most common choice is "Unix Makefiles" to build from command line, but there are IDE options too.
+5. Execute `cmake -G "MyGenerator" -DEDITOR=TRUE /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. The most common choice is "Unix Makefiles" to build from command line, but there are IDE options too. Remove `-DEDITOR=TRUE` for standalone builds.
 6. The build scripts or IDE project files are now generated in your build directory
 7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator.
 

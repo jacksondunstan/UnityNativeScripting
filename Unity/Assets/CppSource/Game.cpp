@@ -13,9 +13,12 @@
 using namespace System;
 using namespace UnityEngine;
 
+void PrintPlatformDefines();
+
 // Called when the plugin is initialized
 void PluginMain()
 {
+	PrintPlatformDefines();
 	Debug::Log(String("Game booted up"));
 	GameObject go(String("GameObject with a TestScript"));
 	go.AddComponent<MyGame::MonoBehaviours::TestScript>();
@@ -52,4 +55,38 @@ void MyGame::MonoBehaviours::TestScript::Update()
 			Debug::Log(String("Done spawning game objects"));
 		}
 	}
+}
+
+void PrintPlatformDefines()
+{
+#if defined(UNITY_EDITOR)
+	Debug::Log(String("UNITY_EDITOR"));
+#endif
+#if defined(UNITY_STANDALONE)
+	Debug::Log(String("UNITY_STANDALONE"));
+#endif
+#if defined(UNITY_IOS)
+	Debug::Log(String("UNITY_IOS"));
+#endif
+#if defined(UNITY_ANDROID)
+	Debug::Log(String("UNITY_ANDROID"));
+#endif
+#if defined(UNITY_EDITOR_WIN)
+	Debug::Log(String("UNITY_EDITOR_WIN"));
+#endif
+#if defined(UNITY_EDITOR_OSX)
+	Debug::Log(String("UNITY_EDITOR_OSX"));
+#endif
+#if defined(UNITY_EDITOR_LINUX)
+	Debug::Log(String("UNITY_EDITOR_LINUX"));
+#endif
+#if defined(UNITY_STANDALONE_OSX)
+	Debug::Log(String("UNITY_STANDALONE_OSX"));
+#endif
+#if defined(UNITY_STANDALONE_WIN)
+	Debug::Log(String("UNITY_STANDALONE_WIN"));
+#endif
+#if defined(UNITY_STANDALONE_LINUX)
+	Debug::Log(String("UNITY_STANDALONE_LINUX"));
+#endif
 }

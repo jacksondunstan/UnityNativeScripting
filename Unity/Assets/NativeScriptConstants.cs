@@ -19,11 +19,11 @@ public static class NativeScriptConstants
 	/// Path to load the plugin from when running inside the editor
 	/// </summary>
 #if UNITY_EDITOR_OSX
-	public const string PluginPath = "/Plugins/NativeScript.bundle/Contents/MacOS/NativeScript";
+	public const string PluginPath = "/Plugins/Editor/NativeScript.bundle/Contents/MacOS/NativeScript";
 #elif UNITY_EDITOR_LINUX
-	public const string PluginPath = "/Plugins/libNativeScript.so";
+	public const string PluginPath = "/Plugins/Editor/libNativeScript.so";
 #elif UNITY_EDITOR_WIN
-	public const string PluginPath = "/Plugins/NativeScript.dll";
+	public const string PluginPath = "/Plugins/Editor/NativeScript.dll";
 #endif
 	
 	/// <summary>

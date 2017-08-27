@@ -21,8 +21,7 @@ namespace NativeScript
 	/// </license>
 	public static class Bindings
 	{
-	#if UNITY_EDITOR
-
+#if UNITY_EDITOR
 		// Handle to the C++ DLL
 		public static IntPtr libraryHandle;
 
@@ -63,11 +62,9 @@ namespace NativeScript
 		public delegate void TestScriptUpdateDelegate(int thisHandle);
 		public static TestScriptUpdateDelegate TestScriptUpdate;
 		/*END MONOBEHAVIOUR DELEGATES*/
+#endif
 
-	#endif
-
-	#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
 		[DllImport("__Internal")]
 		public static extern IntPtr dlopen(
 			string path,
@@ -110,10 +107,7 @@ namespace NativeScript
 				symbol,
 				typeof(T)) as T;
 		}
-
-
-	#elif UNITY_EDITOR_WIN
-
+#elif UNITY_EDITOR_WIN
 		[DllImport("kernel32")]
 		public static extern IntPtr LoadLibrary(
 			string path);
@@ -155,9 +149,7 @@ namespace NativeScript
 				symbol,
 				typeof(T)) as T;
 		}
-
-	#else
-
+#else
 		[DllImport(NativeScriptConstants.PluginName)]
 		static extern void Init(
 			int maxManagedObjects,
@@ -196,8 +188,7 @@ namespace NativeScript
 		[DllImport(Constants.PluginName)]
 		public static extern void TestScriptUpdate(int thisHandle);
 		/*END MONOBEHAVIOUR IMPORTS*/
-
-	#endif
+#endif
 
 		delegate void ReleaseObjectDelegate(int handle);
 		
@@ -225,7 +216,7 @@ namespace NativeScript
 
 		public static void Open()
 		{
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 
 			// Open native library
 			libraryHandle = OpenLibrary(
@@ -240,7 +231,7 @@ namespace NativeScript
 			TestScriptUpdate = GetDelegate<TestScriptUpdateDelegate>(libraryHandle, "TestScriptUpdate");
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
-	#endif
+#endif
 
 			// Init C++ library
 			ObjectStore.Init(NativeScriptConstants.MaxManagedObjects);
@@ -272,10 +263,10 @@ namespace NativeScript
 		
 		public static void Close()
 		{
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 			CloseLibrary(libraryHandle);
 			libraryHandle = IntPtr.Zero;
-	#endif
+#endif
 		}
 
 		////////////////////////////////////////////////////////////////
