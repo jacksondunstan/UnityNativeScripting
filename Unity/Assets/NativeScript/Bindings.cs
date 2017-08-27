@@ -176,16 +176,16 @@ namespace NativeScript
 			/*END INIT PARAMS*/);
 
 		/*BEGIN MONOBEHAVIOUR IMPORTS*/
-		[DllImport(Constants.PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		public static extern void TestScriptAwake(int thisHandle);
 		
-		[DllImport(Constants.PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		public static extern void TestScriptOnAnimatorIK(int thisHandle, int param0);
 		
-		[DllImport(Constants.PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		public static extern void TestScriptOnCollisionEnter(int thisHandle, int param0);
 		
-		[DllImport(Constants.PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		public static extern void TestScriptUpdate(int thisHandle);
 		/*END MONOBEHAVIOUR IMPORTS*/
 #endif
