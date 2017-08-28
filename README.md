@@ -82,8 +82,9 @@ One of the project's goals is to make it just as easy to work with C++ as it is 
 
 1. Download or clone this repo
 2. Copy everything in `Unity/Assets` directory to your Unity project's `Assets` directory
-3. Edit `NativeScriptTypes.json` and specify what parts of the Unity API you want access to from C++. Some examples are provided, but feel free to delete them if you're not using those features.
-4. Edit `CppSource/Game.cpp` to create your game. Some example code is provided, but feel free to delete it. You can add more C++ source (`.cpp`) and header (`.h`) files here as your game grows.
+3. Copy the `Unity/CppSource` directory to your Unity project directory
+4. Edit `NativeScriptTypes.json` and specify what parts of the Unity API you want access to from C++. Some examples are provided, but feel free to delete them if you're not using those features.
+5. Edit `Unity/CppSource/Game/Game.cpp` to create your game. Some example code is provided, but feel free to delete it. You can add more C++ source (`.cpp`) and header (`.h`) files here as your game grows.
 
 # Building the C++ Plugin
 
@@ -93,7 +94,7 @@ One of the project's goals is to make it just as easy to work with C++ as it is 
 2. Create a directory for build files. Anywhere is fine.
 3. Open the Terminal app in `/Applications/Utilities`
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G MyGenerator -DCMAKE_TOOLCHAIN_FILE=/path/to/your/project/Assets/iOS.cmake /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. Common choices include "Unix Makefiles" to build from command line or "Xcode" to use Apple's IDE.
+5. Execute `cmake -G MyGenerator -DCMAKE_TOOLCHAIN_FILE=/path/to/your/project/CppSource/iOS.cmake /path/to/your/project/CppSource`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. Common choices include "Unix Makefiles" to build from command line or "Xcode" to use Apple's IDE.
 6. The build scripts or IDE project files are now generated in your build directory
 7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator or open `NativeScript.xcodeproj` and click `Product > Build` if you chose Xcode.
 
@@ -103,7 +104,7 @@ One of the project's goals is to make it just as easy to work with C++ as it is 
 2. Create a directory for build files. Anywhere is fine.
 3. Open the Terminal app in `/Applications/Utilities`
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "MyGenerator" -DEDITOR=TRUE /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. Common choices include "Unix Makefiles" to build from command line or "Xcode" to use Apple's IDE. Remove `-DEDITOR=TRUE` for standalone builds.
+5. Execute `cmake -G "MyGenerator" -DEDITOR=TRUE /path/to/your/project/CppSource`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. Common choices include "Unix Makefiles" to build from command line or "Xcode" to use Apple's IDE. Remove `-DEDITOR=TRUE` for standalone builds.
 6. The build scripts or IDE project files are now generated in your build directory
 7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator or open `NativeScript.xcodeproj` and click `Product > Build` if you chose Xcode.
 
@@ -113,7 +114,7 @@ One of the project's goals is to make it just as easy to work with C++ as it is 
 2. Create a directory for build files. Anywhere is fine.
 3. Open a Command Prompt by clicking the Start button, typing "Command Prompt", then clicking the app
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" -DEDITOR=TRUE /path/to/your/project/Assets`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"`Visual Studio 15 2017 Win64` for Visual Studio 2017. Any version, including Community, works just fine. Remove `-DEDITOR=TRUE` for standalone builds.
+5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" -DEDITOR=TRUE /path/to/your/project/CppSource`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"`Visual Studio 15 2017 Win64` for Visual Studio 2017. Any version, including Community, works just fine. Remove `-DEDITOR=TRUE` for standalone builds.
 6. The project files are now generated in your build directory
 7. Open `NativeScript.sln` and click `Build > Build Solution`.
 
@@ -123,7 +124,7 @@ One of the project's goals is to make it just as easy to work with C++ as it is 
 2. Create a directory for build files. Anywhere is fine.
 3. Open a terminal as appropriate for your Linux distribution
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "MyGenerator" -DEDITOR=TRUE /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. The most common choice is "Unix Makefiles" to build from command line, but there are IDE options too. Remove `-DEDITOR=TRUE` for standalone builds.
+5. Execute `cmake -G "MyGenerator" -DEDITOR=TRUE /path/to/your/project/CppSource`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. The most common choice is "Unix Makefiles" to build from command line, but there are IDE options too. Remove `-DEDITOR=TRUE` for standalone builds.
 6. The build scripts or IDE project files are now generated in your build directory
 7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator.
 
@@ -133,13 +134,15 @@ One of the project's goals is to make it just as easy to work with C++ as it is 
 2. Create a directory for build files. Anywhere is fine.
 3. Open a terminal (macOS, Linux) or Command Prompt (Windows)
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G MyGenerator -DANDROID_NDK=/path/to/android/ndk /path/to/your/project/Assets`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. To make a build for any platform other than Android, omit the `-DANDROID_NDK=/path/to/android/ndk` part.
+5. Execute `cmake -G MyGenerator -DANDROID_NDK=/path/to/android/ndk /path/to/your/project/CppSource`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. To make a build for any platform other than Android, omit the `-DANDROID_NDK=/path/to/android/ndk` part.
 6. The build scripts or IDE project files are now generated in your build directory
 7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator.
 
-# Configuring the Code Generator
+# The Code Generator
 
-Open `NativeScriptTypes.json` and notice the existing examples. Add on to this file to expose more C# APIs from Unity, .NET, or custom DLLs to your C++ code.
+To run the code generator, choose `NativeScript > Generate Bindings` from the Unity editor.
+
+To configure the code generator, open `NativeScriptTypes.json` and notice the existing examples. Add on to this file to expose more C# APIs from Unity, .NET, or custom DLLs to your C++ code.
 
 The code generator supports:
 
@@ -182,7 +185,7 @@ The JSON file is laid out as follows:
 
 # Updating To A New Version
 
-To update to a new version of this project, overwrite your Unity project's `Assets/NativeScript` directory with this project's `Unity/Assets/NativeScript` directory.
+To update to a new version of this project, overwrite your Unity project's `Assets/NativeScript` directory with this project's `Unity/Assets/NativeScript` directory and re-run the code generator.
 
 # Reference
 

@@ -207,21 +207,25 @@ namespace NativeScript
 		const string PostCompileWorkPref = "NativeScriptGenerateBindingsPostCompileWork";
 		const string DryRunPref = "NativeScriptGenerateBindingsDryRun";
 		
+		static readonly string CppDirPath =
+			Path.Combine(
+				Path.Combine(
+					new DirectoryInfo(Application.dataPath)
+						.Parent
+						.FullName,
+					"CppSource"),
+				"NativeScript");
 		static readonly string CsharpPath = Path.Combine(
 			Application.dataPath,
 			Path.Combine(
 				"NativeScript",
 				"Bindings.cs"));
 		static readonly string CppHeaderPath = Path.Combine(
-			Application.dataPath,
-			Path.Combine(
-				"NativeScript",
-				"Bindings.h"));
+			CppDirPath,
+			"Bindings.h");
 		static readonly string CppSourcePath = Path.Combine(
-			Application.dataPath,
-			Path.Combine(
-				"NativeScript",
-				"Bindings.cpp"));
+			CppDirPath,
+			"Bindings.cpp");
 		
 		// Restore unused field types
 		#pragma warning restore CS0649
