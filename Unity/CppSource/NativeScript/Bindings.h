@@ -13,6 +13,9 @@
 // For int32_t, etc.
 #include <stdint.h>
 
+// For nullptr_t
+#include <cstddef>
+
 ////////////////////////////////////////////////////////////////
 // C# struct types
 ////////////////////////////////////////////////////////////////
@@ -86,14 +89,22 @@ namespace System
 		Object(int32_t handle);
 		Object(const Object& other);
 		Object(Object&& other);
+		void SetHandle(int32_t handle);
+		operator bool() const;
+		bool operator==(const Object& other) const;
+		bool operator!=(const Object& other) const;
+		bool operator==(std::nullptr_t other) const;
+		bool operator!=(std::nullptr_t other) const;
 	};
 	
 #define SYSTEM_OBJECT_LIFECYCLE_DECLARATION(ClassName, BaseClassName) \
+	ClassName(std::nullptr_t n); \
 	ClassName(int32_t handle); \
 	ClassName(const ClassName& other); \
 	ClassName(ClassName&& other); \
 	~ClassName(); \
 	ClassName& operator=(const ClassName& other); \
+	ClassName& operator=(std::nullptr_t other); \
 	ClassName& operator=(ClassName&& other);
 	
 	struct String : Object
@@ -160,6 +171,19 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	struct MonoBehaviour;
+}
+
+namespace UnityEngine
+{
+	struct AudioSettings;
+}
+
+namespace UnityEngine
+{
+	namespace Networking
+	{
+		struct NetworkTransport;
+	}
 }
 
 namespace MyGame
@@ -272,6 +296,28 @@ namespace UnityEngine
 	{
 		SYSTEM_OBJECT_LIFECYCLE_DECLARATION(MonoBehaviour, UnityEngine::Behaviour)
 	};
+}
+
+namespace UnityEngine
+{
+	struct AudioSettings : System::Object
+	{
+		SYSTEM_OBJECT_LIFECYCLE_DECLARATION(AudioSettings, System::Object)
+		static void GetDSPBufferSize(int32_t* bufferLength, int32_t* numBuffers);
+	};
+}
+
+namespace UnityEngine
+{
+	namespace Networking
+	{
+		struct NetworkTransport : System::Object
+		{
+			SYSTEM_OBJECT_LIFECYCLE_DECLARATION(NetworkTransport, System::Object)
+			static void GetBroadcastConnectionInfo(int32_t hostId, System::String* address, int32_t* port, uint8_t* error);
+			static void Init();
+		};
+	}
 }
 
 namespace MyGame

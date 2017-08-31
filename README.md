@@ -24,11 +24,12 @@ C++ has no required garbage collector and features optional automatic memory man
 
 While IL2CPP transforms C# into C++ already, it generates a lot of overhead. There are many [surprises](http://jacksondunstan.com/articles/3916) if you read through the generated C++. For example, there's overhead for any function using a static variable and an extra two pointers are stored at the beginning of every class. The same goes for all sorts of features such as `sizeof()`, mandatory null checks, and so forth. Instead, you could write C++ directly and not need to work around IL2CPP.
 
-This project aims to give you a viable alternative to C#. Scripting in C++ isn't right for every project, but now it's an option.
+This project aims to give you a viable alternative to C#. Scripting in C++ isn't right for all parts of every project, but now it's an option.
 
 # Features
 
 * Supports Windows, macOS, iOS, and Android (editor and standalone)
+* Plays nice with other C# scripts- no need to use 100% C++
 * Object-oriented API just like in C#
 
 >
@@ -153,15 +154,18 @@ The code generator supports:
 * Properties (getters and setters)
 * Generic return types
 * `MonoBehaviour` classes with "message" functions (except `OnAudioFilterRead`)
+* `out` and `ref` parameters
 
 The code generator does not support (yet):
 
 * Struct types
 * Arrays (single- or multi-dimensional)
 * Generic functions and types
-* `out` and `ref` parameters
 * Delegates
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
+* Overloaded operators
+* Exceptions
+* Default parameters
 
 The JSON file is laid out as follows:
 

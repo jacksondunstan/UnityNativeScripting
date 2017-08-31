@@ -21,11 +21,23 @@ namespace NativeScript
 	/// </license>
 	public static class Bindings
 	{
+		// Name of the plugin when using [DllImport]
+		const string PluginName = "NativeScript";
+		
+		// Path to load the plugin from when running inside the editor
+#if UNITY_EDITOR_OSX
+		const string PluginPath = "/Plugins/Editor/NativeScript.bundle/Contents/MacOS/NativeScript";
+#elif UNITY_EDITOR_LINUX
+		const string PluginPath = "/Plugins/Editor/libNativeScript.so";
+#elif UNITY_EDITOR_WIN
+		const string PluginPath = "/Plugins/Editor/NativeScript.dll";
+#endif
+
 #if UNITY_EDITOR
 		// Handle to the C++ DLL
-		public static IntPtr libraryHandle;
+		static IntPtr libraryHandle;
 
-		public delegate void InitDelegate(
+		delegate void InitDelegate(
 			int maxManagedObjects,
 			IntPtr releaseObject,
 			IntPtr stringNew,
@@ -46,7 +58,10 @@ namespace NativeScript
 			IntPtr transformPropertySetPosition,
 			IntPtr debugMethodLogSystemObject,
 			IntPtr assertFieldGetRaiseExceptions,
-			IntPtr assertFieldSetRaiseExceptions
+			IntPtr assertFieldSetRaiseExceptions,
+			IntPtr audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
+			IntPtr networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
+			IntPtr networkTransportMethodInit
 			/*END INIT PARAMS*/);
 
 		/*BEGIN MONOBEHAVIOUR DELEGATES*/
@@ -66,20 +81,21 @@ namespace NativeScript
 
 #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
 		[DllImport("__Internal")]
-		public static extern IntPtr dlopen(
+		static extern IntPtr dlopen(
 			string path,
 			int flag);
 
 		[DllImport("__Internal")]
-		public static extern IntPtr dlsym(
+		static extern IntPtr dlsym(
 			IntPtr handle,
 			string symbolName);
 
 		[DllImport("__Internal")]
-		public static extern int dlclose(
+		static extern int dlclose(
 			IntPtr handle);
 
-		public static IntPtr OpenLibrary(string path)
+		static IntPtr OpenLibrary(
+			string path)
 		{
 			IntPtr handle = dlopen(path, 0);
 			if (handle == IntPtr.Zero)
@@ -88,13 +104,14 @@ namespace NativeScript
 			}
 			return handle;
 		}
-
-		public static void CloseLibrary(IntPtr libraryHandle)
+		
+		static void CloseLibrary(
+			IntPtr libraryHandle)
 		{
 			dlclose(libraryHandle);
 		}
-
-		public static T GetDelegate<T>(
+		
+		static T GetDelegate<T>(
 			IntPtr libraryHandle,
 			string functionName) where T : class
 		{
@@ -109,19 +126,19 @@ namespace NativeScript
 		}
 #elif UNITY_EDITOR_WIN
 		[DllImport("kernel32")]
-		public static extern IntPtr LoadLibrary(
+		static extern IntPtr LoadLibrary(
 			string path);
-
+		
 		[DllImport("kernel32")]
-		public static extern IntPtr GetProcAddress(
+		static extern IntPtr GetProcAddress(
 			IntPtr libraryHandle,
 			string symbolName);
-
+		
 		[DllImport("kernel32")]
-		public static extern bool FreeLibrary(
+		static extern bool FreeLibrary(
 			IntPtr libraryHandle);
-
-		public static IntPtr OpenLibrary(string path)
+		
+		static IntPtr OpenLibrary(string path)
 		{
 			IntPtr handle = LoadLibrary(path);
 			if (handle == IntPtr.Zero)
@@ -130,13 +147,13 @@ namespace NativeScript
 			}
 			return handle;
 		}
-
-		public static void CloseLibrary(IntPtr libraryHandle)
+		
+		static void CloseLibrary(IntPtr libraryHandle)
 		{
 			FreeLibrary(libraryHandle);
 		}
-
-		public static T GetDelegate<T>(
+		
+		static T GetDelegate<T>(
 			IntPtr libraryHandle,
 			string functionName) where T : class
 		{
@@ -150,7 +167,7 @@ namespace NativeScript
 				typeof(T)) as T;
 		}
 #else
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(PluginName)]
 		static extern void Init(
 			int maxManagedObjects,
 			IntPtr releaseObject,
@@ -172,26 +189,28 @@ namespace NativeScript
 			IntPtr transformPropertySetPosition,
 			IntPtr debugMethodLogSystemObject,
 			IntPtr assertFieldGetRaiseExceptions,
-			IntPtr assertFieldSetRaiseExceptions
+			IntPtr assertFieldSetRaiseExceptions,
+			IntPtr audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
+			IntPtr networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
+			IntPtr networkTransportMethodInit
 			/*END INIT PARAMS*/);
-
+		
 		/*BEGIN MONOBEHAVIOUR IMPORTS*/
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(Constants.PluginName)]
 		public static extern void TestScriptAwake(int thisHandle);
 		
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(Constants.PluginName)]
 		public static extern void TestScriptOnAnimatorIK(int thisHandle, int param0);
 		
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(Constants.PluginName)]
 		public static extern void TestScriptOnCollisionEnter(int thisHandle, int param0);
 		
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(Constants.PluginName)]
 		public static extern void TestScriptUpdate(int thisHandle);
 		/*END MONOBEHAVIOUR IMPORTS*/
 #endif
-
-		delegate void ReleaseObjectDelegate(int handle);
 		
+		delegate void ReleaseObjectDelegate(int handle);
 		delegate int StringNewDelegate(string chars);
 		
 		/*BEGIN DELEGATE TYPES*/
@@ -212,15 +231,172 @@ namespace NativeScript
 		delegate void DebugMethodLogSystemObjectDelegate(int messageHandle);
 		delegate bool AssertFieldGetRaiseExceptionsDelegate();
 		delegate void AssertFieldSetRaiseExceptionsDelegate(bool value);
+		delegate void AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(out int bufferLength, out int numBuffers);
+		delegate void NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(int hostId, ref int addressHandle, out int port, out byte error);
+		delegate void NetworkTransportMethodInitDelegate();
 		/*END DELEGATE TYPES*/
-
-		public static void Open()
+		
+		// Stored objects. The first is always null.
+		static object[] objects;
+		
+		// Stack of available handles
+		static int[] handles;
+		
+		// Hash table of stored objects to their handles.
+		static object[] keys;
+		static int[] values;
+		
+		// Index of the next available handle
+		static int nextHandleIndex;
+		
+		// The maximum number of objects to store. Must be positive.
+		static int maxObjects;
+		
+		public static int StoreObject(object obj)
 		{
+			// Null is always zero
+			if (object.ReferenceEquals(obj, null))
+			{
+				return 0;
+			}
+			
+			lock (objects)
+			{
+				// Pop a handle off the stack
+				int handle = handles[nextHandleIndex];
+				nextHandleIndex--;
+				
+				// Store the object
+				objects[handle] = obj;
+				
+				// Insert into the hash table
+				int initialIndex = (int)(
+					((uint)obj.GetHashCode()) % maxObjects);
+				int index = initialIndex;
+				do
+				{
+					if (object.ReferenceEquals(keys[index], null))
+					{
+						keys[index] = obj;
+						values[index] = handle;
+						break;
+					}
+					index = (index + 1) % maxObjects;
+				}
+				while (index != initialIndex);
+				
+				return handle;
+			}
+		}
+		
+		public static object GetObject(int handle)
+		{
+			return objects[handle];
+		}
+		
+		public static int GetHandle(object obj)
+		{
+			// Null is always zero
+			if (object.ReferenceEquals(obj, null))
+			{
+				return 0;
+			}
+			
+			lock (objects)
+			{
+				// Look up the object in the hash table
+				int initialIndex = (int)(
+					((uint)obj.GetHashCode()) % maxObjects);
+				int index = initialIndex;
+				do
+				{
+					if (object.ReferenceEquals(keys[index], obj))
+					{
+						return values[index];
+					}
+					index = (index + 1) % maxObjects;
+				}
+				while (index != initialIndex);
+			}
+			
+			// Object not found
+            return -1;
+		}
+		
+		public static void RemoveObject(int handle)
+		{
+			if (handle != 0)
+			{
+				lock (objects)
+				{
+					// Forget the object
+					object obj = objects[handle];
+					objects[handle] = null;
+
+					// Push the handle onto the stack
+					nextHandleIndex++;
+					handles[nextHandleIndex] = handle;
+					
+					// Remove the object from the hash table
+					int initialIndex = (int)(
+						((uint)obj.GetHashCode()) % maxObjects);
+					int index = initialIndex;
+					do
+					{
+						if (object.ReferenceEquals(keys[index], obj))
+						{
+							// Only the key needs to be removed (set to null)
+							// because values corresponding to null will never
+							// be read and the values are just integers, so
+							// we're not holding on to a managed reference that
+							// will prevent GC.
+							keys[index] = null;
+							break;
+						}
+						index = (index + 1) % maxObjects;
+					}
+					while (index != initialIndex);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Open the C++ plugin and call its PluginMain()
+		/// </summary>
+		/// 
+		/// <param name="maxManagedObjects">
+		/// Maximum number of simultaneous managed objects that the C++ plugin
+		/// uses.
+		/// </param>
+		public static void Open(
+			int maxManagedObjects)
+		{
+			Bindings.maxObjects = maxManagedObjects;
+			
+			// Initialize the objects as all null plus room for the
+			// first to always be null.
+			objects = new object[maxManagedObjects + 1];
+
+			// Initialize the handles stack as 1, 2, 3, ...
+			handles = new int[maxManagedObjects];
+			for (
+				int i = 0, handle = maxManagedObjects;
+				i < maxManagedObjects;
+				++i, --handle)
+			{
+				handles[i] = handle;
+			}
+			nextHandleIndex = maxManagedObjects - 1;
+			
+			// Initialize the hash table
+			keys = new object[maxManagedObjects];
+			values = new int[maxManagedObjects];
+			
 #if UNITY_EDITOR
 
 			// Open native library
 			libraryHandle = OpenLibrary(
-				Application.dataPath + NativeScriptConstants.PluginPath);
+				Application.dataPath + PluginPath);
 			InitDelegate Init = GetDelegate<InitDelegate>(
 				libraryHandle,
 				"Init");
@@ -232,11 +408,10 @@ namespace NativeScript
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
 #endif
-
+			
 			// Init C++ library
-			ObjectStore.Init(NativeScriptConstants.MaxManagedObjects);
 			Init(
-				NativeScriptConstants.MaxManagedObjects,
+				maxManagedObjects,
 				Marshal.GetFunctionPointerForDelegate(new ReleaseObjectDelegate(ReleaseObject)),
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
 				/*BEGIN INIT CALL*/
@@ -256,11 +431,17 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new TransformPropertySetPositionDelegate(TransformPropertySetPosition)),
 				Marshal.GetFunctionPointerForDelegate(new DebugMethodLogSystemObjectDelegate(DebugMethodLogSystemObject)),
 				Marshal.GetFunctionPointerForDelegate(new AssertFieldGetRaiseExceptionsDelegate(AssertFieldGetRaiseExceptions)),
-				Marshal.GetFunctionPointerForDelegate(new AssertFieldSetRaiseExceptionsDelegate(AssertFieldSetRaiseExceptions))
+				Marshal.GetFunctionPointerForDelegate(new AssertFieldSetRaiseExceptionsDelegate(AssertFieldSetRaiseExceptions)),
+				Marshal.GetFunctionPointerForDelegate(new AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)),
+				Marshal.GetFunctionPointerForDelegate(new NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)),
+				Marshal.GetFunctionPointerForDelegate(new NetworkTransportMethodInitDelegate(NetworkTransportMethodInit))
 				/*END INIT CALL*/
 				);
 		}
 		
+		/// <summary>
+		/// Close the C++ plugin
+		/// </summary>
 		public static void Close()
 		{
 #if UNITY_EDITOR
@@ -279,7 +460,7 @@ namespace NativeScript
 		{
 			if (handle != 0)
 			{
-				ObjectStore.Remove(handle);
+				NativeScript.Bindings.RemoveObject(handle);
 			}
 		}
 		
@@ -287,7 +468,7 @@ namespace NativeScript
 		static int StringNew(
 			string chars)
 		{
-			int handle = ObjectStore.Store(chars);
+			int handle = NativeScript.Bindings.StoreObject(chars);
 			return handle;
 		}
 		
@@ -295,129 +476,196 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(StopwatchConstructorDelegate))]
 		static int StopwatchConstructor()
 		{
-			var obj = ObjectStore.Store(new System.Diagnostics.Stopwatch());
-			return obj;
+			var returnValue = NativeScript.Bindings.StoreObject(new System.Diagnostics.Stopwatch());
+			return returnValue;
 		}
 		
 		[MonoPInvokeCallback(typeof(StopwatchPropertyGetElapsedMillisecondsDelegate))]
 		static long StopwatchPropertyGetElapsedMilliseconds(int thisHandle)
 		{
-			var thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
-			var obj = thiz.ElapsedMilliseconds;
-			return obj;
+			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.ElapsedMilliseconds;
+			return returnValue;
 		}
 		
 		[MonoPInvokeCallback(typeof(StopwatchMethodStartDelegate))]
 		static void StopwatchMethodStart(int thisHandle)
 		{
-			var thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.GetObject(thisHandle);
 			thiz.Start();
 		}
 		
 		[MonoPInvokeCallback(typeof(StopwatchMethodResetDelegate))]
 		static void StopwatchMethodReset(int thisHandle)
 		{
-			var thiz = (System.Diagnostics.Stopwatch)ObjectStore.Get(thisHandle);
+			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.GetObject(thisHandle);
 			thiz.Reset();
 		}
 		
 		[MonoPInvokeCallback(typeof(ObjectPropertyGetNameDelegate))]
 		static int ObjectPropertyGetName(int thisHandle)
 		{
-			var thiz = (UnityEngine.Object)ObjectStore.Get(thisHandle);
-			var obj = thiz.name;
-			int handle = ObjectStore.Store(obj);
-			return handle;
+			var thiz = (UnityEngine.Object)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.name;
+			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
+			if (returnValueHandle < 0)
+			{
+				return NativeScript.Bindings.StoreObject(returnValue);
+			}
+			else
+			{
+				return returnValueHandle;
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(ObjectPropertySetNameDelegate))]
 		static void ObjectPropertySetName(int thisHandle, int valueHandle)
 		{
-			var thiz = (UnityEngine.Object)ObjectStore.Get(thisHandle);
-			thiz.name = (string)ObjectStore.Get(valueHandle);
+			var thiz = (UnityEngine.Object)NativeScript.Bindings.GetObject(thisHandle);
+			var value = (System.String)NativeScript.Bindings.GetObject(valueHandle);
+			thiz.name = value;
 		}
 		
 		[MonoPInvokeCallback(typeof(GameObjectConstructorDelegate))]
 		static int GameObjectConstructor()
 		{
-			var obj = ObjectStore.Store(new UnityEngine.GameObject());
-			return obj;
+			var returnValue = NativeScript.Bindings.StoreObject(new UnityEngine.GameObject());
+			return returnValue;
 		}
 		
 		[MonoPInvokeCallback(typeof(GameObjectConstructorSystemStringDelegate))]
 		static int GameObjectConstructorSystemString(int nameHandle)
 		{
-			var obj = ObjectStore.Store(new UnityEngine.GameObject((System.String)ObjectStore.Get(nameHandle)));
-			return obj;
+			var name = (System.String)NativeScript.Bindings.GetObject(nameHandle);
+			var returnValue = NativeScript.Bindings.StoreObject(new UnityEngine.GameObject(name));
+			return returnValue;
 		}
 		
 		[MonoPInvokeCallback(typeof(GameObjectPropertyGetTransformDelegate))]
 		static int GameObjectPropertyGetTransform(int thisHandle)
 		{
-			var thiz = (UnityEngine.GameObject)ObjectStore.Get(thisHandle);
-			var obj = thiz.transform;
-			int handle = ObjectStore.Store(obj);
-			return handle;
+			var thiz = (UnityEngine.GameObject)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.transform;
+			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
+			if (returnValueHandle < 0)
+			{
+				return NativeScript.Bindings.StoreObject(returnValue);
+			}
+			else
+			{
+				return returnValueHandle;
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(GameObjectMethodFindSystemStringDelegate))]
 		static int GameObjectMethodFindSystemString(int nameHandle)
 		{
-			var obj = UnityEngine.GameObject.Find((System.String)ObjectStore.Get(nameHandle));
-			int handle = ObjectStore.Store(obj);
-			return handle;
+			var name = (System.String)NativeScript.Bindings.GetObject(nameHandle);
+			var returnValue = UnityEngine.GameObject.Find(name);
+			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
+			if (returnValueHandle < 0)
+			{
+				return NativeScript.Bindings.StoreObject(returnValue);
+			}
+			else
+			{
+				return returnValueHandle;
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(GameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate))]
 		static int GameObjectMethodAddComponentMyGameMonoBehavioursTestScript(int thisHandle)
 		{
-			var thiz = (UnityEngine.GameObject)ObjectStore.Get(thisHandle);
-			var obj = thiz.AddComponent<MyGame.MonoBehaviours.TestScript>();
-			int handle = ObjectStore.Store(obj);
-			return handle;
+			var thiz = (UnityEngine.GameObject)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.AddComponent<MyGame.MonoBehaviours.TestScript>();
+			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
+			if (returnValueHandle < 0)
+			{
+				return NativeScript.Bindings.StoreObject(returnValue);
+			}
+			else
+			{
+				return returnValueHandle;
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(ComponentPropertyGetTransformDelegate))]
 		static int ComponentPropertyGetTransform(int thisHandle)
 		{
-			var thiz = (UnityEngine.Component)ObjectStore.Get(thisHandle);
-			var obj = thiz.transform;
-			int handle = ObjectStore.Store(obj);
-			return handle;
+			var thiz = (UnityEngine.Component)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.transform;
+			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
+			if (returnValueHandle < 0)
+			{
+				return NativeScript.Bindings.StoreObject(returnValue);
+			}
+			else
+			{
+				return returnValueHandle;
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(TransformPropertyGetPositionDelegate))]
 		static UnityEngine.Vector3 TransformPropertyGetPosition(int thisHandle)
 		{
-			var thiz = (UnityEngine.Transform)ObjectStore.Get(thisHandle);
-			var obj = thiz.position;
-			return obj;
+			var thiz = (UnityEngine.Transform)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.position;
+			return returnValue;
 		}
 		
 		[MonoPInvokeCallback(typeof(TransformPropertySetPositionDelegate))]
 		static void TransformPropertySetPosition(int thisHandle, UnityEngine.Vector3 value)
 		{
-			var thiz = (UnityEngine.Transform)ObjectStore.Get(thisHandle);
+			var thiz = (UnityEngine.Transform)NativeScript.Bindings.GetObject(thisHandle);
 			thiz.position = value;
 		}
 		
 		[MonoPInvokeCallback(typeof(DebugMethodLogSystemObjectDelegate))]
 		static void DebugMethodLogSystemObject(int messageHandle)
 		{
-			UnityEngine.Debug.Log(ObjectStore.Get(messageHandle));
+			var message = NativeScript.Bindings.GetObject(messageHandle);
+			UnityEngine.Debug.Log(message);
 		}
 		
 		[MonoPInvokeCallback(typeof(AssertFieldGetRaiseExceptionsDelegate))]
 		static bool AssertFieldGetRaiseExceptions()
 		{
-			var obj = UnityEngine.Assertions.Assert.raiseExceptions;
-			return obj;
+			var returnValue = UnityEngine.Assertions.Assert.raiseExceptions;
+			return returnValue;
 		}
 		
 		[MonoPInvokeCallback(typeof(AssertFieldSetRaiseExceptionsDelegate))]
 		static void AssertFieldSetRaiseExceptions(bool value)
 		{
 			UnityEngine.Assertions.Assert.raiseExceptions = value;
+		}
+		
+		[MonoPInvokeCallback(typeof(AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate))]
+		static void AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(out int bufferLength, out int numBuffers)
+		{
+			UnityEngine.AudioSettings.GetDSPBufferSize(out bufferLength, out numBuffers);
+		}
+		
+		[MonoPInvokeCallback(typeof(NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate))]
+		static void NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(int hostId, ref int addressHandle, out int port, out byte error)
+		{
+			var address = (System.String)NativeScript.Bindings.GetObject(addressHandle);
+			UnityEngine.Networking.NetworkTransport.GetBroadcastConnectionInfo(hostId, out address, out port, out error);
+			int addressHandleNew = NativeScript.Bindings.GetHandle(address);
+			if (addressHandleNew < 0)
+			{
+				addressHandle = NativeScript.Bindings.StoreObject(address);
+			}
+			else
+			{
+				addressHandle = addressHandleNew;
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(NetworkTransportMethodInitDelegate))]
+		static void NetworkTransportMethodInit()
+		{
+			UnityEngine.Networking.NetworkTransport.Init();
 		}
 		/*END FUNCTIONS*/
 	}
@@ -430,11 +678,11 @@ namespace MyGame
 	{
 		public class TestScript : UnityEngine.MonoBehaviour
 		{
-			private int thisHandle;
+			int thisHandle;
 			
 			public TestScript()
 			{
-				thisHandle = NativeScript.ObjectStore.Store(this);
+				thisHandle = NativeScript.Bindings.StoreObject(this);
 			}
 			
 			public void Awake()
@@ -449,9 +697,12 @@ namespace MyGame
 			
 			public void OnCollisionEnter(UnityEngine.Collision param0)
 			{
-				int param0Handle = NativeScript.ObjectStore.Store(param0);
+				int param0Handle = NativeScript.Bindings.GetHandle(param0);
+				if (param0Handle < 0)
+				{
+					param0Handle = NativeScript.Bindings.StoreObject(param0);
+				}
 				NativeScript.Bindings.TestScriptOnCollisionEnter(thisHandle, param0Handle);
-				NativeScript.ObjectStore.Remove(param0Handle);
 			}
 			
 			public void Update()

@@ -59,6 +59,9 @@ namespace Plugin
 	void (*DebugMethodLogSystemObject)(int32_t messageHandle);
 	System::Boolean (*AssertFieldGetRaiseExceptions)();
 	void (*AssertFieldSetRaiseExceptions)(System::Boolean value);
+	void (*AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers);
+	void (*NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error);
+	void (*NetworkTransportMethodInit)();
 	/*END FUNCTION POINTERS*/
 }
 
@@ -100,17 +103,23 @@ namespace Plugin
 ////////////////////////////////////////////////////////////////
 
 namespace System
-{	
+{
 	Object::Object(int32_t handle)
 	{
 		Handle = handle;
-		Plugin::ReferenceManagedObject(handle);
+		if (handle)
+		{
+			Plugin::ReferenceManagedObject(handle);
+		}
 	}
 	
 	Object::Object(const Object& other)
 	{
 		Handle = other.Handle;
-		Plugin::ReferenceManagedObject(Handle);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedObject(Handle);
+		}
 	}
 	
 	Object::Object(Object&& other)
@@ -119,7 +128,53 @@ namespace System
 		other.Handle = 0;
 	}
 	
+	void Object::SetHandle(int32_t handle)
+	{
+		if (Handle != handle)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+			}
+			Handle = handle;
+			if (handle)
+			{
+				Plugin::ReferenceManagedObject(handle);
+			}
+		}
+	}
+	
+	Object::operator bool() const
+	{
+		return Handle != 0;
+	}
+	
+	bool Object::operator==(const Object& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Object::operator!=(const Object& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	bool Object::operator==(std::nullptr_t other) const
+	{
+		return Handle == 0;
+	}
+	
+	bool Object::operator!=(std::nullptr_t other) const
+	{
+		return Handle != 0;
+	}
+	
 	#define SYSTEM_OBJECT_LIFECYCLE_DEFINITION(ClassName, BaseClassName) \
+		ClassName::ClassName(std::nullptr_t n) \
+			: BaseClassName(0) \
+		{ \
+		} \
+		\
 		ClassName::ClassName(int32_t handle) \
 			: BaseClassName(handle) \
 		{ \
@@ -137,20 +192,33 @@ namespace System
 		\
 		ClassName::~ClassName() \
 		{ \
-			Plugin::DereferenceManagedObject(Handle); \
+			if (Handle) \
+			{ \
+				Plugin::DereferenceManagedObject(Handle); \
+			} \
 		} \
 		\
 		ClassName& ClassName::operator=(const ClassName& other) \
 		{ \
-			Plugin::DereferenceManagedObject(Handle); \
-			Handle = other.Handle; \
-			Plugin::ReferenceManagedObject(Handle); \
+			SetHandle(other.Handle); \
+			return *this; \
+		} \
+		ClassName& ClassName::operator=(std::nullptr_t other) \
+		{ \
+			if (Handle) \
+			{ \
+				Plugin::DereferenceManagedObject(Handle); \
+				Handle = 0; \
+			} \
 			return *this; \
 		} \
 		\
 		ClassName& ClassName::operator=(ClassName&& other) \
 		{ \
-			Plugin::DereferenceManagedObject(Handle); \
+			if (Handle) \
+			{ \
+				Plugin::DereferenceManagedObject(Handle); \
+			} \
 			Handle = other.Handle; \
 			other.Handle = 0; \
 			return *this; \
@@ -172,13 +240,16 @@ namespace System
 		SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Stopwatch, System::Object)
 		
 		Stopwatch::Stopwatch()
-			: Stopwatch(Stopwatch(Plugin::StopwatchConstructor()))
+			 : System::Object(0)
 		{
+			auto returnValue = Plugin::StopwatchConstructor();
+			SetHandle(returnValue);
 		}
 		
 		int64_t Stopwatch::GetElapsedMilliseconds()
 		{
-			return Plugin::StopwatchPropertyGetElapsedMilliseconds(Handle);
+			auto returnValue = Plugin::StopwatchPropertyGetElapsedMilliseconds(Handle);
+			return returnValue;
 		}
 		
 		void Stopwatch::Start()
@@ -199,7 +270,8 @@ namespace UnityEngine
 	
 	System::String Object::GetName()
 	{
-		return System::String(Plugin::ObjectPropertyGetName(Handle));
+		auto returnValue = Plugin::ObjectPropertyGetName(Handle);
+		return returnValue;
 	}
 	
 	void Object::SetName(System::String value)
@@ -213,28 +285,35 @@ namespace UnityEngine
 	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(GameObject, UnityEngine::Object)
 	
 	GameObject::GameObject()
-		: GameObject(GameObject(Plugin::GameObjectConstructor()))
+		 : UnityEngine::Object(0)
 	{
+		auto returnValue = Plugin::GameObjectConstructor();
+		SetHandle(returnValue);
 	}
 	
 	GameObject::GameObject(System::String name)
-		: GameObject(GameObject(Plugin::GameObjectConstructorSystemString(name.Handle)))
+		 : UnityEngine::Object(0)
 	{
+		auto returnValue = Plugin::GameObjectConstructorSystemString(name.Handle);
+		SetHandle(returnValue);
 	}
 	
 	UnityEngine::Transform GameObject::GetTransform()
 	{
-		return UnityEngine::Transform(Plugin::GameObjectPropertyGetTransform(Handle));
+		auto returnValue = Plugin::GameObjectPropertyGetTransform(Handle);
+		return returnValue;
 	}
 	
 	UnityEngine::GameObject GameObject::Find(System::String name)
 	{
-		return UnityEngine::GameObject(Plugin::GameObjectMethodFindSystemString(name.Handle));
+		auto returnValue = Plugin::GameObjectMethodFindSystemString(name.Handle);
+		return returnValue;
 	}
 	
 	template<> MyGame::MonoBehaviours::TestScript GameObject::AddComponent<MyGame::MonoBehaviours::TestScript>()
 	{
-		return MyGame::MonoBehaviours::TestScript(Plugin::GameObjectMethodAddComponentMyGameMonoBehavioursTestScript(Handle));
+		auto returnValue = Plugin::GameObjectMethodAddComponentMyGameMonoBehavioursTestScript(Handle);
+		return returnValue;
 	}
 }
 
@@ -244,7 +323,8 @@ namespace UnityEngine
 	
 	UnityEngine::Transform Component::GetTransform()
 	{
-		return UnityEngine::Transform(Plugin::ComponentPropertyGetTransform(Handle));
+		auto returnValue = Plugin::ComponentPropertyGetTransform(Handle);
+		return returnValue;
 	}
 }
 
@@ -254,7 +334,8 @@ namespace UnityEngine
 	
 	UnityEngine::Vector3 Transform::GetPosition()
 	{
-		return Plugin::TransformPropertyGetPosition(Handle);
+		auto returnValue = Plugin::TransformPropertyGetPosition(Handle);
+		return returnValue;
 	}
 	
 	void Transform::SetPosition(UnityEngine::Vector3 value)
@@ -279,7 +360,8 @@ namespace UnityEngine
 	{
 		System::Boolean Assert::GetRaiseExceptions()
 		{
-			return Plugin::AssertFieldGetRaiseExceptions();
+			auto returnValue = Plugin::AssertFieldGetRaiseExceptions();
+			return returnValue;
 		}
 		
 		void Assert::SetRaiseExceptions(System::Boolean value)
@@ -302,6 +384,36 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(MonoBehaviour, UnityEngine::Behaviour)
+}
+
+namespace UnityEngine
+{
+	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(AudioSettings, System::Object)
+	
+	void AudioSettings::GetDSPBufferSize(int32_t* bufferLength, int32_t* numBuffers)
+	{
+		Plugin::AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(bufferLength, numBuffers);
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Networking
+	{
+		SYSTEM_OBJECT_LIFECYCLE_DEFINITION(NetworkTransport, System::Object)
+		
+		void NetworkTransport::GetBroadcastConnectionInfo(int32_t hostId, System::String* address, int32_t* port, uint8_t* error)
+		{
+			int32_t addressHandle = address->Handle;
+			Plugin::NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(hostId, &addressHandle, port, error);
+			address->SetHandle(addressHandle);
+		}
+	
+		void NetworkTransport::Init()
+		{
+			Plugin::NetworkTransportMethodInit();
+		}
+	}
 }
 
 namespace MyGame
@@ -346,7 +458,10 @@ DLLEXPORT void Init(
 	void (*transformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value),
 	void (*debugMethodLogSystemObject)(int32_t messageHandle),
 	System::Boolean (*assertFieldGetRaiseExceptions)(),
-	void (*assertFieldSetRaiseExceptions)(System::Boolean value)
+	void (*assertFieldSetRaiseExceptions)(System::Boolean value),
+	void (*audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers),
+	void (*networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error),
+	void (*networkTransportMethodInit)()
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;
@@ -378,6 +493,9 @@ DLLEXPORT void Init(
 	DebugMethodLogSystemObject = debugMethodLogSystemObject;
 	AssertFieldGetRaiseExceptions = assertFieldGetRaiseExceptions;
 	AssertFieldSetRaiseExceptions = assertFieldSetRaiseExceptions;
+	AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32 = audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32;
+	NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte = networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte;
+	NetworkTransportMethodInit = networkTransportMethodInit;
 	/*END INIT BODY*/
 	
 	PluginMain();

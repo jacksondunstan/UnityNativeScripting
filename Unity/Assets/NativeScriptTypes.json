@@ -20,8 +20,7 @@
 							"ParamTypes": []
 						}
 					],
-					"Properties": [ "ElapsedMilliseconds" ],
-					"Fields": []
+					"Properties": [ "ElapsedMilliseconds" ]
 				}
 			]
 		},
@@ -30,10 +29,7 @@
 			"Types": [
 				{
 					"Name": "UnityEngine.Object",
-					"Constructors": [],
-					"Methods": [],
-					"Properties": [ "name" ],
-					"Fields": []
+					"Properties": [ "name" ]
 				},
 				{
 					"Name": "UnityEngine.GameObject",
@@ -63,62 +59,67 @@
 							]
 						}
 					],
-					"Properties": [ "transform" ],
-					"Fields": []
+					"Properties": [ "transform" ]
 				},
 				{
 					"Name": "UnityEngine.Component",
-					"Constructors": [],
-					"Methods": [],
-					"Properties": [ "transform" ],
-					"Fields": []
+					"Properties": [ "transform" ]
 				},
 				{
 					"Name": "UnityEngine.Transform",
-					"Constructors": [],
-					"Methods": [],
-					"Properties": [ "position" ],
-					"Fields": []
+					"Properties": [ "position" ]
 				},
 				{
 					"Name": "UnityEngine.Debug",
-					"Constructors": [],
 					"Methods": [
 						{
 							"Name": "Log",
 							"ParamTypes": [ "System.Object" ]
 						}
-					],
-					"Properties": [],
-					"Fields": []
+					]
 				},
 				{
 					"Name": "UnityEngine.Assertions.Assert",
-					"Constructors": [],
-					"Methods": [],
-					"Properties": [],
 					"Fields": [ "raiseExceptions" ]
 				},
 				{
-					"Name": "UnityEngine.Collision",
-					"Constructors": [],
-					"Methods": [],
-					"Properties": [],
-					"Fields": []
+					"Name": "UnityEngine.Collision"
 				},
 				{
-					"Name": "UnityEngine.Behaviour",
-					"Constructors": [],
-					"Methods": [],
-					"Properties": [],
-					"Fields": []
+					"Name": "UnityEngine.Behaviour"
 				},
 				{
-					"Name": "UnityEngine.MonoBehaviour",
-					"Constructors": [],
-					"Methods": [],
-					"Properties": [],
-					"Fields": []
+					"Name": "UnityEngine.MonoBehaviour"
+				},
+				{
+					"Name": "UnityEngine.AudioSettings",
+					"Methods": [
+						{
+							"Name": "GetDSPBufferSize",
+							"ParamTypes": [
+								"System.Int32",
+								"System.Int32"
+							]
+						}
+					]
+				},
+				{
+					"Name": "UnityEngine.Networking.NetworkTransport",
+					"Methods": [
+						{
+							"Name": "GetBroadcastConnectionInfo",
+							"ParamTypes": [
+								"System.Int32",
+								"System.String",
+								"System.Int32",
+								"System.Byte"
+							]
+						},
+						{
+							"Name": "Init",
+							"ParamTypes": []
+						}
+					]
 				}
 			]
 		}

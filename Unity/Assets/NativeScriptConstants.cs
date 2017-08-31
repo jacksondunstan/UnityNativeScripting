@@ -11,27 +11,6 @@
 public static class NativeScriptConstants
 {
 	/// <summary>
-	/// Name of the plugin used by [DllImport] when running outside the editor
-	/// </summary>
-	public const string PluginName = "NativeScript";
-	
-	/// <summary>
-	/// Path to load the plugin from when running inside the editor
-	/// </summary>
-#if UNITY_EDITOR_OSX
-	public const string PluginPath = "/Plugins/Editor/NativeScript.bundle/Contents/MacOS/NativeScript";
-#elif UNITY_EDITOR_LINUX
-	public const string PluginPath = "/Plugins/Editor/libNativeScript.so";
-#elif UNITY_EDITOR_WIN
-	public const string PluginPath = "/Plugins/Editor/NativeScript.dll";
-#endif
-	
-	/// <summary>
-	/// Maximum number of simultaneous managed objects that the C++ plugin uses
-	/// </summary>
-	public const int MaxManagedObjects = 1024;
-	
-	/// <summary>
 	/// Path within the Unity project to the exposed types JSON file
 	/// </summary>
 	public const string ExposedTypesJsonPath = "NativeScriptTypes.json";

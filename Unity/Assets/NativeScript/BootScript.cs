@@ -13,10 +13,12 @@ namespace NativeScript
 	/// </license>
 	class BootScript : MonoBehaviour
 	{
+		public int MaxManagedObjects = 1024;
+		
 		void Awake()
 		{
 			DontDestroyOnLoad(gameObject);
-			Bindings.Open();
+			Bindings.Open(MaxManagedObjects);
 		}
 		
 		void OnApplicationQuit()
