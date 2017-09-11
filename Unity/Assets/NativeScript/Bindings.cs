@@ -42,26 +42,36 @@ namespace NativeScript
 			IntPtr releaseObject,
 			IntPtr stringNew,
 			/*BEGIN INIT PARAMS*/
-			IntPtr stopwatchConstructor,
-			IntPtr stopwatchPropertyGetElapsedMilliseconds,
-			IntPtr stopwatchMethodStart,
-			IntPtr stopwatchMethodReset,
-			IntPtr objectPropertyGetName,
-			IntPtr objectPropertySetName,
-			IntPtr gameObjectConstructor,
-			IntPtr gameObjectConstructorSystemString,
-			IntPtr gameObjectPropertyGetTransform,
-			IntPtr gameObjectMethodFindSystemString,
-			IntPtr gameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
-			IntPtr componentPropertyGetTransform,
-			IntPtr transformPropertyGetPosition,
-			IntPtr transformPropertySetPosition,
-			IntPtr debugMethodLogSystemObject,
-			IntPtr assertFieldGetRaiseExceptions,
-			IntPtr assertFieldSetRaiseExceptions,
-			IntPtr audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
-			IntPtr networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
-			IntPtr networkTransportMethodInit
+			IntPtr systemDiagnosticsStopwatchConstructor,
+			IntPtr systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds,
+			IntPtr systemDiagnosticsStopwatchMethodStart,
+			IntPtr systemDiagnosticsStopwatchMethodReset,
+			IntPtr unityEngineObjectPropertyGetName,
+			IntPtr unityEngineObjectPropertySetName,
+			IntPtr unityEngineGameObjectConstructor,
+			IntPtr unityEngineGameObjectConstructorSystemString,
+			IntPtr unityEngineGameObjectPropertyGetTransform,
+			IntPtr unityEngineGameObjectMethodFindSystemString,
+			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
+			IntPtr unityEngineComponentPropertyGetTransform,
+			IntPtr unityEngineTransformPropertyGetPosition,
+			IntPtr unityEngineTransformPropertySetPosition,
+			IntPtr unityEngineDebugMethodLogSystemObject,
+			IntPtr unityEngineAssertionsAssertFieldGetRaiseExceptions,
+			IntPtr unityEngineAssertionsAssertFieldSetRaiseExceptions,
+			IntPtr unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString,
+			IntPtr unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject,
+			IntPtr unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
+			IntPtr unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
+			IntPtr unityEngineNetworkingNetworkTransportMethodInit,
+			IntPtr systemCollectionsGenericListSystemStringConstructor,
+			IntPtr systemCollectionsGenericListSystemStringMethodAddSystemString,
+			IntPtr systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString,
+			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue,
+			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue,
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString,
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue,
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue
 			/*END INIT PARAMS*/);
 
 		/*BEGIN MONOBEHAVIOUR DELEGATES*/
@@ -173,26 +183,36 @@ namespace NativeScript
 			IntPtr releaseObject,
 			IntPtr stringNew,
 			/*BEGIN INIT PARAMS*/
-			IntPtr stopwatchConstructor,
-			IntPtr stopwatchPropertyGetElapsedMilliseconds,
-			IntPtr stopwatchMethodStart,
-			IntPtr stopwatchMethodReset,
-			IntPtr objectPropertyGetName,
-			IntPtr objectPropertySetName,
-			IntPtr gameObjectConstructor,
-			IntPtr gameObjectConstructorSystemString,
-			IntPtr gameObjectPropertyGetTransform,
-			IntPtr gameObjectMethodFindSystemString,
-			IntPtr gameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
-			IntPtr componentPropertyGetTransform,
-			IntPtr transformPropertyGetPosition,
-			IntPtr transformPropertySetPosition,
-			IntPtr debugMethodLogSystemObject,
-			IntPtr assertFieldGetRaiseExceptions,
-			IntPtr assertFieldSetRaiseExceptions,
-			IntPtr audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
-			IntPtr networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
-			IntPtr networkTransportMethodInit
+			IntPtr systemDiagnosticsStopwatchConstructor,
+			IntPtr systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds,
+			IntPtr systemDiagnosticsStopwatchMethodStart,
+			IntPtr systemDiagnosticsStopwatchMethodReset,
+			IntPtr unityEngineObjectPropertyGetName,
+			IntPtr unityEngineObjectPropertySetName,
+			IntPtr unityEngineGameObjectConstructor,
+			IntPtr unityEngineGameObjectConstructorSystemString,
+			IntPtr unityEngineGameObjectPropertyGetTransform,
+			IntPtr unityEngineGameObjectMethodFindSystemString,
+			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
+			IntPtr unityEngineComponentPropertyGetTransform,
+			IntPtr unityEngineTransformPropertyGetPosition,
+			IntPtr unityEngineTransformPropertySetPosition,
+			IntPtr unityEngineDebugMethodLogSystemObject,
+			IntPtr unityEngineAssertionsAssertFieldGetRaiseExceptions,
+			IntPtr unityEngineAssertionsAssertFieldSetRaiseExceptions,
+			IntPtr unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString,
+			IntPtr unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject,
+			IntPtr unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
+			IntPtr unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
+			IntPtr unityEngineNetworkingNetworkTransportMethodInit,
+			IntPtr systemCollectionsGenericListSystemStringConstructor,
+			IntPtr systemCollectionsGenericListSystemStringMethodAddSystemString,
+			IntPtr systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString,
+			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue,
+			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue,
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString,
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue,
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue
 			/*END INIT PARAMS*/);
 		
 		/*BEGIN MONOBEHAVIOUR IMPORTS*/
@@ -214,26 +234,36 @@ namespace NativeScript
 		delegate int StringNewDelegate(string chars);
 		
 		/*BEGIN DELEGATE TYPES*/
-		delegate int StopwatchConstructorDelegate();
-		delegate long StopwatchPropertyGetElapsedMillisecondsDelegate(int thisHandle);
-		delegate void StopwatchMethodStartDelegate(int thisHandle);
-		delegate void StopwatchMethodResetDelegate(int thisHandle);
-		delegate int ObjectPropertyGetNameDelegate(int thisHandle);
-		delegate void ObjectPropertySetNameDelegate(int thisHandle, int valueHandle);
-		delegate int GameObjectConstructorDelegate();
-		delegate int GameObjectConstructorSystemStringDelegate(int nameHandle);
-		delegate int GameObjectPropertyGetTransformDelegate(int thisHandle);
-		delegate int GameObjectMethodFindSystemStringDelegate(int nameHandle);
-		delegate int GameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(int thisHandle);
-		delegate int ComponentPropertyGetTransformDelegate(int thisHandle);
-		delegate UnityEngine.Vector3 TransformPropertyGetPositionDelegate(int thisHandle);
-		delegate void TransformPropertySetPositionDelegate(int thisHandle, UnityEngine.Vector3 value);
-		delegate void DebugMethodLogSystemObjectDelegate(int messageHandle);
-		delegate bool AssertFieldGetRaiseExceptionsDelegate();
-		delegate void AssertFieldSetRaiseExceptionsDelegate(bool value);
-		delegate void AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(out int bufferLength, out int numBuffers);
-		delegate void NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(int hostId, ref int addressHandle, out int port, out byte error);
-		delegate void NetworkTransportMethodInitDelegate();
+		delegate int SystemDiagnosticsStopwatchConstructorDelegate();
+		delegate long SystemDiagnosticsStopwatchPropertyGetElapsedMillisecondsDelegate(int thisHandle);
+		delegate void SystemDiagnosticsStopwatchMethodStartDelegate(int thisHandle);
+		delegate void SystemDiagnosticsStopwatchMethodResetDelegate(int thisHandle);
+		delegate int UnityEngineObjectPropertyGetNameDelegate(int thisHandle);
+		delegate void UnityEngineObjectPropertySetNameDelegate(int thisHandle, int valueHandle);
+		delegate int UnityEngineGameObjectConstructorDelegate();
+		delegate int UnityEngineGameObjectConstructorSystemStringDelegate(int nameHandle);
+		delegate int UnityEngineGameObjectPropertyGetTransformDelegate(int thisHandle);
+		delegate int UnityEngineGameObjectMethodFindSystemStringDelegate(int nameHandle);
+		delegate int UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(int thisHandle);
+		delegate int UnityEngineComponentPropertyGetTransformDelegate(int thisHandle);
+		delegate UnityEngine.Vector3 UnityEngineTransformPropertyGetPositionDelegate(int thisHandle);
+		delegate void UnityEngineTransformPropertySetPositionDelegate(int thisHandle, UnityEngine.Vector3 value);
+		delegate void UnityEngineDebugMethodLogSystemObjectDelegate(int messageHandle);
+		delegate bool UnityEngineAssertionsAssertFieldGetRaiseExceptionsDelegate();
+		delegate void UnityEngineAssertionsAssertFieldSetRaiseExceptionsDelegate(bool value);
+		delegate void UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemStringDelegate(int expectedHandle, int actualHandle);
+		delegate void UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObjectDelegate(int expectedHandle, int actualHandle);
+		delegate void UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(out int bufferLength, out int numBuffers);
+		delegate void UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(int hostId, ref int addressHandle, out int port, out byte error);
+		delegate void UnityEngineNetworkingNetworkTransportMethodInitDelegate();
+		delegate int SystemCollectionsGenericListSystemStringConstructorDelegate();
+		delegate void SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate(int thisHandle, int itemHandle);
+		delegate int SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate(int valueHandle);
+		delegate int SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate(int thisHandle);
+		delegate void SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValueDelegate(int thisHandle, int valueHandle);
+		delegate int SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemStringDelegate(int valueHandle);
+		delegate int SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValueDelegate(int thisHandle);
+		delegate void SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValueDelegate(int thisHandle, int valueHandle);
 		/*END DELEGATE TYPES*/
 		
 		// Stored objects. The first is always null.
@@ -415,26 +445,36 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new ReleaseObjectDelegate(ReleaseObject)),
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
 				/*BEGIN INIT CALL*/
-				Marshal.GetFunctionPointerForDelegate(new StopwatchConstructorDelegate(StopwatchConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new StopwatchPropertyGetElapsedMillisecondsDelegate(StopwatchPropertyGetElapsedMilliseconds)),
-				Marshal.GetFunctionPointerForDelegate(new StopwatchMethodStartDelegate(StopwatchMethodStart)),
-				Marshal.GetFunctionPointerForDelegate(new StopwatchMethodResetDelegate(StopwatchMethodReset)),
-				Marshal.GetFunctionPointerForDelegate(new ObjectPropertyGetNameDelegate(ObjectPropertyGetName)),
-				Marshal.GetFunctionPointerForDelegate(new ObjectPropertySetNameDelegate(ObjectPropertySetName)),
-				Marshal.GetFunctionPointerForDelegate(new GameObjectConstructorDelegate(GameObjectConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new GameObjectConstructorSystemStringDelegate(GameObjectConstructorSystemString)),
-				Marshal.GetFunctionPointerForDelegate(new GameObjectPropertyGetTransformDelegate(GameObjectPropertyGetTransform)),
-				Marshal.GetFunctionPointerForDelegate(new GameObjectMethodFindSystemStringDelegate(GameObjectMethodFindSystemString)),
-				Marshal.GetFunctionPointerForDelegate(new GameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(GameObjectMethodAddComponentMyGameMonoBehavioursTestScript)),
-				Marshal.GetFunctionPointerForDelegate(new ComponentPropertyGetTransformDelegate(ComponentPropertyGetTransform)),
-				Marshal.GetFunctionPointerForDelegate(new TransformPropertyGetPositionDelegate(TransformPropertyGetPosition)),
-				Marshal.GetFunctionPointerForDelegate(new TransformPropertySetPositionDelegate(TransformPropertySetPosition)),
-				Marshal.GetFunctionPointerForDelegate(new DebugMethodLogSystemObjectDelegate(DebugMethodLogSystemObject)),
-				Marshal.GetFunctionPointerForDelegate(new AssertFieldGetRaiseExceptionsDelegate(AssertFieldGetRaiseExceptions)),
-				Marshal.GetFunctionPointerForDelegate(new AssertFieldSetRaiseExceptionsDelegate(AssertFieldSetRaiseExceptions)),
-				Marshal.GetFunctionPointerForDelegate(new AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)),
-				Marshal.GetFunctionPointerForDelegate(new NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)),
-				Marshal.GetFunctionPointerForDelegate(new NetworkTransportMethodInitDelegate(NetworkTransportMethodInit))
+				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchConstructorDelegate(SystemDiagnosticsStopwatchConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchPropertyGetElapsedMillisecondsDelegate(SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)),
+				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchMethodStartDelegate(SystemDiagnosticsStopwatchMethodStart)),
+				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchMethodResetDelegate(SystemDiagnosticsStopwatchMethodReset)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectPropertyGetNameDelegate(UnityEngineObjectPropertyGetName)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectPropertySetNameDelegate(UnityEngineObjectPropertySetName)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectConstructorDelegate(UnityEngineGameObjectConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectConstructorSystemStringDelegate(UnityEngineGameObjectConstructorSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectPropertyGetTransformDelegate(UnityEngineGameObjectPropertyGetTransform)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodFindSystemStringDelegate(UnityEngineGameObjectMethodFindSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineComponentPropertyGetTransformDelegate(UnityEngineComponentPropertyGetTransform)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertyGetPositionDelegate(UnityEngineTransformPropertyGetPosition)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertySetPositionDelegate(UnityEngineTransformPropertySetPosition)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineDebugMethodLogSystemObjectDelegate(UnityEngineDebugMethodLogSystemObject)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineAssertionsAssertFieldGetRaiseExceptionsDelegate(UnityEngineAssertionsAssertFieldGetRaiseExceptions)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineAssertionsAssertFieldSetRaiseExceptionsDelegate(UnityEngineAssertionsAssertFieldSetRaiseExceptions)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemStringDelegate(UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObjectDelegate(UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineNetworkingNetworkTransportMethodInitDelegate(UnityEngineNetworkingNetworkTransportMethodInit)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringConstructorDelegate(SystemCollectionsGenericListSystemStringConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate(SystemCollectionsGenericListSystemStringMethodAddSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate(SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate(SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValueDelegate(SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)),
+				Marshal.GetFunctionPointerForDelegate(new SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemStringDelegate(SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValueDelegate(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)),
+				Marshal.GetFunctionPointerForDelegate(new SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValueDelegate(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue))
 				/*END INIT CALL*/
 				);
 		}
@@ -473,37 +513,37 @@ namespace NativeScript
 		}
 		
 		/*BEGIN FUNCTIONS*/
-		[MonoPInvokeCallback(typeof(StopwatchConstructorDelegate))]
-		static int StopwatchConstructor()
+		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchConstructorDelegate))]
+		static int SystemDiagnosticsStopwatchConstructor()
 		{
 			var returnValue = NativeScript.Bindings.StoreObject(new System.Diagnostics.Stopwatch());
 			return returnValue;
 		}
 		
-		[MonoPInvokeCallback(typeof(StopwatchPropertyGetElapsedMillisecondsDelegate))]
-		static long StopwatchPropertyGetElapsedMilliseconds(int thisHandle)
+		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchPropertyGetElapsedMillisecondsDelegate))]
+		static long SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds(int thisHandle)
 		{
 			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.GetObject(thisHandle);
 			var returnValue = thiz.ElapsedMilliseconds;
 			return returnValue;
 		}
 		
-		[MonoPInvokeCallback(typeof(StopwatchMethodStartDelegate))]
-		static void StopwatchMethodStart(int thisHandle)
+		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchMethodStartDelegate))]
+		static void SystemDiagnosticsStopwatchMethodStart(int thisHandle)
 		{
 			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.GetObject(thisHandle);
 			thiz.Start();
 		}
 		
-		[MonoPInvokeCallback(typeof(StopwatchMethodResetDelegate))]
-		static void StopwatchMethodReset(int thisHandle)
+		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchMethodResetDelegate))]
+		static void SystemDiagnosticsStopwatchMethodReset(int thisHandle)
 		{
 			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.GetObject(thisHandle);
 			thiz.Reset();
 		}
 		
-		[MonoPInvokeCallback(typeof(ObjectPropertyGetNameDelegate))]
-		static int ObjectPropertyGetName(int thisHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertyGetNameDelegate))]
+		static int UnityEngineObjectPropertyGetName(int thisHandle)
 		{
 			var thiz = (UnityEngine.Object)NativeScript.Bindings.GetObject(thisHandle);
 			var returnValue = thiz.name;
@@ -518,31 +558,31 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ObjectPropertySetNameDelegate))]
-		static void ObjectPropertySetName(int thisHandle, int valueHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertySetNameDelegate))]
+		static void UnityEngineObjectPropertySetName(int thisHandle, int valueHandle)
 		{
 			var thiz = (UnityEngine.Object)NativeScript.Bindings.GetObject(thisHandle);
-			var value = (System.String)NativeScript.Bindings.GetObject(valueHandle);
+			var value = (string)NativeScript.Bindings.GetObject(valueHandle);
 			thiz.name = value;
 		}
 		
-		[MonoPInvokeCallback(typeof(GameObjectConstructorDelegate))]
-		static int GameObjectConstructor()
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectConstructorDelegate))]
+		static int UnityEngineGameObjectConstructor()
 		{
 			var returnValue = NativeScript.Bindings.StoreObject(new UnityEngine.GameObject());
 			return returnValue;
 		}
 		
-		[MonoPInvokeCallback(typeof(GameObjectConstructorSystemStringDelegate))]
-		static int GameObjectConstructorSystemString(int nameHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectConstructorSystemStringDelegate))]
+		static int UnityEngineGameObjectConstructorSystemString(int nameHandle)
 		{
-			var name = (System.String)NativeScript.Bindings.GetObject(nameHandle);
+			var name = (string)NativeScript.Bindings.GetObject(nameHandle);
 			var returnValue = NativeScript.Bindings.StoreObject(new UnityEngine.GameObject(name));
 			return returnValue;
 		}
 		
-		[MonoPInvokeCallback(typeof(GameObjectPropertyGetTransformDelegate))]
-		static int GameObjectPropertyGetTransform(int thisHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectPropertyGetTransformDelegate))]
+		static int UnityEngineGameObjectPropertyGetTransform(int thisHandle)
 		{
 			var thiz = (UnityEngine.GameObject)NativeScript.Bindings.GetObject(thisHandle);
 			var returnValue = thiz.transform;
@@ -557,10 +597,10 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(GameObjectMethodFindSystemStringDelegate))]
-		static int GameObjectMethodFindSystemString(int nameHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodFindSystemStringDelegate))]
+		static int UnityEngineGameObjectMethodFindSystemString(int nameHandle)
 		{
-			var name = (System.String)NativeScript.Bindings.GetObject(nameHandle);
+			var name = (string)NativeScript.Bindings.GetObject(nameHandle);
 			var returnValue = UnityEngine.GameObject.Find(name);
 			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
 			if (returnValueHandle < 0)
@@ -573,8 +613,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(GameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate))]
-		static int GameObjectMethodAddComponentMyGameMonoBehavioursTestScript(int thisHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate))]
+		static int UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript(int thisHandle)
 		{
 			var thiz = (UnityEngine.GameObject)NativeScript.Bindings.GetObject(thisHandle);
 			var returnValue = thiz.AddComponent<MyGame.MonoBehaviours.TestScript>();
@@ -589,8 +629,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ComponentPropertyGetTransformDelegate))]
-		static int ComponentPropertyGetTransform(int thisHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineComponentPropertyGetTransformDelegate))]
+		static int UnityEngineComponentPropertyGetTransform(int thisHandle)
 		{
 			var thiz = (UnityEngine.Component)NativeScript.Bindings.GetObject(thisHandle);
 			var returnValue = thiz.transform;
@@ -605,51 +645,67 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(TransformPropertyGetPositionDelegate))]
-		static UnityEngine.Vector3 TransformPropertyGetPosition(int thisHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertyGetPositionDelegate))]
+		static UnityEngine.Vector3 UnityEngineTransformPropertyGetPosition(int thisHandle)
 		{
 			var thiz = (UnityEngine.Transform)NativeScript.Bindings.GetObject(thisHandle);
 			var returnValue = thiz.position;
 			return returnValue;
 		}
 		
-		[MonoPInvokeCallback(typeof(TransformPropertySetPositionDelegate))]
-		static void TransformPropertySetPosition(int thisHandle, UnityEngine.Vector3 value)
+		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertySetPositionDelegate))]
+		static void UnityEngineTransformPropertySetPosition(int thisHandle, UnityEngine.Vector3 value)
 		{
 			var thiz = (UnityEngine.Transform)NativeScript.Bindings.GetObject(thisHandle);
 			thiz.position = value;
 		}
 		
-		[MonoPInvokeCallback(typeof(DebugMethodLogSystemObjectDelegate))]
-		static void DebugMethodLogSystemObject(int messageHandle)
+		[MonoPInvokeCallback(typeof(UnityEngineDebugMethodLogSystemObjectDelegate))]
+		static void UnityEngineDebugMethodLogSystemObject(int messageHandle)
 		{
 			var message = NativeScript.Bindings.GetObject(messageHandle);
 			UnityEngine.Debug.Log(message);
 		}
 		
-		[MonoPInvokeCallback(typeof(AssertFieldGetRaiseExceptionsDelegate))]
-		static bool AssertFieldGetRaiseExceptions()
+		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertFieldGetRaiseExceptionsDelegate))]
+		static bool UnityEngineAssertionsAssertFieldGetRaiseExceptions()
 		{
 			var returnValue = UnityEngine.Assertions.Assert.raiseExceptions;
 			return returnValue;
 		}
 		
-		[MonoPInvokeCallback(typeof(AssertFieldSetRaiseExceptionsDelegate))]
-		static void AssertFieldSetRaiseExceptions(bool value)
+		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertFieldSetRaiseExceptionsDelegate))]
+		static void UnityEngineAssertionsAssertFieldSetRaiseExceptions(bool value)
 		{
 			UnityEngine.Assertions.Assert.raiseExceptions = value;
 		}
 		
-		[MonoPInvokeCallback(typeof(AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate))]
-		static void AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(out int bufferLength, out int numBuffers)
+		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemStringDelegate))]
+		static void UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString(int expectedHandle, int actualHandle)
+		{
+			var expected = (string)NativeScript.Bindings.GetObject(expectedHandle);
+			var actual = (string)NativeScript.Bindings.GetObject(actualHandle);
+			UnityEngine.Assertions.Assert.AreEqual<string>(expected, actual);
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObjectDelegate))]
+		static void UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject(int expectedHandle, int actualHandle)
+		{
+			var expected = (UnityEngine.GameObject)NativeScript.Bindings.GetObject(expectedHandle);
+			var actual = (UnityEngine.GameObject)NativeScript.Bindings.GetObject(actualHandle);
+			UnityEngine.Assertions.Assert.AreEqual<UnityEngine.GameObject>(expected, actual);
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate))]
+		static void UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(out int bufferLength, out int numBuffers)
 		{
 			UnityEngine.AudioSettings.GetDSPBufferSize(out bufferLength, out numBuffers);
 		}
 		
-		[MonoPInvokeCallback(typeof(NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate))]
-		static void NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(int hostId, ref int addressHandle, out int port, out byte error)
+		[MonoPInvokeCallback(typeof(UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate))]
+		static void UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(int hostId, ref int addressHandle, out int port, out byte error)
 		{
-			var address = (System.String)NativeScript.Bindings.GetObject(addressHandle);
+			var address = (string)NativeScript.Bindings.GetObject(addressHandle);
 			UnityEngine.Networking.NetworkTransport.GetBroadcastConnectionInfo(hostId, out address, out port, out error);
 			int addressHandleNew = NativeScript.Bindings.GetHandle(address);
 			if (addressHandleNew < 0)
@@ -662,10 +718,89 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(NetworkTransportMethodInitDelegate))]
-		static void NetworkTransportMethodInit()
+		[MonoPInvokeCallback(typeof(UnityEngineNetworkingNetworkTransportMethodInitDelegate))]
+		static void UnityEngineNetworkingNetworkTransportMethodInit()
 		{
 			UnityEngine.Networking.NetworkTransport.Init();
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemStringConstructorDelegate))]
+		static int SystemCollectionsGenericListSystemStringConstructor()
+		{
+			var returnValue = NativeScript.Bindings.StoreObject(new System.Collections.Generic.List<string>());
+			return returnValue;
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate))]
+		static void SystemCollectionsGenericListSystemStringMethodAddSystemString(int thisHandle, int itemHandle)
+		{
+			var thiz = (System.Collections.Generic.List<string>)NativeScript.Bindings.GetObject(thisHandle);
+			var item = (string)NativeScript.Bindings.GetObject(itemHandle);
+			thiz.Add(item);
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate))]
+		static int SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(int valueHandle)
+		{
+			var value = (string)NativeScript.Bindings.GetObject(valueHandle);
+			var returnValue = NativeScript.Bindings.StoreObject(new System.Collections.Generic.LinkedListNode<string>(value));
+			return returnValue;
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate))]
+		static int SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue(int thisHandle)
+		{
+			var thiz = (System.Collections.Generic.LinkedListNode<string>)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.Value;
+			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
+			if (returnValueHandle < 0)
+			{
+				return NativeScript.Bindings.StoreObject(returnValue);
+			}
+			else
+			{
+				return returnValueHandle;
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValueDelegate))]
+		static void SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue(int thisHandle, int valueHandle)
+		{
+			var thiz = (System.Collections.Generic.LinkedListNode<string>)NativeScript.Bindings.GetObject(thisHandle);
+			var value = (string)NativeScript.Bindings.GetObject(valueHandle);
+			thiz.Value = value;
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemStringDelegate))]
+		static int SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString(int valueHandle)
+		{
+			var value = (string)NativeScript.Bindings.GetObject(valueHandle);
+			var returnValue = NativeScript.Bindings.StoreObject(new System.Runtime.CompilerServices.StrongBox<string>(value));
+			return returnValue;
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValueDelegate))]
+		static int SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue(int thisHandle)
+		{
+			var thiz = (System.Runtime.CompilerServices.StrongBox<string>)NativeScript.Bindings.GetObject(thisHandle);
+			var returnValue = thiz.Value;
+			int returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);
+			if (returnValueHandle < 0)
+			{
+				return NativeScript.Bindings.StoreObject(returnValue);
+			}
+			else
+			{
+				return returnValueHandle;
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValueDelegate))]
+		static void SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue(int thisHandle, int valueHandle)
+		{
+			var thiz = (System.Runtime.CompilerServices.StrongBox<string>)NativeScript.Bindings.GetObject(thisHandle);
+			var value = (string)NativeScript.Bindings.GetObject(valueHandle);
+			thiz.Value = value;
 		}
 		/*END FUNCTIONS*/
 	}

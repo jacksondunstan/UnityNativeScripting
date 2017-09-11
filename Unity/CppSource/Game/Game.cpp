@@ -16,11 +16,34 @@ using namespace UnityEngine;
 void PrintPlatformDefines();
 
 // Called when the plugin is initialized
+// This is mostly full of test code. Feel free to remove it all.
 void PluginMain()
 {
 	PrintPlatformDefines();
 	Debug::Log(String("Game booted up"));
-	GameObject go(String("GameObject with a TestScript"));
+	
+	if (!UnityEngine::Assertions::Assert::GetRaiseExceptions())
+	{
+		UnityEngine::Assertions::Assert::SetRaiseExceptions(true);
+	}
+	
+	System::Collections::Generic::List<System::String> strings;
+	strings.Add("one");
+	strings.Add("two");
+	strings.Add("three");
+	Debug::Log(strings);
+	
+	System::Runtime::CompilerServices::StrongBox<System::String> strongbox("secret");
+	Debug::Log(strongbox.GetValue());
+	strongbox.SetValue("new secret");
+	Debug::Log(strongbox.GetValue());
+	
+	System::Collections::Generic::LinkedListNode<System::String> node("node val");
+	Debug::Log(node.GetValue());
+	node.SetValue("new node val");
+	Debug::Log(node.GetValue());
+	
+	GameObject go("GameObject with a TestScript");
 	go.AddComponent<MyGame::MonoBehaviours::TestScript>();
 }
 

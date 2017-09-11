@@ -1,133 +1,183 @@
 {
 	"Assemblies": [
+		"DOTNET_DLLS/System.Xml.dll"
+	],
+	"Types": [
 		{
-			"Path": "/Applications/Unity/Unity.app/Contents/Mono/lib/mono/unity/System.dll",
-			"Types": [
+			"Name": "System.Diagnostics.Stopwatch",
+			"Constructors": [
 				{
-					"Name": "System.Diagnostics.Stopwatch",
-					"Constructors": [
-						{
-							"Types": []
-						}
-					],
-					"Methods": [
-						{
-							"Name": "Start",
-							"ParamTypes": []
-						},
-						{
-							"Name": "Reset",
-							"ParamTypes": []
-						}
-					],
-					"Properties": [ "ElapsedMilliseconds" ]
+					"ParamTypes": []
+				}
+			],
+			"Methods": [
+				{
+					"Name": "Start",
+					"ParamTypes": []
+				},
+				{
+					"Name": "Reset",
+					"ParamTypes": []
+				}
+			],
+			"Properties": [ "ElapsedMilliseconds" ]
+		},
+		{
+			"Name": "UnityEngine.Object",
+			"Properties": [ "name" ]
+		},
+		{
+			"Name": "UnityEngine.GameObject",
+			"Constructors": [
+				{
+					"ParamTypes": []
+				},
+				{
+					"ParamTypes": [ "System.String" ]
+				}
+			],
+			"Methods": [
+				{
+					"Name": "Find",
+					"ParamTypes": [ "System.String" ]
+				},
+				{
+					"Name": "AddComponent",
+					"ParamTypes": [],
+					"GenericParams": [
+						{ "Types": [ "MyGame.MonoBehaviours.TestScript" ] }
+					]
+				}
+			],
+			"Properties": [ "transform" ]
+		},
+		{
+			"Name": "UnityEngine.Component",
+			"Properties": [ "transform" ]
+		},
+		{
+			"Name": "UnityEngine.Transform",
+			"Properties": [ "position" ]
+		},
+		{
+			"Name": "UnityEngine.Debug",
+			"Methods": [
+				{
+					"Name": "Log",
+					"ParamTypes": [ "System.Object" ]
 				}
 			]
 		},
 		{
-			"Path": "/Applications/Unity/Unity.app/Contents/Managed/UnityEngine.dll",
-			"Types": [
+			"Name": "UnityEngine.Assertions.Assert",
+			"Fields": [ "raiseExceptions" ],
+			"Methods": [
 				{
-					"Name": "UnityEngine.Object",
-					"Properties": [ "name" ]
-				},
-				{
-					"Name": "UnityEngine.GameObject",
-					"Constructors": [
-						{
-							"Types": []
-						},
-						{
-							"Types": [ "System.String" ]
-						}
-					],
-					"Methods": [
-						{
-							"Name": "Find",
-							"ReturnType": "UnityEngine.GameObject",
-							"ParamTypes": [ "System.String" ]
-						},
-						{
-							"Name": "AddComponent",
-							"ReturnType": "T",
-							"ParamTypes": [],
-							"GenericTypes": [
-								{
-									"Name": "T",
-									"Type": "MyGame.MonoBehaviours.TestScript"
-								}
-							]
-						}
-					],
-					"Properties": [ "transform" ]
-				},
-				{
-					"Name": "UnityEngine.Component",
-					"Properties": [ "transform" ]
-				},
-				{
-					"Name": "UnityEngine.Transform",
-					"Properties": [ "position" ]
-				},
-				{
-					"Name": "UnityEngine.Debug",
-					"Methods": [
-						{
-							"Name": "Log",
-							"ParamTypes": [ "System.Object" ]
-						}
-					]
-				},
-				{
-					"Name": "UnityEngine.Assertions.Assert",
-					"Fields": [ "raiseExceptions" ]
-				},
-				{
-					"Name": "UnityEngine.Collision"
-				},
-				{
-					"Name": "UnityEngine.Behaviour"
-				},
-				{
-					"Name": "UnityEngine.MonoBehaviour"
-				},
-				{
-					"Name": "UnityEngine.AudioSettings",
-					"Methods": [
-						{
-							"Name": "GetDSPBufferSize",
-							"ParamTypes": [
-								"System.Int32",
-								"System.Int32"
-							]
-						}
-					]
-				},
-				{
-					"Name": "UnityEngine.Networking.NetworkTransport",
-					"Methods": [
-						{
-							"Name": "GetBroadcastConnectionInfo",
-							"ParamTypes": [
-								"System.Int32",
-								"System.String",
-								"System.Int32",
-								"System.Byte"
-							]
-						},
-						{
-							"Name": "Init",
-							"ParamTypes": []
-						}
+					"Name": "AreEqual",
+					"ParamTypes": [ "T", "T" ],
+					"GenericParams": [
+						{ "Types": [ "System.String" ] },
+						{ "Types": [ "UnityEngine.GameObject" ] }
 					]
 				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Collision"
+		},
+		{
+			"Name": "UnityEngine.Behaviour"
+		},
+		{
+			"Name": "UnityEngine.MonoBehaviour"
+		},
+		{
+			"Name": "UnityEngine.AudioSettings",
+			"Methods": [
+				{
+					"Name": "GetDSPBufferSize",
+					"ParamTypes": [
+						"System.Int32",
+						"System.Int32"
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Networking.NetworkTransport",
+			"Methods": [
+				{
+					"Name": "GetBroadcastConnectionInfo",
+					"ParamTypes": [
+						"System.Int32",
+						"System.String",
+						"System.Int32",
+						"System.Byte"
+					]
+				},
+				{
+					"Name": "Init",
+					"ParamTypes": []
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.List`1",
+			"GenericParams": [
+				{ "Types": [ "System.String" ] }
+			],
+			"Constructors": [
+				{
+					"ParamTypes": []
+				}
+			],
+			"Methods": [
+				{
+					"Name": "Add",
+					"ParamTypes": [ "T" ]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.LinkedListNode`1",
+			"GenericParams": [
+				{ "Types": [ "System.String" ] }
+			],
+			"Constructors": [
+				{
+					"ParamTypes": [ "T" ]
+				}
+			],
+			"Properties": [ "Value" ]
+		},
+		{
+			"Name": " System.Runtime.CompilerServices.StrongBox`1",
+			"GenericParams": [
+				{ "Types": [ "System.String" ] }
+			],
+			"Fields": [ "Value" ],
+			"Constructors": [
+				{
+					"ParamTypes": [ "T" ]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.ObjectModel.Collection`1",
+			"GenericParams": [
+				{ "Types": [ "System.Int32" ] }
+			]
+		},
+		{
+			"Name": "System.Collections.ObjectModel.KeyedCollection`2",
+			"GenericParams": [
+				{ "Types": [ "System.String", "System.Int32" ] }
 			]
 		}
 	],
 	"MonoBehaviours": [
 		{
-			"Name": "TestScript",
-			"Namespace": "MyGame.MonoBehaviours",
+			"Name": "MyGame.MonoBehaviours.TestScript",
 			"Messages": [
 				"Awake",
 				"OnAnimatorIK",

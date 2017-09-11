@@ -42,26 +42,36 @@ namespace Plugin
 	int32_t (*StringNew)(const char* chars);
 	
 	/*BEGIN FUNCTION POINTERS*/
-	int32_t (*StopwatchConstructor)();
-	int64_t (*StopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle);
-	void (*StopwatchMethodStart)(int32_t thisHandle);
-	void (*StopwatchMethodReset)(int32_t thisHandle);
-	int32_t (*ObjectPropertyGetName)(int32_t thisHandle);
-	void (*ObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle);
-	int32_t (*GameObjectConstructor)();
-	int32_t (*GameObjectConstructorSystemString)(int32_t nameHandle);
-	int32_t (*GameObjectPropertyGetTransform)(int32_t thisHandle);
-	int32_t (*GameObjectMethodFindSystemString)(int32_t nameHandle);
-	int32_t (*GameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle);
-	int32_t (*ComponentPropertyGetTransform)(int32_t thisHandle);
-	UnityEngine::Vector3 (*TransformPropertyGetPosition)(int32_t thisHandle);
-	void (*TransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value);
-	void (*DebugMethodLogSystemObject)(int32_t messageHandle);
-	System::Boolean (*AssertFieldGetRaiseExceptions)();
-	void (*AssertFieldSetRaiseExceptions)(System::Boolean value);
-	void (*AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers);
-	void (*NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error);
-	void (*NetworkTransportMethodInit)();
+	int32_t (*SystemDiagnosticsStopwatchConstructor)();
+	int64_t (*SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle);
+	void (*SystemDiagnosticsStopwatchMethodStart)(int32_t thisHandle);
+	void (*SystemDiagnosticsStopwatchMethodReset)(int32_t thisHandle);
+	int32_t (*UnityEngineObjectPropertyGetName)(int32_t thisHandle);
+	void (*UnityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle);
+	int32_t (*UnityEngineGameObjectConstructor)();
+	int32_t (*UnityEngineGameObjectConstructorSystemString)(int32_t nameHandle);
+	int32_t (*UnityEngineGameObjectPropertyGetTransform)(int32_t thisHandle);
+	int32_t (*UnityEngineGameObjectMethodFindSystemString)(int32_t nameHandle);
+	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle);
+	int32_t (*UnityEngineComponentPropertyGetTransform)(int32_t thisHandle);
+	UnityEngine::Vector3 (*UnityEngineTransformPropertyGetPosition)(int32_t thisHandle);
+	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value);
+	void (*UnityEngineDebugMethodLogSystemObject)(int32_t messageHandle);
+	System::Boolean (*UnityEngineAssertionsAssertFieldGetRaiseExceptions)();
+	void (*UnityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value);
+	void (*UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle);
+	void (*UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle);
+	void (*UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers);
+	void (*UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error);
+	void (*UnityEngineNetworkingNetworkTransportMethodInit)();
+	int32_t (*SystemCollectionsGenericListSystemStringConstructor)();
+	void (*SystemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle);
+	int32_t (*SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle);
+	int32_t (*SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)(int32_t thisHandle);
+	void (*SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)(int32_t thisHandle, int32_t valueHandle);
+	int32_t (*SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString)(int32_t valueHandle);
+	int32_t (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle);
+	void (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -169,62 +179,59 @@ namespace System
 		return Handle != 0;
 	}
 	
-	#define SYSTEM_OBJECT_LIFECYCLE_DEFINITION(ClassName, BaseClassName) \
-		ClassName::ClassName(std::nullptr_t n) \
-			: BaseClassName(0) \
-		{ \
-		} \
-		\
-		ClassName::ClassName(int32_t handle) \
-			: BaseClassName(handle) \
-		{ \
-		} \
-		\
-		ClassName::ClassName(const ClassName& other) \
-			: BaseClassName(other) \
-		{ \
-		} \
-		\
-		ClassName::ClassName(ClassName&& other) \
-			: BaseClassName(std::forward<ClassName>(other)) \
-		{ \
-		} \
-		\
-		ClassName::~ClassName() \
-		{ \
-			if (Handle) \
-			{ \
-				Plugin::DereferenceManagedObject(Handle); \
-			} \
-		} \
-		\
-		ClassName& ClassName::operator=(const ClassName& other) \
-		{ \
-			SetHandle(other.Handle); \
-			return *this; \
-		} \
-		ClassName& ClassName::operator=(std::nullptr_t other) \
-		{ \
-			if (Handle) \
-			{ \
-				Plugin::DereferenceManagedObject(Handle); \
-				Handle = 0; \
-			} \
-			return *this; \
-		} \
-		\
-		ClassName& ClassName::operator=(ClassName&& other) \
-		{ \
-			if (Handle) \
-			{ \
-				Plugin::DereferenceManagedObject(Handle); \
-			} \
-			Handle = other.Handle; \
-			other.Handle = 0; \
-			return *this; \
-		}
+	String::String(std::nullptr_t n)
+		: Object(0)
+	{
+	}
 	
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(String, System::Object)
+	String::String(int32_t handle)
+		: Object(handle)
+	{
+	}
+	
+	String::String(const String& other)
+		: Object(other)
+	{
+	}
+	
+	String::String(String&& other)
+		: Object(std::forward<String>(other))
+	{
+	}
+	
+	String::~String()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	String& String::operator=(const String& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	String& String::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	String& String::operator=(String&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 	
 	String::String(const char* chars)
 		: String(Plugin::StringNew(chars))
@@ -237,120 +244,438 @@ namespace System
 {
 	namespace Diagnostics
 	{
-		SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Stopwatch, System::Object)
+		Stopwatch::Stopwatch(std::nullptr_t n)
+			: System::Object(0)
+		{
+		}
+		
+		Stopwatch::Stopwatch(int32_t handle)
+			: System::Object(handle)
+		{
+		}
+		
+		Stopwatch::Stopwatch(const Stopwatch& other)
+			: System::Object(other)
+		{
+		}
+		
+		Stopwatch::Stopwatch(Stopwatch&& other)
+			: System::Object(std::forward<Stopwatch>(other))
+		{
+		}
+		
+		Stopwatch::~Stopwatch()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+			}
+		}
+		
+		Stopwatch& Stopwatch::operator=(const Stopwatch& other)
+		{
+			SetHandle(other.Handle);
+			return *this;
+		}
+		
+		Stopwatch& Stopwatch::operator=(std::nullptr_t other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		Stopwatch& Stopwatch::operator=(Stopwatch&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
 		
 		Stopwatch::Stopwatch()
 			 : System::Object(0)
 		{
-			auto returnValue = Plugin::StopwatchConstructor();
+			auto returnValue = Plugin::SystemDiagnosticsStopwatchConstructor();
 			SetHandle(returnValue);
 		}
 		
 		int64_t Stopwatch::GetElapsedMilliseconds()
 		{
-			auto returnValue = Plugin::StopwatchPropertyGetElapsedMilliseconds(Handle);
+			auto returnValue = Plugin::SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds(Handle);
 			return returnValue;
 		}
 		
 		void Stopwatch::Start()
 		{
-			Plugin::StopwatchMethodStart(Handle);
+			Plugin::SystemDiagnosticsStopwatchMethodStart(Handle);
 		}
 	
 		void Stopwatch::Reset()
 		{
-			Plugin::StopwatchMethodReset(Handle);
+			Plugin::SystemDiagnosticsStopwatchMethodReset(Handle);
 		}
 	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Object, System::Object)
+	Object::Object(std::nullptr_t n)
+		: System::Object(0)
+	{
+	}
+	
+	Object::Object(int32_t handle)
+		: System::Object(handle)
+	{
+	}
+	
+	Object::Object(const Object& other)
+		: System::Object(other)
+	{
+	}
+	
+	Object::Object(Object&& other)
+		: System::Object(std::forward<Object>(other))
+	{
+	}
+	
+	Object::~Object()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	Object& Object::operator=(const Object& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	Object& Object::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Object& Object::operator=(Object&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 	
 	System::String Object::GetName()
 	{
-		auto returnValue = Plugin::ObjectPropertyGetName(Handle);
+		auto returnValue = Plugin::UnityEngineObjectPropertyGetName(Handle);
 		return returnValue;
 	}
 	
 	void Object::SetName(System::String value)
 	{
-		Plugin::ObjectPropertySetName(Handle, value.Handle);
+		Plugin::UnityEngineObjectPropertySetName(Handle, value.Handle);
 	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(GameObject, UnityEngine::Object)
+	GameObject::GameObject(std::nullptr_t n)
+		: UnityEngine::Object(0)
+	{
+	}
+	
+	GameObject::GameObject(int32_t handle)
+		: UnityEngine::Object(handle)
+	{
+	}
+	
+	GameObject::GameObject(const GameObject& other)
+		: UnityEngine::Object(other)
+	{
+	}
+	
+	GameObject::GameObject(GameObject&& other)
+		: UnityEngine::Object(std::forward<GameObject>(other))
+	{
+	}
+	
+	GameObject::~GameObject()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	GameObject& GameObject::operator=(const GameObject& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	GameObject& GameObject::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	GameObject& GameObject::operator=(GameObject&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 	
 	GameObject::GameObject()
 		 : UnityEngine::Object(0)
 	{
-		auto returnValue = Plugin::GameObjectConstructor();
+		auto returnValue = Plugin::UnityEngineGameObjectConstructor();
 		SetHandle(returnValue);
 	}
 	
 	GameObject::GameObject(System::String name)
 		 : UnityEngine::Object(0)
 	{
-		auto returnValue = Plugin::GameObjectConstructorSystemString(name.Handle);
+		auto returnValue = Plugin::UnityEngineGameObjectConstructorSystemString(name.Handle);
 		SetHandle(returnValue);
 	}
 	
 	UnityEngine::Transform GameObject::GetTransform()
 	{
-		auto returnValue = Plugin::GameObjectPropertyGetTransform(Handle);
+		auto returnValue = Plugin::UnityEngineGameObjectPropertyGetTransform(Handle);
 		return returnValue;
 	}
 	
 	UnityEngine::GameObject GameObject::Find(System::String name)
 	{
-		auto returnValue = Plugin::GameObjectMethodFindSystemString(name.Handle);
+		auto returnValue = Plugin::UnityEngineGameObjectMethodFindSystemString(name.Handle);
 		return returnValue;
 	}
 	
 	template<> MyGame::MonoBehaviours::TestScript GameObject::AddComponent<MyGame::MonoBehaviours::TestScript>()
 	{
-		auto returnValue = Plugin::GameObjectMethodAddComponentMyGameMonoBehavioursTestScript(Handle);
+		auto returnValue = Plugin::UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript(Handle);
 		return returnValue;
 	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Component, UnityEngine::Object)
+	Component::Component(std::nullptr_t n)
+		: UnityEngine::Object(0)
+	{
+	}
+	
+	Component::Component(int32_t handle)
+		: UnityEngine::Object(handle)
+	{
+	}
+	
+	Component::Component(const Component& other)
+		: UnityEngine::Object(other)
+	{
+	}
+	
+	Component::Component(Component&& other)
+		: UnityEngine::Object(std::forward<Component>(other))
+	{
+	}
+	
+	Component::~Component()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	Component& Component::operator=(const Component& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	Component& Component::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Component& Component::operator=(Component&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 	
 	UnityEngine::Transform Component::GetTransform()
 	{
-		auto returnValue = Plugin::ComponentPropertyGetTransform(Handle);
+		auto returnValue = Plugin::UnityEngineComponentPropertyGetTransform(Handle);
 		return returnValue;
 	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Transform, UnityEngine::Component)
+	Transform::Transform(std::nullptr_t n)
+		: UnityEngine::Component(0)
+	{
+	}
+	
+	Transform::Transform(int32_t handle)
+		: UnityEngine::Component(handle)
+	{
+	}
+	
+	Transform::Transform(const Transform& other)
+		: UnityEngine::Component(other)
+	{
+	}
+	
+	Transform::Transform(Transform&& other)
+		: UnityEngine::Component(std::forward<Transform>(other))
+	{
+	}
+	
+	Transform::~Transform()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	Transform& Transform::operator=(const Transform& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	Transform& Transform::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Transform& Transform::operator=(Transform&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 	
 	UnityEngine::Vector3 Transform::GetPosition()
 	{
-		auto returnValue = Plugin::TransformPropertyGetPosition(Handle);
+		auto returnValue = Plugin::UnityEngineTransformPropertyGetPosition(Handle);
 		return returnValue;
 	}
 	
 	void Transform::SetPosition(UnityEngine::Vector3 value)
 	{
-		Plugin::TransformPropertySetPosition(Handle, value);
+		Plugin::UnityEngineTransformPropertySetPosition(Handle, value);
 	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Debug, System::Object)
+	Debug::Debug(std::nullptr_t n)
+		: System::Object(0)
+	{
+	}
+	
+	Debug::Debug(int32_t handle)
+		: System::Object(handle)
+	{
+	}
+	
+	Debug::Debug(const Debug& other)
+		: System::Object(other)
+	{
+	}
+	
+	Debug::Debug(Debug&& other)
+		: System::Object(std::forward<Debug>(other))
+	{
+	}
+	
+	Debug::~Debug()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	Debug& Debug::operator=(const Debug& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	Debug& Debug::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Debug& Debug::operator=(Debug&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 	
 	void Debug::Log(System::Object message)
 	{
-		Plugin::DebugMethodLogSystemObject(message.Handle);
+		Plugin::UnityEngineDebugMethodLogSystemObject(message.Handle);
 	}
 }
 
@@ -360,39 +685,261 @@ namespace UnityEngine
 	{
 		System::Boolean Assert::GetRaiseExceptions()
 		{
-			auto returnValue = Plugin::AssertFieldGetRaiseExceptions();
+			auto returnValue = Plugin::UnityEngineAssertionsAssertFieldGetRaiseExceptions();
 			return returnValue;
 		}
 		
 		void Assert::SetRaiseExceptions(System::Boolean value)
 		{
-			Plugin::AssertFieldSetRaiseExceptions(value);
+			Plugin::UnityEngineAssertionsAssertFieldSetRaiseExceptions(value);
+		}
+		
+		template<> void Assert::AreEqual<System::String>(System::String expected, System::String actual)
+		{
+			Plugin::UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString(expected.Handle, actual.Handle);
+		}
+	
+		template<> void Assert::AreEqual<UnityEngine::GameObject>(UnityEngine::GameObject expected, UnityEngine::GameObject actual)
+		{
+			Plugin::UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject(expected.Handle, actual.Handle);
 		}
 	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Collision, System::Object)
+	Collision::Collision(std::nullptr_t n)
+		: System::Object(0)
+	{
+	}
+	
+	Collision::Collision(int32_t handle)
+		: System::Object(handle)
+	{
+	}
+	
+	Collision::Collision(const Collision& other)
+		: System::Object(other)
+	{
+	}
+	
+	Collision::Collision(Collision&& other)
+		: System::Object(std::forward<Collision>(other))
+	{
+	}
+	
+	Collision::~Collision()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	Collision& Collision::operator=(const Collision& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	Collision& Collision::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Collision& Collision::operator=(Collision&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(Behaviour, UnityEngine::Component)
+	Behaviour::Behaviour(std::nullptr_t n)
+		: UnityEngine::Component(0)
+	{
+	}
+	
+	Behaviour::Behaviour(int32_t handle)
+		: UnityEngine::Component(handle)
+	{
+	}
+	
+	Behaviour::Behaviour(const Behaviour& other)
+		: UnityEngine::Component(other)
+	{
+	}
+	
+	Behaviour::Behaviour(Behaviour&& other)
+		: UnityEngine::Component(std::forward<Behaviour>(other))
+	{
+	}
+	
+	Behaviour::~Behaviour()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	Behaviour& Behaviour::operator=(const Behaviour& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	Behaviour& Behaviour::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Behaviour& Behaviour::operator=(Behaviour&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(MonoBehaviour, UnityEngine::Behaviour)
+	MonoBehaviour::MonoBehaviour(std::nullptr_t n)
+		: UnityEngine::Behaviour(0)
+	{
+	}
+	
+	MonoBehaviour::MonoBehaviour(int32_t handle)
+		: UnityEngine::Behaviour(handle)
+	{
+	}
+	
+	MonoBehaviour::MonoBehaviour(const MonoBehaviour& other)
+		: UnityEngine::Behaviour(other)
+	{
+	}
+	
+	MonoBehaviour::MonoBehaviour(MonoBehaviour&& other)
+		: UnityEngine::Behaviour(std::forward<MonoBehaviour>(other))
+	{
+	}
+	
+	MonoBehaviour::~MonoBehaviour()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	MonoBehaviour& MonoBehaviour::operator=(const MonoBehaviour& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	MonoBehaviour& MonoBehaviour::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	MonoBehaviour& MonoBehaviour::operator=(MonoBehaviour&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 }
 
 namespace UnityEngine
 {
-	SYSTEM_OBJECT_LIFECYCLE_DEFINITION(AudioSettings, System::Object)
+	AudioSettings::AudioSettings(std::nullptr_t n)
+		: System::Object(0)
+	{
+	}
+	
+	AudioSettings::AudioSettings(int32_t handle)
+		: System::Object(handle)
+	{
+	}
+	
+	AudioSettings::AudioSettings(const AudioSettings& other)
+		: System::Object(other)
+	{
+	}
+	
+	AudioSettings::AudioSettings(AudioSettings&& other)
+		: System::Object(std::forward<AudioSettings>(other))
+	{
+	}
+	
+	AudioSettings::~AudioSettings()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	AudioSettings& AudioSettings::operator=(const AudioSettings& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	AudioSettings& AudioSettings::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	AudioSettings& AudioSettings::operator=(AudioSettings&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
 	
 	void AudioSettings::GetDSPBufferSize(int32_t* bufferLength, int32_t* numBuffers)
 	{
-		Plugin::AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(bufferLength, numBuffers);
+		Plugin::UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(bufferLength, numBuffers);
 	}
 }
 
@@ -400,18 +947,439 @@ namespace UnityEngine
 {
 	namespace Networking
 	{
-		SYSTEM_OBJECT_LIFECYCLE_DEFINITION(NetworkTransport, System::Object)
+		NetworkTransport::NetworkTransport(std::nullptr_t n)
+			: System::Object(0)
+		{
+		}
+		
+		NetworkTransport::NetworkTransport(int32_t handle)
+			: System::Object(handle)
+		{
+		}
+		
+		NetworkTransport::NetworkTransport(const NetworkTransport& other)
+			: System::Object(other)
+		{
+		}
+		
+		NetworkTransport::NetworkTransport(NetworkTransport&& other)
+			: System::Object(std::forward<NetworkTransport>(other))
+		{
+		}
+		
+		NetworkTransport::~NetworkTransport()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+			}
+		}
+		
+		NetworkTransport& NetworkTransport::operator=(const NetworkTransport& other)
+		{
+			SetHandle(other.Handle);
+			return *this;
+		}
+		
+		NetworkTransport& NetworkTransport::operator=(std::nullptr_t other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		NetworkTransport& NetworkTransport::operator=(NetworkTransport&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
 		
 		void NetworkTransport::GetBroadcastConnectionInfo(int32_t hostId, System::String* address, int32_t* port, uint8_t* error)
 		{
 			int32_t addressHandle = address->Handle;
-			Plugin::NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(hostId, &addressHandle, port, error);
+			Plugin::UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(hostId, &addressHandle, port, error);
 			address->SetHandle(addressHandle);
 		}
 	
 		void NetworkTransport::Init()
 		{
-			Plugin::NetworkTransportMethodInit();
+			Plugin::UnityEngineNetworkingNetworkTransportMethodInit();
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			List<System::String>::List(std::nullptr_t n)
+				: System::Object(0)
+			{
+			}
+			
+			List<System::String>::List(int32_t handle)
+				: System::Object(handle)
+			{
+			}
+			
+			List<System::String>::List(const List<System::String>& other)
+				: System::Object(other)
+			{
+			}
+			
+			List<System::String>::List(List<System::String>&& other)
+				: System::Object(std::forward<List<System::String>>(other))
+			{
+			}
+			
+			List<System::String>::~List<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+			}
+			
+			List<System::String>& List<System::String>::operator=(const List<System::String>& other)
+			{
+				SetHandle(other.Handle);
+				return *this;
+			}
+			
+			List<System::String>& List<System::String>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			List<System::String>& List<System::String>::operator=(List<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			List<System::String>::List()
+				 : System::Object(0)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringConstructor();
+				SetHandle(returnValue);
+			}
+			
+			void List<System::String>::Add(System::String item)
+			{
+				Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString(Handle, item.Handle);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			LinkedListNode<System::String>::LinkedListNode(std::nullptr_t n)
+				: System::Object(0)
+			{
+			}
+			
+			LinkedListNode<System::String>::LinkedListNode(int32_t handle)
+				: System::Object(handle)
+			{
+			}
+			
+			LinkedListNode<System::String>::LinkedListNode(const LinkedListNode<System::String>& other)
+				: System::Object(other)
+			{
+			}
+			
+			LinkedListNode<System::String>::LinkedListNode(LinkedListNode<System::String>&& other)
+				: System::Object(std::forward<LinkedListNode<System::String>>(other))
+			{
+			}
+			
+			LinkedListNode<System::String>::~LinkedListNode<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+			}
+			
+			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(const LinkedListNode<System::String>& other)
+			{
+				SetHandle(other.Handle);
+				return *this;
+			}
+			
+			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(LinkedListNode<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			LinkedListNode<System::String>::LinkedListNode(System::String value)
+				 : System::Object(0)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(value.Handle);
+				SetHandle(returnValue);
+			}
+			
+			System::String LinkedListNode<System::String>::GetValue()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue(Handle);
+				return returnValue;
+			}
+			
+			void LinkedListNode<System::String>::SetValue(System::String value)
+			{
+				Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue(Handle, value.Handle);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace CompilerServices
+		{
+			StrongBox<System::String>::StrongBox(std::nullptr_t n)
+				: System::Object(0)
+			{
+			}
+			
+			StrongBox<System::String>::StrongBox(int32_t handle)
+				: System::Object(handle)
+			{
+			}
+			
+			StrongBox<System::String>::StrongBox(const StrongBox<System::String>& other)
+				: System::Object(other)
+			{
+			}
+			
+			StrongBox<System::String>::StrongBox(StrongBox<System::String>&& other)
+				: System::Object(std::forward<StrongBox<System::String>>(other))
+			{
+			}
+			
+			StrongBox<System::String>::~StrongBox<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+			}
+			
+			StrongBox<System::String>& StrongBox<System::String>::operator=(const StrongBox<System::String>& other)
+			{
+				SetHandle(other.Handle);
+				return *this;
+			}
+			
+			StrongBox<System::String>& StrongBox<System::String>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			StrongBox<System::String>& StrongBox<System::String>::operator=(StrongBox<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			StrongBox<System::String>::StrongBox(System::String value)
+				 : System::Object(0)
+			{
+				auto returnValue = Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString(value.Handle);
+				SetHandle(returnValue);
+			}
+			
+			System::String StrongBox<System::String>::GetValue()
+			{
+				auto returnValue = Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue(Handle);
+				return returnValue;
+			}
+			
+			void StrongBox<System::String>::SetValue(System::String value)
+			{
+				Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue(Handle, value.Handle);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			Collection<int32_t>::Collection(std::nullptr_t n)
+				: System::Object(0)
+			{
+			}
+			
+			Collection<int32_t>::Collection(int32_t handle)
+				: System::Object(handle)
+			{
+			}
+			
+			Collection<int32_t>::Collection(const Collection<int32_t>& other)
+				: System::Object(other)
+			{
+			}
+			
+			Collection<int32_t>::Collection(Collection<int32_t>&& other)
+				: System::Object(std::forward<Collection<int32_t>>(other))
+			{
+			}
+			
+			Collection<int32_t>::~Collection<int32_t>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+			}
+			
+			Collection<int32_t>& Collection<int32_t>::operator=(const Collection<int32_t>& other)
+			{
+				SetHandle(other.Handle);
+				return *this;
+			}
+			
+			Collection<int32_t>& Collection<int32_t>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			Collection<int32_t>& Collection<int32_t>::operator=(Collection<int32_t>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			KeyedCollection<System::String, int32_t>::KeyedCollection(std::nullptr_t n)
+				: System::Collections::ObjectModel::Collection<int32_t>(0)
+			{
+			}
+			
+			KeyedCollection<System::String, int32_t>::KeyedCollection(int32_t handle)
+				: System::Collections::ObjectModel::Collection<int32_t>(handle)
+			{
+			}
+			
+			KeyedCollection<System::String, int32_t>::KeyedCollection(const KeyedCollection<System::String, int32_t>& other)
+				: System::Collections::ObjectModel::Collection<int32_t>(other)
+			{
+			}
+			
+			KeyedCollection<System::String, int32_t>::KeyedCollection(KeyedCollection<System::String, int32_t>&& other)
+				: System::Collections::ObjectModel::Collection<int32_t>(std::forward<KeyedCollection<System::String, int32_t>>(other))
+			{
+			}
+			
+			KeyedCollection<System::String, int32_t>::~KeyedCollection<System::String, int32_t>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+			}
+			
+			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(const KeyedCollection<System::String, int32_t>& other)
+			{
+				SetHandle(other.Handle);
+				return *this;
+			}
+			
+			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(KeyedCollection<System::String, int32_t>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
 		}
 	}
 }
@@ -420,7 +1388,60 @@ namespace MyGame
 {
 	namespace MonoBehaviours
 	{
-		SYSTEM_OBJECT_LIFECYCLE_DEFINITION(TestScript, UnityEngine::MonoBehaviour)
+		TestScript::TestScript(std::nullptr_t n)
+			: UnityEngine::MonoBehaviour(0)
+		{
+		}
+		
+		TestScript::TestScript(int32_t handle)
+			: UnityEngine::MonoBehaviour(handle)
+		{
+		}
+		
+		TestScript::TestScript(const TestScript& other)
+			: UnityEngine::MonoBehaviour(other)
+		{
+		}
+		
+		TestScript::TestScript(TestScript&& other)
+			: UnityEngine::MonoBehaviour(std::forward<TestScript>(other))
+		{
+		}
+		
+		TestScript::~TestScript()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+			}
+		}
+		
+		TestScript& TestScript::operator=(const TestScript& other)
+		{
+			SetHandle(other.Handle);
+			return *this;
+		}
+		
+		TestScript& TestScript::operator=(std::nullptr_t other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		TestScript& TestScript::operator=(TestScript&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedObject(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
 	}
 }
 /*END METHOD DEFINITIONS*/
@@ -442,26 +1463,36 @@ DLLEXPORT void Init(
 	void (*releaseObject)(int32_t handle),
 	int32_t (*stringNew)(const char* chars),
 	/*BEGIN INIT PARAMS*/
-	int32_t (*stopwatchConstructor)(),
-	int64_t (*stopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
-	void (*stopwatchMethodStart)(int32_t thisHandle),
-	void (*stopwatchMethodReset)(int32_t thisHandle),
-	int32_t (*objectPropertyGetName)(int32_t thisHandle),
-	void (*objectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
-	int32_t (*gameObjectConstructor)(),
-	int32_t (*gameObjectConstructorSystemString)(int32_t nameHandle),
-	int32_t (*gameObjectPropertyGetTransform)(int32_t thisHandle),
-	int32_t (*gameObjectMethodFindSystemString)(int32_t nameHandle),
-	int32_t (*gameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle),
-	int32_t (*componentPropertyGetTransform)(int32_t thisHandle),
-	UnityEngine::Vector3 (*transformPropertyGetPosition)(int32_t thisHandle),
-	void (*transformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value),
-	void (*debugMethodLogSystemObject)(int32_t messageHandle),
-	System::Boolean (*assertFieldGetRaiseExceptions)(),
-	void (*assertFieldSetRaiseExceptions)(System::Boolean value),
-	void (*audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers),
-	void (*networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error),
-	void (*networkTransportMethodInit)()
+	int32_t (*systemDiagnosticsStopwatchConstructor)(),
+	int64_t (*systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
+	void (*systemDiagnosticsStopwatchMethodStart)(int32_t thisHandle),
+	void (*systemDiagnosticsStopwatchMethodReset)(int32_t thisHandle),
+	int32_t (*unityEngineObjectPropertyGetName)(int32_t thisHandle),
+	void (*unityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
+	int32_t (*unityEngineGameObjectConstructor)(),
+	int32_t (*unityEngineGameObjectConstructorSystemString)(int32_t nameHandle),
+	int32_t (*unityEngineGameObjectPropertyGetTransform)(int32_t thisHandle),
+	int32_t (*unityEngineGameObjectMethodFindSystemString)(int32_t nameHandle),
+	int32_t (*unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle),
+	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
+	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
+	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value),
+	void (*unityEngineDebugMethodLogSystemObject)(int32_t messageHandle),
+	System::Boolean (*unityEngineAssertionsAssertFieldGetRaiseExceptions)(),
+	void (*unityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value),
+	void (*unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle),
+	void (*unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle),
+	void (*unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers),
+	void (*unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error),
+	void (*unityEngineNetworkingNetworkTransportMethodInit)(),
+	int32_t (*systemCollectionsGenericListSystemStringConstructor)(),
+	void (*systemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle),
+	int32_t (*systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle),
+	int32_t (*systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)(int32_t thisHandle),
+	void (*systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)(int32_t thisHandle, int32_t valueHandle),
+	int32_t (*systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString)(int32_t valueHandle),
+	int32_t (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle),
+	void (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle)
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;
@@ -476,26 +1507,36 @@ DLLEXPORT void Init(
 	StringNew = stringNew;
 	ReleaseObject = releaseObject;
 	/*BEGIN INIT BODY*/
-	StopwatchConstructor = stopwatchConstructor;
-	StopwatchPropertyGetElapsedMilliseconds = stopwatchPropertyGetElapsedMilliseconds;
-	StopwatchMethodStart = stopwatchMethodStart;
-	StopwatchMethodReset = stopwatchMethodReset;
-	ObjectPropertyGetName = objectPropertyGetName;
-	ObjectPropertySetName = objectPropertySetName;
-	GameObjectConstructor = gameObjectConstructor;
-	GameObjectConstructorSystemString = gameObjectConstructorSystemString;
-	GameObjectPropertyGetTransform = gameObjectPropertyGetTransform;
-	GameObjectMethodFindSystemString = gameObjectMethodFindSystemString;
-	GameObjectMethodAddComponentMyGameMonoBehavioursTestScript = gameObjectMethodAddComponentMyGameMonoBehavioursTestScript;
-	ComponentPropertyGetTransform = componentPropertyGetTransform;
-	TransformPropertyGetPosition = transformPropertyGetPosition;
-	TransformPropertySetPosition = transformPropertySetPosition;
-	DebugMethodLogSystemObject = debugMethodLogSystemObject;
-	AssertFieldGetRaiseExceptions = assertFieldGetRaiseExceptions;
-	AssertFieldSetRaiseExceptions = assertFieldSetRaiseExceptions;
-	AudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32 = audioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32;
-	NetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte = networkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte;
-	NetworkTransportMethodInit = networkTransportMethodInit;
+	SystemDiagnosticsStopwatchConstructor = systemDiagnosticsStopwatchConstructor;
+	SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds = systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds;
+	SystemDiagnosticsStopwatchMethodStart = systemDiagnosticsStopwatchMethodStart;
+	SystemDiagnosticsStopwatchMethodReset = systemDiagnosticsStopwatchMethodReset;
+	UnityEngineObjectPropertyGetName = unityEngineObjectPropertyGetName;
+	UnityEngineObjectPropertySetName = unityEngineObjectPropertySetName;
+	UnityEngineGameObjectConstructor = unityEngineGameObjectConstructor;
+	UnityEngineGameObjectConstructorSystemString = unityEngineGameObjectConstructorSystemString;
+	UnityEngineGameObjectPropertyGetTransform = unityEngineGameObjectPropertyGetTransform;
+	UnityEngineGameObjectMethodFindSystemString = unityEngineGameObjectMethodFindSystemString;
+	UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript = unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript;
+	UnityEngineComponentPropertyGetTransform = unityEngineComponentPropertyGetTransform;
+	UnityEngineTransformPropertyGetPosition = unityEngineTransformPropertyGetPosition;
+	UnityEngineTransformPropertySetPosition = unityEngineTransformPropertySetPosition;
+	UnityEngineDebugMethodLogSystemObject = unityEngineDebugMethodLogSystemObject;
+	UnityEngineAssertionsAssertFieldGetRaiseExceptions = unityEngineAssertionsAssertFieldGetRaiseExceptions;
+	UnityEngineAssertionsAssertFieldSetRaiseExceptions = unityEngineAssertionsAssertFieldSetRaiseExceptions;
+	UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString = unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString;
+	UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject = unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject;
+	UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32 = unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32;
+	UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte = unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte;
+	UnityEngineNetworkingNetworkTransportMethodInit = unityEngineNetworkingNetworkTransportMethodInit;
+	SystemCollectionsGenericListSystemStringConstructor = systemCollectionsGenericListSystemStringConstructor;
+	SystemCollectionsGenericListSystemStringMethodAddSystemString = systemCollectionsGenericListSystemStringMethodAddSystemString;
+	SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString = systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString;
+	SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue;
+	SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue;
+	SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString = systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString;
+	SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue;
+	SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue;
 	/*END INIT BODY*/
 	
 	PluginMain();

@@ -147,45 +147,46 @@ To configure the code generator, open `NativeScriptTypes.json` and notice the ex
 
 The code generator supports:
 
-* Class types (i.e. Classes with methods, etc. Parameters, etc. are fine.)
-* Constructors
-* Methods
-* Fields
-* Properties (getters and setters)
-* Generic return types
-* `MonoBehaviour` classes with "message" functions (except `OnAudioFilterRead`)
+* Class types (including generics)
+* Base classes (including generics)
+* Constructors (including generic parameters)
+* Methods (including generic parameters and return types)
+* Fields (including generic types)
+* Properties (getters and setters) (including generic types)
+* `MonoBehaviour` classes with "message" functions like `Update` (except `OnAudioFilterRead`)
 * `out` and `ref` parameters
 
 The code generator does not support (yet):
 
 * Struct types
 * Arrays (single- or multi-dimensional)
-* Generic functions and types
 * Delegates
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
 * Overloaded operators
 * Exceptions
 * Default parameters
+* Interfaces
 
 The JSON file is laid out as follows:
 
-* Path - Absolute path to the DLL
-* Types - Array of types in the DLL to generate
-	* Name - Name of the type including namespace (e.g. `UnityEngine.GameObject`)
-	* Constructors - Array of constructors to generate
-		* Types - Parameter types of the constructor including namespace
-	* Methods - Array of methods to generate
-		* Name - Name of the method
-		* ParamTypes - Parameter types to the method including namespace
-		* GenericTypes - Sets of type parameters to generate
-			* Name - Name of the type parameter (e.g. `T`)
-			* Type - Type to generate for the type parameter including namespace
-	* Properties - Array of property names to generate
-	* Fields - Array of field names to generate
-* MonoBehaviours
-	* Name - Name of the `MonoBehaviour` class to generate
-	* Namespace - Namespace to put the `MonoBehaviour` class in
-	* Messages - Array of message names to generate (e.g. `Update`)
+* **Assemblies** - Paths to custom DLLs. Unity, .NET, and your project are already included. `UNITY_PROJECT`, `UNITY_ASSETS`, `DOTNET_DLLS`, and `UNITY_DLLS` be be replaced by the appropriate path.
+* **Types** - Array of types in the DLL to generate
+	* **Name** - Name of the type including namespace (e.g. `UnityEngine.GameObject`)
+	* **Constructors** - Array of constructors to generate
+		* **Types** - Parameter types of the constructor including namespace
+	* **Methods** - Array of methods to generate
+		* **Name** - Name of the method
+		* **ParamTypes** - Parameter types to the method including namespace
+		* **GenericTypes** - Sets of type parameters to generate (for the method)
+			* **Types** - Type names in the set
+	* **Properties** - Array of property names to generate
+	* **Fields** - Array of field names to generate
+	* **GenericTypes** - Sets of type parameters to generate (for the type)
+		* **Types** - Type names in the set
+* **MonoBehaviours**
+	* **Name** - Name of the `MonoBehaviour` class to generate
+	* **Namespace** - Namespace to put the `MonoBehaviour` class in
+	* **Messages** - Array of message names to generate (e.g. `Update`)
 
 # Updating To A New Version
 
