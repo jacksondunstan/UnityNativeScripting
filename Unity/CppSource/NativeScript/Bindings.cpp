@@ -55,7 +55,7 @@ namespace Plugin
 	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle);
 	int32_t (*UnityEngineComponentPropertyGetTransform)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineTransformPropertyGetPosition)(int32_t thisHandle);
-	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value);
+	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value);
 	void (*UnityEngineDebugMethodLogSystemObject)(int32_t messageHandle);
 	System::Boolean (*UnityEngineAssertionsAssertFieldGetRaiseExceptions)();
 	void (*UnityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value);
@@ -64,6 +64,15 @@ namespace Plugin
 	void (*UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers);
 	void (*UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error);
 	void (*UnityEngineNetworkingNetworkTransportMethodInit)();
+	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
+	float (*UnityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz);
+	void (*UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ);
+	UnityEngine::Vector3 (*UnityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle);
+	void (*UnityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, UnityEngine::Vector3& value);
+	int32_t (*UnityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble)(int32_t keyHandle, double value);
+	int32_t (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)(int32_t thisHandle);
+	double (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle);
 	int32_t (*SystemCollectionsGenericListSystemStringConstructor)();
 	void (*SystemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle);
 	int32_t (*SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle);
@@ -177,6 +186,60 @@ namespace System
 	bool Object::operator!=(std::nullptr_t other) const
 	{
 		return Handle != 0;
+	}
+	
+	ValueType::ValueType(std::nullptr_t n)
+		: Object(0)
+	{
+	}
+	
+	ValueType::ValueType(int32_t handle)
+		: Object(handle)
+	{
+	}
+	
+	ValueType::ValueType(const ValueType& other)
+		: Object(other)
+	{
+	}
+	
+	ValueType::ValueType(ValueType&& other)
+		: Object(std::forward<ValueType>(other))
+	{
+	}
+	
+	ValueType::~ValueType()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	ValueType& ValueType::operator=(const ValueType& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	ValueType& ValueType::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	ValueType& ValueType::operator=(ValueType&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
 	}
 	
 	String::String(std::nullptr_t n)
@@ -610,7 +673,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Transform::SetPosition(UnityEngine::Vector3 value)
+	void Transform::SetPosition(UnityEngine::Vector3& value)
 	{
 		Plugin::UnityEngineTransformPropertySetPosition(Handle, value);
 	}
@@ -1012,6 +1075,188 @@ namespace UnityEngine
 		void NetworkTransport::Init()
 		{
 			Plugin::UnityEngineNetworkingNetworkTransportMethodInit();
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	Vector3::Vector3()
+	{
+	}
+	
+	Vector3::Vector3(float x, float y, float z)
+	{
+		auto returnValue = Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(x, y, z);
+		*this = returnValue;
+	}
+	
+	float Vector3::GetMagnitude()
+	{
+		auto returnValue = Plugin::UnityEngineVector3PropertyGetMagnitude(this);
+		return returnValue;
+	}
+	
+	void Vector3::Set(float newX, float newY, float newZ)
+	{
+		Plugin::UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle(this, newX, newY, newZ);
+	}
+}
+
+namespace UnityEngine
+{
+	RaycastHit::RaycastHit(std::nullptr_t n)
+		: System::ValueType(0)
+	{
+	}
+	
+	RaycastHit::RaycastHit(int32_t handle)
+		: System::ValueType(handle)
+	{
+	}
+	
+	RaycastHit::RaycastHit(const RaycastHit& other)
+		: System::ValueType(other)
+	{
+	}
+	
+	RaycastHit::RaycastHit(RaycastHit&& other)
+		: System::ValueType(std::forward<RaycastHit>(other))
+	{
+	}
+	
+	RaycastHit::~RaycastHit()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+	}
+	
+	RaycastHit& RaycastHit::operator=(const RaycastHit& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	RaycastHit& RaycastHit::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	RaycastHit& RaycastHit::operator=(RaycastHit&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedObject(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	UnityEngine::Vector3 RaycastHit::GetPoint()
+	{
+		auto returnValue = Plugin::UnityEngineRaycastHitPropertyGetPoint(Handle);
+		return returnValue;
+	}
+	
+	void RaycastHit::SetPoint(UnityEngine::Vector3& value)
+	{
+		Plugin::UnityEngineRaycastHitPropertySetPoint(Handle, value);
+	}
+	
+	UnityEngine::Transform RaycastHit::GetTransform()
+	{
+		auto returnValue = Plugin::UnityEngineRaycastHitPropertyGetTransform(Handle);
+		return returnValue;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			KeyValuePair<System::String, double>::KeyValuePair(std::nullptr_t n)
+				: System::ValueType(0)
+			{
+			}
+			
+			KeyValuePair<System::String, double>::KeyValuePair(int32_t handle)
+				: System::ValueType(handle)
+			{
+			}
+			
+			KeyValuePair<System::String, double>::KeyValuePair(const KeyValuePair<System::String, double>& other)
+				: System::ValueType(other)
+			{
+			}
+			
+			KeyValuePair<System::String, double>::KeyValuePair(KeyValuePair<System::String, double>&& other)
+				: System::ValueType(std::forward<KeyValuePair<System::String, double>>(other))
+			{
+			}
+			
+			KeyValuePair<System::String, double>::~KeyValuePair<System::String, double>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+			}
+			
+			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(const KeyValuePair<System::String, double>& other)
+			{
+				SetHandle(other.Handle);
+				return *this;
+			}
+			
+			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(KeyValuePair<System::String, double>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedObject(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			KeyValuePair<System::String, double>::KeyValuePair(System::String key, double value)
+				 : System::ValueType(0)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble(key.Handle, value);
+				SetHandle(returnValue);
+			}
+			
+			System::String KeyValuePair<System::String, double>::GetKey()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey(Handle);
+				return returnValue;
+			}
+			
+			double KeyValuePair<System::String, double>::GetValue()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue(Handle);
+				return returnValue;
+			}
 		}
 	}
 }
@@ -1476,7 +1721,7 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle),
 	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
-	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3 value),
+	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value),
 	void (*unityEngineDebugMethodLogSystemObject)(int32_t messageHandle),
 	System::Boolean (*unityEngineAssertionsAssertFieldGetRaiseExceptions)(),
 	void (*unityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value),
@@ -1485,6 +1730,15 @@ DLLEXPORT void Init(
 	void (*unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers),
 	void (*unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error),
 	void (*unityEngineNetworkingNetworkTransportMethodInit)(),
+	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
+	float (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
+	void (*unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ),
+	UnityEngine::Vector3 (*unityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle),
+	void (*unityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, UnityEngine::Vector3& value),
+	int32_t (*unityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble)(int32_t keyHandle, double value),
+	int32_t (*systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)(int32_t thisHandle),
+	double (*systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle),
 	int32_t (*systemCollectionsGenericListSystemStringConstructor)(),
 	void (*systemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle),
 	int32_t (*systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle),
@@ -1529,6 +1783,15 @@ DLLEXPORT void Init(
 	UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32 = unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32;
 	UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte = unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte;
 	UnityEngineNetworkingNetworkTransportMethodInit = unityEngineNetworkingNetworkTransportMethodInit;
+	UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
+	UnityEngineVector3PropertyGetMagnitude = unityEngineVector3PropertyGetMagnitude;
+	UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle = unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle;
+	UnityEngineRaycastHitPropertyGetPoint = unityEngineRaycastHitPropertyGetPoint;
+	UnityEngineRaycastHitPropertySetPoint = unityEngineRaycastHitPropertySetPoint;
+	UnityEngineRaycastHitPropertyGetTransform = unityEngineRaycastHitPropertyGetTransform;
+	SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble = systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble;
+	SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey;
+	SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue;
 	SystemCollectionsGenericListSystemStringConstructor = systemCollectionsGenericListSystemStringConstructor;
 	SystemCollectionsGenericListSystemStringMethodAddSystemString = systemCollectionsGenericListSystemStringMethodAddSystemString;
 	SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString = systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString;

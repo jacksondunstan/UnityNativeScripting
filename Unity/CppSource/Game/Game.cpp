@@ -43,6 +43,9 @@ void PluginMain()
 	node.SetValue("new node val");
 	Debug::Log(node.GetValue());
 	
+	Collections::Generic::KeyValuePair<String, double> kvp("C++ key", 3.14);
+	Debug::Log(kvp.GetKey());
+	
 	GameObject go("GameObject with a TestScript");
 	go.AddComponent<MyGame::MonoBehaviours::TestScript>();
 }
@@ -70,7 +73,7 @@ void MyGame::MonoBehaviours::TestScript::Update()
 		GameObject go;
 		Transform transform = go.GetTransform();
 		float comp = (float)numCreated;
-		Vector3 position(comp, comp, comp);
+		Vector3 position(comp, comp*10.0f, comp*100.0f);
 		transform.SetPosition(position);
 		numCreated++;
 		if (numCreated == 10)

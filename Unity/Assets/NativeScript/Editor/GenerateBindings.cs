@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -43,6 +44,15 @@ namespace NativeScript
 			public string Name;
 			public string[] ParamTypes;
 			public JsonGenericParams[] GenericParams;
+			public bool IsReadOnly;
+		}
+		
+		[Serializable]
+		class JsonProperty
+		{
+			public string Name;
+			public bool GetIsReadOnly = true;
+			public bool SetIsReadOnly;
 		}
 		
 		[Serializable]
@@ -51,9 +61,10 @@ namespace NativeScript
 			public string Name;
 			public JsonConstructor[] Constructors;
 			public JsonMethod[] Methods;
-			public string[] Properties;
+			public JsonProperty[] Properties;
 			public string[] Fields;
 			public JsonGenericParams[] GenericParams;
+			public int MaxSimultaneous;
 		}
 		
 		[Serializable]
@@ -71,13 +82,15 @@ namespace NativeScript
 			public JsonMonoBehaviour[] MonoBehaviours;
 		}
 		
-		const int InitialStringBuilderCapacity = 1024 * 5;
+		const int InitialStringBuilderCapacity = 1024 * 10;
 		
 		class StringBuilders
 		{
 			public StringBuilder CsharpInitParams =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public StringBuilder CsharpDelegateTypes =
+				new StringBuilder(InitialStringBuilderCapacity);
+			public StringBuilder CsharpStructStoreInitCalls =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public StringBuilder CsharpInitCall =
 				new StringBuilder(InitialStringBuilderCapacity);
@@ -116,7 +129,52 @@ namespace NativeScript
 			public Type DereferencedParameterType;
 			public bool IsOut;
 			public bool IsRef;
-			public bool IsStruct;
+			public TypeKind Kind;
+		}
+		
+		enum TypeKind
+		{
+			// An instance of any class
+			Class,
+			
+			// A struct that must be managed. This includes types like
+			// RaycastHit which have class fields (Transform) and types with no
+			// C++ equivalent like decimal.
+			ManagedStruct,
+			
+			// A struct that can be copied between C#/C++. These are types like
+			// Vector3 with only non-class fields and a C++ equivalent can be
+			// generated.
+			FullStruct,
+			
+			// Any enum
+			Enum,
+			
+			// Any primitive (e.g. int) except pointers
+			Primitive,
+			
+			// A pointer to any type, either X*, IntPtr, or UIntPtr
+			Pointer,
+			
+			// The decimal type
+			Decimal
+		}
+		
+		// Compares by field declaration order
+		// This uses MetadataToken, which isn't guaranteed to match field
+		// declaration order. It just happens to on Mono and .NET.
+		class FieldOrderComparer : IComparer
+		{
+			int IComparer.Compare(object x, object y)
+			{
+				FieldInfo xField = (FieldInfo)x;
+				FieldInfo yField = (FieldInfo)y;
+				return xField.MetadataToken < yField.MetadataToken
+					? -1
+					: xField.MetadataToken > yField.MetadataToken
+						? 1
+						: 0;
+			}
 		}
 		
 		class MessageInfo
@@ -233,6 +291,9 @@ namespace NativeScript
 			CppDirPath,
 			"Bindings.cpp");
 		
+		static readonly FieldOrderComparer DefaultFieldOrderComparer
+			= new FieldOrderComparer();
+		
 		// Restore unused field types
 		#pragma warning restore CS0649
 		
@@ -254,35 +315,71 @@ namespace NativeScript
 			EditorPrefs.SetBool(DryRunPref, dryRun);
 			if (dryRun)
 			{
-				DoPostCompileWork();
+				DoPostCompileWork(true);
 			}
 			else
 			{
 				JsonDocument doc = LoadJson();
+				Assembly[] assemblies = GetAssemblies(doc.Assemblies);
 				
-				// Generate stub types
-				// We'll need to be able to get these via reflection later
-				StringBuilder csharpMonoBehaviours = new StringBuilder(
-					InitialStringBuilderCapacity);
-				string timestamp = DateTime.Now.ToLongTimeString();
-				AppendStubMonoBehaviours(
-					doc.MonoBehaviours,
-					timestamp,
-					csharpMonoBehaviours);
+				// Determine whether we need to generate stubs
+				// We can skip this step if we've already generated all the
+				// required MonoBehaviour classes and their messages
+				bool needStubs = false;
+				foreach (JsonMonoBehaviour monoBehaviour in doc.MonoBehaviours)
+				{
+					// Check if the MonoBehaviour type is already generated
+					Type type = TryGetType(
+						monoBehaviour.Name,
+						assemblies);
+					if (type == null)
+					{
+						needStubs = true;
+						break;
+					}
+					
+					// Check if all the messages are already generated
+					foreach (string message in monoBehaviour.Messages)
+					{
+						MethodInfo methodInfo = type.GetMethod(message);
+						if (methodInfo == null)
+						{
+							needStubs = true;
+							goto determinedNeedStubs;
+						}
+					}
+				}
+				determinedNeedStubs:;
 				
-				// Inject
-				string csharpContents = File.ReadAllText(CsharpPath);
-				csharpContents = InjectIntoString(
-					csharpContents,
-					"/*BEGIN MONOBEHAVIOURS*/\n",
-					"\n/*END MONOBEHAVIOURS*/",
-					csharpMonoBehaviours.ToString());
-				File.WriteAllText(CsharpPath, csharpContents);
-				
-				// Compile and continue after scripts are refreshed
-				Debug.Log("Waiting for compile...");
-				AssetDatabase.Refresh();
-				EditorPrefs.SetBool(PostCompileWorkPref, true);
+				if (needStubs)
+				{
+					// We'll need to be able to get these via reflection later
+					StringBuilder csharpMonoBehaviours = new StringBuilder(
+						InitialStringBuilderCapacity);
+					string timestamp = DateTime.Now.ToLongTimeString();
+					AppendStubMonoBehaviours(
+						doc.MonoBehaviours,
+						timestamp,
+						csharpMonoBehaviours);
+					
+					// Inject
+					string csharpContents = File.ReadAllText(CsharpPath);
+					csharpContents = InjectIntoString(
+						csharpContents,
+						"/*BEGIN MONOBEHAVIOURS*/\n",
+						"\n/*END MONOBEHAVIOURS*/",
+						csharpMonoBehaviours.ToString());
+					File.WriteAllText(CsharpPath, csharpContents);
+					
+					// Compile and continue after scripts are refreshed
+					Debug.Log("Waiting for compile...");
+					AssetDatabase.Refresh();
+					EditorPrefs.SetBool(PostCompileWorkPref, true);
+				}
+				else
+				{
+					DoPostCompileWork(true);
+				}
 			}
 		}
 		
@@ -343,50 +440,17 @@ namespace NativeScript
 			EditorPrefs.DeleteKey(PostCompileWorkPref);
 			if (doWork)
 			{
-				DoPostCompileWork();
+				DoPostCompileWork(false);
 			}
 		}
 		
-		static void DoPostCompileWork()
+		static void DoPostCompileWork(bool canRefreshAssetDb)
 		{
 			bool dryRun = EditorPrefs.GetBool(DryRunPref);
 			EditorPrefs.DeleteKey(DryRunPref);
 			
 			JsonDocument doc = LoadJson();
-			
-			// Gather assemblies
-			const int numDefaultAssemblies = 7;
-			int numAssemblies;
-			Assembly[] assemblies;
-			if (doc.Assemblies == null)
-			{
-				numAssemblies = numDefaultAssemblies;
-				assemblies = new Assembly[numAssemblies];
-			}
-			else
-			{
-				numAssemblies = numDefaultAssemblies + doc.Assemblies.Length;
-				assemblies = new Assembly[numAssemblies];
-				
-				for (int i = 0; i < doc.Assemblies.Length; ++i)
-				{
-					string path = doc.Assemblies[i]
-						.Replace("UNITY_PROJECT", ProjectDirPath)
-						.Replace("UNITY_ASSETS", AssetsDirPath)
-						.Replace("DOTNET_DLLS", DotNetDllsDirPath)
-						.Replace("UNITY_DLLS", UnityDllsDirPath);
-					Assembly assembly = Assembly.LoadFrom(path);
-					assemblies[numDefaultAssemblies + i] = assembly;
-				}
-			}
-			assemblies[0] = typeof(string).Assembly; // .NET: mscorlib
-			assemblies[1] = typeof(Uri).Assembly; // .NET: System
-			assemblies[2] = typeof(Action).Assembly; // .NET: System.Core
-			assemblies[3] = typeof(Vector3).Assembly; // UnityEngine
-			assemblies[4] = typeof(Bindings).Assembly; // Runtime scripts
-			assemblies[5] = typeof(GenerateBindings).Assembly; // Editor scripts
-			assemblies[6] = typeof(EditorPrefs).Assembly; // UnityEditor
-			
+			Assembly[] assemblies = GetAssemblies(doc.Assemblies);
 			StringBuilders builders = new StringBuilders();
 			
 			// Generate types
@@ -419,9 +483,18 @@ namespace NativeScript
 			else
 			{
 				InjectBuilders(builders);
-				Debug.Log(
-					"Can't auto-refresh due to a bug in Unity. " +
-					"Please manually refresh assets with Assets -> Refresh.");
+				if (canRefreshAssetDb)
+				{
+					AssetDatabase.Refresh();
+					Debug.Log("Done generating bindings.");
+				}
+				else
+				{
+					Debug.LogWarning(
+						"Can't auto-refresh due to a bug in Unity. " +
+						"Please manually refresh assets with " +
+						"Assets -> Refresh to finish generating bindings");
+				}
 			}
 		}
 		
@@ -432,6 +505,42 @@ namespace NativeScript
 				NativeScriptConstants.ExposedTypesJsonPath);
 			string json = File.ReadAllText(jsonPath);
 			return JsonUtility.FromJson<JsonDocument>(json);
+		}
+		
+		static Assembly[] GetAssemblies(string[] assemblyNames)
+		{
+			const int numDefaultAssemblies = 7;
+			int numAssemblies;
+			Assembly[] assemblies;
+			if (assemblyNames == null)
+			{
+				numAssemblies = numDefaultAssemblies;
+				assemblies = new Assembly[numAssemblies];
+			}
+			else
+			{
+				numAssemblies = numDefaultAssemblies + assemblyNames.Length;
+				assemblies = new Assembly[numAssemblies];
+				
+				for (int i = 0; i < assemblyNames.Length; ++i)
+				{
+					string path = assemblyNames[i]
+						.Replace("UNITY_PROJECT", ProjectDirPath)
+						.Replace("UNITY_ASSETS", AssetsDirPath)
+						.Replace("DOTNET_DLLS", DotNetDllsDirPath)
+						.Replace("UNITY_DLLS", UnityDllsDirPath);
+					Assembly assembly = Assembly.LoadFrom(path);
+					assemblies[numDefaultAssemblies + i] = assembly;
+				}
+			}
+			assemblies[0] = typeof(string).Assembly; // .NET: mscorlib
+			assemblies[1] = typeof(Uri).Assembly; // .NET: System
+			assemblies[2] = typeof(Action).Assembly; // .NET: System.Core
+			assemblies[3] = typeof(Vector3).Assembly; // UnityEngine
+			assemblies[4] = typeof(Bindings).Assembly; // Runtime scripts
+			assemblies[5] = typeof(GenerateBindings).Assembly; // Editor scripts
+			assemblies[6] = typeof(EditorPrefs).Assembly; // UnityEditor
+			return assemblies;
 		}
 		
 		static Type[] GetTypes(
@@ -450,14 +559,12 @@ namespace NativeScript
 			string typeName,
 			Assembly[] assemblies)
 		{
-			// Search all assemblies for the type
-			foreach (Assembly assembly in assemblies)
+			Type type = TryGetType(
+				typeName,
+				assemblies);
+			if (type != null)
 			{
-				Type type = assembly.GetType(typeName);
-				if (type != null)
-				{
-					return type;
-				}
+				return type;
 			}
 			
 			// Not finding a type is a fatal error
@@ -468,17 +575,67 @@ namespace NativeScript
 			throw new Exception(errorBuilder.ToString());
 		}
 		
-		static ConstructorInfo GetConstructor(
+		static Type TryGetType(
+			string typeName,
+			Assembly[] assemblies)
+		{
+			// Search all assemblies for the type
+			foreach (Assembly assembly in assemblies)
+			{
+				Type type = assembly.GetType(typeName);
+				if (type != null)
+				{
+					return type;
+				}
+			}
+			return null;
+		}
+		
+		static TypeKind GetTypeKind(Type type)
+		{
+			if (type.IsPointer)
+			{
+				return TypeKind.Pointer;
+			}
+			
+			if (type.IsEnum)
+			{
+				return TypeKind.Enum;
+			}
+			
+			if (type.IsPrimitive)
+			{
+				return TypeKind.Primitive;
+			}
+			
+			if (!type.IsValueType)
+			{
+				return TypeKind.Class;
+			}
+			
+			// Decimal (currently) can't be represented on the C++ side, so
+			// don't count it as a full struct
+			if (type != typeof(decimal) && IsFullValueType(type))
+			{
+				return TypeKind.FullStruct;
+			}
+			
+			return TypeKind.ManagedStruct;
+		}
+		
+		static ParameterInfo[] GetConstructorParameters(
 			Type type,
 			string[] paramTypeNames)
 		{
 			foreach (ConstructorInfo ctor in type.GetConstructors())
 			{
+				System.Reflection.ParameterInfo[] reflectionParams
+					= ctor.GetParameters();
 				if (CheckParametersMatch(
 					paramTypeNames,
-					ctor.GetParameters()))
+					reflectionParams))
 				{
-					return ctor;
+					return ConvertParameters(reflectionParams);
 				}
 			}
 			
@@ -705,7 +862,8 @@ namespace NativeScript
 				info.IsRef = !info.IsOut && info.ParameterType.IsByRef;
 				info.DereferencedParameterType = DereferenceParameterType(
 					reflectionInfo);
-				info.IsStruct = info.DereferencedParameterType.IsValueType;
+				info.Kind = GetTypeKind(
+					info.DereferencedParameterType);
 				parameters[i] = info;
 			}
 			return parameters;
@@ -736,7 +894,8 @@ namespace NativeScript
 				info.IsOut = false;
 				info.IsRef = false;
 				info.DereferencedParameterType = paramType;
-				info.IsStruct = info.DereferencedParameterType.IsValueType;
+				info.Kind = GetTypeKind(
+					info.DereferencedParameterType);
 				parameters[i] = info;
 			}
 			return parameters;
@@ -745,6 +904,36 @@ namespace NativeScript
 		static bool IsStatic(Type type)
 		{
 			return type.IsAbstract && type.IsSealed;
+		}
+		
+		static bool IsManagedValueType(Type type)
+		{
+			return type.IsValueType && !IsFullValueType(type);
+		}
+		
+		static bool IsFullValueType(Type type)
+		{
+			if (!type.IsValueType)
+			{
+				return false;
+			}
+			if (type.IsPrimitive || type.IsEnum)
+			{
+				return true;
+			}
+			const BindingFlags bindingFlags =
+				BindingFlags.Instance
+				| BindingFlags.NonPublic
+				| BindingFlags.Public;
+			foreach (FieldInfo field in type.GetFields(bindingFlags))
+			{
+				if (!field.IsStatic
+					&& !IsFullValueType(field.FieldType))
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 		
 		static void AppendWithoutGenericTypeCountSuffix(
@@ -770,58 +959,68 @@ namespace NativeScript
 			StringBuilders builders)
 		{
 			Type type = GetType(jsonType.Name, assemblies);
-			Type[] genericArgTypes = type.GetGenericArguments();
-			if (jsonType.GenericParams != null)
+			if (type.IsEnum)
 			{
-				// Template declaration for the type
-				if (!IsStatic(type))
+				AppendEnum(
+					type,
+					assemblies,
+					builders);
+			}
+			else
+			{
+				Type[] genericArgTypes = type.GetGenericArguments();
+				if (jsonType.GenericParams != null)
 				{
-					int indent = AppendNamespaceBeginning(
-						type.Namespace,
-						builders.CppTypeDeclarations);
-					AppendIndent(
-						indent,
-						builders.CppTypeDeclarations);
-					AppendCppTemplateTypenames(
-						genericArgTypes.Length,
-						builders.CppTypeDeclarations);
-					builders.CppTypeDeclarations.Append("struct ");
-					AppendWithoutGenericTypeCountSuffix(
-						type.Name,
-						builders.CppTypeDeclarations);
-					builders.CppTypeDeclarations.Append(";");
-					builders.CppTypeDeclarations.Append('\n');
-					AppendNamespaceEnding(
-						indent,
-						builders.CppTypeDeclarations);
-					builders.CppTypeDeclarations.Append('\n');
+					// Template declaration for the type
+					if (!IsStatic(type))
+					{
+						int indent = AppendNamespaceBeginning(
+							type.Namespace,
+							builders.CppTypeDeclarations);
+						AppendIndent(
+							indent,
+							builders.CppTypeDeclarations);
+						AppendCppTemplateTypenames(
+							genericArgTypes.Length,
+							builders.CppTypeDeclarations);
+						builders.CppTypeDeclarations.Append("struct ");
+						AppendWithoutGenericTypeCountSuffix(
+							type.Name,
+							builders.CppTypeDeclarations);
+						builders.CppTypeDeclarations.Append(";");
+						builders.CppTypeDeclarations.Append('\n');
+						AppendNamespaceEnding(
+							indent,
+							builders.CppTypeDeclarations);
+						builders.CppTypeDeclarations.Append('\n');
+					}
+					
+					foreach (JsonGenericParams jsonGenericParams
+						in jsonType.GenericParams)
+					{
+						Type[] typeParams = GetTypes(
+							jsonGenericParams.Types,
+							assemblies);
+						type = type.MakeGenericType(typeParams);
+						AppendType(
+							jsonType,
+							genericArgTypes,
+							type,
+							typeParams,
+							assemblies,
+							builders);
+					}
 				}
-				
-				foreach (JsonGenericParams jsonGenericParams
-					in jsonType.GenericParams)
+				else
 				{
-					Type[] typeParams = GetTypes(
-						jsonGenericParams.Types,
-						assemblies);
-					type = type.MakeGenericType(typeParams);
 					AppendType(
 						jsonType,
 						genericArgTypes,
 						type,
-						typeParams,
+						null,
 						assemblies,
 						builders);
 				}
-			}
-			else
-			{
-				AppendType(
-					jsonType,
-					genericArgTypes,
-					type,
-					null,
-					assemblies,
-					builders);
 			}
 		}
 		
@@ -843,6 +1042,102 @@ namespace NativeScript
 			string typeNameLower = builders.TempStrBuilder.ToString();
 			
 			bool isStatic = IsStatic(type);
+			TypeKind typeKind = GetTypeKind(type);
+			if (!isStatic && typeKind == TypeKind.ManagedStruct)
+			{
+				// C# StructStore Init call
+				builders.CsharpStructStoreInitCalls.Append(
+					"\t\t\tNativeScript.Bindings.StructStore<");
+				AppendCsharpTypeName(
+					type,
+					builders.CsharpStructStoreInitCalls);
+				builders.CsharpStructStoreInitCalls.Append(
+					">.Init(");
+				if (jsonType.MaxSimultaneous > 0)
+				{
+					builders.CsharpStructStoreInitCalls.Append(
+						jsonType.MaxSimultaneous);
+				}
+				else
+				{
+					builders.CsharpStructStoreInitCalls.Append(
+						"maxManagedObjects");
+				}
+				builders.CsharpStructStoreInitCalls.Append(
+					");\n");
+				
+				// Build function name
+				builders.TempStrBuilder.Length = 0;
+				builders.TempStrBuilder.Append("ReleaseObject");
+				AppendNamespace(
+					type.Namespace,
+					string.Empty,
+					builders.TempStrBuilder);
+				AppendWithoutGenericTypeCountSuffix(
+					type.Name,
+					builders.TempStrBuilder);
+				if (typeParams != null)
+				{
+					for (int i = 0, len = typeParams.Length; i < len; ++i)
+					{
+						Type typeParam = typeParams[i];
+						AppendNamespace(
+							typeParam.Namespace,
+							string.Empty,
+							builders.TempStrBuilder);
+						AppendWithoutGenericTypeCountSuffix(
+							typeParam.Name,
+							builders.TempStrBuilder);
+						if (i != len - 1)
+						{
+							builders.TempStrBuilder.Append('_');
+						}
+					}
+				}
+				string funcName = builders.TempStrBuilder.ToString();
+				
+				// Build ReleaseObject parameters
+				ParameterInfo paramInfo = new ParameterInfo();
+				paramInfo.Name = "handle";
+				paramInfo.ParameterType = typeof(int);
+				paramInfo.IsOut = false;
+				paramInfo.IsRef = false;
+				paramInfo.DereferencedParameterType = typeof(int);
+				paramInfo.Kind = TypeKind.Primitive;
+				ParameterInfo[] parameters = new[] { paramInfo };
+				
+				// ReleaseObject C# delegate type
+				AppendCsharpDelegateType(
+					funcName,
+					true,
+					type,
+					typeKind,
+					typeof(int),
+					parameters,
+					builders.CsharpDelegateTypes);
+				
+				// ReleaseObject C# function
+				AppendCsharpFunctionBeginning(
+					type,
+					funcName,
+					true,
+					typeKind,
+					typeof(void),
+					null,
+					parameters,
+					builders.CsharpFunctions);
+				builders.CsharpFunctions.Append(
+					"if (handle != 0)\n\t\t\t{\n");
+				builders.CsharpFunctions.Append(
+					"\t\t\t\tNativeScript.Bindings.StructStore<");
+				AppendCsharpTypeName(
+					type,
+					builders.CsharpFunctions);
+				builders.CsharpFunctions.Append(
+					">.Remove(handle);\n\t\t\t}");
+				AppendCsharpFunctionEnd(
+					builders.CsharpFunctions);
+			}
 			
 			// C++ type declaration
 			int indent = AppendCppTypeDeclaration(
@@ -871,6 +1166,13 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			
 			// Constructors
+			if (typeKind == TypeKind.FullStruct)
+			{
+				AppendFullValueTypeDefaultConstructor(
+					type,
+					indent,
+					builders);
+			}
 			if (jsonType.Constructors != null)
 			{
 				foreach (JsonConstructor jsonCtor in jsonType.Constructors)
@@ -879,6 +1181,7 @@ namespace NativeScript
 						jsonCtor,
 						type,
 						isStatic,
+						typeKind,
 						assemblies,
 						typeParams,
 						genericArgTypes,
@@ -891,12 +1194,13 @@ namespace NativeScript
 			// Properties
 			if (jsonType.Properties != null)
 			{
-				foreach (string jsonPropertyName in jsonType.Properties)
+				foreach (JsonProperty jsonProperty in jsonType.Properties)
 				{
 					AppendProperty(
-						jsonPropertyName,
+						jsonProperty,
 						type,
 						isStatic,
+						typeKind,
 						typeParams,
 						genericArgTypes,
 						indent,
@@ -905,19 +1209,30 @@ namespace NativeScript
 			}
 			
 			// Fields
-			if (jsonType.Fields != null)
+			if (typeKind == TypeKind.FullStruct)
 			{
-				foreach (string jsonFieldName in jsonType.Fields)
+				AppendFullValueTypeFields(
+					type,
+					indent + 1,
+					builders);
+			}
+			else
+			{
+				if (jsonType.Fields != null)
 				{
-					AppendField(
-						jsonFieldName,
-						type,
-						isStatic,
-						typeParams,
-						genericArgTypes,
-						indent,
-						builders
-					);
+					foreach (string jsonFieldName in jsonType.Fields)
+					{
+						AppendField(
+							jsonFieldName,
+							type,
+							isStatic,
+							typeKind,
+							typeParams,
+							genericArgTypes,
+							indent,
+							builders
+						);
+					}
 				}
 			}
 			
@@ -932,6 +1247,7 @@ namespace NativeScript
 						assemblies,
 						type,
 						isStatic,
+						typeKind,
 						methods,
 						typeParams,
 						typeNameLower,
@@ -953,10 +1269,80 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 		}
 		
+		static void AppendEnum(
+			Type type,
+			Assembly[] assemblies,
+			StringBuilders builders)
+		{
+			// C++ type declaration (actually definition)
+			int indent = AppendNamespaceBeginning(
+				type.Namespace,
+				builders.CppTypeDeclarations);
+			AppendIndent(
+				indent,
+				builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append("enum struct ");
+			builders.CppTypeDeclarations.Append(type.Name);
+			builders.CppTypeDeclarations.Append(" : ");
+			AppendCppTypeName(
+				Enum.GetUnderlyingType(type),
+				builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append('\n');
+			AppendIndent(
+				indent,
+				builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append("{\n");
+			FieldInfo[] fields = type.GetFields(
+				BindingFlags.Static
+				| BindingFlags.Public);
+			for (int i = 0; i < fields.Length; ++i)
+			{
+				FieldInfo field = fields[i];
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDeclarations);
+				builders.CppTypeDeclarations.Append(field.Name);
+				builders.CppTypeDeclarations.Append(" = ");
+				builders.CppTypeDeclarations.Append(
+					field.GetRawConstantValue());
+				if (i != fields.Length - 1)
+				{
+					builders.CppTypeDeclarations.Append(',');
+				}
+				builders.CppTypeDeclarations.Append('\n');
+			}
+			AppendIndent(
+				indent,
+				builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append("};\n");
+			AppendNamespaceEnding(
+				indent,
+				builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append('\n');
+		}
+		
+		static void AppendHandleStoreTypeName(
+			Type type,
+			StringBuilder output)
+		{
+			output.Append("NativeScript.Bindings.");
+			if (IsManagedValueType(type))
+			{
+				output.Append("StructStore<");
+				AppendCsharpTypeName(type, output);
+				output.Append('>');
+			}
+			else
+			{
+				output.Append("ObjectStore");
+			}
+		}
+		
 		static void AppendConstructor(
 			JsonConstructor jsonCtor,
 			Type enclosingType,
 			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
 			Assembly[] assemblies,
 			Type[] typeTypeParams,
 			Type[] genericArgTypes,
@@ -964,48 +1350,35 @@ namespace NativeScript
 			int indent,
 			StringBuilders builders)
 		{
-			ConstructorInfo ctor;
-			if (enclosingType.IsGenericType)
+			// Get the constructor's parameters
+			ParameterInfo[] parameters;
+			if (enclosingType.IsValueType
+				&& !enclosingType.IsPrimitive
+				&& !enclosingType.IsEnum
+				&& jsonCtor.ParamTypes.Length == 0)
 			{
-				string[] overriddenParamTypeNames = OverrideGenericTypeNames(
-					jsonCtor.ParamTypes,
-					genericArgTypes,
-					typeTypeParams);
-				ctor = GetConstructor(
-					enclosingType,
-					overriddenParamTypeNames);
+				// Allow parameterless constructor for structs
+				parameters = new ParameterInfo[0];
 			}
 			else
 			{
-				ctor = GetConstructor(
+				string[] constructorParamTypeNames;
+				if (enclosingType.IsGenericType)
+				{
+					constructorParamTypeNames = OverrideGenericTypeNames(
+						jsonCtor.ParamTypes,
+						genericArgTypes,
+						typeTypeParams);
+				}
+				else
+				{
+					constructorParamTypeNames = jsonCtor.ParamTypes;
+				}
+				parameters = GetConstructorParameters(
 					enclosingType,
-					jsonCtor.ParamTypes);
+					constructorParamTypeNames);
 			}
-			ParameterInfo[] parameters = ConvertParameters(
-				ctor.GetParameters());
-			AppendConstructor(
-				ctor,
-				typeTypeParams,
-				parameters,
-				assemblies,
-				enclosingType,
-				enclosingTypeIsStatic,
-				typeNameLower,
-				indent,
-				builders);
-		}
-		
-		static void AppendConstructor(
-			ConstructorInfo ctor,
-			Type[] typeParams,
-			ParameterInfo[] parameters,
-			Assembly[] assemblies,
-			Type enclosingType,
-			bool enclosingTypeIsStatic,
-			string typeNameLower,
-			int indent,
-			StringBuilders builders)
-		{
+			
 			// Build uppercase function name
 			builders.TempStrBuilder.Length = 0;
 			AppendNamespace(
@@ -1016,7 +1389,7 @@ namespace NativeScript
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
-				typeParams,
+				typeTypeParams,
 				builders.TempStrBuilder);
 			builders.TempStrBuilder.Append("Constructor");
 			AppendParameterTypeNames(
@@ -1035,10 +1408,21 @@ namespace NativeScript
 				builders.CsharpInitParams);
 
 			// C# delegate type
+			Type delegateReturnType;
+			if (enclosingTypeKind == TypeKind.FullStruct)
+			{
+				delegateReturnType = enclosingType;
+			}
+			else
+			{
+				delegateReturnType = typeof(int);
+			}
 			AppendCsharpDelegateType(
 				funcName,
 				true,
-				typeof(int),
+				enclosingType,
+				enclosingTypeKind,
+				delegateReturnType,
 				parameters,
 				builders.CsharpDelegateTypes);
 
@@ -1046,33 +1430,67 @@ namespace NativeScript
 			AppendCsharpInitCallArg(funcName, builders.CsharpInitCall);
 
 			// C# function
-			AppendCsharpFunctionBeginning(
-				enclosingType,
-				funcName,
-				true,
-				typeof(int),
-				null,
-				parameters,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(
-				"NativeScript.Bindings.StoreObject(new ");
-			AppendCsharpTypeName(
-				enclosingType,
-				builders.CsharpFunctions);
-			AppendCsharpFunctionCallParameters(
-				true,
-				parameters,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(");");
-			AppendCsharpFunctionReturn(
-				parameters,
-				typeof(int),
-				builders.CsharpFunctions);
+			if (enclosingTypeKind == TypeKind.FullStruct)
+			{
+				AppendCsharpFunctionBeginning(
+					enclosingType,
+					funcName,
+					true,
+					enclosingTypeKind,
+					enclosingType,
+					null,
+					parameters,
+					builders.CsharpFunctions);
+				builders.CsharpFunctions.Append("new ");
+				AppendCsharpTypeName(
+					enclosingType,
+					builders.CsharpFunctions);
+				AppendCsharpFunctionCallParameters(
+					true,
+					parameters,
+					builders.CsharpFunctions);
+				builders.CsharpFunctions.Append(";");
+				AppendCsharpFunctionReturn(
+					parameters,
+					enclosingType,
+					builders.CsharpFunctions);
+			}
+			else
+			{
+				AppendCsharpFunctionBeginning(
+					enclosingType,
+					funcName,
+					true,
+					enclosingTypeKind,
+					typeof(int),
+					null,
+					parameters,
+					builders.CsharpFunctions);
+				AppendHandleStoreTypeName(
+					enclosingType,
+					builders.CsharpFunctions);
+				builders.CsharpFunctions.Append(
+					".Store(new ");
+				AppendCsharpTypeName(
+					enclosingType,
+					builders.CsharpFunctions);
+				AppendCsharpFunctionCallParameters(
+					true,
+					parameters,
+					builders.CsharpFunctions);
+				builders.CsharpFunctions.Append(");");
+				AppendCsharpFunctionReturn(
+					parameters,
+					typeof(int),
+					builders.CsharpFunctions);
+			}
 			
 			// C++ function pointer
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				true,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				enclosingType,
 				builders.CppFunctionPointers);
@@ -1095,25 +1513,29 @@ namespace NativeScript
 				enclosingType,
 				null,
 				enclosingType.Name,
-				typeParams,
+				typeTypeParams,
 				null,
 				parameters,
 				indent,
 				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(" : ");
-			AppendCppTypeName(
-				enclosingType.BaseType,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("(0)\n");
+			if (enclosingTypeKind != TypeKind.FullStruct)
+			{
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(" : ");
+				AppendCppTypeName(
+					enclosingType.BaseType,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("(0)\n");
+			}
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				true,
+				enclosingTypeKind,
 				enclosingType,
 				funcName,
 				parameters,
@@ -1122,7 +1544,16 @@ namespace NativeScript
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("SetHandle(returnValue);\n");
+			if (enclosingTypeKind == TypeKind.FullStruct)
+			{
+				builders.CppMethodDefinitions.Append(
+					"*this = returnValue;\n");
+			}
+			else
+			{
+				builders.CppMethodDefinitions.Append(
+					"SetHandle(returnValue);\n");
+			}
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
@@ -1136,6 +1567,8 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				true,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				enclosingType,
 				builders.CppInitParams);
@@ -1148,16 +1581,17 @@ namespace NativeScript
 		}
 		
 		static void AppendProperty(
-			string jsonPropertyName,
+			JsonProperty jsonProperty,
 			Type enclosingType,
 			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
 			Type[] typeParams,
 			Type[] typeGenericArgumentTypes,
 			int indent,
 			StringBuilders builders)
 		{
 			PropertyInfo property = enclosingType.GetProperty(
-				jsonPropertyName);
+				jsonProperty.Name);
 			Type propertyType = OverrideGenericType(
 				property.PropertyType,
 				typeGenericArgumentTypes,
@@ -1176,7 +1610,9 @@ namespace NativeScript
 					"Property",
 					parameters,
 					enclosingTypeIsStatic,
+					enclosingTypeKind,
 					getMethod.IsStatic,
+					jsonProperty.GetIsReadOnly,
 					enclosingType,
 					typeParams,
 					propertyType,
@@ -1197,7 +1633,9 @@ namespace NativeScript
 					"Property",
 					parameters,
 					enclosingTypeIsStatic,
+					enclosingTypeKind,
 					setMethod.IsStatic,
+					jsonProperty.SetIsReadOnly,
 					enclosingType,
 					typeParams,
 					propertyType,
@@ -1206,10 +1644,73 @@ namespace NativeScript
 			}
 		}
 		
+		static void AppendFullValueTypeDefaultConstructor(
+			Type enclosingType,
+			int indent,
+			StringBuilders builders)
+		{
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendWithoutGenericTypeCountSuffix(
+				enclosingType.Name,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("();\n");
+			
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			AppendWithoutGenericTypeCountSuffix(
+				enclosingType.Name,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("::");
+			AppendWithoutGenericTypeCountSuffix(
+				enclosingType.Name,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("()\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+		}
+		
+		static void AppendFullValueTypeFields(
+			Type enclosingType,
+			int indent,
+			StringBuilders builders)
+		{
+			FieldInfo[] fields = enclosingType.GetFields(
+				BindingFlags.Instance
+				| BindingFlags.Public
+				| BindingFlags.NonPublic);
+			Array.Sort(fields, DefaultFieldOrderComparer);
+			foreach (FieldInfo field in fields)
+			{
+				AppendIndent(
+					indent,
+					builders.CppTypeDefinitions);
+				AppendCppTypeName(
+					field.FieldType,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append(' ');
+				builders.CppTypeDefinitions.Append(field.Name);
+				builders.CppTypeDefinitions.Append(";\n");
+			}
+		}
+		
 		static void AppendField(
 			string jsonFieldName,
 			Type enclosingType,
 			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
 			Type[] typeTypeParams,
 			Type[] typeGenericArgumentTypes,
 			int indent,
@@ -1226,7 +1727,9 @@ namespace NativeScript
 				"Field",
 				new ParameterInfo[0],
 				enclosingTypeIsStatic,
+				enclosingTypeKind,
 				field.IsStatic,
+				true,
 				enclosingType,
 				typeTypeParams,
 				fieldType,
@@ -1238,14 +1741,17 @@ namespace NativeScript
 			setParam.IsOut = false;
 			setParam.IsRef = false;
 			setParam.DereferencedParameterType = setParam.ParameterType;
-			setParam.IsStruct = setParam.DereferencedParameterType.IsValueType;
+			setParam.Kind = GetTypeKind(
+				setParam.DereferencedParameterType);
 			ParameterInfo[] parameters = new []{ setParam };
 			AppendSetter(
 				field.Name,
 				"Field",
 				parameters,
 				enclosingTypeIsStatic,
+				enclosingTypeKind,
 				field.IsStatic,
+				false,
 				enclosingType,
 				typeTypeParams,
 				fieldType,
@@ -1258,6 +1764,7 @@ namespace NativeScript
 			Assembly[] assemblies,
 			Type enclosingType,
 			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
 			MethodInfo[] methods,
 			Type[] typeTypeParams,
 			string typeNameLower,
@@ -1306,7 +1813,9 @@ namespace NativeScript
 						typeNameLower,
 						method.Name,
 						enclosingTypeIsStatic,
+						enclosingTypeKind,
 						method.IsStatic,
+						jsonMethod.IsReadOnly,
 						method.ReturnType,
 						typeTypeParams,
 						methodTypeParams,
@@ -1325,7 +1834,9 @@ namespace NativeScript
 					typeNameLower,
 					method.Name,
 					enclosingTypeIsStatic,
+					enclosingTypeKind,
 					method.IsStatic,
+					jsonMethod.IsReadOnly,
 					method.ReturnType,
 					typeTypeParams,
 					null,
@@ -1399,7 +1910,9 @@ namespace NativeScript
 			string typeNameLower,
 			string methodName,
 			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
 			bool methodIsStatic,
+			bool isReadOnly,
 			Type returnType,
 			Type[] typeTypeParams,
 			Type[] methodTypeParams,
@@ -1443,6 +1956,8 @@ namespace NativeScript
 			AppendCsharpDelegateType(
 				funcName,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				returnType,
 				parameters,
 				builders.CsharpDelegateTypes);
@@ -1457,6 +1972,7 @@ namespace NativeScript
 				enclosingType,
 				funcName,
 				methodIsStatic,
+				enclosingTypeKind,
 				returnType,
 				methodTypeParams,
 				parameters,
@@ -1474,6 +1990,15 @@ namespace NativeScript
 				parameters,
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append(';');
+			if (!isReadOnly
+				&& enclosingTypeKind == TypeKind.ManagedStruct)
+			{
+				AppendStructStoreReplace(
+					enclosingType,
+					"thisHandle",
+					"thiz",
+					builders.CsharpFunctions);
+			}
 			AppendCsharpFunctionReturn(
 				parameters,
 				returnType,
@@ -1483,6 +2008,8 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				returnType,
 				builders.CppFunctionPointers);
@@ -1516,6 +2043,7 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
+				enclosingTypeKind,
 				returnType,
 				funcName,
 				parameters,
@@ -1534,6 +2062,8 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				returnType,
 				builders.CppInitParams);
@@ -1646,7 +2176,11 @@ namespace NativeScript
 			AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
 			builders.CsharpMonoBehaviours.Append("{\n");
 			AppendIndent(csharpIndent + 2, builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append("thisHandle = NativeScript.Bindings.StoreObject(this);\n");
+			builders.CsharpMonoBehaviours.Append("thisHandle = ");
+			AppendHandleStoreTypeName(
+				type,
+				builders.CsharpMonoBehaviours);
+			builders.CsharpMonoBehaviours.Append(".Store(this);\n");
 			AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
 			builders.CsharpMonoBehaviours.Append("}\n");
 			if (jsonMonoBehaviour.Messages.Length > 0)
@@ -1720,7 +2254,9 @@ namespace NativeScript
 				builders.CsharpMonoBehaviours.Append("{\n");
 				for (int i = 0; i < numParams; ++i)
 				{
-					if (!parameters[i].IsStruct)
+					ParameterInfo param = parameters[i];
+					if (param.Kind == TypeKind.Class
+						|| param.Kind == TypeKind.ManagedStruct)
 					{
 						AppendIndent(
 							csharpIndent + 2,
@@ -1728,33 +2264,22 @@ namespace NativeScript
 						builders.CsharpMonoBehaviours.Append("int param");
 						builders.CsharpMonoBehaviours.Append(i);
 						builders.CsharpMonoBehaviours.Append("Handle = ");
-						builders.CsharpMonoBehaviours.Append("NativeScript.Bindings.GetHandle(");
+						AppendHandleStoreTypeName(
+							param.DereferencedParameterType,
+							builders.CsharpMonoBehaviours);
+						builders.CsharpMonoBehaviours.Append('.');
+						if (param.Kind == TypeKind.ManagedStruct)
+						{
+							builders.CsharpMonoBehaviours.Append("GetHandle");
+						}
+						else
+						{
+							builders.CsharpMonoBehaviours.Append("Store");
+						}
+						builders.CsharpMonoBehaviours.Append('(');
 						builders.CsharpMonoBehaviours.Append("param");
 						builders.CsharpMonoBehaviours.Append(i);
 						builders.CsharpMonoBehaviours.Append(");\n");
-						AppendIndent(
-							csharpIndent + 2,
-							builders.CsharpMonoBehaviours);
-						builders.CsharpMonoBehaviours.Append("if (param");
-						builders.CsharpMonoBehaviours.Append(i);
-						builders.CsharpMonoBehaviours.Append("Handle < 0)\n");
-						AppendIndent(
-							csharpIndent + 2,
-							builders.CsharpMonoBehaviours);
-						builders.CsharpMonoBehaviours.Append("{\n");
-						AppendIndent(
-							csharpIndent + 3,
-							builders.CsharpMonoBehaviours);
-						builders.CsharpMonoBehaviours.Append("param");
-						builders.CsharpMonoBehaviours.Append(i);
-						builders.CsharpMonoBehaviours.Append("Handle = NativeScript.Bindings.StoreObject(");
-						builders.CsharpMonoBehaviours.Append("param");
-						builders.CsharpMonoBehaviours.Append(i);
-						builders.CsharpMonoBehaviours.Append(");\n");
-						AppendIndent(
-							csharpIndent + 2,
-							builders.CsharpMonoBehaviours);
-						builders.CsharpMonoBehaviours.Append("}\n");
 					}
 				}
 				AppendIndent(
@@ -1772,7 +2297,9 @@ namespace NativeScript
 				{
 					builders.CsharpMonoBehaviours.Append("param");
 					builders.CsharpMonoBehaviours.Append(i);
-					if (!parameters[i].IsStruct)
+					ParameterInfo param = parameters[i];
+					if (param.Kind == TypeKind.Class
+						|| param.Kind == TypeKind.ManagedStruct)
 					{
 						builders.CsharpMonoBehaviours.Append("Handle");
 					}
@@ -1810,7 +2337,7 @@ namespace NativeScript
 				for (int i = 0; i < numParams; ++i)
 				{
 					ParameterInfo param = parameters[i];
-					if (param.IsStruct)
+					if (param.Kind == TypeKind.FullStruct)
 					{
 						AppendCsharpTypeName(
 							param.ParameterType,
@@ -1850,7 +2377,7 @@ namespace NativeScript
 				for (int i = 0; i < numParams; ++i)
 				{
 					ParameterInfo param = parameters[i];
-					if (param.IsStruct)
+					if (param.Kind == TypeKind.FullStruct)
 					{
 						AppendCsharpTypeName(
 							param.ParameterType,
@@ -1894,19 +2421,22 @@ namespace NativeScript
 				for (int i = 0; i < numParams; ++i)
 				{
 					ParameterInfo param = parameters[i];
-					if (param.IsStruct)
+					switch (param.Kind)
 					{
-						AppendCppTypeName(
-							param.ParameterType,
-							builders.CppMonoBehaviourMessages);
-						builders.CppMonoBehaviourMessages.Append(" param");
-						builders.CppMonoBehaviourMessages.Append(i);
-					}
-					else
-					{
-						builders.CppMonoBehaviourMessages.Append("int32_t param");
-						builders.CppMonoBehaviourMessages.Append(i);
-						builders.CppMonoBehaviourMessages.Append("Handle");
+						case TypeKind.FullStruct:
+						case TypeKind.Primitive:
+						case TypeKind.Enum:
+							AppendCppTypeName(
+								param.ParameterType,
+								builders.CppMonoBehaviourMessages);
+							builders.CppMonoBehaviourMessages.Append(" param");
+							builders.CppMonoBehaviourMessages.Append(i);
+							break;
+						default:
+							builders.CppMonoBehaviourMessages.Append("int32_t param");
+							builders.CppMonoBehaviourMessages.Append(i);
+							builders.CppMonoBehaviourMessages.Append("Handle");
+							break;
 					}
 					if (i != numParams-1)
 					{
@@ -1921,7 +2451,8 @@ namespace NativeScript
 				for (int i = 0; i < numParams; ++i)
 				{
 					ParameterInfo param = parameters[i];
-					if (!param.IsStruct)
+					if (param.Kind == TypeKind.Class
+						|| param.Kind == TypeKind.ManagedStruct)
 					{
 						builders.CppMonoBehaviourMessages.Append('\t');
 						AppendCppTypeName(
@@ -1966,7 +2497,9 @@ namespace NativeScript
 			string syntaxType,
 			ParameterInfo[] parameters,
 			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
 			bool methodIsStatic,
+			bool isReadOnly,
 			Type enclosingType,
 			Type[] typeTypeParams,
 			Type fieldType,
@@ -2019,6 +2552,8 @@ namespace NativeScript
 			AppendCsharpDelegateType(
 				funcName,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				fieldType,
 				parameters,
 				builders.CsharpDelegateTypes);
@@ -2033,6 +2568,7 @@ namespace NativeScript
 				enclosingType,
 				funcName,
 				methodIsStatic,
+				enclosingTypeKind,
 				fieldType,
 				typeTypeParams,
 				parameters,
@@ -2043,6 +2579,15 @@ namespace NativeScript
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append(fieldName);
 			builders.CsharpFunctions.Append(';');
+			if (!isReadOnly
+				&& enclosingTypeKind == TypeKind.ManagedStruct)
+			{
+				AppendStructStoreReplace(
+					enclosingType,
+					"thisHandle",
+					"thiz",
+					builders.CsharpFunctions);
+			}
 			AppendCsharpFunctionReturn(
 				parameters,
 				fieldType,
@@ -2052,6 +2597,8 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				fieldType,
 				builders.CppFunctionPointers);
@@ -2081,6 +2628,7 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
+				enclosingTypeKind,
 				fieldType,
 				funcName,
 				parameters,
@@ -2093,12 +2641,14 @@ namespace NativeScript
 			AppendIndent(indent, builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("}\n");
 			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
+			builders.CppMethodDefinitions.Append('\n');
 
 			// C++ init params
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				fieldType,
 				builders.CppInitParams);
@@ -2115,7 +2665,9 @@ namespace NativeScript
 			string syntaxType,
 			ParameterInfo[] parameters,
 			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
 			bool methodIsStatic,
+			bool isReadOnly,
 			Type enclosingType,
 			Type[] typeTypeParams,
 			Type fieldType,
@@ -2168,6 +2720,8 @@ namespace NativeScript
 			AppendCsharpDelegateType(
 				funcName,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				typeof(void),
 				parameters,
 				builders.CsharpDelegateTypes);
@@ -2182,6 +2736,7 @@ namespace NativeScript
 				enclosingType,
 				funcName,
 				methodIsStatic,
+				enclosingTypeKind,
 				typeof(void),
 				typeTypeParams,
 				parameters,
@@ -2193,6 +2748,15 @@ namespace NativeScript
 			builders.CsharpFunctions.Append(fieldName);
 			builders.CsharpFunctions.Append(" = ");
 			builders.CsharpFunctions.Append("value;");
+			if (!isReadOnly
+				&& enclosingTypeKind == TypeKind.ManagedStruct)
+			{
+				AppendStructStoreReplace(
+					enclosingType,
+					"thisHandle",
+					"thiz",
+					builders.CsharpFunctions);
+			}
 			AppendCsharpFunctionReturn(
 				parameters,
 				typeof(void),
@@ -2202,6 +2766,8 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				typeof(void),
 				builders.CppFunctionPointers);
@@ -2231,6 +2797,7 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
+				enclosingTypeKind,
 				null,
 				funcName,
 				parameters,
@@ -2245,6 +2812,8 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				typeof(void),
 				builders.CppInitParams);
@@ -2335,7 +2904,8 @@ namespace NativeScript
 					type.Name,
 					output);
 				AppendCppTypeParameters(typeParams, output);
-				if (baseType != null)
+				if (baseType != null
+					&& !IsFullValueType(type))
 				{
 					output.Append(" : ");
 					AppendCppTypeName(
@@ -2348,7 +2918,7 @@ namespace NativeScript
 				indent,
 				output);
 			output.Append("{\n");
-			if (!isStatic)
+			if (!isStatic && !IsFullValueType(type))
 			{
 				// Constructor from nullptr_t
 				AppendIndent(indent + 1, output);
@@ -2492,7 +3062,7 @@ namespace NativeScript
 			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
 				type.Namespace,
 				output);
-			if (!isStatic)
+			if (!isStatic && !IsFullValueType(type))
 			{
 				if (baseType == null)
 				{
@@ -2858,6 +3428,8 @@ namespace NativeScript
 		static void AppendCsharpDelegateType(
 			string funcName,
 			bool isStatic,
+			Type enclosingType,
+			TypeKind enclosingTypeKind,
 			Type returnType,
 			ParameterInfo[] parameters,
 			StringBuilder output)
@@ -2865,7 +3437,7 @@ namespace NativeScript
 			output.Append("\t\tdelegate ");
 			
 			// Return type
-			if (returnType.IsValueType)
+			if (IsFullValueType(returnType))
 			{
 				AppendCsharpTypeName(
 					returnType,
@@ -2881,7 +3453,18 @@ namespace NativeScript
 			output.Append("Delegate(");
 			if (!isStatic)
 			{
-				output.Append("int thisHandle");
+				if (enclosingTypeKind == TypeKind.FullStruct)
+				{
+					output.Append("ref ");
+					AppendCsharpTypeName(
+						enclosingType,
+						output);
+					output.Append(" thiz");
+				}
+				else
+				{
+					output.Append("int thisHandle");
+				}
 				if (parameters.Length > 0)
 				{
 					output.Append(", ");
@@ -2897,6 +3480,7 @@ namespace NativeScript
 			Type enclosingType,
 			string funcName,
 			bool isStatic,
+			TypeKind enclosingTypeKind,
 			Type returnType,
 			Type[] typeParams,
 			ParameterInfo[] parameters,
@@ -2909,7 +3493,7 @@ namespace NativeScript
 			// Return type
 			if (returnType != null)
 			{
-				if (returnType.IsValueType)
+				if (IsFullValueType(returnType))
 				{
 					AppendCsharpTypeName(
 						returnType,
@@ -2929,7 +3513,18 @@ namespace NativeScript
 			output.Append("(");
 			if (!isStatic)
 			{
-				output.Append("int thisHandle");
+				if (enclosingTypeKind == TypeKind.FullStruct)
+				{
+					output.Append("ref ");
+					AppendCsharpTypeName(
+						enclosingType,
+						output);
+					output.Append(" thiz");
+				}
+				else
+				{
+					output.Append("int thisHandle");
+				}
 				if (parameters.Length > 0)
 				{
 					output.Append(", ");
@@ -2941,21 +3536,27 @@ namespace NativeScript
 			output.Append(")\n\t\t{\n\t\t\t");
 			
 			// Get "this"
-			if (!isStatic)
+			if (!isStatic
+				&& enclosingTypeKind != TypeKind.FullStruct)
 			{
 				output.Append("var thiz = (");
 				AppendCsharpTypeName(
 					enclosingType,
 					output);
+				output.Append(')');
+				AppendHandleStoreTypeName(
+					enclosingType,
+					output);
 				output.Append(
-					")NativeScript.Bindings.GetObject(thisHandle);\n\t\t\t");
+					".Get(thisHandle);\n\t\t\t");
 			}
 			
-			// Get reference type params from ObjectStore
+			// Get managed type params from ObjectStore
 			foreach (ParameterInfo param in parameters)
 			{
 				Type paramType = param.DereferencedParameterType;
-				if (!param.IsStruct)
+				if (param.Kind == TypeKind.Class
+					|| param.Kind == TypeKind.ManagedStruct)
 				{
 					output.Append("var ");
 					output.Append(param.Name);
@@ -2966,7 +3567,8 @@ namespace NativeScript
 						AppendCsharpTypeName(paramType, output);
 						output.Append(')');
 					}
-					output.Append("NativeScript.Bindings.GetObject(");
+					AppendHandleStoreTypeName(paramType, output);
+					output.Append(".Get(");
 					output.Append(param.Name);
 					output.Append("Handle);\n\t\t\t");
 				}
@@ -3023,6 +3625,23 @@ namespace NativeScript
 			output.Append(')');
 		}
 		
+		static void AppendStructStoreReplace(
+			Type enclosingType,
+			string handleVariable,
+			string structVariable,
+			StringBuilder output)
+		{
+			output.Append("\n\t\t\t");
+			AppendHandleStoreTypeName(
+				enclosingType,
+				output);
+			output.Append(".Replace(");
+			output.Append(handleVariable);
+			output.Append(", ref ");
+			output.Append(structVariable);
+			output.Append(");");
+		}
+		
 		static void AppendCsharpFunctionReturn(
 			ParameterInfo[] parameters,
 			Type returnType,
@@ -3031,45 +3650,59 @@ namespace NativeScript
 			// Store reference out and ref params and overwrite handles
 			foreach (ParameterInfo param in parameters)
 			{
-				if (!param.IsStruct && (param.IsOut || param.IsRef))
+				if ((param.Kind == TypeKind.Class
+					|| param.Kind == TypeKind.ManagedStruct)
+					&& (param.IsOut || param.IsRef))
 				{
 					output.Append("\n\t\t\tint ");
 					output.Append(param.Name);
-					output.Append("HandleNew = NativeScript.Bindings.GetHandle(");
+					output.Append("HandleNew = ");
+					AppendHandleStoreTypeName(
+						param.DereferencedParameterType,
+						output);
+					output.Append('.');
+					if (param.Kind == TypeKind.ManagedStruct)
+					{
+						output.Append("Store");
+					}
+					else
+					{
+						output.Append("GetHandle");
+					}
+					output.Append('(');
 					output.Append(param.Name);
-					output.Append(");\n\t\t\tif (");
-					output.Append(param.Name);
-					output.Append("HandleNew < 0)\n\t\t\t{\n\t\t\t\t");
-					output.Append(param.Name);
-					output.Append("Handle = NativeScript.Bindings.StoreObject(");
-					output.Append(param.Name);
-					output.Append(");\n\t\t\t}\n\t\t\telse\n\t\t\t{\n\t\t\t\t");
+					output.Append(");\n\t\t\t");
 					output.Append(param.Name);
 					output.Append("Handle = ");
 					output.Append(param.Name);
-					output.Append("HandleNew;\n\t\t\t}");
+					output.Append("HandleNew;");
 				}
 			}
+			
+			// Return
 			if (!returnType.Equals(typeof(void)))
 			{
-				output.Append('\n');
-				if (returnType.IsValueType)
+				output.Append("\n\t\t\treturn ");
+				if (IsFullValueType(returnType))
 				{
-					output.Append("\t\t\treturn returnValue;");
+					output.Append("returnValue");
 				}
 				else
 				{
-					output.Append("\t\t\tint returnValueHandle = NativeScript.Bindings.GetHandle(returnValue);\n");
-					output.Append("\t\t\tif (returnValueHandle < 0)\n");
-					output.Append("\t\t\t{\n");
-					output.Append("\t\t\t\treturn NativeScript.Bindings.StoreObject(returnValue);\n");
-					output.Append("\t\t\t}\n");
-					output.Append("\t\t\telse\n");
-					output.Append("\t\t\t{\n");
-					output.Append("\t\t\t\treturn returnValueHandle;\n");
-					output.Append("\t\t\t}");
+					AppendHandleStoreTypeName(
+						returnType,
+						output);
+					output.Append(".GetHandle(returnValue)");
 				}
+				output.Append(';');
 			}
+			
+			// Returning ends the function
+			AppendCsharpFunctionEnd(output);
+		}
+		
+		static void AppendCsharpFunctionEnd(StringBuilder output)
+		{
 			output.Append("\n\t\t}\n\t\t\n");
 		}
 		
@@ -3080,37 +3713,56 @@ namespace NativeScript
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
-				if (param.IsOut)
+				
+				// out or ref qualifiers if necessary
+				switch (param.Kind)
 				{
-					if (param.IsStruct)
-					{
-						output.Append("out ");
-					}
-					else
-					{
-						output.Append("ref ");
-					}
+					case TypeKind.FullStruct:
+						if (param.IsOut)
+						{
+							output.Append("out ");
+						}
+						else
+						{
+							output.Append("ref ");
+						}
+						break;
+					case TypeKind.ManagedStruct:
+					case TypeKind.Primitive:
+					case TypeKind.Enum:
+					case TypeKind.Class:
+						if (param.IsOut || param.IsRef)
+						{
+							output.Append("ref ");
+						}
+						break;
 				}
-				if (param.IsRef)
+				
+				// Param type- int for handles
+				switch (param.Kind)
 				{
-					output.Append("ref ");
+					case TypeKind.ManagedStruct:
+					case TypeKind.Class:
+						output.Append("int");
+						break;
+					default:
+						AppendCsharpTypeName(
+							param.DereferencedParameterType,
+							output);
+						break;
 				}
-				if (param.IsStruct)
-				{
-					AppendCsharpTypeName(
-						param.DereferencedParameterType,
-						output);
-				}
-				else
-				{
-					output.Append("int");
-				}
+				
+				// Param name
 				output.Append(' ');
 				output.Append(param.Name);
-				if (!param.IsStruct)
+				
+				// Handle suffix if necessary
+				if (param.Kind == TypeKind.Class
+					|| param.Kind == TypeKind.ManagedStruct)
 				{
 					output.Append("Handle");
 				}
+				
 				if (i != parameters.Length - 1)
 				{
 					output.Append(", ");
@@ -3128,12 +3780,21 @@ namespace NativeScript
 				AppendCppTypeName(
 					param.DereferencedParameterType,
 					output);
+				
+				// Pointer (*) or reference (&) suffix if necessary
 				if (param.IsOut || param.IsRef)
 				{
 					output.Append('*');
 				}
+				else if (param.Kind == TypeKind.FullStruct)
+				{
+					output.Append('&');
+				}
+				
+				// Param name
 				output.Append(' ');
 				output.Append(param.Name);
+				
 				if (i != parameters.Length - 1)
 				{
 					output.Append(", ");
@@ -3150,7 +3811,8 @@ namespace NativeScript
 			{
 				ParameterInfo parameter = parameters[i];
 				output.Append(parameter.Name);
-				if (!parameter.IsStruct)
+				if (parameter.Kind == TypeKind.Class
+					|| parameter.Kind == TypeKind.ManagedStruct)
 				{
 					output.Append("Handle");
 				}
@@ -3245,6 +3907,7 @@ namespace NativeScript
 		
 		static void AppendCppPluginFunctionCall(
 			bool isStatic,
+			TypeKind enclosingTypeKind,
 			Type returnType,
 			string funcName,
 			ParameterInfo[] parameters,
@@ -3254,7 +3917,9 @@ namespace NativeScript
 			// Gather handles for out and ref parameters
 			foreach (ParameterInfo param in parameters)
 			{
-				if (!param.IsStruct && (param.IsOut || param.IsRef))
+				if ((param.Kind == TypeKind.Class
+					|| param.Kind == TypeKind.ManagedStruct)
+					&& (param.IsOut || param.IsRef))
 				{
 					AppendIndent(indent, output);
 					output.Append("int32_t ");
@@ -3276,7 +3941,14 @@ namespace NativeScript
 			output.Append("(");
 			if (!isStatic)
 			{
-				output.Append("Handle");
+				if (enclosingTypeKind == TypeKind.FullStruct)
+				{
+					output.Append("this");
+				}
+				else
+				{
+					output.Append("Handle");
+				}
 				if (parameters.Length > 0)
 				{
 					output.Append(", ");
@@ -3285,23 +3957,26 @@ namespace NativeScript
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
-				if (param.IsStruct)
+				switch (param.Kind)
 				{
-					output.Append(param.Name);
-				}
-				else
-				{
-					if (param.IsOut || param.IsRef)
-					{
-						output.Append('&');
+					case TypeKind.FullStruct:
+					case TypeKind.Primitive:
+					case TypeKind.Enum:
 						output.Append(param.Name);
-					}
-					else
-					{
-						output.Append(param.Name);
-						output.Append('.');
-					}
-					output.Append("Handle");
+						break;
+					default:
+						if (param.IsOut || param.IsRef)
+						{
+							output.Append('&');
+							output.Append(param.Name);
+						}
+						else
+						{
+							output.Append(param.Name);
+							output.Append('.');
+						}
+						output.Append("Handle");
+						break;
 				}
 				if (i != parameters.Length - 1)
 				{
@@ -3313,7 +3988,9 @@ namespace NativeScript
 			// Set out and ref parameters
 			foreach (ParameterInfo param in parameters)
 			{
-				if (!param.IsStruct && (param.IsOut || param.IsRef))
+				if ((param.Kind == TypeKind.Class
+					|| param.Kind == TypeKind.ManagedStruct)
+					&& (param.IsOut || param.IsRef))
 				{
 					AppendIndent(indent, output);
 					output.Append(param.Name);
@@ -3327,6 +4004,8 @@ namespace NativeScript
 		static void AppendCppInitParam(
 			string funcName,
 			bool isStatic,
+			Type enclosingType,
+			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
 			Type returnType,
 			StringBuilder output
@@ -3336,6 +4015,8 @@ namespace NativeScript
 			AppendCppFunctionPointer(
 				funcName,
 				isStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				returnType,
 				',',
@@ -3347,6 +4028,8 @@ namespace NativeScript
 		static void AppendCppFunctionPointerDefinition(
 			string funcName,
 			bool isStatic,
+			Type enclosingType,
+			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
 			Type returnType,
 			StringBuilder output
@@ -3356,6 +4039,8 @@ namespace NativeScript
 			AppendCppFunctionPointer(
 				funcName,
 				isStatic,
+				enclosingType,
+				enclosingTypeKind,
 				parameters,
 				returnType,
 				';',
@@ -3367,13 +4052,15 @@ namespace NativeScript
 		static void AppendCppFunctionPointer(
 			string funcName,
 			bool isStatic,
+			Type enclosingType,
+			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
 			Type returnType,
 			char separator,
 			StringBuilder output)
 		{
 			// Return type
-			if (returnType.IsValueType)
+			if (IsFullValueType(returnType))
 			{
 				AppendCppTypeName(returnType, output);
 			}
@@ -3387,7 +4074,19 @@ namespace NativeScript
 			output.Append(")(");
 			if (!isStatic)
 			{
-				output.Append("int32_t thisHandle");
+				switch (enclosingTypeKind)
+				{
+					case TypeKind.FullStruct:
+					case TypeKind.Primitive:
+						AppendCppTypeName(
+							enclosingType,
+							output);
+						output.Append("* thiz");
+						break;
+					default:
+						output.Append("int32_t thisHandle");
+						break;
+				}
 				if (parameters.Length > 0)
 				{
 					output.Append(", ");
@@ -3396,23 +4095,44 @@ namespace NativeScript
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
-				if (param.IsStruct)
+				switch (param.Kind)
 				{
-					AppendCppTypeName(
-						param.DereferencedParameterType,
-						output);
-				}
-				else
-				{
-					output.Append("int32_t");
-				}
-				if (param.IsOut || param.IsRef)
-				{
-					output.Append('*');
+					case TypeKind.Primitive:
+					case TypeKind.Enum:
+						AppendCppTypeName(
+							param.DereferencedParameterType,
+							output);
+						if (param.IsOut || param.IsRef)
+						{
+							output.Append('*');
+						}
+						break;
+					case TypeKind.FullStruct:
+						AppendCppTypeName(
+							param.DereferencedParameterType,
+							output);
+						if (param.IsOut || param.IsRef)
+						{
+							output.Append('*');
+						}
+						else
+						{
+							output.Append('&');
+						}
+						break;
+					case TypeKind.Class:
+					case TypeKind.ManagedStruct:
+						output.Append("int32_t");
+						if (param.IsOut || param.IsRef)
+						{
+							output.Append('*');
+						}
+						break;
 				}
 				output.Append(' ');
 				output.Append(param.Name);
-				if (!param.IsStruct)
+				if (param.Kind == TypeKind.Class
+					|| param.Kind == TypeKind.ManagedStruct)
 				{
 					output.Append("Handle");
 				}
@@ -3530,6 +4250,18 @@ namespace NativeScript
 			{
 				output.Append("ulong");
 			}
+			else if (type.Equals(typeof(char)))
+			{
+				output.Append("char");
+			}
+			else if (type.Equals(typeof(float)))
+			{
+				output.Append("float");
+			}
+			else if (type.Equals(typeof(double)))
+			{
+				output.Append("double");
+			}
 			else if (type.Equals(typeof(string)))
 			{
 				output.Append("string");
@@ -3592,6 +4324,18 @@ namespace NativeScript
 			{
 				output.Append("uint64_t");
 			}
+			else if (type.Equals(typeof(char)))
+			{
+				output.Append("System::Char");
+			}
+			else if (type.Equals(typeof(float)))
+			{
+				output.Append("float");
+			}
+			else if (type.Equals(typeof(double)))
+			{
+				output.Append("double");
+			}
 			else if (type.Equals(typeof(string)))
 			{
 				output.Append("System::String");
@@ -3630,6 +4374,9 @@ namespace NativeScript
 			LogStringBuilder(
 				"C# delegates",
 				builders.CsharpDelegateTypes);
+			LogStringBuilder(
+				"C# StructStore Init calls",
+				builders.CsharpStructStoreInitCalls);
 			LogStringBuilder(
 				"C# init call",
 				builders.CsharpInitCall);
@@ -3686,6 +4433,7 @@ namespace NativeScript
 		{
 			RemoveTrailingChars(builders.CsharpInitParams);
 			RemoveTrailingChars(builders.CsharpDelegateTypes);
+			RemoveTrailingChars(builders.CsharpStructStoreInitCalls);
 			RemoveTrailingChars(builders.CsharpInitCall);
 			RemoveTrailingChars(builders.CsharpFunctions);
 			RemoveTrailingChars(builders.CsharpMonoBehaviours);
@@ -3744,6 +4492,11 @@ namespace NativeScript
 				"/*BEGIN DELEGATE TYPES*/\n",
 				"\n\t\t/*END DELEGATE TYPES*/",
 				builders.CsharpDelegateTypes.ToString());
+			csharpContents = InjectIntoString(
+				csharpContents,
+				"/*BEGIN STRUCTSTORE INIT CALLS*/\n",
+				"\n\t\t\t/*END STRUCTSTORE INIT CALLS*/",
+				builders.CsharpStructStoreInitCalls.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
 				"/*BEGIN INIT CALL*/\n",

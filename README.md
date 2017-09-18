@@ -148,6 +148,7 @@ To configure the code generator, open `NativeScriptTypes.json` and notice the ex
 The code generator supports:
 
 * Class types (including generics)
+* Struct types (including generics)
 * Base classes (including generics)
 * Constructors (including generic parameters)
 * Methods (including generic parameters and return types)
@@ -155,10 +156,10 @@ The code generator supports:
 * Properties (getters and setters) (including generic types)
 * `MonoBehaviour` classes with "message" functions like `Update` (except `OnAudioFilterRead`)
 * `out` and `ref` parameters
+* Enumerations
 
 The code generator does not support (yet):
 
-* Struct types
 * Arrays (single- or multi-dimensional)
 * Delegates
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
@@ -166,6 +167,8 @@ The code generator does not support (yet):
 * Exceptions
 * Default parameters
 * Interfaces
+* `decimal`
+* Pointers
 
 The JSON file is laid out as follows:
 

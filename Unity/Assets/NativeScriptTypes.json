@@ -20,11 +20,19 @@
 					"ParamTypes": []
 				}
 			],
-			"Properties": [ "ElapsedMilliseconds" ]
+			"Properties": [
+				{
+					"Name": "ElapsedMilliseconds"
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.Object",
-			"Properties": [ "name" ]
+			"Properties": [
+				{
+					"Name": "name"
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.GameObject",
@@ -33,51 +41,86 @@
 					"ParamTypes": []
 				},
 				{
-					"ParamTypes": [ "System.String" ]
+					"ParamTypes": [
+						"System.String"
+					]
 				}
 			],
 			"Methods": [
 				{
 					"Name": "Find",
-					"ParamTypes": [ "System.String" ]
+					"ParamTypes": [
+						"System.String"
+					]
 				},
 				{
 					"Name": "AddComponent",
 					"ParamTypes": [],
 					"GenericParams": [
-						{ "Types": [ "MyGame.MonoBehaviours.TestScript" ] }
+						{
+							"Types": [
+								"MyGame.MonoBehaviours.TestScript"
+							]
+						}
 					]
 				}
 			],
-			"Properties": [ "transform" ]
+			"Properties": [
+				{
+					"Name": "transform"
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.Component",
-			"Properties": [ "transform" ]
+			"Properties": [
+				{
+					"Name": "transform"
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.Transform",
-			"Properties": [ "position" ]
+			"Properties": [
+				{
+					"Name": "position"
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.Debug",
 			"Methods": [
 				{
 					"Name": "Log",
-					"ParamTypes": [ "System.Object" ]
+					"ParamTypes": [
+						"System.Object"
+					]
 				}
 			]
 		},
 		{
 			"Name": "UnityEngine.Assertions.Assert",
-			"Fields": [ "raiseExceptions" ],
+			"Fields": [
+				"raiseExceptions"
+			],
 			"Methods": [
 				{
 					"Name": "AreEqual",
-					"ParamTypes": [ "T", "T" ],
+					"ParamTypes": [
+						"T",
+						"T"
+					],
 					"GenericParams": [
-						{ "Types": [ "System.String" ] },
-						{ "Types": [ "UnityEngine.GameObject" ] }
+						{
+							"Types": [
+								"System.String"
+							]
+						},
+						{
+							"Types": [
+								"UnityEngine.GameObject"
+							]
+						}
 					]
 				}
 			]
@@ -122,9 +165,82 @@
 			]
 		},
 		{
+			"Name": "UnityEngine.Vector3",
+			"Constructors": [
+				{
+					"ParamTypes": [
+						"System.Single",
+						"System.Single",
+						"System.Single"
+					]
+				}
+			],
+			"Methods": [
+				{
+					"Name": "Set",
+					"ParamTypes": [
+						"System.Single",
+						"System.Single",
+						"System.Single"
+					]
+				}
+			],
+			"Properties": [
+				{
+					"Name": "magnitude"
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.RaycastHit",
+			"MaxSimultaneous": 1000,
+			"Properties": [
+				{
+					"Name": "point"
+				},
+				{
+					"Name": "transform"
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.QueryTriggerInteraction"
+		},
+		{
+			"Name": "System.Collections.Generic.KeyValuePair`2",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String",
+						"System.Double"
+					]
+				}
+			],
+			"Constructors": [
+				{
+					"ParamTypes": [
+						"TKey",
+						"TValue"
+					]
+				}
+			],
+			"Properties": [
+				{
+					"Name": "Key"
+				},
+				{
+					"Name": "Value"
+				}
+			]
+		},
+		{
 			"Name": "System.Collections.Generic.List`1",
 			"GenericParams": [
-				{ "Types": [ "System.String" ] }
+				{
+					"Types": [
+						"System.String"
+					]
+				}
 			],
 			"Constructors": [
 				{
@@ -134,44 +250,73 @@
 			"Methods": [
 				{
 					"Name": "Add",
-					"ParamTypes": [ "T" ]
+					"ParamTypes": [
+						"T"
+					]
 				}
 			]
 		},
 		{
 			"Name": "System.Collections.Generic.LinkedListNode`1",
 			"GenericParams": [
-				{ "Types": [ "System.String" ] }
+				{
+					"Types": [
+						"System.String"
+					]
+				}
 			],
 			"Constructors": [
 				{
-					"ParamTypes": [ "T" ]
+					"ParamTypes": [
+						"T"
+					]
 				}
 			],
-			"Properties": [ "Value" ]
+			"Properties": [
+				{
+					"Name": "Value"
+				}
+			]
 		},
 		{
 			"Name": " System.Runtime.CompilerServices.StrongBox`1",
 			"GenericParams": [
-				{ "Types": [ "System.String" ] }
+				{
+					"Types": [
+						"System.String"
+					]
+				}
 			],
-			"Fields": [ "Value" ],
+			"Fields": [
+				"Value"
+			],
 			"Constructors": [
 				{
-					"ParamTypes": [ "T" ]
+					"ParamTypes": [
+						"T"
+					]
 				}
 			]
 		},
 		{
 			"Name": "System.Collections.ObjectModel.Collection`1",
 			"GenericParams": [
-				{ "Types": [ "System.Int32" ] }
+				{
+					"Types": [
+						"System.Int32"
+					]
+				}
 			]
 		},
 		{
 			"Name": "System.Collections.ObjectModel.KeyedCollection`2",
 			"GenericParams": [
-				{ "Types": [ "System.String", "System.Int32" ] }
+				{
+					"Types": [
+						"System.String",
+						"System.Int32"
+					]
+				}
 			]
 		}
 	],

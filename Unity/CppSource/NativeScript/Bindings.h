@@ -34,7 +34,12 @@ namespace System
 		}
 		
 		Boolean(const Boolean& other)
-		: Value(other.Value)
+			: Value(other.Value)
+		{
+		}
+		
+		Boolean(const Boolean&& other)
+			: Value(other.Value)
 		{
 		}
 		
@@ -68,55 +73,61 @@ namespace System
 			return Value != other;
 		}
 	};
-}
-
-namespace UnityEngine
-{
-	struct Vector3
+	
+	// .NET chars are two bytes long
+	// This struct helps them interoperate with C++'s char type
+	struct Char
 	{
-		float x;
-		float y;
-		float z;
+		int16_t Value;
 		
-		Vector3()
-			: x(0.0f)
-			, y(0.0f)
-			, z(0.0f)
+		Char()
+			: Value(0)
 		{
 		}
 		
-		Vector3(
-			float x,
-			float y,
-			float z)
-			: x(x)
-			, y(y)
-			, z(z)
+		Char(const Char& other)
+			: Value(other.Value)
 		{
 		}
 		
-		Vector3 operator+(const Vector3& other)
+		Char(const Char&& other)
+			: Value(other.Value)
 		{
-			return {
-				x + other.x,
-				y + other.y,
-				z + other.z };
 		}
 		
-		Vector3& operator=(const Vector3& other)
+		Char(char value)
+			: Value(value)
 		{
-			x = other.x;
-			y = other.y;
-			z = other.z;
-			return *this;
 		}
 		
-		Vector3& operator+=(const Vector3& other)
+		Char(int16_t value)
+			: Value(value)
 		{
-			x += other.x;
-			y += other.y;
-			z += other.z;
-			return *this;
+		}
+		
+		operator bool() const
+		{
+			return (bool)Value;
+		}
+		
+		bool operator==(const Char other) const
+		{
+			return Value == other.Value;
+		}
+		
+		bool operator!=(const Char other) const
+		{
+			return Value != other.Value;
+		}
+		
+		bool operator==(const char other) const
+		{
+			return Value == other;
+		}
+		
+		bool operator!=(const char other) const
+		{
+			return Value != other;
 		}
 	};
 }
@@ -139,6 +150,19 @@ namespace System
 		bool operator!=(const Object& other) const;
 		bool operator==(std::nullptr_t other) const;
 		bool operator!=(std::nullptr_t other) const;
+	};
+	
+	struct ValueType : Object
+	{
+		ValueType(std::nullptr_t n);
+		ValueType(int32_t handle);
+		ValueType(const ValueType& other);
+		ValueType(ValueType&& other);
+		~ValueType();
+		ValueType& operator=(const ValueType& other);
+		ValueType& operator=(std::nullptr_t other);
+		ValueType& operator=(ValueType&& other);
+		ValueType(const char* chars);
 	};
 	
 	struct String : Object
@@ -224,6 +248,48 @@ namespace UnityEngine
 	namespace Networking
 	{
 		struct NetworkTransport;
+	}
+}
+
+namespace UnityEngine
+{
+	struct Vector3;
+}
+
+namespace UnityEngine
+{
+	struct RaycastHit;
+}
+
+namespace UnityEngine
+{
+	enum struct QueryTriggerInteraction : int32_t
+	{
+		UseGlobal = 0,
+		Ignore = 1,
+		Collide = 2
+	};
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename T0, typename T1> struct KeyValuePair;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct KeyValuePair<System::String, double>;
+		}
 	}
 }
 
@@ -435,7 +501,7 @@ namespace UnityEngine
 		Transform& operator=(std::nullptr_t other);
 		Transform& operator=(Transform&& other);
 		UnityEngine::Vector3 GetPosition();
-		void SetPosition(UnityEngine::Vector3 value);
+		void SetPosition(UnityEngine::Vector3& value);
 	};
 }
 
@@ -547,6 +613,62 @@ namespace UnityEngine
 			static void GetBroadcastConnectionInfo(int32_t hostId, System::String* address, int32_t* port, uint8_t* error);
 			static void Init();
 		};
+	}
+}
+
+namespace UnityEngine
+{
+	struct Vector3
+	{
+		Vector3();
+		Vector3(float x, float y, float z);
+		float GetMagnitude();
+		float x;
+		float y;
+		float z;
+		void Set(float newX, float newY, float newZ);
+	};
+}
+
+namespace UnityEngine
+{
+	struct RaycastHit : System::ValueType
+	{
+		RaycastHit(std::nullptr_t n);
+		RaycastHit(int32_t handle);
+		RaycastHit(const RaycastHit& other);
+		RaycastHit(RaycastHit&& other);
+		~RaycastHit();
+		RaycastHit& operator=(const RaycastHit& other);
+		RaycastHit& operator=(std::nullptr_t other);
+		RaycastHit& operator=(RaycastHit&& other);
+		UnityEngine::Vector3 GetPoint();
+		void SetPoint(UnityEngine::Vector3& value);
+		UnityEngine::Transform GetTransform();
+	};
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct KeyValuePair<System::String, double> : System::ValueType
+			{
+				KeyValuePair<System::String, double>(std::nullptr_t n);
+				KeyValuePair<System::String, double>(int32_t handle);
+				KeyValuePair<System::String, double>(const KeyValuePair<System::String, double>& other);
+				KeyValuePair<System::String, double>(KeyValuePair<System::String, double>&& other);
+				~KeyValuePair<System::String, double>();
+				KeyValuePair<System::String, double>& operator=(const KeyValuePair<System::String, double>& other);
+				KeyValuePair<System::String, double>& operator=(std::nullptr_t other);
+				KeyValuePair<System::String, double>& operator=(KeyValuePair<System::String, double>&& other);
+				KeyValuePair(System::String key, double value);
+				System::String GetKey();
+				double GetValue();
+			};
+		}
 	}
 }
 
