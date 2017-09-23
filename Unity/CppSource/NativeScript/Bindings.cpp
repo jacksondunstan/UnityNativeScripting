@@ -67,9 +67,11 @@ namespace Plugin
 	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
 	float (*UnityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz);
 	void (*UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ);
+	void (*ReleaseUnityEngineRaycastHit)(int32_t handle);
 	UnityEngine::Vector3 (*UnityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle);
 	void (*UnityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, UnityEngine::Vector3& value);
 	int32_t (*UnityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle);
+	void (*ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble)(int32_t handle);
 	int32_t (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble)(int32_t keyHandle, double value);
 	int32_t (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)(int32_t thisHandle);
 	double (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle);
@@ -90,30 +92,84 @@ namespace Plugin
 
 namespace Plugin
 {
-	int32_t managedObjectsRefCountLen;
-	int32_t* managedObjectRefCounts;
+	int32_t RefCountsLenClass;
+	int32_t* RefCountsClass;
 
-	void ReferenceManagedObject(int32_t handle)
+	void ReferenceManagedClass(int32_t handle)
 	{
-		assert(handle >= 0 && handle < managedObjectsRefCountLen);
+		assert(handle >= 0 && handle < RefCountsLenClass);
 		if (handle != 0)
 		{
-			managedObjectRefCounts[handle]++;
+			RefCountsClass[handle]++;
 		}
 	}
 
-	void DereferenceManagedObject(int32_t handle)
+	void DereferenceManagedClass(int32_t handle)
 	{
-		assert(handle >= 0 && handle < managedObjectsRefCountLen);
+		assert(handle >= 0 && handle < RefCountsLenClass);
 		if (handle != 0)
 		{
-			int32_t numRemain = --managedObjectRefCounts[handle];
+			int32_t numRemain = --RefCountsClass[handle];
 			if (numRemain == 0)
 			{
 				ReleaseObject(handle);
 			}
 		}
 	}
+	
+	/*BEGIN REF COUNTS STATE AND FUNCTIONS*/
+	int32_t RefCountsLenUnityEngineRaycastHit;
+	int32_t* RefCountsUnityEngineRaycastHit;
+	
+	void ReferenceManagedUnityEngineRaycastHit(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineRaycastHit);
+		if (handle != 0)
+		{
+			RefCountsUnityEngineRaycastHit[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEngineRaycastHit(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineRaycastHit);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEngineRaycastHit[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEngineRaycastHit(handle);
+			}
+		}
+	}
+	
+	int32_t RefCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble;
+	int32_t* RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble;
+	
+	void ReferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble);
+		if (handle != 0)
+		{
+			RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble[handle]++;
+		}
+	}
+	
+	void DereferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble[handle];
+			if (numRemain == 0)
+			{
+				ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(handle);
+			}
+		}
+	}
+	
+
+	/*END REF COUNTS STATE AND FUNCTIONS*/
 }
 
 ////////////////////////////////////////////////////////////////
@@ -128,7 +184,7 @@ namespace System
 		Handle = handle;
 		if (handle)
 		{
-			Plugin::ReferenceManagedObject(handle);
+			Plugin::ReferenceManagedClass(handle);
 		}
 	}
 	
@@ -137,7 +193,7 @@ namespace System
 		Handle = other.Handle;
 		if (Handle)
 		{
-			Plugin::ReferenceManagedObject(Handle);
+			Plugin::ReferenceManagedClass(Handle);
 		}
 	}
 	
@@ -153,12 +209,12 @@ namespace System
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = handle;
 			if (handle)
 			{
-				Plugin::ReferenceManagedObject(handle);
+				Plugin::ReferenceManagedClass(handle);
 			}
 		}
 	}
@@ -212,7 +268,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -225,7 +281,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -235,7 +291,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -266,7 +322,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -279,7 +335,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -289,7 +345,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -331,7 +387,7 @@ namespace System
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 			}
 		}
 		
@@ -345,7 +401,7 @@ namespace System
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
 			}
 			return *this;
@@ -355,7 +411,7 @@ namespace System
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = other.Handle;
 			other.Handle = 0;
@@ -413,7 +469,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -427,7 +483,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -437,7 +493,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -482,7 +538,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -496,7 +552,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -506,7 +562,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -572,7 +628,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -586,7 +642,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -596,7 +652,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -636,7 +692,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -650,7 +706,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -660,7 +716,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -705,7 +761,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -719,7 +775,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -729,7 +785,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -795,7 +851,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -809,7 +865,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -819,7 +875,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -853,7 +909,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -867,7 +923,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -877,7 +933,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -911,7 +967,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -925,7 +981,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -935,7 +991,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -969,7 +1025,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 	}
 	
@@ -983,7 +1039,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -993,7 +1049,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -1034,7 +1090,7 @@ namespace UnityEngine
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 			}
 		}
 		
@@ -1048,7 +1104,7 @@ namespace UnityEngine
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
 			}
 			return *this;
@@ -1058,7 +1114,7 @@ namespace UnityEngine
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = other.Handle;
 			other.Handle = 0;
@@ -1129,7 +1185,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedUnityEngineRaycastHit(Handle);
 		}
 	}
 	
@@ -1143,7 +1199,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedUnityEngineRaycastHit(Handle);
 			Handle = 0;
 		}
 		return *this;
@@ -1153,7 +1209,7 @@ namespace UnityEngine
 	{
 		if (Handle)
 		{
-			Plugin::DereferenceManagedObject(Handle);
+			Plugin::DereferenceManagedUnityEngineRaycastHit(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -1208,7 +1264,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
 				}
 			}
 			
@@ -1222,7 +1278,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
 					Handle = 0;
 				}
 				return *this;
@@ -1232,7 +1288,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -1291,7 +1347,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 			}
 			
@@ -1305,7 +1361,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
 				}
 				return *this;
@@ -1315,7 +1371,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -1367,7 +1423,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 			}
 			
@@ -1381,7 +1437,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
 				}
 				return *this;
@@ -1391,7 +1447,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -1449,7 +1505,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 			}
 			
@@ -1463,7 +1519,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
 				}
 				return *this;
@@ -1473,7 +1529,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -1531,7 +1587,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 			}
 			
@@ -1545,7 +1601,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
 				}
 				return *this;
@@ -1555,7 +1611,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -1595,7 +1651,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 			}
 			
@@ -1609,7 +1665,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
 				}
 				return *this;
@@ -1619,7 +1675,7 @@ namespace System
 			{
 				if (Handle)
 				{
-					Plugin::DereferenceManagedObject(Handle);
+					Plugin::DereferenceManagedClass(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -1657,7 +1713,7 @@ namespace MyGame
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 			}
 		}
 		
@@ -1671,7 +1727,7 @@ namespace MyGame
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
 			}
 			return *this;
@@ -1681,7 +1737,7 @@ namespace MyGame
 		{
 			if (Handle)
 			{
-				Plugin::DereferenceManagedObject(Handle);
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = other.Handle;
 			other.Handle = 0;
@@ -1733,9 +1789,13 @@ DLLEXPORT void Init(
 	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
 	float (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
 	void (*unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ),
+	void (*releaseUnityEngineRaycastHit)(int32_t handle),
+	int32_t refCountsLenUnityEngineRaycastHit,
 	UnityEngine::Vector3 (*unityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle),
 	void (*unityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, UnityEngine::Vector3& value),
 	int32_t (*unityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle),
+	void (*releaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble)(int32_t handle),
+	int32_t refCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble,
 	int32_t (*systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble)(int32_t keyHandle, double value),
 	int32_t (*systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)(int32_t thisHandle),
 	double (*systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle),
@@ -1752,54 +1812,60 @@ DLLEXPORT void Init(
 	using namespace Plugin;
 	
 	// Init managed object ref counting
-	managedObjectsRefCountLen = maxManagedObjects;
-	managedObjectRefCounts = (int32_t*)calloc(
+	Plugin::RefCountsLenClass = maxManagedObjects;
+	Plugin::RefCountsClass = (int32_t*)calloc(
 		maxManagedObjects,
 		sizeof(int32_t));
 	
 	// Init pointers to C# functions
-	StringNew = stringNew;
-	ReleaseObject = releaseObject;
+	Plugin::StringNew = stringNew;
+	Plugin::ReleaseObject = releaseObject;
 	/*BEGIN INIT BODY*/
-	SystemDiagnosticsStopwatchConstructor = systemDiagnosticsStopwatchConstructor;
-	SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds = systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds;
-	SystemDiagnosticsStopwatchMethodStart = systemDiagnosticsStopwatchMethodStart;
-	SystemDiagnosticsStopwatchMethodReset = systemDiagnosticsStopwatchMethodReset;
-	UnityEngineObjectPropertyGetName = unityEngineObjectPropertyGetName;
-	UnityEngineObjectPropertySetName = unityEngineObjectPropertySetName;
-	UnityEngineGameObjectConstructor = unityEngineGameObjectConstructor;
-	UnityEngineGameObjectConstructorSystemString = unityEngineGameObjectConstructorSystemString;
-	UnityEngineGameObjectPropertyGetTransform = unityEngineGameObjectPropertyGetTransform;
-	UnityEngineGameObjectMethodFindSystemString = unityEngineGameObjectMethodFindSystemString;
-	UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript = unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript;
-	UnityEngineComponentPropertyGetTransform = unityEngineComponentPropertyGetTransform;
-	UnityEngineTransformPropertyGetPosition = unityEngineTransformPropertyGetPosition;
-	UnityEngineTransformPropertySetPosition = unityEngineTransformPropertySetPosition;
-	UnityEngineDebugMethodLogSystemObject = unityEngineDebugMethodLogSystemObject;
-	UnityEngineAssertionsAssertFieldGetRaiseExceptions = unityEngineAssertionsAssertFieldGetRaiseExceptions;
-	UnityEngineAssertionsAssertFieldSetRaiseExceptions = unityEngineAssertionsAssertFieldSetRaiseExceptions;
-	UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString = unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString;
-	UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject = unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject;
-	UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32 = unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32;
-	UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte = unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte;
-	UnityEngineNetworkingNetworkTransportMethodInit = unityEngineNetworkingNetworkTransportMethodInit;
-	UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
-	UnityEngineVector3PropertyGetMagnitude = unityEngineVector3PropertyGetMagnitude;
-	UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle = unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle;
-	UnityEngineRaycastHitPropertyGetPoint = unityEngineRaycastHitPropertyGetPoint;
-	UnityEngineRaycastHitPropertySetPoint = unityEngineRaycastHitPropertySetPoint;
-	UnityEngineRaycastHitPropertyGetTransform = unityEngineRaycastHitPropertyGetTransform;
-	SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble = systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble;
-	SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey;
-	SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue;
-	SystemCollectionsGenericListSystemStringConstructor = systemCollectionsGenericListSystemStringConstructor;
-	SystemCollectionsGenericListSystemStringMethodAddSystemString = systemCollectionsGenericListSystemStringMethodAddSystemString;
-	SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString = systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString;
-	SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue;
-	SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue;
-	SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString = systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString;
-	SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue;
-	SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue;
+	Plugin::SystemDiagnosticsStopwatchConstructor = systemDiagnosticsStopwatchConstructor;
+	Plugin::SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds = systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds;
+	Plugin::SystemDiagnosticsStopwatchMethodStart = systemDiagnosticsStopwatchMethodStart;
+	Plugin::SystemDiagnosticsStopwatchMethodReset = systemDiagnosticsStopwatchMethodReset;
+	Plugin::UnityEngineObjectPropertyGetName = unityEngineObjectPropertyGetName;
+	Plugin::UnityEngineObjectPropertySetName = unityEngineObjectPropertySetName;
+	Plugin::UnityEngineGameObjectConstructor = unityEngineGameObjectConstructor;
+	Plugin::UnityEngineGameObjectConstructorSystemString = unityEngineGameObjectConstructorSystemString;
+	Plugin::UnityEngineGameObjectPropertyGetTransform = unityEngineGameObjectPropertyGetTransform;
+	Plugin::UnityEngineGameObjectMethodFindSystemString = unityEngineGameObjectMethodFindSystemString;
+	Plugin::UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript = unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript;
+	Plugin::UnityEngineComponentPropertyGetTransform = unityEngineComponentPropertyGetTransform;
+	Plugin::UnityEngineTransformPropertyGetPosition = unityEngineTransformPropertyGetPosition;
+	Plugin::UnityEngineTransformPropertySetPosition = unityEngineTransformPropertySetPosition;
+	Plugin::UnityEngineDebugMethodLogSystemObject = unityEngineDebugMethodLogSystemObject;
+	Plugin::UnityEngineAssertionsAssertFieldGetRaiseExceptions = unityEngineAssertionsAssertFieldGetRaiseExceptions;
+	Plugin::UnityEngineAssertionsAssertFieldSetRaiseExceptions = unityEngineAssertionsAssertFieldSetRaiseExceptions;
+	Plugin::UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString = unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString;
+	Plugin::UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject = unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject;
+	Plugin::UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32 = unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32;
+	Plugin::UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte = unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte;
+	Plugin::UnityEngineNetworkingNetworkTransportMethodInit = unityEngineNetworkingNetworkTransportMethodInit;
+	Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
+	Plugin::UnityEngineVector3PropertyGetMagnitude = unityEngineVector3PropertyGetMagnitude;
+	Plugin::UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle = unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle;
+	Plugin::ReleaseUnityEngineRaycastHit = releaseUnityEngineRaycastHit;
+	Plugin::RefCountsLenUnityEngineRaycastHit = refCountsLenUnityEngineRaycastHit;
+	Plugin::RefCountsUnityEngineRaycastHit = (int32_t*)calloc(refCountsLenUnityEngineRaycastHit, sizeof(int32_t));
+	Plugin::UnityEngineRaycastHitPropertyGetPoint = unityEngineRaycastHitPropertyGetPoint;
+	Plugin::UnityEngineRaycastHitPropertySetPoint = unityEngineRaycastHitPropertySetPoint;
+	Plugin::UnityEngineRaycastHitPropertyGetTransform = unityEngineRaycastHitPropertyGetTransform;
+	Plugin::ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = releaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble;
+	Plugin::RefCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = refCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble;
+	Plugin::RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = (int32_t*)calloc(refCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble, sizeof(int32_t));
+	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble = systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble;
+	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey;
+	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue;
+	Plugin::SystemCollectionsGenericListSystemStringConstructor = systemCollectionsGenericListSystemStringConstructor;
+	Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString = systemCollectionsGenericListSystemStringMethodAddSystemString;
+	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString = systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString;
+	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue;
+	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue;
+	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString = systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString;
+	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue;
+	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue;
 	/*END INIT BODY*/
 	
 	PluginMain();

@@ -292,9 +292,13 @@ namespace NativeScript
 			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
+			IntPtr releaseUnityEngineRaycastHit,
+			int ReleaseUnityEngineRaycastHit,
 			IntPtr unityEngineRaycastHitPropertyGetPoint,
 			IntPtr unityEngineRaycastHitPropertySetPoint,
 			IntPtr unityEngineRaycastHitPropertyGetTransform,
+			IntPtr releaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble,
+			int ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue,
@@ -442,9 +446,13 @@ namespace NativeScript
 			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
+			IntPtr releaseUnityEngineRaycastHit,
+			int ReleaseUnityEngineRaycastHit,
 			IntPtr unityEngineRaycastHitPropertyGetPoint,
 			IntPtr unityEngineRaycastHitPropertySetPoint,
 			IntPtr unityEngineRaycastHitPropertyGetTransform,
+			IntPtr releaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble,
+			int ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue,
@@ -502,11 +510,11 @@ namespace NativeScript
 		delegate UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(float x, float y, float z);
 		delegate float UnityEngineVector3PropertyGetMagnitudeDelegate(ref UnityEngine.Vector3 thiz);
 		delegate void UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(ref UnityEngine.Vector3 thiz, float newX, float newY, float newZ);
-		delegate int ReleaseObjectUnityEngineRaycastHitDelegate(int handle);
+		delegate void ReleaseUnityEngineRaycastHitDelegate(int handle);
 		delegate UnityEngine.Vector3 UnityEngineRaycastHitPropertyGetPointDelegate(int thisHandle);
 		delegate void UnityEngineRaycastHitPropertySetPointDelegate(int thisHandle, ref UnityEngine.Vector3 value);
 		delegate int UnityEngineRaycastHitPropertyGetTransformDelegate(int thisHandle);
-		delegate int ReleaseObjectSystemCollectionsGenericKeyValuePairSystemString_SystemDoubleDelegate(int handle);
+		delegate void ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDoubleDelegate(int handle);
 		delegate int SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDoubleDelegate(int keyHandle, double value);
 		delegate int SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKeyDelegate(int thisHandle);
 		delegate double SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValueDelegate(int thisHandle);
@@ -585,9 +593,13 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3PropertyGetMagnitudeDelegate(UnityEngineVector3PropertyGetMagnitude)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEngineRaycastHitDelegate(ReleaseUnityEngineRaycastHit)),
+				1000,
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitPropertyGetPointDelegate(UnityEngineRaycastHitPropertyGetPoint)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitPropertySetPointDelegate(UnityEngineRaycastHitPropertySetPoint)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitPropertyGetTransformDelegate(UnityEngineRaycastHitPropertyGetTransform)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDoubleDelegate(ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble)),
+				maxManagedObjects,
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDoubleDelegate(SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKeyDelegate(SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValueDelegate(SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)),
@@ -821,8 +833,8 @@ namespace NativeScript
 			thiz.Set(newX, newY, newZ);
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseObjectUnityEngineRaycastHitDelegate))]
-		static void ReleaseObjectUnityEngineRaycastHit(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseUnityEngineRaycastHitDelegate))]
+		static void ReleaseUnityEngineRaycastHit(int handle)
 		{
 			if (handle != 0)
 			{
@@ -854,8 +866,8 @@ namespace NativeScript
 			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseObjectSystemCollectionsGenericKeyValuePairSystemString_SystemDoubleDelegate))]
-		static void ReleaseObjectSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDoubleDelegate))]
+		static void ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(int handle)
 		{
 			if (handle != 0)
 			{
