@@ -137,38 +137,41 @@ namespace NativeScript
 			
 			public static void Remove(int handle)
 			{
-				if (handle != 0)
+				// Null is never stored, so there's nothing to remove
+				if (handle == 0)
 				{
-					lock (objects)
+					return;
+				}
+				
+				lock (objects)
+				{
+					// Forget the object
+					object obj = objects[handle];
+					objects[handle] = null;
+					
+					// Push the handle onto the stack
+					nextHandleIndex++;
+					handles[nextHandleIndex] = handle;
+					
+					// Remove the object from the hash table
+					int initialIndex = (int)(
+						((uint)obj.GetHashCode()) % maxObjects);
+					int index = initialIndex;
+					do
 					{
-						// Forget the object
-						object obj = objects[handle];
-						objects[handle] = null;
-
-						// Push the handle onto the stack
-						nextHandleIndex++;
-						handles[nextHandleIndex] = handle;
-						
-						// Remove the object from the hash table
-						int initialIndex = (int)(
-							((uint)obj.GetHashCode()) % maxObjects);
-						int index = initialIndex;
-						do
+						if (object.ReferenceEquals(keys[index], obj))
 						{
-							if (object.ReferenceEquals(keys[index], obj))
-							{
-								// Only the key needs to be removed (set to null)
-								// because values corresponding to null will never
-								// be read and the values are just integers, so
-								// we're not holding on to a managed reference that
-								// will prevent GC.
-								keys[index] = null;
-								break;
-							}
-							index = (index + 1) % maxObjects;
+							// Only the key needs to be removed (set to null)
+							// because values corresponding to null will never
+							// be read and the values are just integers, so
+							// we're not holding on to a managed reference that
+							// will prevent GC.
+							keys[index] = null;
+							break;
 						}
-						while (index != initialIndex);
+						index = (index + 1) % maxObjects;
 					}
+					while (index != initialIndex);
 				}
 			}
 		}
@@ -1002,15 +1005,9 @@ namespace MyGame
 	{
 		public class TestScript : UnityEngine.MonoBehaviour
 		{
-			int thisHandle;
-			
-			public TestScript()
-			{
-				thisHandle = NativeScript.Bindings.ObjectStore.Store(this);
-			}
-			
 			public void Awake()
 			{
+				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
 				NativeScript.Bindings.TestScriptAwake(thisHandle);
 				if (NativeScript.Bindings.UnhandledCppException != null)
 				{
@@ -1022,6 +1019,7 @@ namespace MyGame
 			
 			public void OnAnimatorIK(int param0)
 			{
+				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
 				NativeScript.Bindings.TestScriptOnAnimatorIK(thisHandle, param0);
 				if (NativeScript.Bindings.UnhandledCppException != null)
 				{
@@ -1034,6 +1032,7 @@ namespace MyGame
 			public void OnCollisionEnter(UnityEngine.Collision param0)
 			{
 				int param0Handle = NativeScript.Bindings.ObjectStore.Store(param0);
+				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
 				NativeScript.Bindings.TestScriptOnCollisionEnter(thisHandle, param0Handle);
 				if (NativeScript.Bindings.UnhandledCppException != null)
 				{
@@ -1045,6 +1044,7 @@ namespace MyGame
 			
 			public void Update()
 			{
+				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
 				NativeScript.Bindings.TestScriptUpdate(thisHandle);
 				if (NativeScript.Bindings.UnhandledCppException != null)
 				{

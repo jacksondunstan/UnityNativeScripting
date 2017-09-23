@@ -1500,7 +1500,7 @@ namespace NativeScript
 			bool enclosingTypeIsStatic,
 			TypeKind enclosingTypeKind,
 			Assembly[] assemblies,
-			Type[] typeTypeParams,
+			Type[] enclosingTypeParams,
 			Type[] genericArgTypes,
 			string typeNameLower,
 			int indent,
@@ -1524,7 +1524,7 @@ namespace NativeScript
 					constructorParamTypeNames = OverrideGenericTypeNames(
 						jsonCtor.ParamTypes,
 						genericArgTypes,
-						typeTypeParams);
+						enclosingTypeParams);
 				}
 				else
 				{
@@ -1545,7 +1545,7 @@ namespace NativeScript
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
-				typeTypeParams,
+				enclosingTypeParams,
 				builders.TempStrBuilder);
 			builders.TempStrBuilder.Append("Constructor");
 			AppendParameterTypeNames(
@@ -1669,7 +1669,7 @@ namespace NativeScript
 				enclosingType,
 				null,
 				enclosingType.Name,
-				typeTypeParams,
+				enclosingTypeParams,
 				null,
 				parameters,
 				indent,
@@ -1691,24 +1691,54 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				true,
+				enclosingType,
 				enclosingTypeKind,
+				enclosingTypeParams,
 				enclosingType,
 				funcName,
 				parameters,
 				indent + 1,
 				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
 			if (enclosingTypeKind == TypeKind.FullStruct)
 			{
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
 				builders.CppMethodDefinitions.Append(
 					"*this = returnValue;\n");
 			}
 			else
 			{
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
 				builders.CppMethodDefinitions.Append(
-					"SetHandle(returnValue);\n");
+					"Handle = returnValue;\n");
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(
+					"if (returnValue)\n");
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(
+					"{\n");
+				AppendIndent(
+					indent + 2,
+					builders.CppMethodDefinitions);
+				AppendReferenceManagedHandleFunctionCall(
+					enclosingType,
+					enclosingTypeKind,
+					enclosingTypeParams,
+					"returnValue",
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(";\n");
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(
+					"}\n");
 			}
 			AppendIndent(
 				indent,
@@ -2070,7 +2100,7 @@ namespace NativeScript
 			bool methodIsStatic,
 			bool isReadOnly,
 			Type returnType,
-			Type[] typeTypeParams,
+			Type[] enclosingTypeParams,
 			Type[] methodTypeParams,
 			ParameterInfo[] parameters,
 			int indent,
@@ -2086,7 +2116,7 @@ namespace NativeScript
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
-				typeTypeParams,
+				enclosingTypeParams,
 				builders.TempStrBuilder);
 			builders.TempStrBuilder.Append("Method");
 			builders.TempStrBuilder.Append(methodName);
@@ -2188,7 +2218,7 @@ namespace NativeScript
 				enclosingType,
 				returnType,
 				methodName,
-				typeTypeParams,
+				enclosingTypeParams,
 				methodTypeParams,
 				parameters,
 				indent,
@@ -2199,7 +2229,9 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
+				enclosingType,
 				enclosingTypeKind,
+				enclosingTypeParams,
 				returnType,
 				funcName,
 				parameters,
@@ -2322,29 +2354,6 @@ namespace NativeScript
 			builders.CsharpMonoBehaviours.Append(" : UnityEngine.MonoBehaviour\n");
 			AppendIndent(csharpIndent, builders.CsharpMonoBehaviours);
 			builders.CsharpMonoBehaviours.Append("{\n");
-			AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append("int thisHandle;\n");
-			AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append('\n');
-			AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append("public ");
-			builders.CsharpMonoBehaviours.Append(type.Name);
-			builders.CsharpMonoBehaviours.Append("()\n");
-			AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append("{\n");
-			AppendIndent(csharpIndent + 2, builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append("thisHandle = ");
-			AppendHandleStoreTypeName(
-				type,
-				builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append(".Store(this);\n");
-			AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
-			builders.CsharpMonoBehaviours.Append("}\n");
-			if (jsonMonoBehaviour.Messages.Length > 0)
-			{
-				AppendIndent(csharpIndent + 1, builders.CsharpMonoBehaviours);
-				builders.CsharpMonoBehaviours.Append('\n');
-			}
 			for (
 				int messageIndex = 0;
 				messageIndex < jsonMonoBehaviour.Messages.Length;
@@ -2380,6 +2389,7 @@ namespace NativeScript
 					parameters,
 					builders.CppTypeDefinitions);
 				
+				// C# message function
 				AppendIndent(
 					csharpIndent + 1,
 					builders.CsharpMonoBehaviours);
@@ -2439,6 +2449,11 @@ namespace NativeScript
 						builders.CsharpMonoBehaviours.Append(");\n");
 					}
 				}
+				AppendIndent(
+					csharpIndent + 2,
+					builders.CsharpMonoBehaviours);
+				builders.CsharpMonoBehaviours.Append(
+					"int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);\n");
 				AppendIndent(
 					csharpIndent + 2,
 					builders.CsharpMonoBehaviours);
@@ -2701,7 +2716,7 @@ namespace NativeScript
 			bool methodIsStatic,
 			bool isReadOnly,
 			Type enclosingType,
-			Type[] typeTypeParams,
+			Type[] enclosingTypeParams,
 			Type fieldType,
 			int indent,
 			StringBuilders builders)
@@ -2725,7 +2740,7 @@ namespace NativeScript
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
-				typeTypeParams,
+				enclosingTypeParams,
 				builders.TempStrBuilder);
 			builders.TempStrBuilder.Append(syntaxType);
 			builders.TempStrBuilder.Append("Get");
@@ -2770,7 +2785,7 @@ namespace NativeScript
 				methodIsStatic,
 				enclosingTypeKind,
 				fieldType,
-				typeTypeParams,
+				enclosingTypeParams,
 				parameters,
 				builders.CsharpFunctions);
 			AppendCsharpFunctionCallSubject(
@@ -2819,7 +2834,7 @@ namespace NativeScript
 				enclosingType,
 				fieldType,
 				methodName,
-				typeTypeParams,
+				enclosingTypeParams,
 				null,
 				parameters,
 				indent,
@@ -2828,7 +2843,9 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
+				enclosingType,
 				enclosingTypeKind,
+				enclosingTypeParams,
 				fieldType,
 				funcName,
 				parameters,
@@ -2869,7 +2886,7 @@ namespace NativeScript
 			bool methodIsStatic,
 			bool isReadOnly,
 			Type enclosingType,
-			Type[] typeTypeParams,
+			Type[] enclosingTypeParams,
 			Type fieldType,
 			int indent,
 			StringBuilders builders)
@@ -2893,7 +2910,7 @@ namespace NativeScript
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
-				typeTypeParams,
+				enclosingTypeParams,
 				builders.TempStrBuilder);
 			builders.TempStrBuilder.Append(syntaxType);
 			builders.TempStrBuilder.Append("Set");
@@ -2938,7 +2955,7 @@ namespace NativeScript
 				methodIsStatic,
 				enclosingTypeKind,
 				typeof(void),
-				typeTypeParams,
+				enclosingTypeParams,
 				parameters,
 				builders.CsharpFunctions);
 			AppendCsharpFunctionCallSubject(
@@ -2988,7 +3005,7 @@ namespace NativeScript
 				enclosingType,
 				typeof(void),
 				methodName,
-				typeTypeParams,
+				enclosingTypeParams,
 				null,
 				parameters,
 				indent,
@@ -2997,7 +3014,9 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
+				enclosingType,
 				enclosingTypeKind,
+				enclosingTypeParams,
 				null,
 				funcName,
 				parameters,
@@ -3228,6 +3247,28 @@ namespace NativeScript
 					typeParams,
 					output);
 				output.Append("&& other);\n");
+				
+				// Equality operator with same type
+				AppendIndent(indent + 1, output);
+				output.Append("bool operator==(const ");
+				AppendWithoutGenericTypeCountSuffix(
+					type.Name,
+					output);
+				AppendCppTypeParameters(
+					typeParams,
+					output);
+				output.Append("& other) const;\n");
+				
+				// Inequality operator with same type
+				AppendIndent(indent + 1, output);
+				output.Append("bool operator!=(const ");
+				AppendWithoutGenericTypeCountSuffix(
+					type.Name,
+					output);
+				AppendCppTypeParameters(
+					typeParams,
+					output);
+				output.Append("& other) const;\n");
 			}
 		}
 		
@@ -3319,6 +3360,20 @@ namespace NativeScript
 				output.Append("(handle)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
+				AppendIndent(indent + 1, output);
+				output.Append("if (handle)\n");
+				AppendIndent(indent + 1, output);
+				output.Append("{\n");
+				AppendIndent(indent + 2, output);
+				AppendReferenceManagedHandleFunctionCall(
+					enclosingType,
+					enclosingTypeKind,
+					enclosingTypeParams,
+					"handle",
+					output);
+				output.Append(";\n");
+				AppendIndent(indent + 1, output);
+				output.Append("}\n");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
@@ -3349,9 +3404,23 @@ namespace NativeScript
 				AppendCppTypeName(
 					baseType,
 					output);
-				output.Append("(other)\n");
+				output.Append("(other.Handle)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
+				AppendIndent(indent + 1, output);
+				output.Append("if (Handle)\n");
+				AppendIndent(indent + 1, output);
+				output.Append("{\n");
+				AppendIndent(indent + 2, output);
+				AppendReferenceManagedHandleFunctionCall(
+					enclosingType,
+					enclosingTypeKind,
+					enclosingTypeParams,
+					"Handle",
+					output);
+				output.Append(";\n");
+				AppendIndent(indent + 1, output);
+				output.Append("}\n");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
@@ -3382,16 +3451,11 @@ namespace NativeScript
 				AppendCppTypeName(
 					baseType,
 					output);
-				output.Append("(std::forward<");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
-					output);
-				AppendCppTypeParameters(
-					enclosingTypeParams,
-					output);
-				output.Append(">(other))\n");
+				output.Append("(other.Handle)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
+				AppendIndent(indent + 1, output);
+				output.Append("other.Handle = 0;\n");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
@@ -3415,20 +3479,22 @@ namespace NativeScript
 				output.Append("()\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
-				AppendIndent(indent, output);
-				output.Append("\tif (Handle)\n");
-				AppendIndent(indent, output);
-				output.Append("\t{\n");
-				AppendIndent(indent, output);
-				output.Append("\t\t");
+				AppendIndent(indent + 1, output);
+				output.Append("if (Handle)\n");
+				AppendIndent(indent + 1, output);
+				output.Append("{\n");
+				AppendIndent(indent + 2, output);
 				AppendDereferenceManagedHandleFunctionCall(
 					enclosingType,
 					enclosingTypeKind,
 					enclosingTypeParams,
+					"Handle",
 					output);
 				output.Append(";\n");
-				AppendIndent(indent, output);
-				output.Append("\t}\n");
+				AppendIndent(indent + 2, output);
+				output.Append("Handle = 0;\n");
+				AppendIndent(indent + 1, output);
+				output.Append("}\n");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
@@ -3459,8 +3525,14 @@ namespace NativeScript
 				output.Append("& other)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
-				AppendIndent(indent, output);
-				output.Append("\tSetHandle(other.Handle);\n");
+				AppendSetHandle(
+					enclosingType,
+					enclosingTypeKind,
+					enclosingTypeParams,
+					indent + 1,
+					"this",
+					"other.Handle",
+					output);
 				AppendIndent(indent, output);
 				output.Append("\treturn *this;\n");
 				AppendIndent(indent, output);
@@ -3496,6 +3568,7 @@ namespace NativeScript
 					enclosingType,
 					enclosingTypeKind,
 					enclosingTypeParams,
+					"Handle",
 					output);
 				output.Append(";\n");
 				AppendIndent(indent, output);
@@ -3544,6 +3617,7 @@ namespace NativeScript
 					enclosingType,
 					enclosingTypeKind,
 					enclosingTypeParams,
+					"Handle",
 					output);
 				output.Append(";\n");
 				AppendIndent(indent, output);
@@ -3558,14 +3632,150 @@ namespace NativeScript
 				output.Append("}\n");
 				AppendIndent(indent, output);
 				output.Append('\n');
+				
+				// Equality operator with same type
+				AppendIndent(indent, output);
+				output.Append("bool ");
+				AppendWithoutGenericTypeCountSuffix(
+					enclosingType.Name,
+					output);
+				AppendCppTypeParameters(
+					enclosingTypeParams,
+					output);
+				output.Append("::operator==(const ");
+				AppendWithoutGenericTypeCountSuffix(
+					enclosingType.Name,
+					output);
+				AppendCppTypeParameters(
+					enclosingTypeParams,
+					output);
+				output.Append("& other) const\n");
+				AppendIndent(indent, output);
+				output.Append("{\n");
+				AppendIndent(indent + 1, output);
+				output.Append("return Handle == other.Handle;\n");
+				AppendIndent(indent, output);
+				output.Append("}\n");
+				AppendIndent(indent, output);
+				output.Append('\n');
+				
+				// Inequality operator with same type
+				AppendIndent(indent, output);
+				output.Append("bool ");
+				AppendWithoutGenericTypeCountSuffix(
+					enclosingType.Name,
+					output);
+				AppendCppTypeParameters(
+					enclosingTypeParams,
+					output);
+				output.Append("::operator!=(const ");
+				AppendWithoutGenericTypeCountSuffix(
+					enclosingType.Name,
+					output);
+				AppendCppTypeParameters(
+					enclosingTypeParams,
+					output);
+				output.Append("& other) const\n");
+				AppendIndent(indent, output);
+				output.Append("{\n");
+				AppendIndent(indent + 1, output);
+				output.Append("return Handle != other.Handle;\n");
+				AppendIndent(indent, output);
+				output.Append("}\n");
+				AppendIndent(indent, output);
+				output.Append('\n');
 			}
 			return cppMethodDefinitionsIndent;
+		}
+		
+		static void AppendSetHandle(
+			Type enclosingType,
+			TypeKind enclosingTypeKind,
+			Type[] enclosingTypeParams,
+			int indent,
+			string thisExpression,
+			string otherHandleExpression,
+			StringBuilder output)
+		{
+			string thisHandleExpression = thisExpression + "->Handle";
+			AppendIndent(indent, output);
+			output.Append("if (");
+			output.Append(thisHandleExpression);
+			output.Append(" != ");
+			output.Append(otherHandleExpression);
+			output.Append(")\n");
+			AppendIndent(indent, output);
+			output.Append("{\n");
+			AppendIndent(indent + 1, output);
+			output.Append("if (");
+			output.Append(thisHandleExpression);
+			output.Append(")\n");
+			AppendIndent(indent + 1, output);
+			output.Append("{\n");
+			AppendIndent(indent + 2, output);
+			AppendDereferenceManagedHandleFunctionCall(
+				enclosingType,
+				enclosingTypeKind,
+				enclosingTypeParams,
+				thisHandleExpression,
+				output);
+			output.Append(";\n");
+			AppendIndent(indent + 1, output);
+			output.Append("}\n");
+			AppendIndent(indent + 1, output);
+			output.Append(thisHandleExpression);
+			output.Append(" = ");
+			output.Append(otherHandleExpression);
+			output.Append(";\n");
+			AppendIndent(indent + 1, output);
+			output.Append("if (");
+			output.Append(thisHandleExpression);
+			output.Append(")\n");
+			AppendIndent(indent + 1, output);
+			output.Append("{\n");
+			AppendIndent(indent + 2, output);
+			AppendReferenceManagedHandleFunctionCall(
+				enclosingType,
+				enclosingTypeKind,
+				enclosingTypeParams,
+				thisHandleExpression,
+				output);
+			output.Append(";\n");
+			AppendIndent(indent + 1, output);
+			output.Append("}\n");
+			AppendIndent(indent, output);
+			output.Append("}\n");
+		}
+		
+		static void AppendReferenceManagedHandleFunctionCall(
+			Type enclosingType,
+			TypeKind enclosingTypeKind,
+			Type[] enclosingTypeParams,
+			string handleVariable,
+			StringBuilder output)
+		{
+			if (enclosingTypeKind == TypeKind.ManagedStruct)
+			{
+				output.Append("Plugin::ReferenceManaged");
+				AppendReleaseFunctionNameSuffix(
+					enclosingType,
+					enclosingTypeParams,
+					output);
+				output.Append("(Handle)");
+			}
+			else
+			{
+				output.Append("Plugin::ReferenceManagedClass(");
+				output.Append(handleVariable);
+				output.Append(")");
+			}
 		}
 		
 		static void AppendDereferenceManagedHandleFunctionCall(
 			Type enclosingType,
 			TypeKind enclosingTypeKind,
 			Type[] enclosingTypeParams,
+			string handleVariable,
 			StringBuilder output)
 		{
 			if (enclosingTypeKind == TypeKind.ManagedStruct)
@@ -3579,7 +3789,9 @@ namespace NativeScript
 			}
 			else
 			{
-				output.Append("Plugin::DereferenceManagedClass(Handle)");
+				output.Append("Plugin::DereferenceManagedClass(");
+				output.Append(handleVariable);
+				output.Append(")");
 			}
 		}
 		
@@ -4149,7 +4361,9 @@ namespace NativeScript
 		
 		static void AppendCppPluginFunctionCall(
 			bool isStatic,
+			Type enclosingType,
 			TypeKind enclosingTypeKind,
+			Type[] enclosingTypeParams,
 			Type returnType,
 			string funcName,
 			ParameterInfo[] parameters,
@@ -4234,11 +4448,14 @@ namespace NativeScript
 					|| param.Kind == TypeKind.ManagedStruct)
 					&& (param.IsOut || param.IsRef))
 				{
-					AppendIndent(indent, output);
-					output.Append(param.Name);
-					output.Append("->SetHandle(");
-					output.Append(param.Name);
-					output.Append("Handle);\n");
+					AppendSetHandle(
+						enclosingType,
+						enclosingTypeKind,
+						enclosingTypeParams,
+						indent,
+						param.Name,
+						param.Name + "Handle",
+						output);
 				}
 			}
 		}

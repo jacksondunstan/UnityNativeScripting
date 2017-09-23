@@ -141,13 +141,9 @@ namespace System
 	struct Object
 	{
 		int32_t Handle;
+		Object(std::nullptr_t n);
 		Object(int32_t handle);
-		Object(const Object& other);
-		Object(Object&& other);
-		void SetHandle(int32_t handle);
 		operator bool() const;
-		bool operator==(const Object& other) const;
-		bool operator!=(const Object& other) const;
 		bool operator==(std::nullptr_t other) const;
 		bool operator!=(std::nullptr_t other) const;
 	};
@@ -156,13 +152,6 @@ namespace System
 	{
 		ValueType(std::nullptr_t n);
 		ValueType(int32_t handle);
-		ValueType(const ValueType& other);
-		ValueType(ValueType&& other);
-		~ValueType();
-		ValueType& operator=(const ValueType& other);
-		ValueType& operator=(std::nullptr_t other);
-		ValueType& operator=(ValueType&& other);
-		ValueType(const char* chars);
 	};
 	
 	struct String : Object
@@ -432,6 +421,8 @@ namespace System
 			Stopwatch& operator=(const Stopwatch& other);
 			Stopwatch& operator=(std::nullptr_t other);
 			Stopwatch& operator=(Stopwatch&& other);
+			bool operator==(const Stopwatch& other) const;
+			bool operator!=(const Stopwatch& other) const;
 			Stopwatch();
 			int64_t GetElapsedMilliseconds();
 			void Start();
@@ -452,6 +443,8 @@ namespace UnityEngine
 		Object& operator=(const Object& other);
 		Object& operator=(std::nullptr_t other);
 		Object& operator=(Object&& other);
+		bool operator==(const Object& other) const;
+		bool operator!=(const Object& other) const;
 		System::String GetName();
 		void SetName(System::String value);
 	};
@@ -469,6 +462,8 @@ namespace UnityEngine
 		GameObject& operator=(const GameObject& other);
 		GameObject& operator=(std::nullptr_t other);
 		GameObject& operator=(GameObject&& other);
+		bool operator==(const GameObject& other) const;
+		bool operator!=(const GameObject& other) const;
 		GameObject();
 		GameObject(System::String name);
 		UnityEngine::Transform GetTransform();
@@ -489,6 +484,8 @@ namespace UnityEngine
 		Component& operator=(const Component& other);
 		Component& operator=(std::nullptr_t other);
 		Component& operator=(Component&& other);
+		bool operator==(const Component& other) const;
+		bool operator!=(const Component& other) const;
 		UnityEngine::Transform GetTransform();
 	};
 }
@@ -505,6 +502,8 @@ namespace UnityEngine
 		Transform& operator=(const Transform& other);
 		Transform& operator=(std::nullptr_t other);
 		Transform& operator=(Transform&& other);
+		bool operator==(const Transform& other) const;
+		bool operator!=(const Transform& other) const;
 		UnityEngine::Vector3 GetPosition();
 		void SetPosition(UnityEngine::Vector3& value);
 	};
@@ -522,6 +521,8 @@ namespace UnityEngine
 		Debug& operator=(const Debug& other);
 		Debug& operator=(std::nullptr_t other);
 		Debug& operator=(Debug&& other);
+		bool operator==(const Debug& other) const;
+		bool operator!=(const Debug& other) const;
 		static void Log(System::Object message);
 	};
 }
@@ -552,6 +553,8 @@ namespace UnityEngine
 		Collision& operator=(const Collision& other);
 		Collision& operator=(std::nullptr_t other);
 		Collision& operator=(Collision&& other);
+		bool operator==(const Collision& other) const;
+		bool operator!=(const Collision& other) const;
 	};
 }
 
@@ -567,6 +570,8 @@ namespace UnityEngine
 		Behaviour& operator=(const Behaviour& other);
 		Behaviour& operator=(std::nullptr_t other);
 		Behaviour& operator=(Behaviour&& other);
+		bool operator==(const Behaviour& other) const;
+		bool operator!=(const Behaviour& other) const;
 	};
 }
 
@@ -582,6 +587,8 @@ namespace UnityEngine
 		MonoBehaviour& operator=(const MonoBehaviour& other);
 		MonoBehaviour& operator=(std::nullptr_t other);
 		MonoBehaviour& operator=(MonoBehaviour&& other);
+		bool operator==(const MonoBehaviour& other) const;
+		bool operator!=(const MonoBehaviour& other) const;
 	};
 }
 
@@ -597,6 +604,8 @@ namespace UnityEngine
 		AudioSettings& operator=(const AudioSettings& other);
 		AudioSettings& operator=(std::nullptr_t other);
 		AudioSettings& operator=(AudioSettings&& other);
+		bool operator==(const AudioSettings& other) const;
+		bool operator!=(const AudioSettings& other) const;
 		static void GetDSPBufferSize(int32_t* bufferLength, int32_t* numBuffers);
 	};
 }
@@ -615,6 +624,8 @@ namespace UnityEngine
 			NetworkTransport& operator=(const NetworkTransport& other);
 			NetworkTransport& operator=(std::nullptr_t other);
 			NetworkTransport& operator=(NetworkTransport&& other);
+			bool operator==(const NetworkTransport& other) const;
+			bool operator!=(const NetworkTransport& other) const;
 			static void GetBroadcastConnectionInfo(int32_t hostId, System::String* address, int32_t* port, uint8_t* error);
 			static void Init();
 		};
@@ -647,6 +658,8 @@ namespace UnityEngine
 		RaycastHit& operator=(const RaycastHit& other);
 		RaycastHit& operator=(std::nullptr_t other);
 		RaycastHit& operator=(RaycastHit&& other);
+		bool operator==(const RaycastHit& other) const;
+		bool operator!=(const RaycastHit& other) const;
 		UnityEngine::Vector3 GetPoint();
 		void SetPoint(UnityEngine::Vector3& value);
 		UnityEngine::Transform GetTransform();
@@ -669,6 +682,8 @@ namespace System
 				KeyValuePair<System::String, double>& operator=(const KeyValuePair<System::String, double>& other);
 				KeyValuePair<System::String, double>& operator=(std::nullptr_t other);
 				KeyValuePair<System::String, double>& operator=(KeyValuePair<System::String, double>&& other);
+				bool operator==(const KeyValuePair<System::String, double>& other) const;
+				bool operator!=(const KeyValuePair<System::String, double>& other) const;
 				KeyValuePair(System::String key, double value);
 				System::String GetKey();
 				double GetValue();
@@ -693,6 +708,8 @@ namespace System
 				List<System::String>& operator=(const List<System::String>& other);
 				List<System::String>& operator=(std::nullptr_t other);
 				List<System::String>& operator=(List<System::String>&& other);
+				bool operator==(const List<System::String>& other) const;
+				bool operator!=(const List<System::String>& other) const;
 				List();
 				void Add(System::String item);
 			};
@@ -716,6 +733,8 @@ namespace System
 				LinkedListNode<System::String>& operator=(const LinkedListNode<System::String>& other);
 				LinkedListNode<System::String>& operator=(std::nullptr_t other);
 				LinkedListNode<System::String>& operator=(LinkedListNode<System::String>&& other);
+				bool operator==(const LinkedListNode<System::String>& other) const;
+				bool operator!=(const LinkedListNode<System::String>& other) const;
 				LinkedListNode(System::String value);
 				System::String GetValue();
 				void SetValue(System::String value);
@@ -740,6 +759,8 @@ namespace System
 				StrongBox<System::String>& operator=(const StrongBox<System::String>& other);
 				StrongBox<System::String>& operator=(std::nullptr_t other);
 				StrongBox<System::String>& operator=(StrongBox<System::String>&& other);
+				bool operator==(const StrongBox<System::String>& other) const;
+				bool operator!=(const StrongBox<System::String>& other) const;
 				StrongBox(System::String value);
 				System::String GetValue();
 				void SetValue(System::String value);
@@ -764,6 +785,8 @@ namespace System
 				Collection<int32_t>& operator=(const Collection<int32_t>& other);
 				Collection<int32_t>& operator=(std::nullptr_t other);
 				Collection<int32_t>& operator=(Collection<int32_t>&& other);
+				bool operator==(const Collection<int32_t>& other) const;
+				bool operator!=(const Collection<int32_t>& other) const;
 			};
 		}
 	}
@@ -785,6 +808,8 @@ namespace System
 				KeyedCollection<System::String, int32_t>& operator=(const KeyedCollection<System::String, int32_t>& other);
 				KeyedCollection<System::String, int32_t>& operator=(std::nullptr_t other);
 				KeyedCollection<System::String, int32_t>& operator=(KeyedCollection<System::String, int32_t>&& other);
+				bool operator==(const KeyedCollection<System::String, int32_t>& other) const;
+				bool operator!=(const KeyedCollection<System::String, int32_t>& other) const;
 			};
 		}
 	}
@@ -802,6 +827,8 @@ namespace System
 		Exception& operator=(const Exception& other);
 		Exception& operator=(std::nullptr_t other);
 		Exception& operator=(Exception&& other);
+		bool operator==(const Exception& other) const;
+		bool operator!=(const Exception& other) const;
 		Exception(System::String message);
 	};
 }
@@ -820,6 +847,8 @@ namespace MyGame
 			TestScript& operator=(const TestScript& other);
 			TestScript& operator=(std::nullptr_t other);
 			TestScript& operator=(TestScript&& other);
+			bool operator==(const TestScript& other) const;
+			bool operator!=(const TestScript& other) const;
 			void Awake();
 			void OnAnimatorIK(int32_t param0);
 			void OnCollisionEnter(UnityEngine::Collision param0);

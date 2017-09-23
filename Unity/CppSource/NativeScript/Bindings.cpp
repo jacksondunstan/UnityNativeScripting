@@ -21,9 +21,6 @@
 // For malloc(), etc.
 #include <stdlib.h>
 
-// For std::forward
-#include <utility>
-
 // Macro to put before functions that need to be exposed to C#
 #ifdef _WIN32
 	#define DLLEXPORT extern "C" __declspec(dllexport)
@@ -181,59 +178,19 @@ namespace Plugin
 
 namespace System
 {
+	Object::Object(std::nullptr_t n)
+		: Handle(0)
+	{
+	}
+	
 	Object::Object(int32_t handle)
+		: Handle(handle)
 	{
-		Handle = handle;
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-		}
-	}
-	
-	Object::Object(const Object& other)
-	{
-		Handle = other.Handle;
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
-	}
-	
-	Object::Object(Object&& other)
-	{
-		Handle = other.Handle;
-		other.Handle = 0;
-	}
-	
-	void Object::SetHandle(int32_t handle)
-	{
-		if (Handle != handle)
-		{
-			if (Handle)
-			{
-				Plugin::DereferenceManagedClass(Handle);
-			}
-			Handle = handle;
-			if (handle)
-			{
-				Plugin::ReferenceManagedClass(handle);
-			}
-		}
 	}
 	
 	Object::operator bool() const
 	{
 		return Handle != 0;
-	}
-	
-	bool Object::operator==(const Object& other) const
-	{
-		return Handle == other.Handle;
-	}
-	
-	bool Object::operator!=(const Object& other) const
-	{
-		return Handle != other.Handle;
 	}
 	
 	bool Object::operator==(std::nullptr_t other) const
@@ -256,50 +213,6 @@ namespace System
 	{
 	}
 	
-	ValueType::ValueType(const ValueType& other)
-		: Object(other)
-	{
-	}
-	
-	ValueType::ValueType(ValueType&& other)
-		: Object(std::forward<ValueType>(other))
-	{
-	}
-	
-	ValueType::~ValueType()
-	{
-		if (Handle)
-		{
-			Plugin::DereferenceManagedClass(Handle);
-		}
-	}
-	
-	ValueType& ValueType::operator=(const ValueType& other)
-	{
-		SetHandle(other.Handle);
-		return *this;
-	}
-	ValueType& ValueType::operator=(std::nullptr_t other)
-	{
-		if (Handle)
-		{
-			Plugin::DereferenceManagedClass(Handle);
-			Handle = 0;
-		}
-		return *this;
-	}
-	
-	ValueType& ValueType::operator=(ValueType&& other)
-	{
-		if (Handle)
-		{
-			Plugin::DereferenceManagedClass(Handle);
-		}
-		Handle = other.Handle;
-		other.Handle = 0;
-		return *this;
-	}
-	
 	String::String(std::nullptr_t n)
 		: Object(0)
 	{
@@ -308,16 +221,25 @@ namespace System
 	String::String(int32_t handle)
 		: Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	String::String(const String& other)
-		: Object(other)
+		: Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	String::String(String&& other)
-		: Object(std::forward<String>(other))
+		: Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	String::~String()
@@ -325,14 +247,27 @@ namespace System
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	String& String::operator=(const String& other)
 	{
-		SetHandle(other.Handle);
+		if (Handle != other.Handle)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+			}
+			Handle = other.Handle;
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
 		return *this;
 	}
+	
 	String& String::operator=(std::nullptr_t other)
 	{
 		if (Handle)
@@ -373,16 +308,25 @@ namespace System
 		Stopwatch::Stopwatch(int32_t handle)
 			: System::Object(handle)
 		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
 		}
 		
 		Stopwatch::Stopwatch(const Stopwatch& other)
-			: System::Object(other)
+			: System::Object(other.Handle)
 		{
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
 		}
 		
 		Stopwatch::Stopwatch(Stopwatch&& other)
-			: System::Object(std::forward<Stopwatch>(other))
+			: System::Object(other.Handle)
 		{
+			other.Handle = 0;
 		}
 		
 		Stopwatch::~Stopwatch()
@@ -390,12 +334,24 @@ namespace System
 			if (Handle)
 			{
 				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
 			}
 		}
 		
 		Stopwatch& Stopwatch::operator=(const Stopwatch& other)
 		{
-			SetHandle(other.Handle);
+			if (this->Handle != other.Handle)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+			}
 			return *this;
 		}
 		
@@ -420,11 +376,25 @@ namespace System
 			return *this;
 		}
 		
+		bool Stopwatch::operator==(const Stopwatch& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool Stopwatch::operator!=(const Stopwatch& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
 		Stopwatch::Stopwatch()
 			 : System::Object(0)
 		{
 			auto returnValue = Plugin::SystemDiagnosticsStopwatchConstructor();
-			SetHandle(returnValue);
+			Handle = returnValue;
+			if (returnValue)
+			{
+				Plugin::ReferenceManagedClass(returnValue);
+			}
 		}
 		
 		int64_t Stopwatch::GetElapsedMilliseconds()
@@ -455,16 +425,25 @@ namespace UnityEngine
 	Object::Object(int32_t handle)
 		: System::Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	Object::Object(const Object& other)
-		: System::Object(other)
+		: System::Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	Object::Object(Object&& other)
-		: System::Object(std::forward<Object>(other))
+		: System::Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	Object::~Object()
@@ -472,12 +451,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	Object& Object::operator=(const Object& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -502,6 +493,16 @@ namespace UnityEngine
 		return *this;
 	}
 	
+	bool Object::operator==(const Object& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Object::operator!=(const Object& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
 	System::String Object::GetName()
 	{
 		auto returnValue = Plugin::UnityEngineObjectPropertyGetName(Handle);
@@ -524,16 +525,25 @@ namespace UnityEngine
 	GameObject::GameObject(int32_t handle)
 		: UnityEngine::Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	GameObject::GameObject(const GameObject& other)
-		: UnityEngine::Object(other)
+		: UnityEngine::Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	GameObject::GameObject(GameObject&& other)
-		: UnityEngine::Object(std::forward<GameObject>(other))
+		: UnityEngine::Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	GameObject::~GameObject()
@@ -541,12 +551,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	GameObject& GameObject::operator=(const GameObject& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -571,18 +593,36 @@ namespace UnityEngine
 		return *this;
 	}
 	
+	bool GameObject::operator==(const GameObject& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool GameObject::operator!=(const GameObject& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
 	GameObject::GameObject()
 		 : UnityEngine::Object(0)
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectConstructor();
-		SetHandle(returnValue);
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
 	}
 	
 	GameObject::GameObject(System::String name)
 		 : UnityEngine::Object(0)
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectConstructorSystemString(name.Handle);
-		SetHandle(returnValue);
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
 	}
 	
 	UnityEngine::Transform GameObject::GetTransform()
@@ -614,16 +654,25 @@ namespace UnityEngine
 	Component::Component(int32_t handle)
 		: UnityEngine::Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	Component::Component(const Component& other)
-		: UnityEngine::Object(other)
+		: UnityEngine::Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	Component::Component(Component&& other)
-		: UnityEngine::Object(std::forward<Component>(other))
+		: UnityEngine::Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	Component::~Component()
@@ -631,12 +680,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	Component& Component::operator=(const Component& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -661,6 +722,16 @@ namespace UnityEngine
 		return *this;
 	}
 	
+	bool Component::operator==(const Component& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Component::operator!=(const Component& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
 	UnityEngine::Transform Component::GetTransform()
 	{
 		auto returnValue = Plugin::UnityEngineComponentPropertyGetTransform(Handle);
@@ -678,16 +749,25 @@ namespace UnityEngine
 	Transform::Transform(int32_t handle)
 		: UnityEngine::Component(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	Transform::Transform(const Transform& other)
-		: UnityEngine::Component(other)
+		: UnityEngine::Component(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	Transform::Transform(Transform&& other)
-		: UnityEngine::Component(std::forward<Transform>(other))
+		: UnityEngine::Component(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	Transform::~Transform()
@@ -695,12 +775,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	Transform& Transform::operator=(const Transform& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -725,6 +817,16 @@ namespace UnityEngine
 		return *this;
 	}
 	
+	bool Transform::operator==(const Transform& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Transform::operator!=(const Transform& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
 	UnityEngine::Vector3 Transform::GetPosition()
 	{
 		auto returnValue = Plugin::UnityEngineTransformPropertyGetPosition(Handle);
@@ -747,16 +849,25 @@ namespace UnityEngine
 	Debug::Debug(int32_t handle)
 		: System::Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	Debug::Debug(const Debug& other)
-		: System::Object(other)
+		: System::Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	Debug::Debug(Debug&& other)
-		: System::Object(std::forward<Debug>(other))
+		: System::Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	Debug::~Debug()
@@ -764,12 +875,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	Debug& Debug::operator=(const Debug& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -792,6 +915,16 @@ namespace UnityEngine
 		Handle = other.Handle;
 		other.Handle = 0;
 		return *this;
+	}
+	
+	bool Debug::operator==(const Debug& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Debug::operator!=(const Debug& other) const
+	{
+		return Handle != other.Handle;
 	}
 	
 	void Debug::Log(System::Object message)
@@ -837,16 +970,25 @@ namespace UnityEngine
 	Collision::Collision(int32_t handle)
 		: System::Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	Collision::Collision(const Collision& other)
-		: System::Object(other)
+		: System::Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	Collision::Collision(Collision&& other)
-		: System::Object(std::forward<Collision>(other))
+		: System::Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	Collision::~Collision()
@@ -854,12 +996,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	Collision& Collision::operator=(const Collision& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -883,6 +1037,16 @@ namespace UnityEngine
 		other.Handle = 0;
 		return *this;
 	}
+	
+	bool Collision::operator==(const Collision& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Collision::operator!=(const Collision& other) const
+	{
+		return Handle != other.Handle;
+	}
 }
 
 namespace UnityEngine
@@ -895,16 +1059,25 @@ namespace UnityEngine
 	Behaviour::Behaviour(int32_t handle)
 		: UnityEngine::Component(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	Behaviour::Behaviour(const Behaviour& other)
-		: UnityEngine::Component(other)
+		: UnityEngine::Component(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	Behaviour::Behaviour(Behaviour&& other)
-		: UnityEngine::Component(std::forward<Behaviour>(other))
+		: UnityEngine::Component(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	Behaviour::~Behaviour()
@@ -912,12 +1085,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	Behaviour& Behaviour::operator=(const Behaviour& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -941,6 +1126,16 @@ namespace UnityEngine
 		other.Handle = 0;
 		return *this;
 	}
+	
+	bool Behaviour::operator==(const Behaviour& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Behaviour::operator!=(const Behaviour& other) const
+	{
+		return Handle != other.Handle;
+	}
 }
 
 namespace UnityEngine
@@ -953,16 +1148,25 @@ namespace UnityEngine
 	MonoBehaviour::MonoBehaviour(int32_t handle)
 		: UnityEngine::Behaviour(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	MonoBehaviour::MonoBehaviour(const MonoBehaviour& other)
-		: UnityEngine::Behaviour(other)
+		: UnityEngine::Behaviour(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	MonoBehaviour::MonoBehaviour(MonoBehaviour&& other)
-		: UnityEngine::Behaviour(std::forward<MonoBehaviour>(other))
+		: UnityEngine::Behaviour(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	MonoBehaviour::~MonoBehaviour()
@@ -970,12 +1174,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	MonoBehaviour& MonoBehaviour::operator=(const MonoBehaviour& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -999,6 +1215,16 @@ namespace UnityEngine
 		other.Handle = 0;
 		return *this;
 	}
+	
+	bool MonoBehaviour::operator==(const MonoBehaviour& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool MonoBehaviour::operator!=(const MonoBehaviour& other) const
+	{
+		return Handle != other.Handle;
+	}
 }
 
 namespace UnityEngine
@@ -1011,16 +1237,25 @@ namespace UnityEngine
 	AudioSettings::AudioSettings(int32_t handle)
 		: System::Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	AudioSettings::AudioSettings(const AudioSettings& other)
-		: System::Object(other)
+		: System::Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	AudioSettings::AudioSettings(AudioSettings&& other)
-		: System::Object(std::forward<AudioSettings>(other))
+		: System::Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	AudioSettings::~AudioSettings()
@@ -1028,12 +1263,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	AudioSettings& AudioSettings::operator=(const AudioSettings& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -1058,6 +1305,16 @@ namespace UnityEngine
 		return *this;
 	}
 	
+	bool AudioSettings::operator==(const AudioSettings& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool AudioSettings::operator!=(const AudioSettings& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
 	void AudioSettings::GetDSPBufferSize(int32_t* bufferLength, int32_t* numBuffers)
 	{
 		Plugin::UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(bufferLength, numBuffers);
@@ -1076,16 +1333,25 @@ namespace UnityEngine
 		NetworkTransport::NetworkTransport(int32_t handle)
 			: System::Object(handle)
 		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
 		}
 		
 		NetworkTransport::NetworkTransport(const NetworkTransport& other)
-			: System::Object(other)
+			: System::Object(other.Handle)
 		{
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
 		}
 		
 		NetworkTransport::NetworkTransport(NetworkTransport&& other)
-			: System::Object(std::forward<NetworkTransport>(other))
+			: System::Object(other.Handle)
 		{
+			other.Handle = 0;
 		}
 		
 		NetworkTransport::~NetworkTransport()
@@ -1093,12 +1359,24 @@ namespace UnityEngine
 			if (Handle)
 			{
 				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
 			}
 		}
 		
 		NetworkTransport& NetworkTransport::operator=(const NetworkTransport& other)
 		{
-			SetHandle(other.Handle);
+			if (this->Handle != other.Handle)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+			}
 			return *this;
 		}
 		
@@ -1123,11 +1401,32 @@ namespace UnityEngine
 			return *this;
 		}
 		
+		bool NetworkTransport::operator==(const NetworkTransport& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool NetworkTransport::operator!=(const NetworkTransport& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
 		void NetworkTransport::GetBroadcastConnectionInfo(int32_t hostId, System::String* address, int32_t* port, uint8_t* error)
 		{
 			int32_t addressHandle = address->Handle;
 			Plugin::UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(hostId, &addressHandle, port, error);
-			address->SetHandle(addressHandle);
+			if (address->Handle != addressHandle)
+			{
+				if (address->Handle)
+				{
+					Plugin::DereferenceManagedClass(address->Handle);
+				}
+				address->Handle = addressHandle;
+				if (address->Handle)
+				{
+					Plugin::ReferenceManagedClass(address->Handle);
+				}
+			}
 		}
 	
 		void NetworkTransport::Init()
@@ -1171,16 +1470,25 @@ namespace UnityEngine
 	RaycastHit::RaycastHit(int32_t handle)
 		: System::ValueType(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedUnityEngineRaycastHit(Handle);
+		}
 	}
 	
 	RaycastHit::RaycastHit(const RaycastHit& other)
-		: System::ValueType(other)
+		: System::ValueType(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedUnityEngineRaycastHit(Handle);
+		}
 	}
 	
 	RaycastHit::RaycastHit(RaycastHit&& other)
-		: System::ValueType(std::forward<RaycastHit>(other))
+		: System::ValueType(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	RaycastHit::~RaycastHit()
@@ -1188,12 +1496,24 @@ namespace UnityEngine
 		if (Handle)
 		{
 			Plugin::DereferenceManagedUnityEngineRaycastHit(Handle);
+			Handle = 0;
 		}
 	}
 	
 	RaycastHit& RaycastHit::operator=(const RaycastHit& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineRaycastHit(Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedUnityEngineRaycastHit(Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -1216,6 +1536,16 @@ namespace UnityEngine
 		Handle = other.Handle;
 		other.Handle = 0;
 		return *this;
+	}
+	
+	bool RaycastHit::operator==(const RaycastHit& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool RaycastHit::operator!=(const RaycastHit& other) const
+	{
+		return Handle != other.Handle;
 	}
 	
 	UnityEngine::Vector3 RaycastHit::GetPoint()
@@ -1250,16 +1580,25 @@ namespace System
 			KeyValuePair<System::String, double>::KeyValuePair(int32_t handle)
 				: System::ValueType(handle)
 			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
+				}
 			}
 			
 			KeyValuePair<System::String, double>::KeyValuePair(const KeyValuePair<System::String, double>& other)
-				: System::ValueType(other)
+				: System::ValueType(other.Handle)
 			{
+				if (Handle)
+				{
+					Plugin::ReferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
+				}
 			}
 			
 			KeyValuePair<System::String, double>::KeyValuePair(KeyValuePair<System::String, double>&& other)
-				: System::ValueType(std::forward<KeyValuePair<System::String, double>>(other))
+				: System::ValueType(other.Handle)
 			{
+				other.Handle = 0;
 			}
 			
 			KeyValuePair<System::String, double>::~KeyValuePair<System::String, double>()
@@ -1267,12 +1606,24 @@ namespace System
 				if (Handle)
 				{
 					Plugin::DereferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
+					Handle = 0;
 				}
 			}
 			
 			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(const KeyValuePair<System::String, double>& other)
 			{
-				SetHandle(other.Handle);
+				if (this->Handle != other.Handle)
+				{
+					if (this->Handle)
+					{
+						Plugin::DereferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
+					}
+					this->Handle = other.Handle;
+					if (this->Handle)
+					{
+						Plugin::ReferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
+					}
+				}
 				return *this;
 			}
 			
@@ -1297,11 +1648,25 @@ namespace System
 				return *this;
 			}
 			
+			bool KeyValuePair<System::String, double>::operator==(const KeyValuePair<System::String, double>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool KeyValuePair<System::String, double>::operator!=(const KeyValuePair<System::String, double>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
 			KeyValuePair<System::String, double>::KeyValuePair(System::String key, double value)
 				 : System::ValueType(0)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble(key.Handle, value);
-				SetHandle(returnValue);
+				Handle = returnValue;
+				if (returnValue)
+				{
+					Plugin::ReferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
+				}
 			}
 			
 			System::String KeyValuePair<System::String, double>::GetKey()
@@ -1333,16 +1698,25 @@ namespace System
 			List<System::String>::List(int32_t handle)
 				: System::Object(handle)
 			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
 			}
 			
 			List<System::String>::List(const List<System::String>& other)
-				: System::Object(other)
+				: System::Object(other.Handle)
 			{
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
 			}
 			
 			List<System::String>::List(List<System::String>&& other)
-				: System::Object(std::forward<List<System::String>>(other))
+				: System::Object(other.Handle)
 			{
+				other.Handle = 0;
 			}
 			
 			List<System::String>::~List<System::String>()
@@ -1350,12 +1724,24 @@ namespace System
 				if (Handle)
 				{
 					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
 				}
 			}
 			
 			List<System::String>& List<System::String>::operator=(const List<System::String>& other)
 			{
-				SetHandle(other.Handle);
+				if (this->Handle != other.Handle)
+				{
+					if (this->Handle)
+					{
+						Plugin::DereferenceManagedClass(this->Handle);
+					}
+					this->Handle = other.Handle;
+					if (this->Handle)
+					{
+						Plugin::ReferenceManagedClass(this->Handle);
+					}
+				}
 				return *this;
 			}
 			
@@ -1380,11 +1766,25 @@ namespace System
 				return *this;
 			}
 			
+			bool List<System::String>::operator==(const List<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool List<System::String>::operator!=(const List<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
 			List<System::String>::List()
 				 : System::Object(0)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringConstructor();
-				SetHandle(returnValue);
+				Handle = returnValue;
+				if (returnValue)
+				{
+					Plugin::ReferenceManagedClass(returnValue);
+				}
 			}
 			
 			void List<System::String>::Add(System::String item)
@@ -1409,16 +1809,25 @@ namespace System
 			LinkedListNode<System::String>::LinkedListNode(int32_t handle)
 				: System::Object(handle)
 			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
 			}
 			
 			LinkedListNode<System::String>::LinkedListNode(const LinkedListNode<System::String>& other)
-				: System::Object(other)
+				: System::Object(other.Handle)
 			{
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
 			}
 			
 			LinkedListNode<System::String>::LinkedListNode(LinkedListNode<System::String>&& other)
-				: System::Object(std::forward<LinkedListNode<System::String>>(other))
+				: System::Object(other.Handle)
 			{
+				other.Handle = 0;
 			}
 			
 			LinkedListNode<System::String>::~LinkedListNode<System::String>()
@@ -1426,12 +1835,24 @@ namespace System
 				if (Handle)
 				{
 					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
 				}
 			}
 			
 			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(const LinkedListNode<System::String>& other)
 			{
-				SetHandle(other.Handle);
+				if (this->Handle != other.Handle)
+				{
+					if (this->Handle)
+					{
+						Plugin::DereferenceManagedClass(this->Handle);
+					}
+					this->Handle = other.Handle;
+					if (this->Handle)
+					{
+						Plugin::ReferenceManagedClass(this->Handle);
+					}
+				}
 				return *this;
 			}
 			
@@ -1456,11 +1877,25 @@ namespace System
 				return *this;
 			}
 			
+			bool LinkedListNode<System::String>::operator==(const LinkedListNode<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool LinkedListNode<System::String>::operator!=(const LinkedListNode<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
 			LinkedListNode<System::String>::LinkedListNode(System::String value)
 				 : System::Object(0)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(value.Handle);
-				SetHandle(returnValue);
+				Handle = returnValue;
+				if (returnValue)
+				{
+					Plugin::ReferenceManagedClass(returnValue);
+				}
 			}
 			
 			System::String LinkedListNode<System::String>::GetValue()
@@ -1491,16 +1926,25 @@ namespace System
 			StrongBox<System::String>::StrongBox(int32_t handle)
 				: System::Object(handle)
 			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
 			}
 			
 			StrongBox<System::String>::StrongBox(const StrongBox<System::String>& other)
-				: System::Object(other)
+				: System::Object(other.Handle)
 			{
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
 			}
 			
 			StrongBox<System::String>::StrongBox(StrongBox<System::String>&& other)
-				: System::Object(std::forward<StrongBox<System::String>>(other))
+				: System::Object(other.Handle)
 			{
+				other.Handle = 0;
 			}
 			
 			StrongBox<System::String>::~StrongBox<System::String>()
@@ -1508,12 +1952,24 @@ namespace System
 				if (Handle)
 				{
 					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
 				}
 			}
 			
 			StrongBox<System::String>& StrongBox<System::String>::operator=(const StrongBox<System::String>& other)
 			{
-				SetHandle(other.Handle);
+				if (this->Handle != other.Handle)
+				{
+					if (this->Handle)
+					{
+						Plugin::DereferenceManagedClass(this->Handle);
+					}
+					this->Handle = other.Handle;
+					if (this->Handle)
+					{
+						Plugin::ReferenceManagedClass(this->Handle);
+					}
+				}
 				return *this;
 			}
 			
@@ -1538,11 +1994,25 @@ namespace System
 				return *this;
 			}
 			
+			bool StrongBox<System::String>::operator==(const StrongBox<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool StrongBox<System::String>::operator!=(const StrongBox<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
 			StrongBox<System::String>::StrongBox(System::String value)
 				 : System::Object(0)
 			{
 				auto returnValue = Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString(value.Handle);
-				SetHandle(returnValue);
+				Handle = returnValue;
+				if (returnValue)
+				{
+					Plugin::ReferenceManagedClass(returnValue);
+				}
 			}
 			
 			System::String StrongBox<System::String>::GetValue()
@@ -1573,16 +2043,25 @@ namespace System
 			Collection<int32_t>::Collection(int32_t handle)
 				: System::Object(handle)
 			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
 			}
 			
 			Collection<int32_t>::Collection(const Collection<int32_t>& other)
-				: System::Object(other)
+				: System::Object(other.Handle)
 			{
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
 			}
 			
 			Collection<int32_t>::Collection(Collection<int32_t>&& other)
-				: System::Object(std::forward<Collection<int32_t>>(other))
+				: System::Object(other.Handle)
 			{
+				other.Handle = 0;
 			}
 			
 			Collection<int32_t>::~Collection<int32_t>()
@@ -1590,12 +2069,24 @@ namespace System
 				if (Handle)
 				{
 					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
 				}
 			}
 			
 			Collection<int32_t>& Collection<int32_t>::operator=(const Collection<int32_t>& other)
 			{
-				SetHandle(other.Handle);
+				if (this->Handle != other.Handle)
+				{
+					if (this->Handle)
+					{
+						Plugin::DereferenceManagedClass(this->Handle);
+					}
+					this->Handle = other.Handle;
+					if (this->Handle)
+					{
+						Plugin::ReferenceManagedClass(this->Handle);
+					}
+				}
 				return *this;
 			}
 			
@@ -1619,6 +2110,16 @@ namespace System
 				other.Handle = 0;
 				return *this;
 			}
+			
+			bool Collection<int32_t>::operator==(const Collection<int32_t>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool Collection<int32_t>::operator!=(const Collection<int32_t>& other) const
+			{
+				return Handle != other.Handle;
+			}
 		}
 	}
 }
@@ -1637,16 +2138,25 @@ namespace System
 			KeyedCollection<System::String, int32_t>::KeyedCollection(int32_t handle)
 				: System::Collections::ObjectModel::Collection<int32_t>(handle)
 			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
 			}
 			
 			KeyedCollection<System::String, int32_t>::KeyedCollection(const KeyedCollection<System::String, int32_t>& other)
-				: System::Collections::ObjectModel::Collection<int32_t>(other)
+				: System::Collections::ObjectModel::Collection<int32_t>(other.Handle)
 			{
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
 			}
 			
 			KeyedCollection<System::String, int32_t>::KeyedCollection(KeyedCollection<System::String, int32_t>&& other)
-				: System::Collections::ObjectModel::Collection<int32_t>(std::forward<KeyedCollection<System::String, int32_t>>(other))
+				: System::Collections::ObjectModel::Collection<int32_t>(other.Handle)
 			{
+				other.Handle = 0;
 			}
 			
 			KeyedCollection<System::String, int32_t>::~KeyedCollection<System::String, int32_t>()
@@ -1654,12 +2164,24 @@ namespace System
 				if (Handle)
 				{
 					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
 				}
 			}
 			
 			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(const KeyedCollection<System::String, int32_t>& other)
 			{
-				SetHandle(other.Handle);
+				if (this->Handle != other.Handle)
+				{
+					if (this->Handle)
+					{
+						Plugin::DereferenceManagedClass(this->Handle);
+					}
+					this->Handle = other.Handle;
+					if (this->Handle)
+					{
+						Plugin::ReferenceManagedClass(this->Handle);
+					}
+				}
 				return *this;
 			}
 			
@@ -1683,6 +2205,16 @@ namespace System
 				other.Handle = 0;
 				return *this;
 			}
+			
+			bool KeyedCollection<System::String, int32_t>::operator==(const KeyedCollection<System::String, int32_t>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool KeyedCollection<System::String, int32_t>::operator!=(const KeyedCollection<System::String, int32_t>& other) const
+			{
+				return Handle != other.Handle;
+			}
 		}
 	}
 }
@@ -1697,16 +2229,25 @@ namespace System
 	Exception::Exception(int32_t handle)
 		: System::Object(handle)
 	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
 	}
 	
 	Exception::Exception(const Exception& other)
-		: System::Object(other)
+		: System::Object(other.Handle)
 	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
 	}
 	
 	Exception::Exception(Exception&& other)
-		: System::Object(std::forward<Exception>(other))
+		: System::Object(other.Handle)
 	{
+		other.Handle = 0;
 	}
 	
 	Exception::~Exception()
@@ -1714,12 +2255,24 @@ namespace System
 		if (Handle)
 		{
 			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
 		}
 	}
 	
 	Exception& Exception::operator=(const Exception& other)
 	{
-		SetHandle(other.Handle);
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
 		return *this;
 	}
 	
@@ -1744,11 +2297,25 @@ namespace System
 		return *this;
 	}
 	
+	bool Exception::operator==(const Exception& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Exception::operator!=(const Exception& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
 	Exception::Exception(System::String message)
 		 : System::Object(0)
 	{
 		auto returnValue = Plugin::SystemExceptionConstructorSystemString(message.Handle);
-		SetHandle(returnValue);
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
 	}
 }
 
@@ -1764,16 +2331,25 @@ namespace MyGame
 		TestScript::TestScript(int32_t handle)
 			: UnityEngine::MonoBehaviour(handle)
 		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
 		}
 		
 		TestScript::TestScript(const TestScript& other)
-			: UnityEngine::MonoBehaviour(other)
+			: UnityEngine::MonoBehaviour(other.Handle)
 		{
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
 		}
 		
 		TestScript::TestScript(TestScript&& other)
-			: UnityEngine::MonoBehaviour(std::forward<TestScript>(other))
+			: UnityEngine::MonoBehaviour(other.Handle)
 		{
+			other.Handle = 0;
 		}
 		
 		TestScript::~TestScript()
@@ -1781,12 +2357,24 @@ namespace MyGame
 			if (Handle)
 			{
 				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
 			}
 		}
 		
 		TestScript& TestScript::operator=(const TestScript& other)
 		{
-			SetHandle(other.Handle);
+			if (this->Handle != other.Handle)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+			}
 			return *this;
 		}
 		
@@ -1809,6 +2397,16 @@ namespace MyGame
 			Handle = other.Handle;
 			other.Handle = 0;
 			return *this;
+		}
+		
+		bool TestScript::operator==(const TestScript& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool TestScript::operator!=(const TestScript& other) const
+		{
+			return Handle != other.Handle;
 		}
 	}
 }
