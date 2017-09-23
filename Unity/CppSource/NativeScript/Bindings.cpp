@@ -38,6 +38,7 @@
 namespace Plugin
 {
 	void (*ReleaseObject)(int32_t handle);
+	void (*SetException)(int32_t handle);
 	
 	int32_t (*StringNew)(const char* chars);
 	
@@ -83,6 +84,7 @@ namespace Plugin
 	int32_t (*SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString)(int32_t valueHandle);
 	int32_t (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle);
 	void (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle);
+	int32_t (*SystemExceptionConstructorSystemString)(int32_t messageHandle);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -1685,6 +1687,71 @@ namespace System
 	}
 }
 
+namespace System
+{
+	Exception::Exception(std::nullptr_t n)
+		: System::Object(0)
+	{
+	}
+	
+	Exception::Exception(int32_t handle)
+		: System::Object(handle)
+	{
+	}
+	
+	Exception::Exception(const Exception& other)
+		: System::Object(other)
+	{
+	}
+	
+	Exception::Exception(Exception&& other)
+		: System::Object(std::forward<Exception>(other))
+	{
+	}
+	
+	Exception::~Exception()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+	}
+	
+	Exception& Exception::operator=(const Exception& other)
+	{
+		SetHandle(other.Handle);
+		return *this;
+	}
+	
+	Exception& Exception::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Exception& Exception::operator=(Exception&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	Exception::Exception(System::String message)
+		 : System::Object(0)
+	{
+		auto returnValue = Plugin::SystemExceptionConstructorSystemString(message.Handle);
+		SetHandle(returnValue);
+	}
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -1763,6 +1830,7 @@ DLLEXPORT void Init(
 	int32_t maxManagedObjects,
 	void (*releaseObject)(int32_t handle),
 	int32_t (*stringNew)(const char* chars),
+	void (*setException)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
 	int32_t (*systemDiagnosticsStopwatchConstructor)(),
 	int64_t (*systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
@@ -1806,7 +1874,8 @@ DLLEXPORT void Init(
 	void (*systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)(int32_t thisHandle, int32_t valueHandle),
 	int32_t (*systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString)(int32_t valueHandle),
 	int32_t (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle),
-	void (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle)
+	void (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle),
+	int32_t (*systemExceptionConstructorSystemString)(int32_t messageHandle)
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;
@@ -1820,6 +1889,7 @@ DLLEXPORT void Init(
 	// Init pointers to C# functions
 	Plugin::StringNew = stringNew;
 	Plugin::ReleaseObject = releaseObject;
+	Plugin::SetException = setException;
 	/*BEGIN INIT BODY*/
 	Plugin::SystemDiagnosticsStopwatchConstructor = systemDiagnosticsStopwatchConstructor;
 	Plugin::SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds = systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds;
@@ -1866,34 +1936,98 @@ DLLEXPORT void Init(
 	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString = systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString;
 	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue;
 	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue;
+	Plugin::SystemExceptionConstructorSystemString = systemExceptionConstructorSystemString;
 	/*END INIT BODY*/
 	
-	PluginMain();
+	try
+	{
+		PluginMain();
+	}
+	catch (System::Exception ex)
+	{
+		Plugin::SetException(ex.Handle);
+	}
+	catch (...)
+	{
+		System::Exception ex(System::String("Unhandled exception in PluginMain"));
+		Plugin::SetException(ex.Handle);
+	}
 }
 
 /*BEGIN MONOBEHAVIOUR MESSAGES*/
 DLLEXPORT void TestScriptAwake(int32_t thisHandle)
 {
 	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
-	thiz.Awake();
+	try
+	{
+		thiz.Awake();
+	}
+	catch (System::Exception ex)
+	{
+		Plugin::SetException(ex.Handle);
+	}
+	catch (...)
+	{
+		System::Exception ex(System::String("Unhandled exception in MyGame::MonoBehaviours::TestScript::Awake"));
+		Plugin::SetException(ex.Handle);
+	}
 }
+
 
 DLLEXPORT void TestScriptOnAnimatorIK(int32_t thisHandle, int32_t param0)
 {
 	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
-	thiz.OnAnimatorIK(param0);
+	try
+	{
+		thiz.OnAnimatorIK(param0);
+	}
+	catch (System::Exception ex)
+	{
+		Plugin::SetException(ex.Handle);
+	}
+	catch (...)
+	{
+		System::Exception ex(System::String("Unhandled exception in MyGame::MonoBehaviours::TestScript::OnAnimatorIK"));
+		Plugin::SetException(ex.Handle);
+	}
 }
+
 
 DLLEXPORT void TestScriptOnCollisionEnter(int32_t thisHandle, int32_t param0Handle)
 {
 	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
 	UnityEngine::Collision param0(param0Handle);
-	thiz.OnCollisionEnter(param0);
+	try
+	{
+		thiz.OnCollisionEnter(param0);
+	}
+	catch (System::Exception ex)
+	{
+		Plugin::SetException(ex.Handle);
+	}
+	catch (...)
+	{
+		System::Exception ex(System::String("Unhandled exception in MyGame::MonoBehaviours::TestScript::OnCollisionEnter"));
+		Plugin::SetException(ex.Handle);
+	}
 }
+
 
 DLLEXPORT void TestScriptUpdate(int32_t thisHandle)
 {
 	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
-	thiz.Update();
+	try
+	{
+		thiz.Update();
+	}
+	catch (System::Exception ex)
+	{
+		Plugin::SetException(ex.Handle);
+	}
+	catch (...)
+	{
+		System::Exception ex(System::String("Unhandled exception in MyGame::MonoBehaviours::TestScript::Update"));
+		Plugin::SetException(ex.Handle);
+	}
 }
 /*END MONOBEHAVIOUR MESSAGES*/

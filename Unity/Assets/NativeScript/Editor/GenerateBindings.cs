@@ -203,10 +203,10 @@ namespace NativeScript
 			new MessageInfo("Awake"),
 			new MessageInfo("FixedUpdate"),
 			new MessageInfo("LateUpdate"),
-			new MessageInfo("OnAnimatorIK",typeof(int)),
+			new MessageInfo("OnAnimatorIK", typeof(int)),
 			new MessageInfo("OnAnimatorMove"),
-			new MessageInfo("OnApplicationFocus",typeof(bool)),
-			new MessageInfo("OnApplicationPause",typeof(bool)),
+			new MessageInfo("OnApplicationFocus", typeof(bool)),
+			new MessageInfo("OnApplicationPause", typeof(bool)),
 			new MessageInfo("OnApplicationQuit"),
 			// TODO re-enable when arrays are supported
 			// new MessageInfo("OnAudioFilterRead", typeof(float[]), typeof(int)),
@@ -2467,6 +2467,30 @@ namespace NativeScript
 				}
 				builders.CsharpMonoBehaviours.Append(");\n");
 				AppendIndent(
+					csharpIndent + 2,
+					builders.CsharpMonoBehaviours);
+				builders.CsharpMonoBehaviours.Append("if (NativeScript.Bindings.UnhandledCppException != null)\n");
+				AppendIndent(
+					csharpIndent + 2,
+					builders.CsharpMonoBehaviours);
+				builders.CsharpMonoBehaviours.Append("{\n");
+				AppendIndent(
+					csharpIndent + 3,
+					builders.CsharpMonoBehaviours);
+				builders.CsharpMonoBehaviours.Append("Exception ex = NativeScript.Bindings.UnhandledCppException;\n");
+				AppendIndent(
+					csharpIndent + 3,
+					builders.CsharpMonoBehaviours);
+				builders.CsharpMonoBehaviours.Append("NativeScript.Bindings.UnhandledCppException = null;\n");
+				AppendIndent(
+					csharpIndent + 3,
+					builders.CsharpMonoBehaviours);
+				builders.CsharpMonoBehaviours.Append("throw ex;\n");
+				AppendIndent(
+					csharpIndent + 2,
+					builders.CsharpMonoBehaviours);
+				builders.CsharpMonoBehaviours.Append("}\n");
+				AppendIndent(
 					csharpIndent + 1,
 					builders.CsharpMonoBehaviours);
 				builders.CsharpMonoBehaviours.Append("}\n");
@@ -2622,7 +2646,9 @@ namespace NativeScript
 						builders.CppMonoBehaviourMessages.Append("Handle);\n");
 					}
 				}
-				builders.CppMonoBehaviourMessages.Append("\tthiz.");
+				builders.CppMonoBehaviourMessages.Append("\ttry\n");
+				builders.CppMonoBehaviourMessages.Append("\t{\n");
+				builders.CppMonoBehaviourMessages.Append("\t\tthiz.");
 				builders.CppMonoBehaviourMessages.Append(messageInfo.Name);
 				builders.CppMonoBehaviourMessages.Append("(");
 				for (int i = 0; i < numParams; ++i)
@@ -2634,7 +2660,24 @@ namespace NativeScript
 						builders.CppMonoBehaviourMessages.Append(", ");
 					}
 				}
-				builders.CppMonoBehaviourMessages.Append(");\n}\n\n");
+				builders.CppMonoBehaviourMessages.Append(");\n");
+				builders.CppMonoBehaviourMessages.Append("\t}\n");
+				builders.CppMonoBehaviourMessages.Append("\tcatch (System::Exception ex)\n");
+				builders.CppMonoBehaviourMessages.Append("\t{\n");
+				builders.CppMonoBehaviourMessages.Append("\t\tPlugin::SetException(ex.Handle);\n");
+				builders.CppMonoBehaviourMessages.Append("\t}\n");
+				builders.CppMonoBehaviourMessages.Append("\tcatch (...)\n");
+				builders.CppMonoBehaviourMessages.Append("\t{\n");
+				builders.CppMonoBehaviourMessages.Append("\t\tSystem::Exception ex(System::String(\"Unhandled exception in ");
+				AppendCppTypeName(
+					type,
+					builders.CppMonoBehaviourMessages);
+				builders.CppMonoBehaviourMessages.Append("::");
+				builders.CppMonoBehaviourMessages.Append(messageInfo.Name);
+				builders.CppMonoBehaviourMessages.Append("\"));\n");
+				builders.CppMonoBehaviourMessages.Append("\t\tPlugin::SetException(ex.Handle);\n");
+				builders.CppMonoBehaviourMessages.Append("\t}\n");
+				builders.CppMonoBehaviourMessages.Append("}\n\n\n");
 			}
 			
 			// C# Class extending MonoBehaviour (end)

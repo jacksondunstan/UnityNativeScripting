@@ -266,6 +266,7 @@ namespace NativeScript
 			int maxManagedObjects,
 			IntPtr releaseObject,
 			IntPtr stringNew,
+			IntPtr setException,
 			/*BEGIN INIT PARAMS*/
 			IntPtr systemDiagnosticsStopwatchConstructor,
 			IntPtr systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds,
@@ -309,7 +310,8 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue,
 			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString,
 			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue,
-			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue,
+			IntPtr systemExceptionConstructorSystemString
 			/*END INIT PARAMS*/);
 
 		/*BEGIN MONOBEHAVIOUR DELEGATES*/
@@ -420,6 +422,7 @@ namespace NativeScript
 			int maxManagedObjects,
 			IntPtr releaseObject,
 			IntPtr stringNew,
+			IntPtr setException,
 			/*BEGIN INIT PARAMS*/
 			IntPtr systemDiagnosticsStopwatchConstructor,
 			IntPtr systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds,
@@ -463,7 +466,8 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue,
 			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString,
 			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue,
-			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue
+			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue,
+			IntPtr systemExceptionConstructorSystemString
 			/*END INIT PARAMS*/);
 		
 		/*BEGIN MONOBEHAVIOUR IMPORTS*/
@@ -483,6 +487,7 @@ namespace NativeScript
 		
 		delegate void ReleaseObjectDelegate(int handle);
 		delegate int StringNewDelegate(string chars);
+		delegate void SetExceptionDelegate(int handle);
 		
 		/*BEGIN DELEGATE TYPES*/
 		delegate int SystemDiagnosticsStopwatchConstructorDelegate();
@@ -526,7 +531,10 @@ namespace NativeScript
 		delegate int SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemStringDelegate(int valueHandle);
 		delegate int SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValueDelegate(int thisHandle);
 		delegate void SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValueDelegate(int thisHandle, int valueHandle);
+		delegate int SystemExceptionConstructorSystemStringDelegate(int messageHandle);
 		/*END DELEGATE TYPES*/
+		
+		public static Exception UnhandledCppException;
 		
 		/// <summary>
 		/// Open the C++ plugin and call its PluginMain()
@@ -567,6 +575,7 @@ namespace NativeScript
 				maxManagedObjects,
 				Marshal.GetFunctionPointerForDelegate(new ReleaseObjectDelegate(ReleaseObject)),
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
+				Marshal.GetFunctionPointerForDelegate(new SetExceptionDelegate(SetException)),
 				/*BEGIN INIT CALL*/
 				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchConstructorDelegate(SystemDiagnosticsStopwatchConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchPropertyGetElapsedMillisecondsDelegate(SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)),
@@ -610,9 +619,16 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValueDelegate(SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)),
 				Marshal.GetFunctionPointerForDelegate(new SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemStringDelegate(SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValueDelegate(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)),
-				Marshal.GetFunctionPointerForDelegate(new SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValueDelegate(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue))
+				Marshal.GetFunctionPointerForDelegate(new SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValueDelegate(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)),
+				Marshal.GetFunctionPointerForDelegate(new SystemExceptionConstructorSystemStringDelegate(SystemExceptionConstructorSystemString))
 				/*END INIT CALL*/
 				);
+			if (UnhandledCppException != null)
+			{
+				Exception ex = UnhandledCppException;
+				UnhandledCppException = null;
+				throw new Exception("Unhandled C++ exception in Init", ex);
+			}
 		}
 		
 		/// <summary>
@@ -636,7 +652,7 @@ namespace NativeScript
 		{
 			if (handle != 0)
 			{
-				NativeScript.Bindings.ObjectStore.Remove(handle);
+				ObjectStore.Remove(handle);
 			}
 		}
 		
@@ -644,8 +660,14 @@ namespace NativeScript
 		static int StringNew(
 			string chars)
 		{
-			int handle = NativeScript.Bindings.ObjectStore.Store(chars);
+			int handle = ObjectStore.Store(chars);
 			return handle;
+		}
+		
+		[MonoPInvokeCallback(typeof(SetExceptionDelegate))]
+		static void SetException(int handle)
+		{
+			UnhandledCppException = ObjectStore.Get(handle) as Exception;
 		}
 		
 		/*BEGIN FUNCTIONS*/
@@ -961,6 +983,14 @@ namespace NativeScript
 			var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
 			thiz.Value = value;
 		}
+		
+		[MonoPInvokeCallback(typeof(SystemExceptionConstructorSystemStringDelegate))]
+		static int SystemExceptionConstructorSystemString(int messageHandle)
+		{
+			var message = (string)NativeScript.Bindings.ObjectStore.Get(messageHandle);
+			var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Exception(message));
+			return returnValue;
+		}
 		/*END FUNCTIONS*/
 	}
 }
@@ -982,22 +1012,46 @@ namespace MyGame
 			public void Awake()
 			{
 				NativeScript.Bindings.TestScriptAwake(thisHandle);
+				if (NativeScript.Bindings.UnhandledCppException != null)
+				{
+					Exception ex = NativeScript.Bindings.UnhandledCppException;
+					NativeScript.Bindings.UnhandledCppException = null;
+					throw ex;
+				}
 			}
 			
 			public void OnAnimatorIK(int param0)
 			{
 				NativeScript.Bindings.TestScriptOnAnimatorIK(thisHandle, param0);
+				if (NativeScript.Bindings.UnhandledCppException != null)
+				{
+					Exception ex = NativeScript.Bindings.UnhandledCppException;
+					NativeScript.Bindings.UnhandledCppException = null;
+					throw ex;
+				}
 			}
 			
 			public void OnCollisionEnter(UnityEngine.Collision param0)
 			{
 				int param0Handle = NativeScript.Bindings.ObjectStore.Store(param0);
 				NativeScript.Bindings.TestScriptOnCollisionEnter(thisHandle, param0Handle);
+				if (NativeScript.Bindings.UnhandledCppException != null)
+				{
+					Exception ex = NativeScript.Bindings.UnhandledCppException;
+					NativeScript.Bindings.UnhandledCppException = null;
+					throw ex;
+				}
 			}
 			
 			public void Update()
 			{
 				NativeScript.Bindings.TestScriptUpdate(thisHandle);
+				if (NativeScript.Bindings.UnhandledCppException != null)
+				{
+					Exception ex = NativeScript.Bindings.UnhandledCppException;
+					NativeScript.Bindings.UnhandledCppException = null;
+					throw ex;
+				}
 			}
 		}
 	}

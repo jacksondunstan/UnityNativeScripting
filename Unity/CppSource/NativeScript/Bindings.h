@@ -403,6 +403,11 @@ namespace System
 	}
 }
 
+namespace System
+{
+	struct Exception;
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -783,6 +788,22 @@ namespace System
 			};
 		}
 	}
+}
+
+namespace System
+{
+	struct Exception : System::Object
+	{
+		Exception(std::nullptr_t n);
+		Exception(int32_t handle);
+		Exception(const Exception& other);
+		Exception(Exception&& other);
+		~Exception();
+		Exception& operator=(const Exception& other);
+		Exception& operator=(std::nullptr_t other);
+		Exception& operator=(Exception&& other);
+		Exception(System::String message);
+	};
 }
 
 namespace MyGame

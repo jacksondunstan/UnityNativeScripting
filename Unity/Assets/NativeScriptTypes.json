@@ -318,6 +318,16 @@
 					]
 				}
 			]
+		},
+		{
+			"Name": "System.Exception",
+			"Constructors": [
+				{
+					"ParamTypes": [
+						"System.String"
+					]
+				}
+			]
 		}
 	],
 	"MonoBehaviours": [
