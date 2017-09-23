@@ -316,7 +316,9 @@ namespace NativeScript
 			IntPtr systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue,
 			IntPtr systemExceptionConstructorSystemString
 			/*END INIT PARAMS*/);
-
+		
+		public delegate void SetCsharpExceptionDelegate(int handle);
+		
 		/*BEGIN MONOBEHAVIOUR DELEGATES*/
 		public delegate void TestScriptAwakeDelegate(int thisHandle);
 		public static TestScriptAwakeDelegate TestScriptAwake;
@@ -473,6 +475,9 @@ namespace NativeScript
 			IntPtr systemExceptionConstructorSystemString
 			/*END INIT PARAMS*/);
 		
+		[DllImport(PluginName)]
+		static extern void SetCsharpException(int handle);
+		
 		/*BEGIN MONOBEHAVIOUR IMPORTS*/
 		[DllImport(Constants.PluginName)]
 		public static extern void TestScriptAwake(int thisHandle);
@@ -538,6 +543,7 @@ namespace NativeScript
 		/*END DELEGATE TYPES*/
 		
 		public static Exception UnhandledCppException;
+		public static SetCsharpExceptionDelegate SetCsharpException;
 		
 		/// <summary>
 		/// Open the C++ plugin and call its PluginMain()
@@ -564,6 +570,9 @@ namespace NativeScript
 			InitDelegate Init = GetDelegate<InitDelegate>(
 				libraryHandle,
 				"Init");
+			SetCsharpException = GetDelegate<SetCsharpExceptionDelegate>(
+				libraryHandle,
+				"SetCsharpException");
 			/*BEGIN MONOBEHAVIOUR GETDELEGATE CALLS*/
 			TestScriptAwake = GetDelegate<TestScriptAwakeDelegate>(libraryHandle, "TestScriptAwake");
 			TestScriptOnAnimatorIK = GetDelegate<TestScriptOnAnimatorIKDelegate>(libraryHandle, "TestScriptOnAnimatorIK");
@@ -677,322 +686,640 @@ namespace NativeScript
 		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchConstructorDelegate))]
 		static int SystemDiagnosticsStopwatchConstructor()
 		{
-			var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Diagnostics.Stopwatch());
-			return returnValue;
+			try
+			{
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Diagnostics.Stopwatch());
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchPropertyGetElapsedMillisecondsDelegate))]
 		static long SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds(int thisHandle)
 		{
-			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.ElapsedMilliseconds;
-			return returnValue;
+			try
+			{
+				var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.ElapsedMilliseconds;
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(long);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchMethodStartDelegate))]
 		static void SystemDiagnosticsStopwatchMethodStart(int thisHandle)
 		{
-			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			thiz.Start();
+			try
+			{
+				var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				thiz.Start();
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchMethodResetDelegate))]
 		static void SystemDiagnosticsStopwatchMethodReset(int thisHandle)
 		{
-			var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			thiz.Reset();
+			try
+			{
+				var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				thiz.Reset();
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertyGetNameDelegate))]
 		static int UnityEngineObjectPropertyGetName(int thisHandle)
 		{
-			var thiz = (UnityEngine.Object)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.name;
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (UnityEngine.Object)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.name;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertySetNameDelegate))]
 		static void UnityEngineObjectPropertySetName(int thisHandle, int valueHandle)
 		{
-			var thiz = (UnityEngine.Object)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
-			thiz.name = value;
+			try
+			{
+				var thiz = (UnityEngine.Object)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
+				thiz.name = value;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineGameObjectConstructorDelegate))]
 		static int UnityEngineGameObjectConstructor()
 		{
-			var returnValue = NativeScript.Bindings.ObjectStore.Store(new UnityEngine.GameObject());
-			return returnValue;
+			try
+			{
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new UnityEngine.GameObject());
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineGameObjectConstructorSystemStringDelegate))]
 		static int UnityEngineGameObjectConstructorSystemString(int nameHandle)
 		{
-			var name = (string)NativeScript.Bindings.ObjectStore.Get(nameHandle);
-			var returnValue = NativeScript.Bindings.ObjectStore.Store(new UnityEngine.GameObject(name));
-			return returnValue;
+			try
+			{
+				var name = (string)NativeScript.Bindings.ObjectStore.Get(nameHandle);
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new UnityEngine.GameObject(name));
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineGameObjectPropertyGetTransformDelegate))]
 		static int UnityEngineGameObjectPropertyGetTransform(int thisHandle)
 		{
-			var thiz = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.transform;
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.transform;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodFindSystemStringDelegate))]
 		static int UnityEngineGameObjectMethodFindSystemString(int nameHandle)
 		{
-			var name = (string)NativeScript.Bindings.ObjectStore.Get(nameHandle);
-			var returnValue = UnityEngine.GameObject.Find(name);
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var name = (string)NativeScript.Bindings.ObjectStore.Get(nameHandle);
+				var returnValue = UnityEngine.GameObject.Find(name);
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate))]
 		static int UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript(int thisHandle)
 		{
-			var thiz = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.AddComponent<MyGame.MonoBehaviours.TestScript>();
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.AddComponent<MyGame.MonoBehaviours.TestScript>();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineComponentPropertyGetTransformDelegate))]
 		static int UnityEngineComponentPropertyGetTransform(int thisHandle)
 		{
-			var thiz = (UnityEngine.Component)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.transform;
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (UnityEngine.Component)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.transform;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertyGetPositionDelegate))]
 		static UnityEngine.Vector3 UnityEngineTransformPropertyGetPosition(int thisHandle)
 		{
-			var thiz = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.position;
-			return returnValue;
+			try
+			{
+				var thiz = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.position;
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.Vector3);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertySetPositionDelegate))]
 		static void UnityEngineTransformPropertySetPosition(int thisHandle, ref UnityEngine.Vector3 value)
 		{
-			var thiz = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			thiz.position = value;
+			try
+			{
+				var thiz = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				thiz.position = value;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineDebugMethodLogSystemObjectDelegate))]
 		static void UnityEngineDebugMethodLogSystemObject(int messageHandle)
 		{
-			var message = NativeScript.Bindings.ObjectStore.Get(messageHandle);
-			UnityEngine.Debug.Log(message);
+			try
+			{
+				var message = NativeScript.Bindings.ObjectStore.Get(messageHandle);
+				UnityEngine.Debug.Log(message);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertFieldGetRaiseExceptionsDelegate))]
 		static bool UnityEngineAssertionsAssertFieldGetRaiseExceptions()
 		{
-			var returnValue = UnityEngine.Assertions.Assert.raiseExceptions;
-			return returnValue;
+			try
+			{
+				var returnValue = UnityEngine.Assertions.Assert.raiseExceptions;
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertFieldSetRaiseExceptionsDelegate))]
 		static void UnityEngineAssertionsAssertFieldSetRaiseExceptions(bool value)
 		{
-			UnityEngine.Assertions.Assert.raiseExceptions = value;
+			try
+			{
+				UnityEngine.Assertions.Assert.raiseExceptions = value;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemStringDelegate))]
 		static void UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString(int expectedHandle, int actualHandle)
 		{
-			var expected = (string)NativeScript.Bindings.ObjectStore.Get(expectedHandle);
-			var actual = (string)NativeScript.Bindings.ObjectStore.Get(actualHandle);
-			UnityEngine.Assertions.Assert.AreEqual<string>(expected, actual);
+			try
+			{
+				var expected = (string)NativeScript.Bindings.ObjectStore.Get(expectedHandle);
+				var actual = (string)NativeScript.Bindings.ObjectStore.Get(actualHandle);
+				UnityEngine.Assertions.Assert.AreEqual<string>(expected, actual);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObjectDelegate))]
 		static void UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject(int expectedHandle, int actualHandle)
 		{
-			var expected = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(expectedHandle);
-			var actual = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(actualHandle);
-			UnityEngine.Assertions.Assert.AreEqual<UnityEngine.GameObject>(expected, actual);
+			try
+			{
+				var expected = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(expectedHandle);
+				var actual = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(actualHandle);
+				UnityEngine.Assertions.Assert.AreEqual<UnityEngine.GameObject>(expected, actual);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate))]
 		static void UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(ref int bufferLength, ref int numBuffers)
 		{
-			UnityEngine.AudioSettings.GetDSPBufferSize(out bufferLength, out numBuffers);
+			try
+			{
+				UnityEngine.AudioSettings.GetDSPBufferSize(out bufferLength, out numBuffers);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate))]
 		static void UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(int hostId, ref int addressHandle, ref int port, ref byte error)
 		{
-			var address = (string)NativeScript.Bindings.ObjectStore.Get(addressHandle);
-			UnityEngine.Networking.NetworkTransport.GetBroadcastConnectionInfo(hostId, out address, out port, out error);
-			int addressHandleNew = NativeScript.Bindings.ObjectStore.GetHandle(address);
-			addressHandle = addressHandleNew;
+			try
+			{
+				var address = (string)NativeScript.Bindings.ObjectStore.Get(addressHandle);
+				UnityEngine.Networking.NetworkTransport.GetBroadcastConnectionInfo(hostId, out address, out port, out error);
+				int addressHandleNew = NativeScript.Bindings.ObjectStore.GetHandle(address);
+				addressHandle = addressHandleNew;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineNetworkingNetworkTransportMethodInitDelegate))]
 		static void UnityEngineNetworkingNetworkTransportMethodInit()
 		{
-			UnityEngine.Networking.NetworkTransport.Init();
+			try
+			{
+				UnityEngine.Networking.NetworkTransport.Init();
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate))]
 		static UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(float x, float y, float z)
 		{
-			var returnValue = new UnityEngine.Vector3(x, y, z);
-			return returnValue;
+			try
+			{
+				var returnValue = new UnityEngine.Vector3(x, y, z);
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.Vector3);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineVector3PropertyGetMagnitudeDelegate))]
 		static float UnityEngineVector3PropertyGetMagnitude(ref UnityEngine.Vector3 thiz)
 		{
-			var returnValue = thiz.magnitude;
-			return returnValue;
+			try
+			{
+				var returnValue = thiz.magnitude;
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(float);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate))]
 		static void UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle(ref UnityEngine.Vector3 thiz, float newX, float newY, float newZ)
 		{
-			thiz.Set(newX, newY, newZ);
+			try
+			{
+				thiz.Set(newX, newY, newZ);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(ReleaseUnityEngineRaycastHitDelegate))]
 		static void ReleaseUnityEngineRaycastHit(int handle)
 		{
-			if (handle != 0)
+			try
+			{
+				if (handle != 0)
 			{
 				NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Remove(handle);
+			}
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineRaycastHitPropertyGetPointDelegate))]
 		static UnityEngine.Vector3 UnityEngineRaycastHitPropertyGetPoint(int thisHandle)
 		{
-			var thiz = (UnityEngine.RaycastHit)NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Get(thisHandle);
-			var returnValue = thiz.point;
-			return returnValue;
+			try
+			{
+				var thiz = (UnityEngine.RaycastHit)NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Get(thisHandle);
+				var returnValue = thiz.point;
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.Vector3);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineRaycastHitPropertySetPointDelegate))]
 		static void UnityEngineRaycastHitPropertySetPoint(int thisHandle, ref UnityEngine.Vector3 value)
 		{
-			var thiz = (UnityEngine.RaycastHit)NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Get(thisHandle);
-			thiz.point = value;
-			NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Replace(thisHandle, ref thiz);
+			try
+			{
+				var thiz = (UnityEngine.RaycastHit)NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Get(thisHandle);
+				thiz.point = value;
+				NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Replace(thisHandle, ref thiz);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(UnityEngineRaycastHitPropertyGetTransformDelegate))]
 		static int UnityEngineRaycastHitPropertyGetTransform(int thisHandle)
 		{
-			var thiz = (UnityEngine.RaycastHit)NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Get(thisHandle);
-			var returnValue = thiz.transform;
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (UnityEngine.RaycastHit)NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Get(thisHandle);
+				var returnValue = thiz.transform;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDoubleDelegate))]
 		static void ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(int handle)
 		{
-			if (handle != 0)
+			try
+			{
+				if (handle != 0)
 			{
 				NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Remove(handle);
+			}
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDoubleDelegate))]
 		static int SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble(int keyHandle, double value)
 		{
-			var key = (string)NativeScript.Bindings.ObjectStore.Get(keyHandle);
-			var returnValue = NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Store(new System.Collections.Generic.KeyValuePair<string, double>(key, value));
-			return returnValue;
+			try
+			{
+				var key = (string)NativeScript.Bindings.ObjectStore.Get(keyHandle);
+				var returnValue = NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Store(new System.Collections.Generic.KeyValuePair<string, double>(key, value));
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKeyDelegate))]
 		static int SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey(int thisHandle)
 		{
-			var thiz = (System.Collections.Generic.KeyValuePair<string, double>)NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Get(thisHandle);
-			var returnValue = thiz.Key;
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (System.Collections.Generic.KeyValuePair<string, double>)NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Get(thisHandle);
+				var returnValue = thiz.Key;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValueDelegate))]
 		static double SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue(int thisHandle)
 		{
-			var thiz = (System.Collections.Generic.KeyValuePair<string, double>)NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Get(thisHandle);
-			var returnValue = thiz.Value;
-			return returnValue;
+			try
+			{
+				var thiz = (System.Collections.Generic.KeyValuePair<string, double>)NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Get(thisHandle);
+				var returnValue = thiz.Value;
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(double);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemStringConstructorDelegate))]
 		static int SystemCollectionsGenericListSystemStringConstructor()
 		{
-			var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Collections.Generic.List<string>());
-			return returnValue;
+			try
+			{
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Collections.Generic.List<string>());
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate))]
 		static void SystemCollectionsGenericListSystemStringMethodAddSystemString(int thisHandle, int itemHandle)
 		{
-			var thiz = (System.Collections.Generic.List<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var item = (string)NativeScript.Bindings.ObjectStore.Get(itemHandle);
-			thiz.Add(item);
+			try
+			{
+				var thiz = (System.Collections.Generic.List<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var item = (string)NativeScript.Bindings.ObjectStore.Get(itemHandle);
+				thiz.Add(item);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate))]
 		static int SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(int valueHandle)
 		{
-			var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
-			var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Collections.Generic.LinkedListNode<string>(value));
-			return returnValue;
+			try
+			{
+				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Collections.Generic.LinkedListNode<string>(value));
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate))]
 		static int SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue(int thisHandle)
 		{
-			var thiz = (System.Collections.Generic.LinkedListNode<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.Value;
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (System.Collections.Generic.LinkedListNode<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Value;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValueDelegate))]
 		static void SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue(int thisHandle, int valueHandle)
 		{
-			var thiz = (System.Collections.Generic.LinkedListNode<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
-			thiz.Value = value;
+			try
+			{
+				var thiz = (System.Collections.Generic.LinkedListNode<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
+				thiz.Value = value;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemStringDelegate))]
 		static int SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString(int valueHandle)
 		{
-			var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
-			var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Runtime.CompilerServices.StrongBox<string>(value));
-			return returnValue;
+			try
+			{
+				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Runtime.CompilerServices.StrongBox<string>(value));
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValueDelegate))]
 		static int SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue(int thisHandle)
 		{
-			var thiz = (System.Runtime.CompilerServices.StrongBox<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var returnValue = thiz.Value;
-			return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			try
+			{
+				var thiz = (System.Runtime.CompilerServices.StrongBox<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Value;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValueDelegate))]
 		static void SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue(int thisHandle, int valueHandle)
 		{
-			var thiz = (System.Runtime.CompilerServices.StrongBox<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-			var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
-			thiz.Value = value;
+			try
+			{
+				var thiz = (System.Runtime.CompilerServices.StrongBox<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
+				thiz.Value = value;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemExceptionConstructorSystemStringDelegate))]
 		static int SystemExceptionConstructorSystemString(int messageHandle)
 		{
-			var message = (string)NativeScript.Bindings.ObjectStore.Get(messageHandle);
-			var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Exception(message));
-			return returnValue;
+			try
+			{
+				var message = (string)NativeScript.Bindings.ObjectStore.Get(messageHandle);
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Exception(message));
+				return returnValue;
+			}
+			catch (Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
 		}
 		/*END FUNCTIONS*/
 	}

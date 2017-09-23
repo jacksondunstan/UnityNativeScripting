@@ -1146,6 +1146,7 @@ namespace NativeScript
 				builders.CsharpFunctions.Append(
 					">.Remove(handle);\n\t\t\t}");
 				AppendCsharpFunctionEnd(
+					typeof(void),
 					builders.CsharpFunctions);
 				
 				// C++ function pointer definition
@@ -3989,6 +3990,9 @@ namespace NativeScript
 				output);
 			output.Append(")\n\t\t{\n\t\t\t");
 			
+			// Start try/catch block
+			output.Append("try\n\t\t\t{\n\t\t\t\t");
+			
 			// Get "this"
 			if (!isStatic
 				&& enclosingTypeKind != TypeKind.FullStruct)
@@ -4002,7 +4006,7 @@ namespace NativeScript
 					enclosingType,
 					output);
 				output.Append(
-					".Get(thisHandle);\n\t\t\t");
+					".Get(thisHandle);\n\t\t\t\t");
 			}
 			
 			// Get managed type params from ObjectStore
@@ -4024,7 +4028,7 @@ namespace NativeScript
 					AppendHandleStoreTypeName(paramType, output);
 					output.Append(".Get(");
 					output.Append(param.Name);
-					output.Append("Handle);\n\t\t\t");
+					output.Append("Handle);\n\t\t\t\t");
 				}
 			}
 			
@@ -4085,7 +4089,7 @@ namespace NativeScript
 			string structVariable,
 			StringBuilder output)
 		{
-			output.Append("\n\t\t\t");
+			output.Append("\n\t\t\t\t");
 			AppendHandleStoreTypeName(
 				enclosingType,
 				output);
@@ -4108,7 +4112,7 @@ namespace NativeScript
 					|| param.Kind == TypeKind.ManagedStruct)
 					&& (param.IsOut || param.IsRef))
 				{
-					output.Append("\n\t\t\tint ");
+					output.Append("\n\t\t\t\tint ");
 					output.Append(param.Name);
 					output.Append("HandleNew = ");
 					AppendHandleStoreTypeName(
@@ -4125,7 +4129,7 @@ namespace NativeScript
 					}
 					output.Append('(');
 					output.Append(param.Name);
-					output.Append(");\n\t\t\t");
+					output.Append(");\n\t\t\t\t");
 					output.Append(param.Name);
 					output.Append("Handle = ");
 					output.Append(param.Name);
@@ -4136,7 +4140,7 @@ namespace NativeScript
 			// Return
 			if (!returnType.Equals(typeof(void)))
 			{
-				output.Append("\n\t\t\treturn ");
+				output.Append("\n\t\t\t\treturn ");
 				if (IsFullValueType(returnType))
 				{
 					output.Append("returnValue");
@@ -4152,12 +4156,38 @@ namespace NativeScript
 			}
 			
 			// Returning ends the function
-			AppendCsharpFunctionEnd(output);
+			AppendCsharpFunctionEnd(
+				returnType,
+				output);
 		}
 		
-		static void AppendCsharpFunctionEnd(StringBuilder output)
+		static void AppendCsharpFunctionEnd(
+			Type returnType,
+			StringBuilder output)
 		{
-			output.Append("\n\t\t}\n\t\t\n");
+			output.Append('\n');
+			output.Append("\t\t\t}\n");
+			output.Append("\t\t\tcatch (Exception ex)\n");
+			output.Append("\t\t\t{\n");
+			output.Append("\t\t\t\tNativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));\n");
+			if (returnType != typeof(void))
+			{
+				output.Append("\t\t\t\treturn default(");
+				if (IsFullValueType(returnType))
+				{
+					AppendCsharpTypeName(
+						returnType,
+						output);
+				}
+				else
+				{
+					output.Append("int");
+				}
+				output.Append(");\n");
+			}
+			output.Append("\t\t\t}\n");
+			output.Append("\t\t}\n");
+			output.Append("\t\t\n");
 		}
 		
 		static void AppendCsharpParameterDeclaration(
@@ -4440,6 +4470,20 @@ namespace NativeScript
 				}
 			}
 			output.Append(");\n");
+			
+			// Handle uncaught exceptions from the C# side
+			AppendIndent(indent, output);
+			output.Append("if (Plugin::unhandledCsharpException)\n");
+			AppendIndent(indent, output);
+			output.Append("{\n");
+			AppendIndent(indent + 1, output);
+			output.Append("System::Exception ex(Plugin::unhandledCsharpException);\n");
+			AppendIndent(indent + 1, output);
+			output.Append("Plugin::unhandledCsharpException = nullptr;\n");
+			AppendIndent(indent + 1, output);
+			output.Append("throw ex;\n");
+			AppendIndent(indent, output);
+			output.Append("}\n");
 			
 			// Set out and ref parameters
 			foreach (ParameterInfo param in parameters)

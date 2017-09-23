@@ -21,7 +21,7 @@ void PluginMain()
 {
 	PrintPlatformDefines();
 	Debug::Log(String("Game booted up"));
-	
+		
 	if (!UnityEngine::Assertions::Assert::GetRaiseExceptions())
 	{
 		UnityEngine::Assertions::Assert::SetRaiseExceptions(true);
