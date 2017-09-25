@@ -184,13 +184,13 @@ namespace Plugin
 
 namespace System
 {
-	Object::Object(std::nullptr_t n)
-		: Handle(0)
+	Object::Object(Plugin::InternalUse iu, int32_t handle)
+		: Handle(handle)
 	{
 	}
 	
-	Object::Object(int32_t handle)
-		: Handle(handle)
+	Object::Object(std::nullptr_t n)
+		: Handle(0)
 	{
 	}
 	
@@ -214,13 +214,13 @@ namespace System
 		throw *this;
 	}
 	
-	ValueType::ValueType(std::nullptr_t n)
-		: Object(0)
+	ValueType::ValueType(Plugin::InternalUse iu, int32_t handle)
+		: Object(iu, handle)
 	{
 	}
 	
-	ValueType::ValueType(int32_t handle)
-		: Object(handle)
+	ValueType::ValueType(std::nullptr_t n)
+		: Object(0)
 	{
 	}
 	
@@ -229,8 +229,8 @@ namespace System
 	{
 	}
 	
-	String::String(int32_t handle)
-		: Object(handle)
+	String::String(Plugin::InternalUse iu, int32_t handle)
+		: Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -239,7 +239,7 @@ namespace System
 	}
 	
 	String::String(const String& other)
-		: Object(other.Handle)
+		: Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -248,7 +248,7 @@ namespace System
 	}
 	
 	String::String(String&& other)
-		: Object(other.Handle)
+		: Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -301,7 +301,7 @@ namespace System
 	}
 	
 	String::String(const char* chars)
-		: String(Plugin::StringNew(chars))
+		: Object(Plugin::InternalUse::Only, Plugin::StringNew(chars))
 	{
 	}
 }
@@ -316,8 +316,8 @@ namespace System
 		{
 		}
 		
-		Stopwatch::Stopwatch(int32_t handle)
-			: System::Object(handle)
+		Stopwatch::Stopwatch(Plugin::InternalUse iu, int32_t handle)
+			: System::Object(iu, handle)
 		{
 			if (handle)
 			{
@@ -326,7 +326,7 @@ namespace System
 		}
 		
 		Stopwatch::Stopwatch(const Stopwatch& other)
-			: System::Object(other.Handle)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
 		{
 			if (Handle)
 			{
@@ -335,7 +335,7 @@ namespace System
 		}
 		
 		Stopwatch::Stopwatch(Stopwatch&& other)
-			: System::Object(other.Handle)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
 		{
 			other.Handle = 0;
 		}
@@ -461,8 +461,8 @@ namespace UnityEngine
 	{
 	}
 	
-	Object::Object(int32_t handle)
-		: System::Object(handle)
+	Object::Object(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -471,7 +471,7 @@ namespace UnityEngine
 	}
 	
 	Object::Object(const Object& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -480,7 +480,7 @@ namespace UnityEngine
 	}
 	
 	Object::Object(Object&& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -552,7 +552,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return returnValue;
+		return System::String(Plugin::InternalUse::Only, returnValue);
 	}
 	
 	void Object::SetName(System::String value)
@@ -575,8 +575,8 @@ namespace UnityEngine
 	{
 	}
 	
-	GameObject::GameObject(int32_t handle)
-		: UnityEngine::Object(handle)
+	GameObject::GameObject(Plugin::InternalUse iu, int32_t handle)
+		: UnityEngine::Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -585,7 +585,7 @@ namespace UnityEngine
 	}
 	
 	GameObject::GameObject(const GameObject& other)
-		: UnityEngine::Object(other.Handle)
+		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -594,7 +594,7 @@ namespace UnityEngine
 	}
 	
 	GameObject::GameObject(GameObject&& other)
-		: UnityEngine::Object(other.Handle)
+		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -702,7 +702,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return returnValue;
+		return UnityEngine::Transform(Plugin::InternalUse::Only, returnValue);
 	}
 	
 	UnityEngine::GameObject GameObject::Find(System::String name)
@@ -715,7 +715,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return returnValue;
+		return UnityEngine::GameObject(Plugin::InternalUse::Only, returnValue);
 	}
 	
 	template<> MyGame::MonoBehaviours::TestScript GameObject::AddComponent<MyGame::MonoBehaviours::TestScript>()
@@ -728,7 +728,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return returnValue;
+		return MyGame::MonoBehaviours::TestScript(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -739,8 +739,8 @@ namespace UnityEngine
 	{
 	}
 	
-	Component::Component(int32_t handle)
-		: UnityEngine::Object(handle)
+	Component::Component(Plugin::InternalUse iu, int32_t handle)
+		: UnityEngine::Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -749,7 +749,7 @@ namespace UnityEngine
 	}
 	
 	Component::Component(const Component& other)
-		: UnityEngine::Object(other.Handle)
+		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -758,7 +758,7 @@ namespace UnityEngine
 	}
 	
 	Component::Component(Component&& other)
-		: UnityEngine::Object(other.Handle)
+		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -830,7 +830,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return returnValue;
+		return UnityEngine::Transform(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -841,8 +841,8 @@ namespace UnityEngine
 	{
 	}
 	
-	Transform::Transform(int32_t handle)
-		: UnityEngine::Component(handle)
+	Transform::Transform(Plugin::InternalUse iu, int32_t handle)
+		: UnityEngine::Component(iu, handle)
 	{
 		if (handle)
 		{
@@ -851,7 +851,7 @@ namespace UnityEngine
 	}
 	
 	Transform::Transform(const Transform& other)
-		: UnityEngine::Component(other.Handle)
+		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -860,7 +860,7 @@ namespace UnityEngine
 	}
 	
 	Transform::Transform(Transform&& other)
-		: UnityEngine::Component(other.Handle)
+		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -955,8 +955,8 @@ namespace UnityEngine
 	{
 	}
 	
-	Debug::Debug(int32_t handle)
-		: System::Object(handle)
+	Debug::Debug(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -965,7 +965,7 @@ namespace UnityEngine
 	}
 	
 	Debug::Debug(const Debug& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -974,7 +974,7 @@ namespace UnityEngine
 	}
 	
 	Debug::Debug(Debug&& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1111,8 +1111,8 @@ namespace UnityEngine
 	{
 	}
 	
-	Collision::Collision(int32_t handle)
-		: System::Object(handle)
+	Collision::Collision(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -1121,7 +1121,7 @@ namespace UnityEngine
 	}
 	
 	Collision::Collision(const Collision& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -1130,7 +1130,7 @@ namespace UnityEngine
 	}
 	
 	Collision::Collision(Collision&& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1200,8 +1200,8 @@ namespace UnityEngine
 	{
 	}
 	
-	Behaviour::Behaviour(int32_t handle)
-		: UnityEngine::Component(handle)
+	Behaviour::Behaviour(Plugin::InternalUse iu, int32_t handle)
+		: UnityEngine::Component(iu, handle)
 	{
 		if (handle)
 		{
@@ -1210,7 +1210,7 @@ namespace UnityEngine
 	}
 	
 	Behaviour::Behaviour(const Behaviour& other)
-		: UnityEngine::Component(other.Handle)
+		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -1219,7 +1219,7 @@ namespace UnityEngine
 	}
 	
 	Behaviour::Behaviour(Behaviour&& other)
-		: UnityEngine::Component(other.Handle)
+		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1289,8 +1289,8 @@ namespace UnityEngine
 	{
 	}
 	
-	MonoBehaviour::MonoBehaviour(int32_t handle)
-		: UnityEngine::Behaviour(handle)
+	MonoBehaviour::MonoBehaviour(Plugin::InternalUse iu, int32_t handle)
+		: UnityEngine::Behaviour(iu, handle)
 	{
 		if (handle)
 		{
@@ -1299,7 +1299,7 @@ namespace UnityEngine
 	}
 	
 	MonoBehaviour::MonoBehaviour(const MonoBehaviour& other)
-		: UnityEngine::Behaviour(other.Handle)
+		: UnityEngine::Behaviour(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -1308,7 +1308,7 @@ namespace UnityEngine
 	}
 	
 	MonoBehaviour::MonoBehaviour(MonoBehaviour&& other)
-		: UnityEngine::Behaviour(other.Handle)
+		: UnityEngine::Behaviour(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1378,8 +1378,8 @@ namespace UnityEngine
 	{
 	}
 	
-	AudioSettings::AudioSettings(int32_t handle)
-		: System::Object(handle)
+	AudioSettings::AudioSettings(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -1388,7 +1388,7 @@ namespace UnityEngine
 	}
 	
 	AudioSettings::AudioSettings(const AudioSettings& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -1397,7 +1397,7 @@ namespace UnityEngine
 	}
 	
 	AudioSettings::AudioSettings(AudioSettings&& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1481,8 +1481,8 @@ namespace UnityEngine
 		{
 		}
 		
-		NetworkTransport::NetworkTransport(int32_t handle)
-			: System::Object(handle)
+		NetworkTransport::NetworkTransport(Plugin::InternalUse iu, int32_t handle)
+			: System::Object(iu, handle)
 		{
 			if (handle)
 			{
@@ -1491,7 +1491,7 @@ namespace UnityEngine
 		}
 		
 		NetworkTransport::NetworkTransport(const NetworkTransport& other)
-			: System::Object(other.Handle)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
 		{
 			if (Handle)
 			{
@@ -1500,7 +1500,7 @@ namespace UnityEngine
 		}
 		
 		NetworkTransport::NetworkTransport(NetworkTransport&& other)
-			: System::Object(other.Handle)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
 		{
 			other.Handle = 0;
 		}
@@ -1653,8 +1653,8 @@ namespace UnityEngine
 	{
 	}
 	
-	RaycastHit::RaycastHit(int32_t handle)
-		: System::ValueType(handle)
+	RaycastHit::RaycastHit(Plugin::InternalUse iu, int32_t handle)
+		: System::ValueType(iu, handle)
 	{
 		if (handle)
 		{
@@ -1663,7 +1663,7 @@ namespace UnityEngine
 	}
 	
 	RaycastHit::RaycastHit(const RaycastHit& other)
-		: System::ValueType(other.Handle)
+		: System::ValueType(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -1672,7 +1672,7 @@ namespace UnityEngine
 	}
 	
 	RaycastHit::RaycastHit(RaycastHit&& other)
-		: System::ValueType(other.Handle)
+		: System::ValueType(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1769,7 +1769,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return returnValue;
+		return UnityEngine::Transform(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -1784,8 +1784,8 @@ namespace System
 			{
 			}
 			
-			KeyValuePair<System::String, double>::KeyValuePair(int32_t handle)
-				: System::ValueType(handle)
+			KeyValuePair<System::String, double>::KeyValuePair(Plugin::InternalUse iu, int32_t handle)
+				: System::ValueType(iu, handle)
 			{
 				if (handle)
 				{
@@ -1794,7 +1794,7 @@ namespace System
 			}
 			
 			KeyValuePair<System::String, double>::KeyValuePair(const KeyValuePair<System::String, double>& other)
-				: System::ValueType(other.Handle)
+				: System::ValueType(Plugin::InternalUse::Only, other.Handle)
 			{
 				if (Handle)
 				{
@@ -1803,7 +1803,7 @@ namespace System
 			}
 			
 			KeyValuePair<System::String, double>::KeyValuePair(KeyValuePair<System::String, double>&& other)
-				: System::ValueType(other.Handle)
+				: System::ValueType(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -1893,7 +1893,7 @@ namespace System
 					ex->ThrowReferenceToThis();
 					delete ex;
 				}
-				return returnValue;
+				return System::String(Plugin::InternalUse::Only, returnValue);
 			}
 			
 			double KeyValuePair<System::String, double>::GetValue()
@@ -1923,8 +1923,8 @@ namespace System
 			{
 			}
 			
-			List<System::String>::List(int32_t handle)
-				: System::Object(handle)
+			List<System::String>::List(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
 			{
 				if (handle)
 				{
@@ -1933,7 +1933,7 @@ namespace System
 			}
 			
 			List<System::String>::List(const List<System::String>& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				if (Handle)
 				{
@@ -1942,7 +1942,7 @@ namespace System
 			}
 			
 			List<System::String>::List(List<System::String>&& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2048,8 +2048,8 @@ namespace System
 			{
 			}
 			
-			LinkedListNode<System::String>::LinkedListNode(int32_t handle)
-				: System::Object(handle)
+			LinkedListNode<System::String>::LinkedListNode(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
 			{
 				if (handle)
 				{
@@ -2058,7 +2058,7 @@ namespace System
 			}
 			
 			LinkedListNode<System::String>::LinkedListNode(const LinkedListNode<System::String>& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				if (Handle)
 				{
@@ -2067,7 +2067,7 @@ namespace System
 			}
 			
 			LinkedListNode<System::String>::LinkedListNode(LinkedListNode<System::String>&& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2157,7 +2157,7 @@ namespace System
 					ex->ThrowReferenceToThis();
 					delete ex;
 				}
-				return returnValue;
+				return System::String(Plugin::InternalUse::Only, returnValue);
 			}
 			
 			void LinkedListNode<System::String>::SetValue(System::String value)
@@ -2186,8 +2186,8 @@ namespace System
 			{
 			}
 			
-			StrongBox<System::String>::StrongBox(int32_t handle)
-				: System::Object(handle)
+			StrongBox<System::String>::StrongBox(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
 			{
 				if (handle)
 				{
@@ -2196,7 +2196,7 @@ namespace System
 			}
 			
 			StrongBox<System::String>::StrongBox(const StrongBox<System::String>& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				if (Handle)
 				{
@@ -2205,7 +2205,7 @@ namespace System
 			}
 			
 			StrongBox<System::String>::StrongBox(StrongBox<System::String>&& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2295,7 +2295,7 @@ namespace System
 					ex->ThrowReferenceToThis();
 					delete ex;
 				}
-				return returnValue;
+				return System::String(Plugin::InternalUse::Only, returnValue);
 			}
 			
 			void StrongBox<System::String>::SetValue(System::String value)
@@ -2324,8 +2324,8 @@ namespace System
 			{
 			}
 			
-			Collection<int32_t>::Collection(int32_t handle)
-				: System::Object(handle)
+			Collection<int32_t>::Collection(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
 			{
 				if (handle)
 				{
@@ -2334,7 +2334,7 @@ namespace System
 			}
 			
 			Collection<int32_t>::Collection(const Collection<int32_t>& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				if (Handle)
 				{
@@ -2343,7 +2343,7 @@ namespace System
 			}
 			
 			Collection<int32_t>::Collection(Collection<int32_t>&& other)
-				: System::Object(other.Handle)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2419,8 +2419,8 @@ namespace System
 			{
 			}
 			
-			KeyedCollection<System::String, int32_t>::KeyedCollection(int32_t handle)
-				: System::Collections::ObjectModel::Collection<int32_t>(handle)
+			KeyedCollection<System::String, int32_t>::KeyedCollection(Plugin::InternalUse iu, int32_t handle)
+				: System::Collections::ObjectModel::Collection<int32_t>(iu, handle)
 			{
 				if (handle)
 				{
@@ -2429,7 +2429,7 @@ namespace System
 			}
 			
 			KeyedCollection<System::String, int32_t>::KeyedCollection(const KeyedCollection<System::String, int32_t>& other)
-				: System::Collections::ObjectModel::Collection<int32_t>(other.Handle)
+				: System::Collections::ObjectModel::Collection<int32_t>(Plugin::InternalUse::Only, other.Handle)
 			{
 				if (Handle)
 				{
@@ -2438,7 +2438,7 @@ namespace System
 			}
 			
 			KeyedCollection<System::String, int32_t>::KeyedCollection(KeyedCollection<System::String, int32_t>&& other)
-				: System::Collections::ObjectModel::Collection<int32_t>(other.Handle)
+				: System::Collections::ObjectModel::Collection<int32_t>(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2510,8 +2510,8 @@ namespace System
 	{
 	}
 	
-	Exception::Exception(int32_t handle)
-		: System::Object(handle)
+	Exception::Exception(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
 	{
 		if (handle)
 		{
@@ -2520,7 +2520,7 @@ namespace System
 	}
 	
 	Exception::Exception(const Exception& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -2529,7 +2529,7 @@ namespace System
 	}
 	
 	Exception::Exception(Exception&& other)
-		: System::Object(other.Handle)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -2617,8 +2617,8 @@ namespace System
 	{
 	}
 	
-	SystemException::SystemException(int32_t handle)
-		: System::Exception(handle)
+	SystemException::SystemException(Plugin::InternalUse iu, int32_t handle)
+		: System::Exception(iu, handle)
 	{
 		if (handle)
 		{
@@ -2627,7 +2627,7 @@ namespace System
 	}
 	
 	SystemException::SystemException(const SystemException& other)
-		: System::Exception(other.Handle)
+		: System::Exception(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -2636,7 +2636,7 @@ namespace System
 	}
 	
 	SystemException::SystemException(SystemException&& other)
-		: System::Exception(other.Handle)
+		: System::Exception(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -2706,8 +2706,8 @@ namespace System
 	{
 	}
 	
-	NullReferenceException::NullReferenceException(int32_t handle)
-		: System::SystemException(handle)
+	NullReferenceException::NullReferenceException(Plugin::InternalUse iu, int32_t handle)
+		: System::SystemException(iu, handle)
 	{
 		if (handle)
 		{
@@ -2716,7 +2716,7 @@ namespace System
 	}
 	
 	NullReferenceException::NullReferenceException(const NullReferenceException& other)
-		: System::SystemException(other.Handle)
+		: System::SystemException(Plugin::InternalUse::Only, other.Handle)
 	{
 		if (Handle)
 		{
@@ -2725,7 +2725,7 @@ namespace System
 	}
 	
 	NullReferenceException::NullReferenceException(NullReferenceException&& other)
-		: System::SystemException(other.Handle)
+		: System::SystemException(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -2797,8 +2797,8 @@ namespace MyGame
 		{
 		}
 		
-		TestScript::TestScript(int32_t handle)
-			: UnityEngine::MonoBehaviour(handle)
+		TestScript::TestScript(Plugin::InternalUse iu, int32_t handle)
+			: UnityEngine::MonoBehaviour(iu, handle)
 		{
 			if (handle)
 			{
@@ -2807,7 +2807,7 @@ namespace MyGame
 		}
 		
 		TestScript::TestScript(const TestScript& other)
-			: UnityEngine::MonoBehaviour(other.Handle)
+			: UnityEngine::MonoBehaviour(Plugin::InternalUse::Only, other.Handle)
 		{
 			if (Handle)
 			{
@@ -2816,7 +2816,7 @@ namespace MyGame
 		}
 		
 		TestScript::TestScript(TestScript&& other)
-			: UnityEngine::MonoBehaviour(other.Handle)
+			: UnityEngine::MonoBehaviour(Plugin::InternalUse::Only, other.Handle)
 		{
 			other.Handle = 0;
 		}
@@ -2885,7 +2885,7 @@ namespace System
 	struct NullReferenceExceptionThrower : System::NullReferenceException
 	{
 		NullReferenceExceptionThrower(int32_t handle)
-			: System::NullReferenceException(handle)
+			: System::NullReferenceException(Plugin::InternalUse::Only, handle)
 		{
 		}
 	
@@ -3044,13 +3044,15 @@ DLLEXPORT void Init(
 // Receive an unhandled exception from C#
 DLLEXPORT void SetCsharpException(int32_t handle)
 {
-	Plugin::unhandledCsharpException = new System::Exception(handle);
+	Plugin::unhandledCsharpException = new System::Exception(
+		Plugin::InternalUse::Only,
+		handle);
 }
 
 /*BEGIN MONOBEHAVIOUR MESSAGES*/
 DLLEXPORT void TestScriptAwake(int32_t thisHandle)
 {
-	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
+	MyGame::MonoBehaviours::TestScript thiz(Plugin::InternalUse::Only, thisHandle);
 	try
 	{
 		thiz.Awake();
@@ -3069,7 +3071,7 @@ DLLEXPORT void TestScriptAwake(int32_t thisHandle)
 
 DLLEXPORT void TestScriptOnAnimatorIK(int32_t thisHandle, int32_t param0)
 {
-	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
+	MyGame::MonoBehaviours::TestScript thiz(Plugin::InternalUse::Only, thisHandle);
 	try
 	{
 		thiz.OnAnimatorIK(param0);
@@ -3088,8 +3090,8 @@ DLLEXPORT void TestScriptOnAnimatorIK(int32_t thisHandle, int32_t param0)
 
 DLLEXPORT void TestScriptOnCollisionEnter(int32_t thisHandle, int32_t param0Handle)
 {
-	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
-	UnityEngine::Collision param0(param0Handle);
+	MyGame::MonoBehaviours::TestScript thiz(Plugin::InternalUse::Only, thisHandle);
+	UnityEngine::Collision param0(Plugin::InternalUse::Only, param0Handle);
 	try
 	{
 		thiz.OnCollisionEnter(param0);
@@ -3108,7 +3110,7 @@ DLLEXPORT void TestScriptOnCollisionEnter(int32_t thisHandle, int32_t param0Hand
 
 DLLEXPORT void TestScriptUpdate(int32_t thisHandle)
 {
-	MyGame::MonoBehaviours::TestScript thiz(thisHandle);
+	MyGame::MonoBehaviours::TestScript thiz(Plugin::InternalUse::Only, thisHandle);
 	try
 	{
 		thiz.Update();

@@ -2620,7 +2620,7 @@ namespace NativeScript
 				AppendCppTypeName(
 					type,
 					builders.CppMonoBehaviourMessages);
-				builders.CppMonoBehaviourMessages.Append(" thiz(thisHandle);\n");
+				builders.CppMonoBehaviourMessages.Append(" thiz(Plugin::InternalUse::Only, thisHandle);\n");
 				for (int i = 0; i < numParams; ++i)
 				{
 					ParameterInfo param = parameters[i];
@@ -2633,7 +2633,7 @@ namespace NativeScript
 							builders.CppMonoBehaviourMessages);
 						builders.CppMonoBehaviourMessages.Append(" param");
 						builders.CppMonoBehaviourMessages.Append(i);
-						builders.CppMonoBehaviourMessages.Append("(param");
+						builders.CppMonoBehaviourMessages.Append("(Plugin::InternalUse::Only, param");
 						builders.CppMonoBehaviourMessages.Append(i);
 						builders.CppMonoBehaviourMessages.Append("Handle);\n");
 					}
@@ -2890,7 +2890,7 @@ namespace NativeScript
 				AppendCppTypeName(
 					exceptionType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("(handle)\n");
+				builders.CppMethodDefinitions.Append("(Plugin::InternalUse::Only, handle)\n");
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
@@ -3442,7 +3442,7 @@ namespace NativeScript
 				AppendCppTypeParameters(
 					typeParams,
 					output);
-				output.Append("(int32_t handle);\n");
+				output.Append("(Plugin::InternalUse iu, int32_t handle);\n");
 				
 				// Copy constructor
 				AppendIndent(indent + 1, output);
@@ -3480,7 +3480,7 @@ namespace NativeScript
 				
 				// Destructor
 				AppendIndent(indent + 1, output);
-				output.Append('~');
+				output.Append("virtual ~");
 				AppendWithoutGenericTypeCountSuffix(
 					type.Name,
 					output);
@@ -3636,13 +3636,13 @@ namespace NativeScript
 				AppendWithoutGenericTypeCountSuffix(
 					enclosingType.Name,
 					output);
-				output.Append("(int32_t handle)\n");
+				output.Append("(Plugin::InternalUse iu, int32_t handle)\n");
 				AppendIndent(indent, output);
 				output.Append("\t: ");
 				AppendCppTypeName(
 					baseType,
 					output);
-				output.Append("(handle)\n");
+				output.Append("(iu, handle)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				AppendIndent(indent + 1, output);
@@ -3689,7 +3689,7 @@ namespace NativeScript
 				AppendCppTypeName(
 					baseType,
 					output);
-				output.Append("(other.Handle)\n");
+				output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				AppendIndent(indent + 1, output);
@@ -3736,7 +3736,7 @@ namespace NativeScript
 				AppendCppTypeName(
 					baseType,
 					output);
-				output.Append("(other.Handle)\n");
+				output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				AppendIndent(indent + 1, output);
@@ -4725,7 +4725,19 @@ namespace NativeScript
 			if (returnType != null && !returnType.Equals(typeof(void)))
 			{
 				AppendIndent(indent, output);
-				output.Append("return returnValue;\n");
+				output.Append("return ");
+				if (IsFullValueType(returnType))
+				{
+					output.Append("returnValue");
+				}
+				else
+				{
+					AppendCppTypeName(
+						returnType,
+						output);
+					output.Append("(Plugin::InternalUse::Only, returnValue)");
+				}
+				output.Append(";\n");
 			}
 		}
 		
