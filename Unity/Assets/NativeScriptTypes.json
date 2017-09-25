@@ -256,6 +256,11 @@
 					"ParamTypes": []
 				}
 			],
+			"Properties": [
+				{
+					"Name": "Item"
+				}
+			],
 			"Methods": [
 				{
 					"Name": "Add",

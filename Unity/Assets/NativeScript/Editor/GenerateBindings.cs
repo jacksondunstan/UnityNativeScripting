@@ -2210,6 +2210,7 @@ namespace NativeScript
 				enclosingType,
 				methodIsStatic,
 				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append('.');
 			builders.CsharpFunctions.Append(methodName);
 			AppendCSharpTypeParameters(
 				methodTypeParams,
@@ -3074,7 +3075,17 @@ namespace NativeScript
 				enclosingType,
 				methodIsStatic,
 				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(fieldName);
+			if (parameters.Length == 1)
+			{
+				builders.CsharpFunctions.Append('[');
+				builders.CsharpFunctions.Append(parameters[0].Name);
+				builders.CsharpFunctions.Append("]");
+			}
+			else
+			{
+				builders.CsharpFunctions.Append('.');
+				builders.CsharpFunctions.Append(fieldName);
+			}
 			builders.CsharpFunctions.Append(';');
 			if (!isReadOnly
 				&& enclosingTypeKind == TypeKind.ManagedStruct)
@@ -3246,9 +3257,21 @@ namespace NativeScript
 				enclosingType,
 				methodIsStatic,
 				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(fieldName);
-			builders.CsharpFunctions.Append(" = ");
-			builders.CsharpFunctions.Append("value;");
+			if (parameters.Length == 2)
+			{
+				builders.CsharpFunctions.Append('[');
+				builders.CsharpFunctions.Append(parameters[0].Name);
+				builders.CsharpFunctions.Append("] = ");
+				builders.CsharpFunctions.Append(parameters[1].Name);
+			}
+			else
+			{
+				builders.CsharpFunctions.Append('.');
+				builders.CsharpFunctions.Append(fieldName);
+				builders.CsharpFunctions.Append(" = ");
+				builders.CsharpFunctions.Append("value");
+			}
+			builders.CsharpFunctions.Append(';');
 			if (!isReadOnly
 				&& enclosingTypeKind == TypeKind.ManagedStruct)
 			{
@@ -4338,7 +4361,6 @@ namespace NativeScript
 			{
 				output.Append("thiz");
 			}
-			output.Append('.');
 		}
 		
 		static void AppendCsharpFunctionCallParameters(

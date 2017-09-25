@@ -735,6 +735,8 @@ namespace System
 				bool operator==(const List<System::String>& other) const;
 				bool operator!=(const List<System::String>& other) const;
 				List();
+				System::String GetItem(int32_t index);
+				void SetItem(int32_t index, System::String value);
 				void Add(System::String item);
 			};
 		}

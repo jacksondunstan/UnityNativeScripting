@@ -32,6 +32,11 @@ void PluginMain()
 	strings.Add("two");
 	strings.Add("three");
 	Debug::Log(strings);
+	String first = strings.GetItem(0);
+	Debug::Log(first);
+	strings.SetItem(0, "new one");
+	first = strings.GetItem(0);
+	Debug::Log(first);
 	
 	System::Runtime::CompilerServices::StrongBox<System::String> strongbox("secret");
 	Debug::Log(strongbox.GetValue());

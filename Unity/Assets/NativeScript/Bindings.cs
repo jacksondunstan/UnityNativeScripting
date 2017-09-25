@@ -307,6 +307,8 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue,
 			IntPtr systemCollectionsGenericListSystemStringConstructor,
+			IntPtr systemCollectionsGenericListSystemStringPropertyGetItem,
+			IntPtr systemCollectionsGenericListSystemStringPropertySetItem,
 			IntPtr systemCollectionsGenericListSystemStringMethodAddSystemString,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue,
@@ -468,6 +470,8 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey,
 			IntPtr systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue,
 			IntPtr systemCollectionsGenericListSystemStringConstructor,
+			IntPtr systemCollectionsGenericListSystemStringPropertyGetItem,
+			IntPtr systemCollectionsGenericListSystemStringPropertySetItem,
 			IntPtr systemCollectionsGenericListSystemStringMethodAddSystemString,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue,
@@ -538,6 +542,8 @@ namespace NativeScript
 		delegate int SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKeyDelegate(int thisHandle);
 		delegate double SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValueDelegate(int thisHandle);
 		delegate int SystemCollectionsGenericListSystemStringConstructorDelegate();
+		delegate int SystemCollectionsGenericListSystemStringPropertyGetItemDelegate(int thisHandle, int index);
+		delegate void SystemCollectionsGenericListSystemStringPropertySetItemDelegate(int thisHandle, int index, int valueHandle);
 		delegate void SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate(int thisHandle, int itemHandle);
 		delegate int SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate(int valueHandle);
 		delegate int SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate(int thisHandle);
@@ -632,6 +638,8 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKeyDelegate(SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValueDelegate(SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringConstructorDelegate(SystemCollectionsGenericListSystemStringConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringPropertyGetItemDelegate(SystemCollectionsGenericListSystemStringPropertyGetItem)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringPropertySetItemDelegate(SystemCollectionsGenericListSystemStringPropertySetItem)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate(SystemCollectionsGenericListSystemStringMethodAddSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate(SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate(SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)),
@@ -1356,6 +1364,46 @@ namespace NativeScript
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemStringPropertyGetItemDelegate))]
+		static int SystemCollectionsGenericListSystemStringPropertyGetItem(int thisHandle, int index)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.List<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz[index];
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemStringPropertySetItemDelegate))]
+		static void SystemCollectionsGenericListSystemStringPropertySetItem(int thisHandle, int index, int valueHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.List<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
+				thiz[index] = value;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
