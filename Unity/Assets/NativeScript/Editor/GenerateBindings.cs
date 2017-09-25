@@ -51,13 +51,25 @@ namespace NativeScript
 		}
 		
 		[Serializable]
+		class JsonPropertyGet
+		{
+			public bool IsReadOnly = true;
+			public string[] Exceptions;
+		}
+		
+		[Serializable]
+		class JsonPropertySet
+		{
+			public bool IsReadOnly;
+			public string[] Exceptions;
+		}
+		
+		[Serializable]
 		class JsonProperty
 		{
 			public string Name;
-			public bool GetIsReadOnly = true;
-			public bool SetIsReadOnly;
-			public string[] GetExceptions;
-			public string[] SetExceptions;
+			public JsonPropertyGet Get;
+			public JsonPropertySet Set;
 		}
 		
 		[Serializable]
@@ -1807,59 +1819,67 @@ namespace NativeScript
 				property.PropertyType,
 				typeGenericArgumentTypes,
 				typeParams);
-			Type[] getExceptionTypes = GetTypes(
-				jsonProperty.GetExceptions,
-				assemblies);
-			Type[] setExceptionTypes = GetTypes(
-				jsonProperty.SetExceptions,
-				assemblies);
-			MethodInfo getMethod = property.GetGetMethod();
-			if (getMethod != null && getMethod.IsPublic)
+			JsonPropertyGet jsonPropertyGet = jsonProperty.Get;
+			if (jsonPropertyGet != null)
 			{
-				ParameterInfo[] parameters = ConvertParameters(
-					getMethod.GetParameters());
-				OverrideGenericParameterTypes(
-					parameters,
-					typeGenericArgumentTypes,
-					typeParams);
-				AppendGetter(
-					property.Name,
-					"Property",
-					parameters,
-					enclosingTypeIsStatic,
-					enclosingTypeKind,
-					getMethod.IsStatic,
-					jsonProperty.GetIsReadOnly,
-					enclosingType,
-					typeParams,
-					propertyType,
-					indent,
-					getExceptionTypes,
-					builders);
+				Type[] exceptionTypes = GetTypes(
+					jsonPropertyGet.Exceptions,
+					assemblies);
+				MethodInfo getMethod = property.GetGetMethod();
+				if (getMethod != null)
+				{
+					ParameterInfo[] parameters = ConvertParameters(
+						getMethod.GetParameters());
+					OverrideGenericParameterTypes(
+						parameters,
+						typeGenericArgumentTypes,
+						typeParams);
+					AppendGetter(
+						property.Name,
+						"Property",
+						parameters,
+						enclosingTypeIsStatic,
+						enclosingTypeKind,
+						getMethod.IsStatic,
+						jsonPropertyGet.IsReadOnly,
+						enclosingType,
+						typeParams,
+						propertyType,
+						indent,
+						exceptionTypes,
+						builders);
+				}
 			}
-			MethodInfo setMethod = property.GetSetMethod();
-			if (setMethod != null && setMethod.IsPublic)
+			JsonPropertySet jsonPropertySet = jsonProperty.Set;
+			if (jsonPropertySet != null)
 			{
-				ParameterInfo[] parameters = ConvertParameters(
-					setMethod.GetParameters());
-				OverrideGenericParameterTypes(
-					parameters,
-					typeGenericArgumentTypes,
-					typeParams);
-				AppendSetter(
-					property.Name,
-					"Property",
-					parameters,
-					enclosingTypeIsStatic,
-					enclosingTypeKind,
-					setMethod.IsStatic,
-					jsonProperty.SetIsReadOnly,
-					enclosingType,
-					typeParams,
-					propertyType,
-					indent,
-					setExceptionTypes,
-					builders);
+				Type[] exceptionTypes = GetTypes(
+					jsonPropertySet.Exceptions,
+					assemblies);
+				MethodInfo method = property.GetSetMethod();
+				if (method != null)
+				{
+					ParameterInfo[] parameters = ConvertParameters(
+						method.GetParameters());
+					OverrideGenericParameterTypes(
+						parameters,
+						typeGenericArgumentTypes,
+						typeParams);
+					AppendSetter(
+						property.Name,
+						"Property",
+						parameters,
+						enclosingTypeIsStatic,
+						enclosingTypeKind,
+						method.IsStatic,
+						jsonPropertySet.IsReadOnly,
+						enclosingType,
+						typeParams,
+						propertyType,
+						indent,
+						exceptionTypes,
+						builders);
+				}
 			}
 		}
 		
@@ -2833,17 +2853,21 @@ namespace NativeScript
 					{
 						foreach (JsonProperty jsonProperty in jsonType.Properties)
 						{
-							if (jsonProperty.GetExceptions != null)
+							JsonPropertyGet jsonPropertyGet = jsonProperty.Get;
+							if (jsonPropertyGet != null
+								&& jsonPropertyGet.Exceptions != null)
 							{
 								AddUniqueTypes(
-									jsonProperty.GetExceptions,
+									jsonPropertyGet.Exceptions,
 									exceptionTypes,
 									assemblies);
 							}
-							if (jsonProperty.SetExceptions != null)
+							JsonPropertySet jsonPropertySet = jsonProperty.Set;
+							if (jsonPropertySet != null
+								&& jsonPropertySet.Exceptions != null)
 							{
 								AddUniqueTypes(
-									jsonProperty.SetExceptions,
+									jsonPropertySet.Exceptions,
 									exceptionTypes,
 									assemblies);
 							}

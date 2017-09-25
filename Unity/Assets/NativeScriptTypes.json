@@ -22,7 +22,8 @@
 			],
 			"Properties": [
 				{
-					"Name": "ElapsedMilliseconds"
+					"Name": "ElapsedMilliseconds",
+					"Get": {}
 				}
 			]
 		},
@@ -30,7 +31,9 @@
 			"Name": "UnityEngine.Object",
 			"Properties": [
 				{
-					"Name": "name"
+					"Name": "name",
+					"Get": {},
+					"Set": {}
 				}
 			]
 		},
@@ -71,9 +74,11 @@
 			"Properties": [
 				{
 					"Name": "transform",
-					"GetExceptions": [
-						"System.NullReferenceException"
-					]
+					"Get": {
+						"Exceptions": [
+							"System.NullReferenceException"
+						]
+					}
 				}
 			]
 		},
@@ -81,7 +86,8 @@
 			"Name": "UnityEngine.Component",
 			"Properties": [
 				{
-					"Name": "transform"
+					"Name": "transform",
+					"Get": {}
 				}
 			]
 		},
@@ -90,9 +96,12 @@
 			"Properties": [
 				{
 					"Name": "position",
-					"SetExceptions": [
-						"System.NullReferenceException"
-					]
+					"Get": {},
+					"Set": {
+						"Exceptions": [
+							"System.NullReferenceException"
+						]
+					}
 				}
 			]
 		},
@@ -196,7 +205,8 @@
 			],
 			"Properties": [
 				{
-					"Name": "magnitude"
+					"Name": "magnitude",
+					"Get": {}
 				}
 			]
 		},
@@ -205,10 +215,12 @@
 			"MaxSimultaneous": 1000,
 			"Properties": [
 				{
-					"Name": "point"
+					"Name": "point",
+					"Get": {}
 				},
 				{
-					"Name": "transform"
+					"Name": "transform",
+					"Get": {}
 				}
 			]
 		},
@@ -235,10 +247,14 @@
 			],
 			"Properties": [
 				{
-					"Name": "Key"
+					"Name": "Key",
+					"Get": {},
+					"Set": {}
 				},
 				{
-					"Name": "Value"
+					"Name": "Value",
+					"Get": {},
+					"Set": {}
 				}
 			]
 		},
@@ -258,7 +274,9 @@
 			],
 			"Properties": [
 				{
-					"Name": "Item"
+					"Name": "Item",
+					"Get": {},
+					"Set": {}
 				}
 			],
 			"Methods": [
@@ -288,7 +306,9 @@
 			],
 			"Properties": [
 				{
-					"Name": "Value"
+					"Name": "Value",
+					"Get": {},
+					"Set": {}
 				}
 			]
 		},
