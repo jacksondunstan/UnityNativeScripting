@@ -103,11 +103,11 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public StringBuilder CsharpMonoBehaviours =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpMonoBehaviourDelegates =
+			public StringBuilder CsharpDelegates =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpMonoBehaviourImports =
+			public StringBuilder CsharpImports =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpMonoBehaviourGetDelegateCalls =
+			public StringBuilder CsharpGetDelegateCalls =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public StringBuilder CppFunctionPointers =
 				new StringBuilder(InitialStringBuilderCapacity);
@@ -2567,20 +2567,20 @@ namespace NativeScript
 					type.Name,
 					messageInfo.Name,
 					parameters,
-					builders.CsharpMonoBehaviourDelegates);
+					builders.CsharpDelegates);
 				
 				// C# Import
 				AppendCsharpImport(
 					type.Name,
 					messageInfo.Name,
 					parameters,
-					builders.CsharpMonoBehaviourImports);
+					builders.CsharpImports);
 				
 				// C# GetDelegate Call
 				AppendCsharpGetDelegateCall(
 					type.Name,
 					messageInfo.Name,
-					builders.CsharpMonoBehaviourGetDelegateCalls);
+					builders.CsharpGetDelegateCalls);
 				
 				// C++ Message
 				builders.CppMonoBehaviourMessages.Append("DLLEXPORT void ");
@@ -2950,7 +2950,7 @@ namespace NativeScript
 					string.Empty,
 					funcName,
 					parameters,
-					builders.CsharpMonoBehaviourImports);
+					builders.CsharpImports);
 				
 				// C# delegate
 				AppendCsharpDelegate(
@@ -2958,14 +2958,14 @@ namespace NativeScript
 					string.Empty,
 					funcName,
 					parameters,
-					builders.CsharpMonoBehaviourDelegates
+					builders.CsharpDelegates
 				);
 				
 				// C# GetDelegate call
 				AppendCsharpGetDelegateCall(
 					string.Empty,
 					funcName,
-					builders.CsharpMonoBehaviourGetDelegateCalls);
+					builders.CsharpGetDelegateCalls);
 			}
 		}
 		
@@ -5233,13 +5233,13 @@ namespace NativeScript
 				builders.CsharpMonoBehaviours);
 			LogStringBuilder(
 				"C# MonoBehaviour Delegates",
-				builders.CsharpMonoBehaviourDelegates);
+				builders.CsharpDelegates);
 			LogStringBuilder(
 				"C# MonoBehaviour Imports",
-				builders.CsharpMonoBehaviourImports);
+				builders.CsharpImports);
 			LogStringBuilder(
 				"C# MonoBehaviour GetDelegate Calls",
-				builders.CsharpMonoBehaviourGetDelegateCalls);
+				builders.CsharpGetDelegateCalls);
 			LogStringBuilder(
 				"C++ function pointers",
 				builders.CppFunctionPointers);
@@ -5282,9 +5282,9 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CsharpInitCall);
 			RemoveTrailingChars(builders.CsharpFunctions);
 			RemoveTrailingChars(builders.CsharpMonoBehaviours);
-			RemoveTrailingChars(builders.CsharpMonoBehaviourDelegates);
-			RemoveTrailingChars(builders.CsharpMonoBehaviourImports);
-			RemoveTrailingChars(builders.CsharpMonoBehaviourGetDelegateCalls);
+			RemoveTrailingChars(builders.CsharpDelegates);
+			RemoveTrailingChars(builders.CsharpImports);
+			RemoveTrailingChars(builders.CsharpGetDelegateCalls);
 			RemoveTrailingChars(builders.CppFunctionPointers);
 			RemoveTrailingChars(builders.CppTypeDeclarations);
 			RemoveTrailingChars(builders.CppMethodDefinitions);
@@ -5361,17 +5361,17 @@ namespace NativeScript
 				csharpContents,
 				"/*BEGIN MONOBEHAVIOUR DELEGATES*/\n",
 				"\n\t\t/*END MONOBEHAVIOUR DELEGATES*/",
-				builders.CsharpMonoBehaviourDelegates.ToString());
+				builders.CsharpDelegates.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
 				"/*BEGIN MONOBEHAVIOUR IMPORTS*/\n",
 				"\n\t\t/*END MONOBEHAVIOUR IMPORTS*/",
-				builders.CsharpMonoBehaviourImports.ToString());
+				builders.CsharpImports.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
 				"/*BEGIN MONOBEHAVIOUR GETDELEGATE CALLS*/\n",
 				"\n\t\t\t/*END MONOBEHAVIOUR GETDELEGATE CALLS*/",
-				builders.CsharpMonoBehaviourGetDelegateCalls.ToString());
+				builders.CsharpGetDelegateCalls.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
 				"/*BEGIN FUNCTION POINTERS*/\n",
