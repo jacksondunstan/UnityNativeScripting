@@ -2898,7 +2898,8 @@ namespace System
 
 DLLEXPORT void SetCsharpExceptionSystemNullReferenceException(int32_t handle)
 {
-	delete Plugin::unhandledCsharpException;	Plugin::unhandledCsharpException = new System::NullReferenceExceptionThrower(handle);
+	delete Plugin::unhandledCsharpException;
+	Plugin::unhandledCsharpException = new System::NullReferenceExceptionThrower(handle);
 }
 /*END METHOD DEFINITIONS*/
 

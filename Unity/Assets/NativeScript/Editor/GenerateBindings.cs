@@ -2933,7 +2933,7 @@ namespace NativeScript
 				builders.CppMethodDefinitions.Append(funcName);
 				builders.CppMethodDefinitions.Append("(int32_t handle)\n");
 				builders.CppMethodDefinitions.Append("{\n");
-				builders.CppMethodDefinitions.Append("\tdelete Plugin::unhandledCsharpException;");
+				builders.CppMethodDefinitions.Append("\tdelete Plugin::unhandledCsharpException;\n");
 				builders.CppMethodDefinitions.Append("\tPlugin::unhandledCsharpException = new ");
 				AppendCppTypeName(
 					exceptionType,
