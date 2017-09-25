@@ -331,6 +331,9 @@ namespace NativeScript
 		
 		public delegate void TestScriptUpdateDelegate(int thisHandle);
 		public static TestScriptUpdateDelegate TestScriptUpdate;
+		
+		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegate(int param0);
+		public static SetCsharpExceptionSystemNullReferenceExceptionDelegate SetCsharpExceptionSystemNullReferenceException;
 		/*END MONOBEHAVIOUR DELEGATES*/
 #endif
 
@@ -490,6 +493,9 @@ namespace NativeScript
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void TestScriptUpdate(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle, int param0);
 		/*END MONOBEHAVIOUR IMPORTS*/
 #endif
 		
@@ -578,6 +584,7 @@ namespace NativeScript
 			TestScriptOnAnimatorIK = GetDelegate<TestScriptOnAnimatorIKDelegate>(libraryHandle, "TestScriptOnAnimatorIK");
 			TestScriptOnCollisionEnter = GetDelegate<TestScriptOnCollisionEnterDelegate>(libraryHandle, "TestScriptOnCollisionEnter");
 			TestScriptUpdate = GetDelegate<TestScriptUpdateDelegate>(libraryHandle, "TestScriptUpdate");
+			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegate>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
 #endif
@@ -691,7 +698,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Diagnostics.Stopwatch());
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -707,7 +714,7 @@ namespace NativeScript
 				var returnValue = thiz.ElapsedMilliseconds;
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(long);
@@ -722,7 +729,7 @@ namespace NativeScript
 				var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz.Start();
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -736,7 +743,7 @@ namespace NativeScript
 				var thiz = (System.Diagnostics.Stopwatch)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz.Reset();
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -751,7 +758,7 @@ namespace NativeScript
 				var returnValue = thiz.name;
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -767,7 +774,7 @@ namespace NativeScript
 				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
 				thiz.name = value;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -781,7 +788,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.ObjectStore.Store(new UnityEngine.GameObject());
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -797,7 +804,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.ObjectStore.Store(new UnityEngine.GameObject(name));
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -813,7 +820,12 @@ namespace NativeScript
 				var returnValue = thiz.transform;
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -829,7 +841,7 @@ namespace NativeScript
 				var returnValue = UnityEngine.GameObject.Find(name);
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -845,7 +857,12 @@ namespace NativeScript
 				var returnValue = thiz.AddComponent<MyGame.MonoBehaviours.TestScript>();
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -861,7 +878,7 @@ namespace NativeScript
 				var returnValue = thiz.transform;
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -877,7 +894,7 @@ namespace NativeScript
 				var returnValue = thiz.position;
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(UnityEngine.Vector3);
@@ -892,7 +909,11 @@ namespace NativeScript
 				var thiz = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz.position = value;
 			}
-			catch (Exception ex)
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -906,7 +927,7 @@ namespace NativeScript
 				var message = NativeScript.Bindings.ObjectStore.Get(messageHandle);
 				UnityEngine.Debug.Log(message);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -920,7 +941,7 @@ namespace NativeScript
 				var returnValue = UnityEngine.Assertions.Assert.raiseExceptions;
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(bool);
@@ -934,7 +955,7 @@ namespace NativeScript
 			{
 				UnityEngine.Assertions.Assert.raiseExceptions = value;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -949,7 +970,7 @@ namespace NativeScript
 				var actual = (string)NativeScript.Bindings.ObjectStore.Get(actualHandle);
 				UnityEngine.Assertions.Assert.AreEqual<string>(expected, actual);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -964,7 +985,7 @@ namespace NativeScript
 				var actual = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(actualHandle);
 				UnityEngine.Assertions.Assert.AreEqual<UnityEngine.GameObject>(expected, actual);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -977,7 +998,7 @@ namespace NativeScript
 			{
 				UnityEngine.AudioSettings.GetDSPBufferSize(out bufferLength, out numBuffers);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -993,7 +1014,7 @@ namespace NativeScript
 				int addressHandleNew = NativeScript.Bindings.ObjectStore.GetHandle(address);
 				addressHandle = addressHandleNew;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1006,7 +1027,7 @@ namespace NativeScript
 			{
 				UnityEngine.Networking.NetworkTransport.Init();
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1020,7 +1041,7 @@ namespace NativeScript
 				var returnValue = new UnityEngine.Vector3(x, y, z);
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(UnityEngine.Vector3);
@@ -1035,7 +1056,7 @@ namespace NativeScript
 				var returnValue = thiz.magnitude;
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(float);
@@ -1049,7 +1070,7 @@ namespace NativeScript
 			{
 				thiz.Set(newX, newY, newZ);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1065,7 +1086,7 @@ namespace NativeScript
 				NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Remove(handle);
 			}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1080,7 +1101,7 @@ namespace NativeScript
 				var returnValue = thiz.point;
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(UnityEngine.Vector3);
@@ -1096,7 +1117,7 @@ namespace NativeScript
 				thiz.point = value;
 				NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Replace(thisHandle, ref thiz);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1111,7 +1132,7 @@ namespace NativeScript
 				var returnValue = thiz.transform;
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1128,7 +1149,7 @@ namespace NativeScript
 				NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Remove(handle);
 			}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1143,7 +1164,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Store(new System.Collections.Generic.KeyValuePair<string, double>(key, value));
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1159,7 +1180,7 @@ namespace NativeScript
 				var returnValue = thiz.Key;
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1175,7 +1196,7 @@ namespace NativeScript
 				var returnValue = thiz.Value;
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(double);
@@ -1190,7 +1211,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Collections.Generic.List<string>());
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1206,7 +1227,7 @@ namespace NativeScript
 				var item = (string)NativeScript.Bindings.ObjectStore.Get(itemHandle);
 				thiz.Add(item);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1221,7 +1242,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Collections.Generic.LinkedListNode<string>(value));
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1237,7 +1258,7 @@ namespace NativeScript
 				var returnValue = thiz.Value;
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1253,7 +1274,7 @@ namespace NativeScript
 				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
 				thiz.Value = value;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1268,7 +1289,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Runtime.CompilerServices.StrongBox<string>(value));
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1284,7 +1305,7 @@ namespace NativeScript
 				var returnValue = thiz.Value;
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);
@@ -1300,7 +1321,7 @@ namespace NativeScript
 				var value = (string)NativeScript.Bindings.ObjectStore.Get(valueHandle);
 				thiz.Value = value;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
@@ -1315,7 +1336,7 @@ namespace NativeScript
 				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Exception(message));
 				return returnValue;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(int);

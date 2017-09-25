@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -30,6 +31,7 @@ namespace NativeScript
 		class JsonConstructor
 		{
 			public string[] ParamTypes;
+			public string[] Exceptions;
 		}
 		
 		[Serializable]
@@ -45,6 +47,7 @@ namespace NativeScript
 			public string[] ParamTypes;
 			public JsonGenericParams[] GenericParams;
 			public bool IsReadOnly;
+			public string[] Exceptions;
 		}
 		
 		[Serializable]
@@ -53,6 +56,8 @@ namespace NativeScript
 			public string Name;
 			public bool GetIsReadOnly = true;
 			public bool SetIsReadOnly;
+			public string[] GetExceptions;
+			public string[] SetExceptions;
 		}
 		
 		[Serializable]
@@ -481,6 +486,12 @@ namespace NativeScript
 				}
 			}
 			
+			// Generate exception setters
+			AppendExceptions(
+				doc,
+				assemblies,
+				builders);
+			
 			RemoveTrailingChars(builders);
 			
 			if (dryRun)
@@ -554,6 +565,10 @@ namespace NativeScript
 			string[] typeNames,
 			Assembly[] assemblies)
 		{
+			if (typeNames == null)
+			{
+				return new Type[0];
+			}
 			Type[] types = new Type[typeNames.Length];
 			for (int i = 0; i < typeNames.Length; ++i)
 			{
@@ -1147,6 +1162,7 @@ namespace NativeScript
 					">.Remove(handle);\n\t\t\t}");
 				AppendCsharpFunctionEnd(
 					typeof(void),
+					new Type[0],
 					builders.CsharpFunctions);
 				
 				// C++ function pointer definition
@@ -1197,9 +1213,9 @@ namespace NativeScript
 					builders.CppInitBody);
 				builders.CppInitBody.Append("\tPlugin::RefCounts");
 				builders.CppInitBody.Append(funcNameSuffix);
-				builders.CppInitBody.Append(" = (int32_t*)calloc(");
+				builders.CppInitBody.Append(" = new int32_t[");
 				builders.CppInitBody.Append(refCountsArrayLengthNameLower);
-				builders.CppInitBody.Append(", sizeof(int32_t));\n");
+				builders.CppInitBody.Append("]();\n");
 				
 				// C# init param for handle array length
 				builders.CsharpInitParams.Append("\t\t\tint ");
@@ -1329,6 +1345,7 @@ namespace NativeScript
 						typeParams,
 						genericArgTypes,
 						indent,
+						assemblies,
 						builders);
 				}
 			}
@@ -1536,6 +1553,10 @@ namespace NativeScript
 					constructorParamTypeNames);
 			}
 			
+			Type[] exceptionTypes = GetTypes(
+				jsonCtor.Exceptions,
+				assemblies);
+			
 			// Build uppercase function name
 			builders.TempStrBuilder.Length = 0;
 			AppendNamespace(
@@ -1610,6 +1631,7 @@ namespace NativeScript
 				AppendCsharpFunctionReturn(
 					parameters,
 					enclosingType,
+					exceptionTypes,
 					builders.CsharpFunctions);
 			}
 			else
@@ -1639,6 +1661,7 @@ namespace NativeScript
 				AppendCsharpFunctionReturn(
 					parameters,
 					typeof(int),
+					exceptionTypes,
 					builders.CsharpFunctions);
 			}
 			
@@ -1775,6 +1798,7 @@ namespace NativeScript
 			Type[] typeParams,
 			Type[] typeGenericArgumentTypes,
 			int indent,
+			Assembly[] assemblies,
 			StringBuilders builders)
 		{
 			PropertyInfo property = enclosingType.GetProperty(
@@ -1783,6 +1807,12 @@ namespace NativeScript
 				property.PropertyType,
 				typeGenericArgumentTypes,
 				typeParams);
+			Type[] getExceptionTypes = GetTypes(
+				jsonProperty.GetExceptions,
+				assemblies);
+			Type[] setExceptionTypes = GetTypes(
+				jsonProperty.SetExceptions,
+				assemblies);
 			MethodInfo getMethod = property.GetGetMethod();
 			if (getMethod != null && getMethod.IsPublic)
 			{
@@ -1804,6 +1834,7 @@ namespace NativeScript
 					typeParams,
 					propertyType,
 					indent,
+					getExceptionTypes,
 					builders);
 			}
 			MethodInfo setMethod = property.GetSetMethod();
@@ -1827,6 +1858,7 @@ namespace NativeScript
 					typeParams,
 					propertyType,
 					indent,
+					setExceptionTypes,
 					builders);
 			}
 		}
@@ -1909,6 +1941,7 @@ namespace NativeScript
 				field.FieldType,
 				typeGenericArgumentTypes,
 				typeTypeParams);
+			Type[] exceptionTypes = new Type[0];
 			AppendGetter(
 				field.Name,
 				"Field",
@@ -1921,6 +1954,7 @@ namespace NativeScript
 				typeTypeParams,
 				fieldType,
 				indent,
+				exceptionTypes,
 				builders);
 			ParameterInfo setParam = new ParameterInfo();
 			setParam.Name = "value";
@@ -1943,6 +1977,7 @@ namespace NativeScript
 				typeTypeParams,
 				fieldType,
 				indent,
+				exceptionTypes,
 				builders);
 		}
 		
@@ -1982,6 +2017,10 @@ namespace NativeScript
 					jsonMethod.ParamTypes);
 			}
 			
+			Type[] exceptionTypes = GetTypes(
+				jsonMethod.Exceptions,
+				assemblies);
+			
 			if (jsonMethod.GenericParams != null)
 			{
 				// Generate for each set of generic types
@@ -2008,6 +2047,7 @@ namespace NativeScript
 						methodTypeParams,
 						parameters,
 						indent,
+						exceptionTypes,
 						builders);
 				}
 			}
@@ -2029,6 +2069,7 @@ namespace NativeScript
 					null,
 					parameters,
 					indent,
+					exceptionTypes,
 					builders);
 			}
 		}
@@ -2105,6 +2146,7 @@ namespace NativeScript
 			Type[] methodTypeParams,
 			ParameterInfo[] parameters,
 			int indent,
+			Type[] exceptionTypes,
 			StringBuilders builders)
 		{
 			// Build uppercase function name
@@ -2189,6 +2231,7 @@ namespace NativeScript
 			AppendCsharpFunctionReturn(
 				parameters,
 				returnType,
+				exceptionTypes,
 				builders.CsharpFunctions);
 			
 			// C++ function pointer
@@ -2519,92 +2562,25 @@ namespace NativeScript
 				}
 				
 				// C# Delegate
-				builders.CsharpMonoBehaviourDelegates.Append(
-					"\t\tpublic delegate void ");
-				builders.CsharpMonoBehaviourDelegates.Append(
-					type.Name);
-				builders.CsharpMonoBehaviourDelegates.Append(
-					messageInfo.Name);
-				builders.CsharpMonoBehaviourDelegates.Append(
-					"Delegate(int thisHandle");
-				if (numParams > 0)
-				{
-					builders.CsharpMonoBehaviourDelegates.Append(", ");
-				}
-				for (int i = 0; i < numParams; ++i)
-				{
-					ParameterInfo param = parameters[i];
-					if (param.Kind == TypeKind.FullStruct)
-					{
-						AppendCsharpTypeName(
-							param.ParameterType,
-							builders.CsharpMonoBehaviourDelegates);
-						builders.CsharpMonoBehaviourDelegates.Append(" param");
-						builders.CsharpMonoBehaviourDelegates.Append(i);
-					}
-					else
-					{
-						builders.CsharpMonoBehaviourDelegates.Append("int param");
-						builders.CsharpMonoBehaviourDelegates.Append(i);
-					}
-					if (i != numParams-1)
-					{
-						builders.CsharpMonoBehaviourDelegates.Append(", ");
-					}
-				}
-				builders.CsharpMonoBehaviourDelegates.Append(");\n");
-				builders.CsharpMonoBehaviourDelegates.Append("\t\tpublic static ");
-				builders.CsharpMonoBehaviourDelegates.Append(type.Name);
-				builders.CsharpMonoBehaviourDelegates.Append(messageInfo.Name);
-				builders.CsharpMonoBehaviourDelegates.Append("Delegate ");
-				builders.CsharpMonoBehaviourDelegates.Append(type.Name);
-				builders.CsharpMonoBehaviourDelegates.Append(messageInfo.Name);
-				builders.CsharpMonoBehaviourDelegates.Append(";\n\t\t\n");
+				AppendCsharpDelegate(
+					false,
+					type.Name,
+					messageInfo.Name,
+					parameters,
+					builders.CsharpMonoBehaviourDelegates);
 				
 				// C# Import
-				builders.CsharpMonoBehaviourImports.Append("\t\t[DllImport(Constants.PluginName)]\n");
-				builders.CsharpMonoBehaviourImports.Append("\t\tpublic static extern void ");
-				builders.CsharpMonoBehaviourImports.Append(type.Name);
-				builders.CsharpMonoBehaviourImports.Append(messageInfo.Name);
-				builders.CsharpMonoBehaviourImports.Append("(int thisHandle");
-				if (numParams > 0)
-				{
-					builders.CsharpMonoBehaviourImports.Append(", ");
-				}
-				for (int i = 0; i < numParams; ++i)
-				{
-					ParameterInfo param = parameters[i];
-					if (param.Kind == TypeKind.FullStruct)
-					{
-						AppendCsharpTypeName(
-							param.ParameterType,
-							builders.CsharpMonoBehaviourImports);
-						builders.CsharpMonoBehaviourImports.Append(" param");
-						builders.CsharpMonoBehaviourImports.Append(i);
-					}
-					else
-					{
-						builders.CsharpMonoBehaviourImports.Append("int param");
-						builders.CsharpMonoBehaviourImports.Append(i);
-					}
-					if (i != numParams-1)
-					{
-						builders.CsharpMonoBehaviourImports.Append(", ");
-					}
-				}
-				builders.CsharpMonoBehaviourImports.Append(");\n\t\t\n");
+				AppendCsharpImport(
+					type.Name,
+					messageInfo.Name,
+					parameters,
+					builders.CsharpMonoBehaviourImports);
 				
 				// C# GetDelegate Call
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append("\t\t\t");
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append(type.Name);
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append(messageInfo.Name);
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append(" = GetDelegate<");
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append(type.Name);
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append(messageInfo.Name);
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append("Delegate>(libraryHandle, \"");
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append(type.Name);
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append(messageInfo.Name);
-				builders.CsharpMonoBehaviourGetDelegateCalls.Append("\");\n");
+				AppendCsharpGetDelegateCall(
+					type.Name,
+					messageInfo.Name,
+					builders.CsharpMonoBehaviourGetDelegateCalls);
 				
 				// C++ Message
 				builders.CppMonoBehaviourMessages.Append("DLLEXPORT void ");
@@ -2708,6 +2684,310 @@ namespace NativeScript
 				builders.CppTypeDefinitions);
 		}
 		
+		static void AppendCsharpDelegate(
+			bool isStatic,
+			string typeName,
+			string funcName,
+			ParameterInfo[] parameters,
+			StringBuilder output)
+		{
+			output.Append("\t\tpublic delegate void ");
+			output.Append(typeName);
+			output.Append(funcName);
+			output.Append("Delegate(");
+			if (!isStatic)
+			{
+				output.Append("int thisHandle");
+				if (parameters.Length > 0)
+				{
+					output.Append(", ");
+				}
+			}
+			for (int i = 0; i < parameters.Length; ++i)
+			{
+				ParameterInfo param = parameters[i];
+				if (param.Kind == TypeKind.FullStruct)
+				{
+					AppendCsharpTypeName(
+						param.ParameterType,
+						output);
+					output.Append(" param");
+					output.Append(i);
+				}
+				else
+				{
+					output.Append("int param");
+					output.Append(i);
+				}
+				if (i != parameters.Length-1)
+				{
+					output.Append(", ");
+				}
+			}
+			output.Append(");\n");
+			output.Append("\t\tpublic static ");
+			output.Append(typeName);
+			output.Append(funcName);
+			output.Append("Delegate ");
+			output.Append(typeName);
+			output.Append(funcName);
+			output.Append(";\n\t\t\n");
+		}
+		
+		static void AppendCsharpGetDelegateCall(
+			string typeName,
+			string funcName,
+			StringBuilder output)
+		{
+			output.Append("\t\t\t");
+			output.Append(typeName);
+			output.Append(funcName);
+			output.Append(" = GetDelegate<");
+			output.Append(typeName);
+			output.Append(funcName);
+			output.Append("Delegate>(libraryHandle, \"");
+			output.Append(typeName);
+			output.Append(funcName);
+			output.Append("\");\n");
+		}
+		
+		static void AppendCsharpImport(
+			string typeName,
+			string funcName,
+			ParameterInfo[] parameters,
+			StringBuilder output
+		)
+		{
+			output.Append("\t\t[DllImport(Constants.PluginName)]\n");
+			output.Append("\t\tpublic static extern void ");
+			output.Append(typeName);
+			output.Append(funcName);
+			output.Append("(int thisHandle");
+			if (parameters.Length > 0)
+			{
+				output.Append(", ");
+			}
+			for (int i = 0; i < parameters.Length; ++i)
+			{
+				ParameterInfo param = parameters[i];
+				if (param.Kind == TypeKind.FullStruct)
+				{
+					AppendCsharpTypeName(
+						param.ParameterType,
+						output);
+					output.Append(" param");
+					output.Append(i);
+				}
+				else
+				{
+					output.Append("int param");
+					output.Append(i);
+				}
+				if (i != parameters.Length-1)
+				{
+					output.Append(", ");
+				}
+			}
+			output.Append(");\n\t\t\n");
+		}
+		
+		static void AppendExceptions(
+			JsonDocument doc,
+			Assembly[] assemblies,
+			StringBuilders builders)
+		{
+			// Gather all specific types of exceptions
+			Dictionary<string, Type> exceptionTypes = new Dictionary<string, Type>();
+			if (doc.Types != null)
+			{
+				foreach (JsonType jsonType in doc.Types)
+				{
+					if (jsonType.Methods != null)
+					{
+						foreach (JsonMethod jsonMethod in jsonType.Methods)
+						{
+							if (jsonMethod.Exceptions != null)
+							{
+								AddUniqueTypes(
+									jsonMethod.Exceptions,
+									exceptionTypes,
+									assemblies);
+							}
+						}
+					}
+					if (jsonType.Constructors != null)
+					{
+						foreach (JsonConstructor jsonCtor in jsonType.Constructors)
+						{
+							if (jsonCtor.Exceptions != null)
+							{
+								AddUniqueTypes(
+									jsonCtor.Exceptions,
+									exceptionTypes,
+									assemblies);
+							}
+						}
+					}
+					if (jsonType.Properties != null)
+					{
+						foreach (JsonProperty jsonProperty in jsonType.Properties)
+						{
+							if (jsonProperty.GetExceptions != null)
+							{
+								AddUniqueTypes(
+									jsonProperty.GetExceptions,
+									exceptionTypes,
+									assemblies);
+							}
+							if (jsonProperty.SetExceptions != null)
+							{
+								AddUniqueTypes(
+									jsonProperty.SetExceptions,
+									exceptionTypes,
+									assemblies);
+							}
+						}
+					}
+				}
+			}
+			
+			foreach (Type exceptionType in exceptionTypes.Values)
+			{
+				// Build function name
+				builders.TempStrBuilder.Length = 0;
+				AppendCsharpSetCsharpExceptionFunctionName(
+					exceptionType,
+					builders.TempStrBuilder);
+				string funcName = builders.TempStrBuilder.ToString();
+				
+				// C++ thrower type
+				int throwerIndent = AppendNamespaceBeginning(
+					exceptionType.Namespace,
+					builders.CppMethodDefinitions);
+				AppendIndent(
+					throwerIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("struct ");
+				builders.CppMethodDefinitions.Append(exceptionType.Name);
+				builders.CppMethodDefinitions.Append("Thrower : ");
+				AppendCppTypeName(
+					exceptionType,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append('\n');
+				AppendIndent(
+					throwerIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("{\n");
+				AppendIndent(
+					throwerIndent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(exceptionType.Name);
+				builders.CppMethodDefinitions.Append("Thrower(int32_t handle)\n");
+				AppendIndent(
+					throwerIndent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(": ");
+				AppendCppTypeName(
+					exceptionType,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("(handle)\n");
+				AppendIndent(
+					throwerIndent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("{\n");
+				AppendIndent(
+					throwerIndent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("}\n");
+				AppendIndent(
+					throwerIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("\n");
+				AppendIndent(
+					throwerIndent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("virtual void ThrowReferenceToThis()\n");
+				AppendIndent(
+					throwerIndent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("{\n");
+				AppendIndent(
+					throwerIndent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("throw *this;\n");
+				AppendIndent(
+					throwerIndent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("}\n");
+				AppendIndent(
+					throwerIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("};\n");
+				AppendNamespaceEnding(
+					throwerIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append('\n');
+				
+				// C++ function
+				builders.CppMethodDefinitions.Append("DLLEXPORT void ");
+				builders.CppMethodDefinitions.Append(funcName);
+				builders.CppMethodDefinitions.Append("(int32_t handle)\n");
+				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.Append("\tdelete Plugin::unhandledCsharpException;");
+				builders.CppMethodDefinitions.Append("\tPlugin::unhandledCsharpException = new ");
+				AppendCppTypeName(
+					exceptionType,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("Thrower(handle);\n");
+				builders.CppMethodDefinitions.Append("}\n\n");
+				
+				// Build parameters
+				ParameterInfo[] parameters = ConvertParameters(
+					new Type[]{ typeof(int) });
+				
+				// C# imports
+				AppendCsharpImport(
+					string.Empty,
+					funcName,
+					parameters,
+					builders.CsharpMonoBehaviourImports);
+				
+				// C# delegate
+				AppendCsharpDelegate(
+					true,
+					string.Empty,
+					funcName,
+					parameters,
+					builders.CsharpMonoBehaviourDelegates
+				);
+				
+				// C# GetDelegate call
+				AppendCsharpGetDelegateCall(
+					string.Empty,
+					funcName,
+					builders.CsharpMonoBehaviourGetDelegateCalls);
+			}
+		}
+		
+		static void AddUniqueTypes(
+			string[] typeNames,
+			Dictionary<string, Type> types,
+			Assembly[] assemblies)
+		{
+			foreach (string typeName in typeNames)
+			{
+				if (!types.ContainsKey(typeName))
+				{
+					Type type = GetType(
+						typeName,
+						assemblies);
+					types.Add(
+						typeName,
+						type);
+				}
+			}
+		}
+		
 		static void AppendGetter(
 			string fieldName,
 			string syntaxType,
@@ -2720,6 +3000,7 @@ namespace NativeScript
 			Type[] enclosingTypeParams,
 			Type fieldType,
 			int indent,
+			Type[] exceptionTypes,
 			StringBuilders builders)
 		{
 			// Build uppercase field name
@@ -2807,6 +3088,7 @@ namespace NativeScript
 			AppendCsharpFunctionReturn(
 				parameters,
 				fieldType,
+				exceptionTypes,
 				builders.CsharpFunctions);
 
 			// C++ function pointer
@@ -2890,6 +3172,7 @@ namespace NativeScript
 			Type[] enclosingTypeParams,
 			Type fieldType,
 			int indent,
+			Type[] exceptionTypes,
 			StringBuilders builders)
 		{
 			// Build uppercased field name
@@ -2978,6 +3261,7 @@ namespace NativeScript
 			AppendCsharpFunctionReturn(
 				parameters,
 				typeof(void),
+				exceptionTypes,
 				builders.CsharpFunctions);
 			
 			// C++ function pointer
@@ -4103,6 +4387,7 @@ namespace NativeScript
 		static void AppendCsharpFunctionReturn(
 			ParameterInfo[] parameters,
 			Type returnType,
+			Type[] exceptionTypes,
 			StringBuilder output)
 		{
 			// Store reference out and ref params and overwrite handles
@@ -4158,18 +4443,48 @@ namespace NativeScript
 			// Returning ends the function
 			AppendCsharpFunctionEnd(
 				returnType,
+				exceptionTypes,
 				output);
 		}
 		
 		static void AppendCsharpFunctionEnd(
 			Type returnType,
+			Type[] exceptionTypes,
 			StringBuilder output)
 		{
 			output.Append('\n');
 			output.Append("\t\t\t}\n");
-			output.Append("\t\t\tcatch (Exception ex)\n");
+			foreach (Type exceptionType in exceptionTypes)
+			{
+				AppendCsharpCatchException(
+					exceptionType,
+					returnType,
+					output);
+			}
+			AppendCsharpCatchException(
+				typeof(Exception),
+				returnType,
+				output);
+			output.Append("\t\t}\n");
+			output.Append("\t\t\n");
+		}
+		
+		static void AppendCsharpCatchException(
+			Type exceptionType,
+			Type returnType,
+			StringBuilder output)
+		{
+			output.Append("\t\t\tcatch (");
+			AppendCsharpTypeName(
+				exceptionType,
+				output);
+			output.Append(" ex)\n");
 			output.Append("\t\t\t{\n");
-			output.Append("\t\t\t\tNativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));\n");
+			output.Append("\t\t\t\tNativeScript.Bindings.");
+			AppendCsharpSetCsharpExceptionFunctionName(
+				exceptionType,
+				output);
+			output.Append("(NativeScript.Bindings.ObjectStore.Store(ex));\n");
 			if (returnType != typeof(void))
 			{
 				output.Append("\t\t\t\treturn default(");
@@ -4186,8 +4501,24 @@ namespace NativeScript
 				output.Append(");\n");
 			}
 			output.Append("\t\t\t}\n");
-			output.Append("\t\t}\n");
-			output.Append("\t\t\n");
+		}
+		
+		static void AppendCsharpSetCsharpExceptionFunctionName(
+			Type exceptionType,
+			StringBuilder output
+		)
+		{
+			output.Append("SetCsharpException");
+			if (exceptionType != typeof(Exception))
+			{
+				AppendNamespace(
+					exceptionType.Namespace,
+					string.Empty,
+					output);
+				AppendWithoutGenericTypeCountSuffix(
+					exceptionType.Name,
+					output);
+			}
 		}
 		
 		static void AppendCsharpParameterDeclaration(
@@ -4477,11 +4808,13 @@ namespace NativeScript
 			AppendIndent(indent, output);
 			output.Append("{\n");
 			AppendIndent(indent + 1, output);
-			output.Append("System::Exception ex(Plugin::unhandledCsharpException);\n");
+			output.Append("System::Exception* ex = Plugin::unhandledCsharpException;\n");
 			AppendIndent(indent + 1, output);
 			output.Append("Plugin::unhandledCsharpException = nullptr;\n");
 			AppendIndent(indent + 1, output);
-			output.Append("throw ex;\n");
+			output.Append("ex->ThrowReferenceToThis();\n");
+			AppendIndent(indent + 1, output);
+			output.Append("delete ex;\n");
 			AppendIndent(indent, output);
 			output.Append("}\n");
 			

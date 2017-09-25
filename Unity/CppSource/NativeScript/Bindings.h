@@ -143,9 +143,11 @@ namespace System
 		int32_t Handle;
 		Object(std::nullptr_t n);
 		Object(int32_t handle);
+		virtual ~Object() = default;
 		operator bool() const;
 		bool operator==(std::nullptr_t other) const;
 		bool operator!=(std::nullptr_t other) const;
+		virtual void ThrowReferenceToThis();
 	};
 	
 	struct ValueType : Object
@@ -395,6 +397,16 @@ namespace System
 namespace System
 {
 	struct Exception;
+}
+
+namespace System
+{
+	struct SystemException;
+}
+
+namespace System
+{
+	struct NullReferenceException;
 }
 
 namespace MyGame
@@ -830,6 +842,40 @@ namespace System
 		bool operator==(const Exception& other) const;
 		bool operator!=(const Exception& other) const;
 		Exception(System::String message);
+	};
+}
+
+namespace System
+{
+	struct SystemException : System::Exception
+	{
+		SystemException(std::nullptr_t n);
+		SystemException(int32_t handle);
+		SystemException(const SystemException& other);
+		SystemException(SystemException&& other);
+		~SystemException();
+		SystemException& operator=(const SystemException& other);
+		SystemException& operator=(std::nullptr_t other);
+		SystemException& operator=(SystemException&& other);
+		bool operator==(const SystemException& other) const;
+		bool operator!=(const SystemException& other) const;
+	};
+}
+
+namespace System
+{
+	struct NullReferenceException : System::SystemException
+	{
+		NullReferenceException(std::nullptr_t n);
+		NullReferenceException(int32_t handle);
+		NullReferenceException(const NullReferenceException& other);
+		NullReferenceException(NullReferenceException&& other);
+		~NullReferenceException();
+		NullReferenceException& operator=(const NullReferenceException& other);
+		NullReferenceException& operator=(std::nullptr_t other);
+		NullReferenceException& operator=(NullReferenceException&& other);
+		bool operator==(const NullReferenceException& other) const;
+		bool operator!=(const NullReferenceException& other) const;
 	};
 }
 

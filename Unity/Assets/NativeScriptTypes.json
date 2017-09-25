@@ -62,12 +62,18 @@
 								"MyGame.MonoBehaviours.TestScript"
 							]
 						}
+					],
+					"Exceptions": [
+						"System.NullReferenceException"
 					]
 				}
 			],
 			"Properties": [
 				{
-					"Name": "transform"
+					"Name": "transform",
+					"GetExceptions": [
+						"System.NullReferenceException"
+					]
 				}
 			]
 		},
@@ -83,7 +89,10 @@
 			"Name": "UnityEngine.Transform",
 			"Properties": [
 				{
-					"Name": "position"
+					"Name": "position",
+					"SetExceptions": [
+						"System.NullReferenceException"
+					]
 				}
 			]
 		},
@@ -328,6 +337,12 @@
 					]
 				}
 			]
+		},
+		{
+			"Name": "System.SystemException"
+		},
+		{
+			"Name": "System.NullReferenceException"
 		}
 	],
 	"MonoBehaviours": [

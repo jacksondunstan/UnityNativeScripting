@@ -174,7 +174,7 @@ namespace Plugin
 namespace Plugin
 {
 	// An unhandled exception caused by C++ calling into C#
-	System::Exception unhandledCsharpException(nullptr);
+	System::Exception* unhandledCsharpException = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -207,6 +207,11 @@ namespace System
 	bool Object::operator!=(std::nullptr_t other) const
 	{
 		return Handle != 0;
+	}
+	
+	void Object::ThrowReferenceToThis()
+	{
+		throw *this;
 	}
 	
 	ValueType::ValueType(std::nullptr_t n)
@@ -398,9 +403,10 @@ namespace System
 			auto returnValue = Plugin::SystemDiagnosticsStopwatchConstructor();
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 			Handle = returnValue;
 			if (returnValue)
@@ -414,9 +420,10 @@ namespace System
 			auto returnValue = Plugin::SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds(Handle);
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 			return returnValue;
 		}
@@ -426,9 +433,10 @@ namespace System
 			Plugin::SystemDiagnosticsStopwatchMethodStart(Handle);
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 	
@@ -437,9 +445,10 @@ namespace System
 			Plugin::SystemDiagnosticsStopwatchMethodReset(Handle);
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 	}
@@ -538,9 +547,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineObjectPropertyGetName(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -550,9 +560,10 @@ namespace UnityEngine
 		Plugin::UnityEngineObjectPropertySetName(Handle, value.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -651,9 +662,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineGameObjectConstructor();
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		Handle = returnValue;
 		if (returnValue)
@@ -668,9 +680,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineGameObjectConstructorSystemString(name.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		Handle = returnValue;
 		if (returnValue)
@@ -684,9 +697,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineGameObjectPropertyGetTransform(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -696,9 +710,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineGameObjectMethodFindSystemString(name.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -708,9 +723,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -809,9 +825,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineComponentPropertyGetTransform(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -910,9 +927,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineTransformPropertyGetPosition(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -922,9 +940,10 @@ namespace UnityEngine
 		Plugin::UnityEngineTransformPropertySetPosition(Handle, value);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -1022,9 +1041,10 @@ namespace UnityEngine
 		Plugin::UnityEngineDebugMethodLogSystemObject(message.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -1038,9 +1058,10 @@ namespace UnityEngine
 			auto returnValue = Plugin::UnityEngineAssertionsAssertFieldGetRaiseExceptions();
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 			return returnValue;
 		}
@@ -1050,9 +1071,10 @@ namespace UnityEngine
 			Plugin::UnityEngineAssertionsAssertFieldSetRaiseExceptions(value);
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 		
@@ -1061,9 +1083,10 @@ namespace UnityEngine
 			Plugin::UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString(expected.Handle, actual.Handle);
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 	
@@ -1072,9 +1095,10 @@ namespace UnityEngine
 			Plugin::UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject(expected.Handle, actual.Handle);
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 	}
@@ -1440,9 +1464,10 @@ namespace UnityEngine
 		Plugin::UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(bufferLength, numBuffers);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -1543,9 +1568,10 @@ namespace UnityEngine
 			Plugin::UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(hostId, &addressHandle, port, error);
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 			if (address->Handle != addressHandle)
 			{
@@ -1566,9 +1592,10 @@ namespace UnityEngine
 			Plugin::UnityEngineNetworkingNetworkTransportMethodInit();
 			if (Plugin::unhandledCsharpException)
 			{
-				System::Exception ex(Plugin::unhandledCsharpException);
+				System::Exception* ex = Plugin::unhandledCsharpException;
 				Plugin::unhandledCsharpException = nullptr;
-				throw ex;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 	}
@@ -1585,9 +1612,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(x, y, z);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		*this = returnValue;
 	}
@@ -1597,9 +1625,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineVector3PropertyGetMagnitude(this);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -1609,9 +1638,10 @@ namespace UnityEngine
 		Plugin::UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle(this, newX, newY, newZ);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -1709,9 +1739,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineRaycastHitPropertyGetPoint(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -1721,9 +1752,10 @@ namespace UnityEngine
 		Plugin::UnityEngineRaycastHitPropertySetPoint(Handle, value);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 	
@@ -1732,9 +1764,10 @@ namespace UnityEngine
 		auto returnValue = Plugin::UnityEngineRaycastHitPropertyGetTransform(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		return returnValue;
 	}
@@ -1838,9 +1871,10 @@ namespace System
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble(key.Handle, value);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				Handle = returnValue;
 				if (returnValue)
@@ -1854,9 +1888,10 @@ namespace System
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey(Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				return returnValue;
 			}
@@ -1866,9 +1901,10 @@ namespace System
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue(Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				return returnValue;
 			}
@@ -1974,9 +2010,10 @@ namespace System
 				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringConstructor();
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				Handle = returnValue;
 				if (returnValue)
@@ -1990,9 +2027,10 @@ namespace System
 				Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString(Handle, item.Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 			}
 		}
@@ -2097,9 +2135,10 @@ namespace System
 				auto returnValue = Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(value.Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				Handle = returnValue;
 				if (returnValue)
@@ -2113,9 +2152,10 @@ namespace System
 				auto returnValue = Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue(Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				return returnValue;
 			}
@@ -2125,9 +2165,10 @@ namespace System
 				Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue(Handle, value.Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 			}
 		}
@@ -2232,9 +2273,10 @@ namespace System
 				auto returnValue = Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString(value.Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				Handle = returnValue;
 				if (returnValue)
@@ -2248,9 +2290,10 @@ namespace System
 				auto returnValue = Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue(Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 				return returnValue;
 			}
@@ -2260,9 +2303,10 @@ namespace System
 				Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue(Handle, value.Handle);
 				if (Plugin::unhandledCsharpException)
 				{
-					System::Exception ex(Plugin::unhandledCsharpException);
+					System::Exception* ex = Plugin::unhandledCsharpException;
 					Plugin::unhandledCsharpException = nullptr;
-					throw ex;
+					ex->ThrowReferenceToThis();
+					delete ex;
 				}
 			}
 		}
@@ -2553,15 +2597,194 @@ namespace System
 		auto returnValue = Plugin::SystemExceptionConstructorSystemString(message.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
-			System::Exception ex(Plugin::unhandledCsharpException);
+			System::Exception* ex = Plugin::unhandledCsharpException;
 			Plugin::unhandledCsharpException = nullptr;
-			throw ex;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 		Handle = returnValue;
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
 		}
+	}
+}
+
+namespace System
+{
+	SystemException::SystemException(std::nullptr_t n)
+		: System::Exception(0)
+	{
+	}
+	
+	SystemException::SystemException(int32_t handle)
+		: System::Exception(handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	SystemException::SystemException(const SystemException& other)
+		: System::Exception(other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	SystemException::SystemException(SystemException&& other)
+		: System::Exception(other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	SystemException::~SystemException()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	SystemException& SystemException::operator=(const SystemException& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	SystemException& SystemException::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	SystemException& SystemException::operator=(SystemException&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool SystemException::operator==(const SystemException& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool SystemException::operator!=(const SystemException& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	NullReferenceException::NullReferenceException(std::nullptr_t n)
+		: System::SystemException(0)
+	{
+	}
+	
+	NullReferenceException::NullReferenceException(int32_t handle)
+		: System::SystemException(handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	NullReferenceException::NullReferenceException(const NullReferenceException& other)
+		: System::SystemException(other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	NullReferenceException::NullReferenceException(NullReferenceException&& other)
+		: System::SystemException(other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	NullReferenceException::~NullReferenceException()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	NullReferenceException& NullReferenceException::operator=(const NullReferenceException& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	NullReferenceException& NullReferenceException::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	NullReferenceException& NullReferenceException::operator=(NullReferenceException&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool NullReferenceException::operator==(const NullReferenceException& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool NullReferenceException::operator!=(const NullReferenceException& other) const
+	{
+		return Handle != other.Handle;
 	}
 }
 
@@ -2656,6 +2879,27 @@ namespace MyGame
 		}
 	}
 }
+
+namespace System
+{
+	struct NullReferenceExceptionThrower : System::NullReferenceException
+	{
+		NullReferenceExceptionThrower(int32_t handle)
+			: System::NullReferenceException(handle)
+		{
+		}
+	
+		virtual void ThrowReferenceToThis()
+		{
+			throw *this;
+		}
+	};
+}
+
+DLLEXPORT void SetCsharpExceptionSystemNullReferenceException(int32_t handle)
+{
+	delete Plugin::unhandledCsharpException;	Plugin::unhandledCsharpException = new System::NullReferenceExceptionThrower(handle);
+}
 /*END METHOD DEFINITIONS*/
 
 ////////////////////////////////////////////////////////////////
@@ -2726,9 +2970,7 @@ DLLEXPORT void Init(
 	
 	// Init managed object ref counting
 	Plugin::RefCountsLenClass = maxManagedObjects;
-	Plugin::RefCountsClass = (int32_t*)calloc(
-		maxManagedObjects,
-		sizeof(int32_t));
+	Plugin::RefCountsClass = new int32_t[maxManagedObjects];
 	
 	// Init pointers to C# functions
 	Plugin::StringNew = stringNew;
@@ -2762,13 +3004,13 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle = unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle;
 	Plugin::ReleaseUnityEngineRaycastHit = releaseUnityEngineRaycastHit;
 	Plugin::RefCountsLenUnityEngineRaycastHit = refCountsLenUnityEngineRaycastHit;
-	Plugin::RefCountsUnityEngineRaycastHit = (int32_t*)calloc(refCountsLenUnityEngineRaycastHit, sizeof(int32_t));
+	Plugin::RefCountsUnityEngineRaycastHit = new int32_t[refCountsLenUnityEngineRaycastHit]();
 	Plugin::UnityEngineRaycastHitPropertyGetPoint = unityEngineRaycastHitPropertyGetPoint;
 	Plugin::UnityEngineRaycastHitPropertySetPoint = unityEngineRaycastHitPropertySetPoint;
 	Plugin::UnityEngineRaycastHitPropertyGetTransform = unityEngineRaycastHitPropertyGetTransform;
 	Plugin::ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = releaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble;
 	Plugin::RefCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = refCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble;
-	Plugin::RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = (int32_t*)calloc(refCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble, sizeof(int32_t));
+	Plugin::RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = new int32_t[refCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble]();
 	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble = systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble;
 	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey;
 	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue;
@@ -2801,7 +3043,7 @@ DLLEXPORT void Init(
 // Receive an unhandled exception from C#
 DLLEXPORT void SetCsharpException(int32_t handle)
 {
-	Plugin::unhandledCsharpException = System::Exception(handle);
+	Plugin::unhandledCsharpException = new System::Exception(handle);
 }
 
 /*BEGIN MONOBEHAVIOUR MESSAGES*/
