@@ -4454,6 +4454,15 @@ namespace NativeScript
 		{
 			output.Append('\n');
 			output.Append("\t\t\t}\n");
+			if (Array.IndexOf(
+				exceptionTypes,
+				typeof(NullReferenceException)) < 0)
+			{
+				AppendCsharpCatchException(
+					typeof(NullReferenceException),
+					returnType,
+					output);
+			}
 			foreach (Type exceptionType in exceptionTypes)
 			{
 				AppendCsharpCatchException(
