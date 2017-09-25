@@ -157,6 +157,7 @@ The code generator supports:
 * `MonoBehaviour` classes with "message" functions like `Update` (except `OnAudioFilterRead`)
 * `out` and `ref` parameters
 * Enumerations
+* Exceptions
 
 The code generator does not support (yet):
 
@@ -164,7 +165,6 @@ The code generator does not support (yet):
 * Delegates
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
 * Overloaded operators
-* Exceptions
 * Default parameters
 * Interfaces
 * `decimal`
