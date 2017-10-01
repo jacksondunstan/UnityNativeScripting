@@ -158,7 +158,7 @@ The code generator supports:
 * `out` and `ref` parameters
 * Enumerations
 * Exceptions
-* Overloaded operators (except `operator true` and `operator false`)
+* Overloaded operators
 
 The code generator does not support (yet):
 

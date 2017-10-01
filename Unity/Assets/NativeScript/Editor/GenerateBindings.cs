@@ -2035,6 +2035,12 @@ namespace NativeScript
 				case "x--":
 					jsonMethod.Name = "op_Decrement";
 					break;
+				case "(true)x":
+					jsonMethod.Name = "op_True";
+					break;
+				case "(false)x":
+					jsonMethod.Name = "op_False";
+					break;
 				case "implicit":
 					jsonMethod.Name = "op_Implicit";
 					break;
@@ -2338,6 +2344,12 @@ namespace NativeScript
 						builders.TempStrBuilder.Append(')');
 						op = builders.TempStrBuilder.ToString();
 						break;
+					case "op_True":
+						op = "(true)";
+						break;
+					case "op_False":
+						op = "(false)";
+						break;
 					case "op_Addition":
 						op = "+";
 						break;
@@ -2496,6 +2508,12 @@ namespace NativeScript
 							builders.TempStrBuilder);
 						cppMethodName = builders.TempStrBuilder.ToString();
 						cppReturnType = null;
+						break;
+					case "op_True":
+						cppMethodName = "TrueOperator";
+						break;
+					case "op_False":
+						cppMethodName = "FalseOperator";
 						break;
 					case "op_Addition":
 						cppMethodName = "operator+";
