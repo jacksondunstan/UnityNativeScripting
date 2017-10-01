@@ -35,6 +35,21 @@
 					"Get": {},
 					"Set": {}
 				}
+			],
+			"Methods": [
+				{
+					"Name": "x==y",
+					"ParamTypes": [
+						"UnityEngine.Object",
+						"UnityEngine.Object"
+					]
+				},
+				{
+					"Name": "implicit",
+					"ParamTypes": [
+						"UnityEngine.Object"
+					]
+				}
 			]
 		},
 		{
@@ -50,12 +65,6 @@
 				}
 			],
 			"Methods": [
-				{
-					"Name": "Find",
-					"ParamTypes": [
-						"System.String"
-					]
-				},
 				{
 					"Name": "AddComponent",
 					"ParamTypes": [],
@@ -200,6 +209,19 @@
 						"System.Single",
 						"System.Single",
 						"System.Single"
+					]
+				},
+				{
+					"Name": "x+y",
+					"ParamTypes": [
+						"UnityEngine.Vector3",
+						"UnityEngine.Vector3"
+					]
+				},
+				{
+					"Name": "-x",
+					"ParamTypes": [
+						"UnityEngine.Vector3"
 					]
 				}
 			],

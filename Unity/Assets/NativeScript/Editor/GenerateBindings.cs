@@ -2014,6 +2014,83 @@ namespace NativeScript
 			int indent,
 			StringBuilders builders)
 		{
+			// Map convenience method names to actual method names
+			switch (jsonMethod.Name)
+			{
+				case "+x":
+					jsonMethod.Name = "op_UnaryPlus";
+					break;
+				case "-x":
+					jsonMethod.Name = "op_UnaryNegation";
+					break;
+				case "!x":
+					jsonMethod.Name = "op_LogicalNot";
+					break;
+				case "~x":
+					jsonMethod.Name = "op_OnesComplement";
+					break;
+				case "x++":
+					jsonMethod.Name = "op_Increment";
+					break;
+				case "x--":
+					jsonMethod.Name = "op_Decrement";
+					break;
+				case "implicit":
+					jsonMethod.Name = "op_Implicit";
+					break;
+				case "explicit":
+					jsonMethod.Name = "op_Explicit";
+					break;
+				case "x+y":
+					jsonMethod.Name = "op_Addition";
+					break;
+				case "x-y":
+					jsonMethod.Name = "op_Subtraction";
+					break;
+				case "x*y":
+					jsonMethod.Name = "op_Multiply";
+					break;
+				case "x/y":
+					jsonMethod.Name = "op_Division";
+					break;
+				case "x%y":
+					jsonMethod.Name = "op_Modulus";
+					break;
+				case "x&y":
+					jsonMethod.Name = "op_BitwiseAnd";
+					break;
+				case "x|y":
+					jsonMethod.Name = "op_BitwiseOr";
+					break;
+				case "x^y":
+					jsonMethod.Name = "op_ExclusiveOr";
+					break;
+				case "x<<y":
+					jsonMethod.Name = "op_LeftShift";
+					break;
+				case "x>>y":
+					jsonMethod.Name = "op_RightShift";
+					break;
+				case "x==y":
+					jsonMethod.Name = "op_Equality";
+					break;
+				case "x!=y":
+					jsonMethod.Name = "op_Inequality";
+					break;
+				case "x<y":
+					jsonMethod.Name = "op_LessThan";
+					break;
+				case "x>y":
+					jsonMethod.Name = "op_GreaterThan";
+					break;
+				case "x<=y":
+					jsonMethod.Name = "op_LessThanOrEqual";
+					break;
+				case "x>=y":
+					jsonMethod.Name = "op_GreaterThanOrEqual";
+					break;
+			}
+			
 			// Get the method
 			MethodInfo method;
 			if (enclosingType.IsGenericType)
@@ -2226,19 +2303,128 @@ namespace NativeScript
 				methodTypeParams,
 				parameters,
 				builders.CsharpFunctions);
-			AppendCsharpFunctionCallSubject(
-				enclosingType,
-				methodIsStatic,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append('.');
-			builders.CsharpFunctions.Append(methodName);
-			AppendCSharpTypeParameters(
-				methodTypeParams,
-				builders.CsharpFunctions);
-			AppendCsharpFunctionCallParameters(
-				methodIsStatic,
-				parameters,
-				builders.CsharpFunctions);
+			if (methodName.StartsWith("op_"))
+			{
+				string op;
+				switch (methodName)
+				{
+					case "op_UnaryPlus":
+						op = "+";
+						break;
+					case "op_UnaryNegation":
+						op = "-";
+						break;
+					case "op_LogicalNot":
+						op = "!";
+						break;
+					case "op_OnesComplement":
+						op = "~";
+						break;
+					case "op_Increment":
+						op = "++";
+						break;
+					case "op_Decrement":
+						op = "--";
+						break;
+					case "op_Implicit":
+						op = string.Empty;
+						break;
+					case "op_Explicit":
+						builders.TempStrBuilder.Length = 0;
+						builders.TempStrBuilder.Append('(');
+						AppendWithoutGenericTypeCountSuffix(
+							returnType.Name,
+							builders.TempStrBuilder);
+						builders.TempStrBuilder.Append(')');
+						op = builders.TempStrBuilder.ToString();
+						break;
+					case "op_Addition":
+						op = "+";
+						break;
+					case "op_Subtraction":
+						op = "-";
+						break;
+					case "op_Multiply":
+						op = "*";
+						break;
+					case "op_Division":
+						op = "/";
+						break;
+					case "op_Modulus":
+						op = "%";
+						break;
+					case "op_BitwiseAnd":
+						op = "&";
+						break;
+					case "op_BitwiseOr":
+						op = "|";
+						break;
+					case "op_ExclusiveOr":
+						op = "^";
+						break;
+					case "op_LeftShift":
+						op = "<<";
+						break;
+					case "op_RightShift":
+						op = ">>";
+						break;
+					case "op_Equality":
+						op = "==";
+						break;
+					case "op_Inequality":
+						op = "!=";
+						break;
+					case "op_LessThan":
+						op = "<";
+						break;
+					case "op_GreaterThan":
+						op = ">";
+						break;
+					case "op_LessThanOrEqual":
+						op = "<=";
+						break;
+					case "op_GreaterThanOrEqual":
+						op = ">=";
+						break;
+					default:
+						throw new Exception(
+							"Unsupported overloaded operator: " + methodName);
+				}
+				switch (parameters.Length)
+				{
+					case 1:
+						builders.CsharpFunctions.Append(op);
+						builders.CsharpFunctions.Append(parameters[0].Name);
+						break;
+					case 2:
+						builders.CsharpFunctions.Append(parameters[0].Name);
+						builders.CsharpFunctions.Append(' ');
+						builders.CsharpFunctions.Append(op);
+						builders.CsharpFunctions.Append(' ');
+						builders.CsharpFunctions.Append(parameters[1].Name);
+						break;
+					default:
+						throw new Exception(
+							"Unsupported number of overloaded operator params: "
+							+ parameters.Length);
+				}
+			}
+			else
+			{
+				AppendCsharpFunctionCallSubject(
+					enclosingType,
+					methodIsStatic,
+					builders.CsharpFunctions);
+				builders.CsharpFunctions.Append('.');
+				builders.CsharpFunctions.Append(methodName);
+				AppendCSharpTypeParameters(
+					methodTypeParams,
+					builders.CsharpFunctions);
+				AppendCsharpFunctionCallParameters(
+					methodIsStatic,
+					parameters,
+					builders.CsharpFunctions);
+			}
 			builders.CsharpFunctions.Append(';');
 			if (!isReadOnly
 				&& enclosingTypeKind == TypeKind.ManagedStruct)
@@ -2266,26 +2452,177 @@ namespace NativeScript
 				builders.CppFunctionPointers);
 			
 			// C++ method declaration
+			string cppMethodName;
+			bool cppMethodIsStatic;
+			ParameterInfo[] cppParameters;
+			ParameterInfo[] cppCallParameters;
+			Type cppReturnType = returnType;
+			if (methodName.StartsWith("op_"))
+			{
+				switch (methodName)
+				{
+					case "op_UnaryPlus":
+						cppMethodName = "operator+";
+						break;
+					case "op_UnaryNegation":
+						cppMethodName = "operator-";
+						break;
+					case "op_LogicalNot":
+						cppMethodName = "operator!";
+						break;
+					case "op_OnesComplement":
+						cppMethodName = "operator~";
+						break;
+					case "op_Increment":
+						cppMethodName = "operator++";
+						break;
+					case "op_Decrement":
+						cppMethodName = "operator--";
+						break;
+					case "op_Implicit":
+						builders.TempStrBuilder.Length = 0;
+						builders.TempStrBuilder.Append("operator ");
+						AppendCppTypeName(
+							returnType,
+							builders.TempStrBuilder);
+						cppMethodName = builders.TempStrBuilder.ToString();
+						cppReturnType = null;
+						break;
+					case "op_Explicit":
+						builders.TempStrBuilder.Length = 0;
+						builders.TempStrBuilder.Append("explicit operator ");
+						AppendCppTypeName(
+							returnType,
+							builders.TempStrBuilder);
+						cppMethodName = builders.TempStrBuilder.ToString();
+						cppReturnType = null;
+						break;
+					case "op_Addition":
+						cppMethodName = "operator+";
+						break;
+					case "op_Subtraction":
+						cppMethodName = "operator-";
+						break;
+					case "op_Multiply":
+						cppMethodName = "operator*";
+						break;
+					case "op_Division":
+						cppMethodName = "operator/";
+						break;
+					case "op_Modulus":
+						cppMethodName = "operator%";
+						break;
+					case "op_BitwiseAnd":
+						cppMethodName = "operator&";
+						break;
+					case "op_BitwiseOr":
+						cppMethodName = "operator|";
+						break;
+					case "op_ExclusiveOr":
+						cppMethodName = "operator^";
+						break;
+					case "op_LeftShift":
+						cppMethodName = "operator<<";
+						break;
+					case "op_RightShift":
+						cppMethodName = "operator>>";
+						break;
+					case "op_Equality":
+						cppMethodName = "operator==";
+						break;
+					case "op_Inequality":
+						cppMethodName = "operator!=";
+						break;
+					case "op_LessThan":
+						cppMethodName = "operator<";
+						break;
+					case "op_GreaterThan":
+						cppMethodName = "operator>";
+						break;
+					case "op_LessThanOrEqual":
+						cppMethodName = "operator<=";
+						break;
+					case "op_GreaterThanOrEqual":
+						cppMethodName = "operator>=";
+						break;
+					default:
+						throw new Exception(
+							"Unsupported overloaded operator: " + methodName);
+				}
+				cppMethodIsStatic = false;
+				ParameterInfo thisParam;
+				switch (enclosingTypeKind)
+				{
+					case TypeKind.Class:
+					case TypeKind.ManagedStruct:
+						thisParam = new ParameterInfo{
+							Name = "Handle",
+							ParameterType = typeof(int),
+							DereferencedParameterType = typeof(int),
+							IsOut = false,
+							IsRef = false,
+							Kind = TypeKind.Primitive
+						};
+						break;
+					default:
+						thisParam = new ParameterInfo{
+							Name = "*this",
+							ParameterType = enclosingType,
+							DereferencedParameterType = enclosingType,
+							IsOut = false,
+							IsRef = false,
+							Kind = TypeKind.Primitive
+						};
+						break;
+				}
+				switch (parameters.Length)
+				{
+					case 1:
+						cppParameters = new ParameterInfo[0];
+						cppCallParameters = new [] {
+							thisParam };
+						break;
+					case 2:
+						cppParameters = new [] {
+							parameters[0] };
+						cppCallParameters = new [] {
+							thisParam,
+							parameters[0]
+						};
+						break;
+					default:
+						throw new Exception(
+							"Unsupported number of overloaded operator parameters: "
+							+ parameters.Length);
+				}
+			}
+			else
+			{
+				cppMethodName = methodName;
+				cppMethodIsStatic = methodIsStatic;
+				cppParameters = parameters;
+				cppCallParameters = parameters;
+			}
 			AppendIndent(
 				indent + 1,
 				builders.CppTypeDefinitions);
 			AppendCppMethodDeclaration(
-				methodName,
+				cppMethodName,
 				enclosingTypeIsStatic,
-				methodIsStatic,
-				returnType,
+				cppMethodIsStatic,
+				cppReturnType,
 				methodTypeParams,
-				parameters,
+				cppParameters,
 				builders.CppTypeDefinitions);
 			
 			// C++ method definition
 			AppendCppMethodDefinition(
 				enclosingType,
-				returnType,
-				methodName,
+				cppReturnType,
+				cppMethodName,
 				enclosingTypeParams,
 				methodTypeParams,
-				parameters,
+				cppParameters,
 				indent,
 				builders.CppMethodDefinitions);
 			AppendIndent(
@@ -2299,7 +2636,7 @@ namespace NativeScript
 				enclosingTypeParams,
 				returnType,
 				funcName,
-				parameters,
+				cppCallParameters,
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendCppMethodReturn(

@@ -156,7 +156,6 @@ namespace System
 		Object(Plugin::InternalUse iu, int32_t handle);
 		Object(std::nullptr_t n);
 		virtual ~Object() = default;
-		operator bool() const;
 		bool operator==(std::nullptr_t other) const;
 		bool operator!=(std::nullptr_t other) const;
 		virtual void ThrowReferenceToThis();
@@ -471,6 +470,8 @@ namespace UnityEngine
 		bool operator!=(const Object& other) const;
 		System::String GetName();
 		void SetName(System::String value);
+		System::Boolean operator==(UnityEngine::Object x);
+		operator System::Boolean();
 	};
 }
 
@@ -491,7 +492,6 @@ namespace UnityEngine
 		GameObject();
 		GameObject(System::String name);
 		UnityEngine::Transform GetTransform();
-		static UnityEngine::GameObject Find(System::String name);
 		template<typename T0> MyGame::MonoBehaviours::TestScript AddComponent();
 	};
 }
@@ -667,6 +667,8 @@ namespace UnityEngine
 		float y;
 		float z;
 		void Set(float newX, float newY, float newZ);
+		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
+		UnityEngine::Vector3 operator-();
 	};
 }
 

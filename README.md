@@ -158,38 +158,17 @@ The code generator supports:
 * `out` and `ref` parameters
 * Enumerations
 * Exceptions
+* Overloaded operators (except `operator true` and `operator false`)
 
 The code generator does not support (yet):
 
 * Arrays (single- or multi-dimensional)
 * Delegates
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
-* Overloaded operators
 * Default parameters
 * Interfaces
 * `decimal`
 * Pointers
-
-The JSON file is laid out as follows:
-
-* **Assemblies** - Paths to custom DLLs. Unity, .NET, and your project are already included. `UNITY_PROJECT`, `UNITY_ASSETS`, `DOTNET_DLLS`, and `UNITY_DLLS` be be replaced by the appropriate path.
-* **Types** - Array of types in the DLL to generate
-	* **Name** - Name of the type including namespace (e.g. `UnityEngine.GameObject`)
-	* **Constructors** - Array of constructors to generate
-		* **Types** - Parameter types of the constructor including namespace
-	* **Methods** - Array of methods to generate
-		* **Name** - Name of the method
-		* **ParamTypes** - Parameter types to the method including namespace
-		* **GenericTypes** - Sets of type parameters to generate (for the method)
-			* **Types** - Type names in the set
-	* **Properties** - Array of property names to generate
-	* **Fields** - Array of field names to generate
-	* **GenericTypes** - Sets of type parameters to generate (for the type)
-		* **Types** - Type names in the set
-* **MonoBehaviours**
-	* **Name** - Name of the `MonoBehaviour` class to generate
-	* **Namespace** - Namespace to put the `MonoBehaviour` class in
-	* **Messages** - Array of message names to generate (e.g. `Update`)
 
 # Updating To A New Version
 

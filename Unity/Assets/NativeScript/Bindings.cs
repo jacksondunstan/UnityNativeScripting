@@ -277,10 +277,11 @@ namespace NativeScript
 			IntPtr systemDiagnosticsStopwatchMethodReset,
 			IntPtr unityEngineObjectPropertyGetName,
 			IntPtr unityEngineObjectPropertySetName,
+			IntPtr unityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject,
+			IntPtr unityEngineObjectMethodop_ImplicitUnityEngineObject,
 			IntPtr unityEngineGameObjectConstructor,
 			IntPtr unityEngineGameObjectConstructorSystemString,
 			IntPtr unityEngineGameObjectPropertyGetTransform,
-			IntPtr unityEngineGameObjectMethodFindSystemString,
 			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
 			IntPtr unityEngineComponentPropertyGetTransform,
 			IntPtr unityEngineTransformPropertyGetPosition,
@@ -296,6 +297,8 @@ namespace NativeScript
 			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
+			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
+			IntPtr unityEngineVector3Methodop_UnaryNegationUnityEngineVector3,
 			IntPtr releaseUnityEngineRaycastHit,
 			int ReleaseUnityEngineRaycastHit,
 			IntPtr unityEngineRaycastHitPropertyGetPoint,
@@ -440,10 +443,11 @@ namespace NativeScript
 			IntPtr systemDiagnosticsStopwatchMethodReset,
 			IntPtr unityEngineObjectPropertyGetName,
 			IntPtr unityEngineObjectPropertySetName,
+			IntPtr unityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject,
+			IntPtr unityEngineObjectMethodop_ImplicitUnityEngineObject,
 			IntPtr unityEngineGameObjectConstructor,
 			IntPtr unityEngineGameObjectConstructorSystemString,
 			IntPtr unityEngineGameObjectPropertyGetTransform,
-			IntPtr unityEngineGameObjectMethodFindSystemString,
 			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
 			IntPtr unityEngineComponentPropertyGetTransform,
 			IntPtr unityEngineTransformPropertyGetPosition,
@@ -459,6 +463,8 @@ namespace NativeScript
 			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
+			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
+			IntPtr unityEngineVector3Methodop_UnaryNegationUnityEngineVector3,
 			IntPtr releaseUnityEngineRaycastHit,
 			int ReleaseUnityEngineRaycastHit,
 			IntPtr unityEngineRaycastHitPropertyGetPoint,
@@ -514,10 +520,11 @@ namespace NativeScript
 		delegate void SystemDiagnosticsStopwatchMethodResetDelegate(int thisHandle);
 		delegate int UnityEngineObjectPropertyGetNameDelegate(int thisHandle);
 		delegate void UnityEngineObjectPropertySetNameDelegate(int thisHandle, int valueHandle);
+		delegate bool UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObjectDelegate(int xHandle, int yHandle);
+		delegate bool UnityEngineObjectMethodop_ImplicitUnityEngineObjectDelegate(int existsHandle);
 		delegate int UnityEngineGameObjectConstructorDelegate();
 		delegate int UnityEngineGameObjectConstructorSystemStringDelegate(int nameHandle);
 		delegate int UnityEngineGameObjectPropertyGetTransformDelegate(int thisHandle);
-		delegate int UnityEngineGameObjectMethodFindSystemStringDelegate(int nameHandle);
 		delegate int UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(int thisHandle);
 		delegate int UnityEngineComponentPropertyGetTransformDelegate(int thisHandle);
 		delegate UnityEngine.Vector3 UnityEngineTransformPropertyGetPositionDelegate(int thisHandle);
@@ -533,6 +540,8 @@ namespace NativeScript
 		delegate UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(float x, float y, float z);
 		delegate float UnityEngineVector3PropertyGetMagnitudeDelegate(ref UnityEngine.Vector3 thiz);
 		delegate void UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(ref UnityEngine.Vector3 thiz, float newX, float newY, float newZ);
+		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b);
+		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3Delegate(ref UnityEngine.Vector3 a);
 		delegate void ReleaseUnityEngineRaycastHitDelegate(int handle);
 		delegate UnityEngine.Vector3 UnityEngineRaycastHitPropertyGetPointDelegate(int thisHandle);
 		delegate void UnityEngineRaycastHitPropertySetPointDelegate(int thisHandle, ref UnityEngine.Vector3 value);
@@ -608,10 +617,11 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchMethodResetDelegate(SystemDiagnosticsStopwatchMethodReset)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectPropertyGetNameDelegate(UnityEngineObjectPropertyGetName)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectPropertySetNameDelegate(UnityEngineObjectPropertySetName)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObjectDelegate(UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectMethodop_ImplicitUnityEngineObjectDelegate(UnityEngineObjectMethodop_ImplicitUnityEngineObject)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectConstructorDelegate(UnityEngineGameObjectConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectConstructorSystemStringDelegate(UnityEngineGameObjectConstructorSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectPropertyGetTransformDelegate(UnityEngineGameObjectPropertyGetTransform)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodFindSystemStringDelegate(UnityEngineGameObjectMethodFindSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineComponentPropertyGetTransformDelegate(UnityEngineComponentPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertyGetPositionDelegate(UnityEngineTransformPropertyGetPosition)),
@@ -627,6 +637,8 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3PropertyGetMagnitudeDelegate(UnityEngineVector3PropertyGetMagnitude)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3Delegate(UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEngineRaycastHitDelegate(ReleaseUnityEngineRaycastHit)),
 				1000,
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitPropertyGetPointDelegate(UnityEngineRaycastHitPropertyGetPoint)),
@@ -815,6 +827,49 @@ namespace NativeScript
 			}
 		}
 		
+		[MonoPInvokeCallback(typeof(UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObjectDelegate))]
+		static bool UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject(int xHandle, int yHandle)
+		{
+			try
+			{
+				var x = (UnityEngine.Object)NativeScript.Bindings.ObjectStore.Get(xHandle);
+				var y = (UnityEngine.Object)NativeScript.Bindings.ObjectStore.Get(yHandle);
+				var returnValue = x == y;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineObjectMethodop_ImplicitUnityEngineObjectDelegate))]
+		static bool UnityEngineObjectMethodop_ImplicitUnityEngineObject(int existsHandle)
+		{
+			try
+			{
+				var exists = (UnityEngine.Object)NativeScript.Bindings.ObjectStore.Get(existsHandle);
+				var returnValue = exists;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(UnityEngineGameObjectConstructorDelegate))]
 		static int UnityEngineGameObjectConstructor()
 		{
@@ -863,27 +918,6 @@ namespace NativeScript
 			{
 				var thiz = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz.transform;
-				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(int);
-			}
-			catch (System.Exception ex)
-			{
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(int);
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodFindSystemStringDelegate))]
-		static int UnityEngineGameObjectMethodFindSystemString(int nameHandle)
-		{
-			try
-			{
-				var name = (string)NativeScript.Bindings.ObjectStore.Get(nameHandle);
-				var returnValue = UnityEngine.GameObject.Find(name);
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
 			catch (System.NullReferenceException ex)
@@ -1180,6 +1214,46 @@ namespace NativeScript
 			catch (System.Exception ex)
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate))]
+		static UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b)
+		{
+			try
+			{
+				var returnValue = a + b;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.Vector3);
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.Vector3);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3Delegate))]
+		static UnityEngine.Vector3 UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3(ref UnityEngine.Vector3 a)
+		{
+			try
+			{
+				var returnValue = -a;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.Vector3);
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.Vector3);
 			}
 		}
 		

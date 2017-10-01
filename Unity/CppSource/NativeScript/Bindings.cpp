@@ -46,10 +46,11 @@ namespace Plugin
 	void (*SystemDiagnosticsStopwatchMethodReset)(int32_t thisHandle);
 	int32_t (*UnityEngineObjectPropertyGetName)(int32_t thisHandle);
 	void (*UnityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle);
+	System::Boolean (*UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject)(int32_t xHandle, int32_t yHandle);
+	System::Boolean (*UnityEngineObjectMethodop_ImplicitUnityEngineObject)(int32_t existsHandle);
 	int32_t (*UnityEngineGameObjectConstructor)();
 	int32_t (*UnityEngineGameObjectConstructorSystemString)(int32_t nameHandle);
 	int32_t (*UnityEngineGameObjectPropertyGetTransform)(int32_t thisHandle);
-	int32_t (*UnityEngineGameObjectMethodFindSystemString)(int32_t nameHandle);
 	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle);
 	int32_t (*UnityEngineComponentPropertyGetTransform)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineTransformPropertyGetPosition)(int32_t thisHandle);
@@ -65,6 +66,8 @@ namespace Plugin
 	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
 	float (*UnityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz);
 	void (*UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ);
+	UnityEngine::Vector3 (*UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b);
+	UnityEngine::Vector3 (*UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a);
 	void (*ReleaseUnityEngineRaycastHit)(int32_t handle);
 	UnityEngine::Vector3 (*UnityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle);
 	void (*UnityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, UnityEngine::Vector3& value);
@@ -194,11 +197,6 @@ namespace System
 	Object::Object(std::nullptr_t n)
 		: Handle(0)
 	{
-	}
-	
-	Object::operator bool() const
-	{
-		return Handle != 0;
 	}
 	
 	bool Object::operator==(std::nullptr_t other) const
@@ -568,6 +566,32 @@ namespace UnityEngine
 			delete ex;
 		}
 	}
+	
+	System::Boolean Object::operator==(UnityEngine::Object x)
+	{
+		auto returnValue = Plugin::UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject(Handle, x.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	Object::operator System::Boolean()
+	{
+		auto returnValue = Plugin::UnityEngineObjectMethodop_ImplicitUnityEngineObject(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
 }
 
 namespace UnityEngine
@@ -705,19 +729,6 @@ namespace UnityEngine
 			delete ex;
 		}
 		return UnityEngine::Transform(Plugin::InternalUse::Only, returnValue);
-	}
-	
-	UnityEngine::GameObject GameObject::Find(System::String name)
-	{
-		auto returnValue = Plugin::UnityEngineGameObjectMethodFindSystemString(name.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return UnityEngine::GameObject(Plugin::InternalUse::Only, returnValue);
 	}
 	
 	template<> MyGame::MonoBehaviours::TestScript GameObject::AddComponent<MyGame::MonoBehaviours::TestScript>()
@@ -1645,6 +1656,32 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	UnityEngine::Vector3 Vector3::operator+(UnityEngine::Vector3& a)
+	{
+		auto returnValue = Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3(*this, a);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	UnityEngine::Vector3 Vector3::operator-()
+	{
+		auto returnValue = Plugin::UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
 	}
 }
 
@@ -2954,10 +2991,11 @@ DLLEXPORT void Init(
 	void (*systemDiagnosticsStopwatchMethodReset)(int32_t thisHandle),
 	int32_t (*unityEngineObjectPropertyGetName)(int32_t thisHandle),
 	void (*unityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
+	System::Boolean (*unityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject)(int32_t xHandle, int32_t yHandle),
+	System::Boolean (*unityEngineObjectMethodop_ImplicitUnityEngineObject)(int32_t existsHandle),
 	int32_t (*unityEngineGameObjectConstructor)(),
 	int32_t (*unityEngineGameObjectConstructorSystemString)(int32_t nameHandle),
 	int32_t (*unityEngineGameObjectPropertyGetTransform)(int32_t thisHandle),
-	int32_t (*unityEngineGameObjectMethodFindSystemString)(int32_t nameHandle),
 	int32_t (*unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle),
 	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
@@ -2973,6 +3011,8 @@ DLLEXPORT void Init(
 	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
 	float (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
 	void (*unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ),
+	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b),
+	UnityEngine::Vector3 (*unityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a),
 	void (*releaseUnityEngineRaycastHit)(int32_t handle),
 	int32_t refCountsLenUnityEngineRaycastHit,
 	UnityEngine::Vector3 (*unityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle),
@@ -3013,10 +3053,11 @@ DLLEXPORT void Init(
 	Plugin::SystemDiagnosticsStopwatchMethodReset = systemDiagnosticsStopwatchMethodReset;
 	Plugin::UnityEngineObjectPropertyGetName = unityEngineObjectPropertyGetName;
 	Plugin::UnityEngineObjectPropertySetName = unityEngineObjectPropertySetName;
+	Plugin::UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject = unityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject;
+	Plugin::UnityEngineObjectMethodop_ImplicitUnityEngineObject = unityEngineObjectMethodop_ImplicitUnityEngineObject;
 	Plugin::UnityEngineGameObjectConstructor = unityEngineGameObjectConstructor;
 	Plugin::UnityEngineGameObjectConstructorSystemString = unityEngineGameObjectConstructorSystemString;
 	Plugin::UnityEngineGameObjectPropertyGetTransform = unityEngineGameObjectPropertyGetTransform;
-	Plugin::UnityEngineGameObjectMethodFindSystemString = unityEngineGameObjectMethodFindSystemString;
 	Plugin::UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript = unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript;
 	Plugin::UnityEngineComponentPropertyGetTransform = unityEngineComponentPropertyGetTransform;
 	Plugin::UnityEngineTransformPropertyGetPosition = unityEngineTransformPropertyGetPosition;
@@ -3032,6 +3073,8 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
 	Plugin::UnityEngineVector3PropertyGetMagnitude = unityEngineVector3PropertyGetMagnitude;
 	Plugin::UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle = unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle;
+	Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3 = unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3;
+	Plugin::UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3 = unityEngineVector3Methodop_UnaryNegationUnityEngineVector3;
 	Plugin::ReleaseUnityEngineRaycastHit = releaseUnityEngineRaycastHit;
 	Plugin::RefCountsLenUnityEngineRaycastHit = refCountsLenUnityEngineRaycastHit;
 	Plugin::RefCountsUnityEngineRaycastHit = new int32_t[refCountsLenUnityEngineRaycastHit]();
