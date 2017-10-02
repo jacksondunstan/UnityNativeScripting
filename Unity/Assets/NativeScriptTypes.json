@@ -1,7 +1,6 @@
 {
 	"Assemblies": [
-		"DOTNET_DLLS/System.Xml.dll",
-		"DOTNET_DLLS/System.Data.dll"
+		"DOTNET_DLLS/System.Xml.dll"
 	],
 	"Types": [
 		{
