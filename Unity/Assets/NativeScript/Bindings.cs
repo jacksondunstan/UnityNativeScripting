@@ -299,6 +299,8 @@ namespace NativeScript
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
 			IntPtr unityEngineVector3Methodop_UnaryNegationUnityEngineVector3,
+			IntPtr unityEngineMatrix4x4PropertyGetItem,
+			IntPtr unityEngineMatrix4x4PropertySetItem,
 			IntPtr releaseUnityEngineRaycastHit,
 			int ReleaseUnityEngineRaycastHit,
 			IntPtr unityEngineRaycastHitPropertyGetPoint,
@@ -465,6 +467,8 @@ namespace NativeScript
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
 			IntPtr unityEngineVector3Methodop_UnaryNegationUnityEngineVector3,
+			IntPtr unityEngineMatrix4x4PropertyGetItem,
+			IntPtr unityEngineMatrix4x4PropertySetItem,
 			IntPtr releaseUnityEngineRaycastHit,
 			int ReleaseUnityEngineRaycastHit,
 			IntPtr unityEngineRaycastHitPropertyGetPoint,
@@ -542,6 +546,8 @@ namespace NativeScript
 		delegate void UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(ref UnityEngine.Vector3 thiz, float newX, float newY, float newZ);
 		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b);
 		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3Delegate(ref UnityEngine.Vector3 a);
+		delegate float UnityEngineMatrix4x4PropertyGetItemDelegate(ref UnityEngine.Matrix4x4 thiz, int row, int column);
+		delegate void UnityEngineMatrix4x4PropertySetItemDelegate(ref UnityEngine.Matrix4x4 thiz, int row, int column, float value);
 		delegate void ReleaseUnityEngineRaycastHitDelegate(int handle);
 		delegate UnityEngine.Vector3 UnityEngineRaycastHitPropertyGetPointDelegate(int thisHandle);
 		delegate void UnityEngineRaycastHitPropertySetPointDelegate(int thisHandle, ref UnityEngine.Vector3 value);
@@ -639,6 +645,8 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3Delegate(UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineMatrix4x4PropertyGetItemDelegate(UnityEngineMatrix4x4PropertyGetItem)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineMatrix4x4PropertySetItemDelegate(UnityEngineMatrix4x4PropertySetItem)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEngineRaycastHitDelegate(ReleaseUnityEngineRaycastHit)),
 				1000,
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitPropertyGetPointDelegate(UnityEngineRaycastHitPropertyGetPoint)),
@@ -1254,6 +1262,43 @@ namespace NativeScript
 			{
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(UnityEngine.Vector3);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineMatrix4x4PropertyGetItemDelegate))]
+		static float UnityEngineMatrix4x4PropertyGetItem(ref UnityEngine.Matrix4x4 thiz, int row, int column)
+		{
+			try
+			{
+				var returnValue = thiz[row, row];
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(float);
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(float);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineMatrix4x4PropertySetItemDelegate))]
+		static void UnityEngineMatrix4x4PropertySetItem(ref UnityEngine.Matrix4x4 thiz, int row, int column, float value)
+		{
+			try
+			{
+				thiz[row, column] = column;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		

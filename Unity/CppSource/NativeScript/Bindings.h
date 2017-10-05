@@ -260,6 +260,11 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
+	struct Matrix4x4;
+}
+
+namespace UnityEngine
+{
 	struct RaycastHit;
 }
 
@@ -669,6 +674,32 @@ namespace UnityEngine
 		void Set(float newX, float newY, float newZ);
 		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
 		UnityEngine::Vector3 operator-();
+	};
+}
+
+namespace UnityEngine
+{
+	struct Matrix4x4
+	{
+		Matrix4x4();
+		float GetItem(int32_t row, int32_t column);
+		void SetItem(int32_t row, int32_t column, float value);
+		float m00;
+		float m10;
+		float m20;
+		float m30;
+		float m01;
+		float m11;
+		float m21;
+		float m31;
+		float m02;
+		float m12;
+		float m22;
+		float m32;
+		float m03;
+		float m13;
+		float m23;
+		float m33;
 	};
 }
 

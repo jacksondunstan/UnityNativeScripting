@@ -233,6 +233,27 @@
 			]
 		},
 		{
+			"Name": "UnityEngine.Matrix4x4",
+			"Properties": [
+				{
+					"Name": "Item",
+					"Get": {
+						"ParamTypes": [
+							"System.Int32",
+							"System.Int32"
+						]
+					},
+					"Set": {
+						"ParamTypes": [
+							"System.Int32",
+							"System.Int32",
+							"System.Single"
+						]
+					}
+				}
+			]
+		},
+		{
 			"Name": "UnityEngine.RaycastHit",
 			"MaxSimultaneous": 1000,
 			"Properties": [

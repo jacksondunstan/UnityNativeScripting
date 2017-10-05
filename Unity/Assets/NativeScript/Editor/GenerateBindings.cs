@@ -54,6 +54,7 @@ namespace NativeScript
 		class JsonPropertyGet
 		{
 			public bool IsReadOnly = true;
+			public string[] ParamTypes;
 			public string[] Exceptions;
 		}
 		
@@ -61,6 +62,7 @@ namespace NativeScript
 		class JsonPropertySet
 		{
 			public bool IsReadOnly;
+			public string[] ParamTypes;
 			public string[] Exceptions;
 		}
 		
@@ -1813,21 +1815,50 @@ namespace NativeScript
 			Assembly[] assemblies,
 			StringBuilders builders)
 		{
-			PropertyInfo property = enclosingType.GetProperty(
-				jsonProperty.Name);
-			Type propertyType = OverrideGenericType(
-				property.PropertyType,
-				typeGenericArgumentTypes,
-				typeParams);
 			JsonPropertyGet jsonPropertyGet = jsonProperty.Get;
 			if (jsonPropertyGet != null)
 			{
-				Type[] exceptionTypes = GetTypes(
-					jsonPropertyGet.Exceptions,
-					assemblies);
-				MethodInfo getMethod = property.GetGetMethod();
+				PropertyInfo property = null;
+				MethodInfo getMethod = null;
+				if (jsonPropertyGet.ParamTypes != null)
+				{
+					PropertyInfo[] properties = enclosingType.GetProperties();
+					foreach (PropertyInfo curProperty in properties)
+					{
+						// Name must match
+						if (curProperty.Name != jsonProperty.Name)
+						{
+							continue;
+						}
+						
+						// Must have a get method
+						getMethod = curProperty.GetGetMethod();
+						if (getMethod == null)
+						{
+							continue;
+						}
+						
+						// All parameters must match
+						if (CheckParametersMatch(
+							jsonPropertyGet.ParamTypes,
+							getMethod.GetParameters()))
+						{
+							property = curProperty;
+							break;
+						}
+					}
+				}
+				else
+				{
+					property = enclosingType.GetProperty(jsonProperty.Name);
+					getMethod = property.GetGetMethod();
+				}
+				
 				if (getMethod != null)
 				{
+					Type[] exceptionTypes = GetTypes(
+						jsonPropertyGet.Exceptions,
+						assemblies);
 					ParameterInfo[] parameters = ConvertParameters(
 						getMethod.GetParameters());
 					OverrideGenericParameterTypes(
@@ -1844,21 +1875,58 @@ namespace NativeScript
 						jsonPropertyGet.IsReadOnly,
 						enclosingType,
 						typeParams,
-						propertyType,
+						property.PropertyType,
 						indent,
 						exceptionTypes,
 						builders);
 				}
 			}
+			
 			JsonPropertySet jsonPropertySet = jsonProperty.Set;
 			if (jsonPropertySet != null)
 			{
-				Type[] exceptionTypes = GetTypes(
-					jsonPropertySet.Exceptions,
-					assemblies);
+				PropertyInfo property = null;
+				MethodInfo setMethod = null;
+				if (jsonPropertySet.ParamTypes != null)
+				{
+					PropertyInfo[] properties = enclosingType.GetProperties();
+					foreach (PropertyInfo curProperty in properties)
+					{
+						// Name must match
+						if (curProperty.Name != jsonProperty.Name)
+						{
+							continue;
+						}
+						
+						// Must have a set method
+						setMethod = curProperty.GetSetMethod();
+						if (setMethod == null)
+						{
+							continue;
+						}
+						
+						// All parameters must match
+						if (CheckParametersMatch(
+							jsonPropertySet.ParamTypes,
+							setMethod.GetParameters()))
+						{
+							property = curProperty;
+							break;
+						}
+					}
+				}
+				else
+				{
+					property = enclosingType.GetProperty(jsonProperty.Name);
+					setMethod = property.GetSetMethod();
+				}
+				
 				MethodInfo method = property.GetSetMethod();
 				if (method != null)
 				{
+					Type[] exceptionTypes = GetTypes(
+						jsonPropertySet.Exceptions,
+						assemblies);
 					ParameterInfo[] parameters = ConvertParameters(
 						method.GetParameters());
 					OverrideGenericParameterTypes(
@@ -1875,7 +1943,7 @@ namespace NativeScript
 						jsonPropertySet.IsReadOnly,
 						enclosingType,
 						typeParams,
-						propertyType,
+						property.PropertyType,
 						indent,
 						exceptionTypes,
 						builders);
@@ -3454,10 +3522,17 @@ namespace NativeScript
 				enclosingType,
 				methodIsStatic,
 				builders.CsharpFunctions);
-			if (parameters.Length == 1)
+			if (parameters.Length > 0)
 			{
 				builders.CsharpFunctions.Append('[');
-				builders.CsharpFunctions.Append(parameters[0].Name);
+				for (int i = 0; i < parameters.Length; ++i)
+				{
+					builders.CsharpFunctions.Append(parameters[0].Name);
+					if (i != parameters.Length-1)
+					{
+						builders.CsharpFunctions.Append(", ");
+					}
+				}
 				builders.CsharpFunctions.Append("]");
 			}
 			else
@@ -3636,10 +3711,17 @@ namespace NativeScript
 				enclosingType,
 				methodIsStatic,
 				builders.CsharpFunctions);
-			if (parameters.Length == 2)
+			if (parameters.Length > 1)
 			{
 				builders.CsharpFunctions.Append('[');
-				builders.CsharpFunctions.Append(parameters[0].Name);
+				for (int i = 0, end = parameters.Length-1; i < end; ++i)
+				{
+					builders.CsharpFunctions.Append(parameters[i].Name);
+					if (i != end-1)
+					{
+						builders.CsharpFunctions.Append(", ");
+					}
+				}
 				builders.CsharpFunctions.Append("] = ");
 				builders.CsharpFunctions.Append(parameters[1].Name);
 			}
