@@ -22,35 +22,6 @@ void PluginMain()
 	PrintPlatformDefines();
 	Debug::Log(String("Game booted up"));
 		
-	if (!UnityEngine::Assertions::Assert::GetRaiseExceptions())
-	{
-		UnityEngine::Assertions::Assert::SetRaiseExceptions(true);
-	}
-	
-	System::Collections::Generic::List<System::String> strings;
-	strings.Add("one");
-	strings.Add("two");
-	strings.Add("three");
-	Debug::Log(strings);
-	String first = strings.GetItem(0);
-	Debug::Log(first);
-	strings.SetItem(0, "new one");
-	first = strings.GetItem(0);
-	Debug::Log(first);
-	
-	System::Runtime::CompilerServices::StrongBox<System::String> strongbox("secret");
-	Debug::Log(strongbox.GetValue());
-	strongbox.SetValue("new secret");
-	Debug::Log(strongbox.GetValue());
-	
-	System::Collections::Generic::LinkedListNode<System::String> node("node val");
-	Debug::Log(node.GetValue());
-	node.SetValue("new node val");
-	Debug::Log(node.GetValue());
-	
-	Collections::Generic::KeyValuePair<String, double> kvp("C++ key", 3.14);
-	Debug::Log(kvp.GetKey());
-	
 	GameObject go("GameObject with a TestScript");
 	go.AddComponent<MyGame::MonoBehaviours::TestScript>();
 }

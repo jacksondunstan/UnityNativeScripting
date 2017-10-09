@@ -161,8 +161,9 @@ namespace System
 		virtual void ThrowReferenceToThis();
 	};
 	
-	struct ValueType : Object
+	struct ValueType
 	{
+		int32_t Handle;
 		ValueType(Plugin::InternalUse iu, int32_t handle);
 		ValueType(std::nullptr_t n);
 	};
@@ -179,6 +180,20 @@ namespace System
 		String& operator=(String&& other);
 		String(const char* chars);
 	};
+	
+	struct Array : Object
+	{
+		Array(Plugin::InternalUse iu, int32_t handle);
+		Array(std::nullptr_t n);
+		int32_t GetLength();
+		int32_t GetRank();
+	};
+	
+	template <typename TElement> struct Array1;
+	template <typename TElement> struct Array2;
+	template <typename TElement> struct Array3;
+	template <typename TElement> struct Array4;
+	template <typename TElement> struct Array5;
 }
 
 /*BEGIN TYPE DECLARATIONS*/
@@ -425,12 +440,87 @@ namespace System
 	struct NullReferenceException;
 }
 
+namespace UnityEngine
+{
+	struct Resolution;
+}
+
+namespace UnityEngine
+{
+	struct Screen;
+}
+
+namespace UnityEngine
+{
+	struct Ray;
+}
+
+namespace UnityEngine
+{
+	struct Physics;
+}
+
+namespace UnityEngine
+{
+	struct Color;
+}
+
+namespace UnityEngine
+{
+	struct GradientColorKey;
+}
+
+namespace UnityEngine
+{
+	struct Gradient;
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
 	{
 		struct TestScript;
 	}
+}
+
+namespace System
+{
+	template<> struct Array1<int32_t>;
+}
+
+namespace System
+{
+	template<> struct Array1<float>;
+}
+
+namespace System
+{
+	template<> struct Array2<float>;
+}
+
+namespace System
+{
+	template<> struct Array3<float>;
+}
+
+namespace System
+{
+	template<> struct Array1<System::String>;
+}
+
+namespace System
+{
+	template<> struct Array1<UnityEngine::Resolution>;
+}
+
+namespace System
+{
+	template<> struct Array1<UnityEngine::RaycastHit>;
+}
+
+namespace System
+{
+	template<> struct Array1<UnityEngine::GradientColorKey>;
 }
 /*END TYPE DECLARATIONS*/
 
@@ -926,6 +1016,113 @@ namespace System
 	};
 }
 
+namespace UnityEngine
+{
+	struct Resolution
+	{
+		Resolution();
+		int32_t GetWidth();
+		void SetWidth(int32_t value);
+		int32_t GetHeight();
+		void SetHeight(int32_t value);
+		int32_t GetRefreshRate();
+		void SetRefreshRate(int32_t value);
+		int32_t m_Width;
+		int32_t m_Height;
+		int32_t m_RefreshRate;
+	};
+}
+
+namespace UnityEngine
+{
+	struct Screen : System::Object
+	{
+		Screen(std::nullptr_t n);
+		Screen(Plugin::InternalUse iu, int32_t handle);
+		Screen(const Screen& other);
+		Screen(Screen&& other);
+		virtual ~Screen();
+		Screen& operator=(const Screen& other);
+		Screen& operator=(std::nullptr_t other);
+		Screen& operator=(Screen&& other);
+		bool operator==(const Screen& other) const;
+		bool operator!=(const Screen& other) const;
+		static System::Array1<Resolution> GetResolutions();
+	};
+}
+
+namespace UnityEngine
+{
+	struct Ray
+	{
+		Ray();
+		Ray(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
+		UnityEngine::Vector3 m_Origin;
+		UnityEngine::Vector3 m_Direction;
+	};
+}
+
+namespace UnityEngine
+{
+	struct Physics : System::Object
+	{
+		Physics(std::nullptr_t n);
+		Physics(Plugin::InternalUse iu, int32_t handle);
+		Physics(const Physics& other);
+		Physics(Physics&& other);
+		virtual ~Physics();
+		Physics& operator=(const Physics& other);
+		Physics& operator=(std::nullptr_t other);
+		Physics& operator=(Physics&& other);
+		bool operator==(const Physics& other) const;
+		bool operator!=(const Physics& other) const;
+		static int32_t RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<RaycastHit> results);
+		static System::Array1<RaycastHit> RaycastAll(UnityEngine::Ray& ray);
+	};
+}
+
+namespace UnityEngine
+{
+	struct Color
+	{
+		Color();
+		float r;
+		float g;
+		float b;
+		float a;
+	};
+}
+
+namespace UnityEngine
+{
+	struct GradientColorKey
+	{
+		GradientColorKey();
+		UnityEngine::Color color;
+		float time;
+	};
+}
+
+namespace UnityEngine
+{
+	struct Gradient : System::Object
+	{
+		Gradient(std::nullptr_t n);
+		Gradient(Plugin::InternalUse iu, int32_t handle);
+		Gradient(const Gradient& other);
+		Gradient(Gradient&& other);
+		virtual ~Gradient();
+		Gradient& operator=(const Gradient& other);
+		Gradient& operator=(std::nullptr_t other);
+		Gradient& operator=(Gradient&& other);
+		bool operator==(const Gradient& other) const;
+		bool operator!=(const Gradient& other) const;
+		Gradient();
+		System::Array1<GradientColorKey> GetColorKeys();
+		void SetColorKeys(System::Array1<GradientColorKey> value);
+	};
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -948,5 +1145,183 @@ namespace MyGame
 			void Update();
 		};
 	}
+}
+
+namespace System
+{
+	template<> struct Array1<int32_t> : System::Array
+	{
+		Array1<int32_t>(std::nullptr_t n);
+		Array1<int32_t>(Plugin::InternalUse iu, int32_t handle);
+		Array1<int32_t>(const Array1<int32_t>& other);
+		Array1<int32_t>(Array1<int32_t>&& other);
+		virtual ~Array1<int32_t>();
+		Array1<int32_t>& operator=(const Array1<int32_t>& other);
+		Array1<int32_t>& operator=(std::nullptr_t other);
+		Array1<int32_t>& operator=(Array1<int32_t>&& other);
+		bool operator==(const Array1<int32_t>& other) const;
+		bool operator!=(const Array1<int32_t>& other) const;
+		Array1(int32_t length0);
+		int32_t GetLength();
+		int32_t GetRank();
+		int32_t GetItem(int32_t index0);
+		void SetItem(int32_t index0, int32_t item);
+	};
+}
+
+namespace System
+{
+	template<> struct Array1<float> : System::Array
+	{
+		Array1<float>(std::nullptr_t n);
+		Array1<float>(Plugin::InternalUse iu, int32_t handle);
+		Array1<float>(const Array1<float>& other);
+		Array1<float>(Array1<float>&& other);
+		virtual ~Array1<float>();
+		Array1<float>& operator=(const Array1<float>& other);
+		Array1<float>& operator=(std::nullptr_t other);
+		Array1<float>& operator=(Array1<float>&& other);
+		bool operator==(const Array1<float>& other) const;
+		bool operator!=(const Array1<float>& other) const;
+		Array1(int32_t length0);
+		int32_t GetLength();
+		int32_t GetRank();
+		float GetItem(int32_t index0);
+		void SetItem(int32_t index0, float item);
+	};
+}
+
+namespace System
+{
+	template<> struct Array2<float> : System::Array
+	{
+		Array2<float>(std::nullptr_t n);
+		Array2<float>(Plugin::InternalUse iu, int32_t handle);
+		Array2<float>(const Array2<float>& other);
+		Array2<float>(Array2<float>&& other);
+		virtual ~Array2<float>();
+		Array2<float>& operator=(const Array2<float>& other);
+		Array2<float>& operator=(std::nullptr_t other);
+		Array2<float>& operator=(Array2<float>&& other);
+		bool operator==(const Array2<float>& other) const;
+		bool operator!=(const Array2<float>& other) const;
+		Array2(int32_t length0, int32_t length1);
+		int32_t GetLength();
+		int32_t GetLength(int32_t dimension);
+		int32_t GetRank();
+		float GetItem(int32_t index0, int32_t index1);
+		void SetItem(int32_t index0, int32_t index1, float item);
+	};
+}
+
+namespace System
+{
+	template<> struct Array3<float> : System::Array
+	{
+		Array3<float>(std::nullptr_t n);
+		Array3<float>(Plugin::InternalUse iu, int32_t handle);
+		Array3<float>(const Array3<float>& other);
+		Array3<float>(Array3<float>&& other);
+		virtual ~Array3<float>();
+		Array3<float>& operator=(const Array3<float>& other);
+		Array3<float>& operator=(std::nullptr_t other);
+		Array3<float>& operator=(Array3<float>&& other);
+		bool operator==(const Array3<float>& other) const;
+		bool operator!=(const Array3<float>& other) const;
+		Array3(int32_t length0, int32_t length1, int32_t length2);
+		int32_t GetLength();
+		int32_t GetLength(int32_t dimension);
+		int32_t GetRank();
+		float GetItem(int32_t index0, int32_t index1, int32_t index2);
+		void SetItem(int32_t index0, int32_t index1, int32_t index2, float item);
+	};
+}
+
+namespace System
+{
+	template<> struct Array1<System::String> : System::Array
+	{
+		Array1<System::String>(std::nullptr_t n);
+		Array1<System::String>(Plugin::InternalUse iu, int32_t handle);
+		Array1<System::String>(const Array1<System::String>& other);
+		Array1<System::String>(Array1<System::String>&& other);
+		virtual ~Array1<System::String>();
+		Array1<System::String>& operator=(const Array1<System::String>& other);
+		Array1<System::String>& operator=(std::nullptr_t other);
+		Array1<System::String>& operator=(Array1<System::String>&& other);
+		bool operator==(const Array1<System::String>& other) const;
+		bool operator!=(const Array1<System::String>& other) const;
+		Array1(int32_t length0);
+		int32_t GetLength();
+		int32_t GetRank();
+		System::String GetItem(int32_t index0);
+		void SetItem(int32_t index0, System::String item);
+	};
+}
+
+namespace System
+{
+	template<> struct Array1<UnityEngine::Resolution> : System::Array
+	{
+		Array1<UnityEngine::Resolution>(std::nullptr_t n);
+		Array1<UnityEngine::Resolution>(Plugin::InternalUse iu, int32_t handle);
+		Array1<UnityEngine::Resolution>(const Array1<UnityEngine::Resolution>& other);
+		Array1<UnityEngine::Resolution>(Array1<UnityEngine::Resolution>&& other);
+		virtual ~Array1<UnityEngine::Resolution>();
+		Array1<UnityEngine::Resolution>& operator=(const Array1<UnityEngine::Resolution>& other);
+		Array1<UnityEngine::Resolution>& operator=(std::nullptr_t other);
+		Array1<UnityEngine::Resolution>& operator=(Array1<UnityEngine::Resolution>&& other);
+		bool operator==(const Array1<UnityEngine::Resolution>& other) const;
+		bool operator!=(const Array1<UnityEngine::Resolution>& other) const;
+		Array1(int32_t length0);
+		int32_t GetLength();
+		int32_t GetRank();
+		UnityEngine::Resolution GetItem(int32_t index0);
+		void SetItem(int32_t index0, UnityEngine::Resolution& item);
+	};
+}
+
+namespace System
+{
+	template<> struct Array1<UnityEngine::RaycastHit> : System::Array
+	{
+		Array1<UnityEngine::RaycastHit>(std::nullptr_t n);
+		Array1<UnityEngine::RaycastHit>(Plugin::InternalUse iu, int32_t handle);
+		Array1<UnityEngine::RaycastHit>(const Array1<UnityEngine::RaycastHit>& other);
+		Array1<UnityEngine::RaycastHit>(Array1<UnityEngine::RaycastHit>&& other);
+		virtual ~Array1<UnityEngine::RaycastHit>();
+		Array1<UnityEngine::RaycastHit>& operator=(const Array1<UnityEngine::RaycastHit>& other);
+		Array1<UnityEngine::RaycastHit>& operator=(std::nullptr_t other);
+		Array1<UnityEngine::RaycastHit>& operator=(Array1<UnityEngine::RaycastHit>&& other);
+		bool operator==(const Array1<UnityEngine::RaycastHit>& other) const;
+		bool operator!=(const Array1<UnityEngine::RaycastHit>& other) const;
+		Array1(int32_t length0);
+		int32_t GetLength();
+		int32_t GetRank();
+		UnityEngine::RaycastHit GetItem(int32_t index0);
+		void SetItem(int32_t index0, UnityEngine::RaycastHit item);
+	};
+}
+
+namespace System
+{
+	template<> struct Array1<UnityEngine::GradientColorKey> : System::Array
+	{
+		Array1<UnityEngine::GradientColorKey>(std::nullptr_t n);
+		Array1<UnityEngine::GradientColorKey>(Plugin::InternalUse iu, int32_t handle);
+		Array1<UnityEngine::GradientColorKey>(const Array1<UnityEngine::GradientColorKey>& other);
+		Array1<UnityEngine::GradientColorKey>(Array1<UnityEngine::GradientColorKey>&& other);
+		virtual ~Array1<UnityEngine::GradientColorKey>();
+		Array1<UnityEngine::GradientColorKey>& operator=(const Array1<UnityEngine::GradientColorKey>& other);
+		Array1<UnityEngine::GradientColorKey>& operator=(std::nullptr_t other);
+		Array1<UnityEngine::GradientColorKey>& operator=(Array1<UnityEngine::GradientColorKey>&& other);
+		bool operator==(const Array1<UnityEngine::GradientColorKey>& other) const;
+		bool operator!=(const Array1<UnityEngine::GradientColorKey>& other) const;
+		Array1(int32_t length0);
+		int32_t GetLength();
+		int32_t GetRank();
+		UnityEngine::GradientColorKey GetItem(int32_t index0);
+		void SetItem(int32_t index0, UnityEngine::GradientColorKey& item);
+	};
 }
 /*END TYPE DEFINITIONS*/

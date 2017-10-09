@@ -2,31 +2,58 @@
 
 A library to allow writing Unity scripts in native code: C, C++, assembly.
 
-# Reasons to Prefer C++ Over C# #
-
-By using C++ directly, you gain complete control over the code the CPU will execute. It's much easier to generate optimal code with a C++ compiler than with a C# compiler, IL2CPP, and finally a C++ compiler. You can even code with compiler intrinsics or assembly to directly write machine code and take advantage of CPU features like [SIMD](http://jacksondunstan.com/articles/3890) and hardware AES encryption for massive performance gains.
-
-C++ is also a much larger language than C# and some developers will prefer having more tools at their disposal. Here are a few differences:
-
-* Its template system is much more powerful than C# generics
-* There are macros for extreme flexibility by generating code
-* Function pointers instead of just delegates
-* No-overhead [algorithms](http://en.cppreference.com/w/cpp/algorithm) instead of LINQ
-* Bit fields for easy memory savings
-* Pointers and never-null references instead of just managed referneces
-* Much more. C++ is huge.
-
-There are also some problems with C# code running under Unity that you'll automatically avoid. For one, Unity's garbage collector is very slow. It runs on the main thread, which blocks rendering and input handling. It collects all objects at once, which causes frame hitches. And it fragments memory, so eventually you may run out and crash.
-
-A significant amount of effort is required to work around the GC and the resulting code is difficult to maintain and slow. This includes techniques like [object pools](http://jacksondunstan.com/articles/3829), which essentially make memory management manual. You've also got to avoid boxing value types to managed types, `foreach` loops in some situations, and various other [gotchas](http://jacksondunstan.com/articles/3850).
-
-C++ has no required garbage collector and features optional automatic memory management via "smart pointer" types like [shared_ptr](http://en.cppreference.com/w/cpp/memory/shared_ptr). It offers an excellent alternative to Unity's primitive garbage collector.
-
-While IL2CPP transforms C# into C++ already, it generates a lot of overhead. There are many [surprises](http://jacksondunstan.com/articles/3916) if you read through the generated C++. For example, there's overhead for any function using a static variable and an extra two pointers are stored at the beginning of every class. The same goes for all sorts of features such as `sizeof()`, mandatory null checks, and so forth. Instead, you could write C++ directly and not need to work around IL2CPP.
+## Purpose
 
 This project aims to give you a viable alternative to C#. Scripting in C++ isn't right for all parts of every project, but now it's an option.
 
-# Features
+## Goals
+
+* Make scripting in C++ as easy as C#
+* Low performance overhead
+* Easy integration with any Unity project
+* Fast compile, build, and code generation times
+
+# Reasons to Prefer C++ Over C# #
+
+## Fast Compile Times
+
+C++ compiles much more quickly than C#. Moderate size projects typically take 10+ seconds to compile in C# but only about 1 second to compile in C++. Faster compilation adds up over time to productivity gains. Quicker iteration times make it easier to stay in the "flow" of programming.
+
+## Fast Device Build Times
+
+Changing one line of C# code requires you to make a new build of the game. Typical iOS build times tend to be at least 10 minutes because IL2CPP has to run and then Xcode has to compile a huge amount of C++.
+
+By using C++, we can compile the game as a C++ plugin in about 1 second, swap the plugin into the Xcode project, and then immediately run the game. That's a huge productivity boost!
+
+## No Garbage Collector
+
+Unity's garbage collector is mandatory and has a lot of problems. It's slow, runs on the main thread, collects all garbage at once, fragments the heap, and never shrinks the heap. So your game will experience "frame hitches" and eventually you'll run out of memory and crash.
+
+A significant amount of effort is required to work around the GC and the resulting code is difficult to maintain and slow. This includes techniques like [object pools](http://jacksondunstan.com/articles/3829), which essentially make memory management manual. You've also got to avoid boxing value types like `int` to to managed types like `object`, not use `foreach` loops in some situations, and various other [gotchas](http://jacksondunstan.com/articles/3850).
+
+C++ has no required garbage collector and features optional automatic memory management via "smart pointer" types like [shared_ptr](http://en.cppreference.com/w/cpp/memory/shared_ptr). It offers excellent alternatives to Unity's primitive garbage collector.
+
+## Total Control
+
+By using C++ directly, you gain complete control over the code the CPU will execute. It's much easier to generate optimal code with a C++ compiler than with a C# compiler, IL2CPP, and finally a C++ compiler. Cut out the middle-man and you can take advantage of compiler intrinsics or assembly to directly write machine code using powerful CPU features like [SIMD](http://jacksondunstan.com/articles/3890) and hardware AES encryption for massive performance gains.
+
+## More Features
+
+C++ is a much larger language than C# and some developers will prefer having more tools at their disposal. Here are a few differences:
+
+* Its template system is much more powerful than C# generics
+* There are macros for extreme flexibility by generating code
+* Cheap function pointers instead of heavyweight delegates
+* No-overhead [algorithms](http://en.cppreference.com/w/cpp/algorithm) instead of LINQ
+* Bit fields for easy memory savings
+* Pointers and never-null references instead of just managed references
+* Much more. C++ is huge.
+
+## No IL2CPP Surprises
+
+While IL2CPP transforms C# into C++ already, it generates a lot of overhead. There are many [surprises](http://jacksondunstan.com/articles/3916) if you read through the generated C++. For example, there's overhead for any function using a static variable and an extra two pointers are stored at the beginning of every class. The same goes for all sorts of features such as `sizeof()`, mandatory null checks, and so forth. Instead, you could write C++ directly and not need to work around IL2CPP.
+
+# UnityNativeScripting Features
 
 * Supports Windows, macOS, iOS, and Android (editor and standalone)
 * Plays nice with other C# scripts- no need to use 100% C++
@@ -55,7 +82,7 @@ This project aims to give you a viable alternative to C#. Scripting in C++ isn't
 
 [Article](http://jacksondunstan.com/articles/3952).
 
-tl;dr - Most projects will not be noticeably impacted by C++ overhead and many projects will benefit from reducing garbage collection and IL2CPP overhead.
+tl;dr - Most projects will not be noticeably impacted by C++ overhead and many projects will benefit from reducing garbage collection, eliminating IL2CPP overhead, and access to compiler intrinsics and assembly.
 
 # Project Structure
 
@@ -77,14 +104,12 @@ With C++, the workflow looks like this:
 3. Switch to the Unity editor window. Nothing to compile.
 4. Run the game
 
-One of the project's goals is to make it just as easy to work with C++ as it is to work with C#, if not easier.
-
 # Getting Started
 
 1. Download or clone this repo
 2. Copy everything in `Unity/Assets` directory to your Unity project's `Assets` directory
 3. Copy the `Unity/CppSource` directory to your Unity project directory
-4. Edit `NativeScriptTypes.json` and specify what parts of the Unity API you want access to from C++. Some examples are provided, but feel free to delete them if you're not using those features.
+4. Edit `NativeScriptTypes.json` and specify what parts of the Unity, .NET, and custom DLL APIs you want access to from C++.
 5. Edit `Unity/CppSource/Game/Game.cpp` to create your game. Some example code is provided, but feel free to delete it. You can add more C++ source (`.cpp`) and header (`.h`) files here as your game grows.
 
 # Building the C++ Plugin
@@ -159,12 +184,13 @@ The code generator supports:
 * Enumerations
 * Exceptions
 * Overloaded operators
+* Arrays (single- and multi-dimensional)
 
 The code generator does not support (yet):
 
-* Arrays (single- or multi-dimensional)
 * Delegates
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
+* `Array` methods (e.g. `IndexOf`)
 * Default parameters
 * Interfaces
 * `decimal`

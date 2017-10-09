@@ -35,9 +35,10 @@
 namespace Plugin
 {
 	void (*ReleaseObject)(int32_t handle);
-	void (*SetException)(int32_t handle);
-	
 	int32_t (*StringNew)(const char* chars);
+	void (*SetException)(int32_t handle);
+	int32_t (*ArrayGetLength)(int32_t handle);
+	int32_t (*ArrayGetRank)(int32_t handle);
 	
 	/*BEGIN FUNCTION POINTERS*/
 	int32_t (*SystemDiagnosticsStopwatchConstructor)();
@@ -89,6 +90,45 @@ namespace Plugin
 	int32_t (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle);
 	void (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle);
 	int32_t (*SystemExceptionConstructorSystemString)(int32_t messageHandle);
+	int32_t (*UnityEngineResolutionPropertyGetWidth)(UnityEngine::Resolution* thiz);
+	void (*UnityEngineResolutionPropertySetWidth)(UnityEngine::Resolution* thiz, int32_t value);
+	int32_t (*UnityEngineResolutionPropertyGetHeight)(UnityEngine::Resolution* thiz);
+	void (*UnityEngineResolutionPropertySetHeight)(UnityEngine::Resolution* thiz, int32_t value);
+	int32_t (*UnityEngineResolutionPropertyGetRefreshRate)(UnityEngine::Resolution* thiz);
+	void (*UnityEngineResolutionPropertySetRefreshRate)(UnityEngine::Resolution* thiz, int32_t value);
+	int32_t (*UnityEngineScreenPropertyGetResolutions)();
+	UnityEngine::Ray (*UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
+	int32_t (*UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(UnityEngine::Ray& ray, int32_t resultsHandle);
+	int32_t (*UnityEnginePhysicsMethodRaycastAllUnityEngineRay)(UnityEngine::Ray& ray);
+	int32_t (*UnityEngineGradientConstructor)();
+	int32_t (*UnityEngineGradientPropertyGetColorKeys)(int32_t thisHandle);
+	void (*UnityEngineGradientPropertySetColorKeys)(int32_t thisHandle, int32_t valueHandle);
+	int32_t (*SystemInt32Array1Constructor1)(int32_t length0);
+	int32_t (*SystemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0);
+	int32_t (*SystemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item);
+	int32_t (*SystemSingleArray1Constructor1)(int32_t length0);
+	float (*SystemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0);
+	int32_t (*SystemSingleArray1SetItem1)(int32_t thisHandle, int32_t index0, float item);
+	int32_t (*SystemSingleArray2Constructor2)(int32_t length0, int32_t length1);
+	int32_t (*SystemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension);
+	float (*SystemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1);
+	int32_t (*SystemSingleArray2SetItem2)(int32_t thisHandle, int32_t index0, int32_t index1, float item);
+	int32_t (*SystemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2);
+	int32_t (*SystemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension);
+	float (*SystemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2);
+	int32_t (*SystemSingleArray3SetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2, float item);
+	int32_t (*SystemStringArray1Constructor1)(int32_t length0);
+	int32_t (*SystemStringArray1GetItem1)(int32_t thisHandle, int32_t index0);
+	int32_t (*SystemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
+	int32_t (*UnityEngineResolutionArray1Constructor1)(int32_t length0);
+	UnityEngine::Resolution (*UnityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0);
+	int32_t (*UnityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item);
+	int32_t (*UnityEngineRaycastHitArray1Constructor1)(int32_t length0);
+	int32_t (*UnityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0);
+	int32_t (*UnityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
+	int32_t (*UnityEngineGradientColorKeyArray1Constructor1)(int32_t length0);
+	UnityEngine::GradientColorKey (*UnityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0);
+	int32_t (*UnityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -217,13 +257,13 @@ namespace System
 	}
 	
 	ValueType::ValueType(Plugin::InternalUse iu, int32_t handle)
-		: Object(iu, handle)
 	{
+		Handle = handle;
 	}
 	
 	ValueType::ValueType(std::nullptr_t n)
-		: Object(0)
 	{
+		Handle = 0;
 	}
 	
 	String::String(std::nullptr_t n)
@@ -306,6 +346,26 @@ namespace System
 		: Object(Plugin::InternalUse::Only, Plugin::StringNew(chars))
 	{
 	}
+	
+	Array::Array(Plugin::InternalUse iu, int32_t handle)
+		: Object(iu, handle)
+	{
+	}
+	
+	Array::Array(std::nullptr_t n)
+		: Object(0)
+	{
+	}
+	
+	int32_t Array::GetLength()
+	{
+		return Plugin::ArrayGetLength(Handle);
+	}
+	
+	int32_t Array::GetRank()
+	{
+		return Plugin::ArrayGetRank(Handle);
+	}
 }
 
 /*BEGIN METHOD DEFINITIONS*/
@@ -314,7 +374,7 @@ namespace System
 	namespace Diagnostics
 	{
 		Stopwatch::Stopwatch(std::nullptr_t n)
-			: System::Object(0)
+			: System::Object(nullptr)
 		{
 		}
 		
@@ -400,7 +460,7 @@ namespace System
 		}
 		
 		Stopwatch::Stopwatch()
-			 : System::Object(0)
+			 : System::Object(nullptr)
 		{
 			auto returnValue = Plugin::SystemDiagnosticsStopwatchConstructor();
 			if (Plugin::unhandledCsharpException)
@@ -459,7 +519,7 @@ namespace System
 namespace UnityEngine
 {
 	Object::Object(std::nullptr_t n)
-		: System::Object(0)
+		: System::Object(nullptr)
 	{
 	}
 	
@@ -599,7 +659,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	GameObject::GameObject(std::nullptr_t n)
-		: UnityEngine::Object(0)
+		: UnityEngine::Object(nullptr)
 	{
 	}
 	
@@ -685,7 +745,7 @@ namespace UnityEngine
 	}
 	
 	GameObject::GameObject()
-		 : UnityEngine::Object(0)
+		 : UnityEngine::Object(nullptr)
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectConstructor();
 		if (Plugin::unhandledCsharpException)
@@ -703,7 +763,7 @@ namespace UnityEngine
 	}
 	
 	GameObject::GameObject(System::String name)
-		 : UnityEngine::Object(0)
+		 : UnityEngine::Object(nullptr)
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectConstructorSystemString(name.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -750,7 +810,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Component::Component(std::nullptr_t n)
-		: UnityEngine::Object(0)
+		: UnityEngine::Object(nullptr)
 	{
 	}
 	
@@ -852,7 +912,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Transform::Transform(std::nullptr_t n)
-		: UnityEngine::Component(0)
+		: UnityEngine::Component(nullptr)
 	{
 	}
 	
@@ -966,7 +1026,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Debug::Debug(std::nullptr_t n)
-		: System::Object(0)
+		: System::Object(nullptr)
 	{
 	}
 	
@@ -1122,7 +1182,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Collision::Collision(std::nullptr_t n)
-		: System::Object(0)
+		: System::Object(nullptr)
 	{
 	}
 	
@@ -1211,7 +1271,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Behaviour::Behaviour(std::nullptr_t n)
-		: UnityEngine::Component(0)
+		: UnityEngine::Component(nullptr)
 	{
 	}
 	
@@ -1300,7 +1360,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	MonoBehaviour::MonoBehaviour(std::nullptr_t n)
-		: UnityEngine::Behaviour(0)
+		: UnityEngine::Behaviour(nullptr)
 	{
 	}
 	
@@ -1389,7 +1449,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	AudioSettings::AudioSettings(std::nullptr_t n)
-		: System::Object(0)
+		: System::Object(nullptr)
 	{
 	}
 	
@@ -1492,7 +1552,7 @@ namespace UnityEngine
 	namespace Networking
 	{
 		NetworkTransport::NetworkTransport(std::nullptr_t n)
-			: System::Object(0)
+			: System::Object(nullptr)
 		{
 		}
 		
@@ -1722,7 +1782,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	RaycastHit::RaycastHit(std::nullptr_t n)
-		: System::ValueType(0)
+		: System::ValueType(nullptr)
 	{
 	}
 	
@@ -1853,7 +1913,7 @@ namespace System
 		namespace Generic
 		{
 			KeyValuePair<System::String, double>::KeyValuePair(std::nullptr_t n)
-				: System::ValueType(0)
+				: System::ValueType(nullptr)
 			{
 			}
 			
@@ -1939,7 +1999,7 @@ namespace System
 			}
 			
 			KeyValuePair<System::String, double>::KeyValuePair(System::String key, double value)
-				 : System::ValueType(0)
+				 : System::ValueType(nullptr)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble(key.Handle, value);
 				if (Plugin::unhandledCsharpException)
@@ -1992,7 +2052,7 @@ namespace System
 		namespace Generic
 		{
 			List<System::String>::List(std::nullptr_t n)
-				: System::Object(0)
+				: System::Object(nullptr)
 			{
 			}
 			
@@ -2078,7 +2138,7 @@ namespace System
 			}
 			
 			List<System::String>::List()
-				 : System::Object(0)
+				 : System::Object(nullptr)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringConstructor();
 				if (Plugin::unhandledCsharpException)
@@ -2142,7 +2202,7 @@ namespace System
 		namespace Generic
 		{
 			LinkedListNode<System::String>::LinkedListNode(std::nullptr_t n)
-				: System::Object(0)
+				: System::Object(nullptr)
 			{
 			}
 			
@@ -2228,7 +2288,7 @@ namespace System
 			}
 			
 			LinkedListNode<System::String>::LinkedListNode(System::String value)
-				 : System::Object(0)
+				 : System::Object(nullptr)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(value.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -2280,7 +2340,7 @@ namespace System
 		namespace CompilerServices
 		{
 			StrongBox<System::String>::StrongBox(std::nullptr_t n)
-				: System::Object(0)
+				: System::Object(nullptr)
 			{
 			}
 			
@@ -2366,7 +2426,7 @@ namespace System
 			}
 			
 			StrongBox<System::String>::StrongBox(System::String value)
-				 : System::Object(0)
+				 : System::Object(nullptr)
 			{
 				auto returnValue = Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString(value.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -2418,7 +2478,7 @@ namespace System
 		namespace ObjectModel
 		{
 			Collection<int32_t>::Collection(std::nullptr_t n)
-				: System::Object(0)
+				: System::Object(nullptr)
 			{
 			}
 			
@@ -2513,7 +2573,7 @@ namespace System
 		namespace ObjectModel
 		{
 			KeyedCollection<System::String, int32_t>::KeyedCollection(std::nullptr_t n)
-				: System::Collections::ObjectModel::Collection<int32_t>(0)
+				: System::Collections::ObjectModel::Collection<int32_t>(nullptr)
 			{
 			}
 			
@@ -2604,7 +2664,7 @@ namespace System
 namespace System
 {
 	Exception::Exception(std::nullptr_t n)
-		: System::Object(0)
+		: System::Object(nullptr)
 	{
 	}
 	
@@ -2690,7 +2750,7 @@ namespace System
 	}
 	
 	Exception::Exception(System::String message)
-		 : System::Object(0)
+		 : System::Object(nullptr)
 	{
 		auto returnValue = Plugin::SystemExceptionConstructorSystemString(message.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2711,7 +2771,7 @@ namespace System
 namespace System
 {
 	SystemException::SystemException(std::nullptr_t n)
-		: System::Exception(0)
+		: System::Exception(nullptr)
 	{
 	}
 	
@@ -2800,7 +2860,7 @@ namespace System
 namespace System
 {
 	NullReferenceException::NullReferenceException(std::nullptr_t n)
-		: System::SystemException(0)
+		: System::SystemException(nullptr)
 	{
 	}
 	
@@ -2886,12 +2946,477 @@ namespace System
 	}
 }
 
+namespace UnityEngine
+{
+	Resolution::Resolution()
+	{
+	}
+	
+	int32_t Resolution::GetWidth()
+	{
+		auto returnValue = Plugin::UnityEngineResolutionPropertyGetWidth(this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Resolution::SetWidth(int32_t value)
+	{
+		Plugin::UnityEngineResolutionPropertySetWidth(this, value);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	int32_t Resolution::GetHeight()
+	{
+		auto returnValue = Plugin::UnityEngineResolutionPropertyGetHeight(this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Resolution::SetHeight(int32_t value)
+	{
+		Plugin::UnityEngineResolutionPropertySetHeight(this, value);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	int32_t Resolution::GetRefreshRate()
+	{
+		auto returnValue = Plugin::UnityEngineResolutionPropertyGetRefreshRate(this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Resolution::SetRefreshRate(int32_t value)
+	{
+		Plugin::UnityEngineResolutionPropertySetRefreshRate(this, value);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	Screen::Screen(std::nullptr_t n)
+		: System::Object(nullptr)
+	{
+	}
+	
+	Screen::Screen(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Screen::Screen(const Screen& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Screen::Screen(Screen&& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Screen::~Screen()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Screen& Screen::operator=(const Screen& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Screen& Screen::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Screen& Screen::operator=(Screen&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Screen::operator==(const Screen& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Screen::operator!=(const Screen& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	System::Array1<Resolution> Screen::GetResolutions()
+	{
+		auto returnValue = Plugin::UnityEngineScreenPropertyGetResolutions();
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return System::Array1<Resolution>(Plugin::InternalUse::Only, returnValue);
+	}
+}
+
+namespace UnityEngine
+{
+	Ray::Ray()
+	{
+	}
+	
+	Ray::Ray(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction)
+	{
+		auto returnValue = Plugin::UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3(origin, direction);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		*this = returnValue;
+	}
+}
+
+namespace UnityEngine
+{
+	Physics::Physics(std::nullptr_t n)
+		: System::Object(nullptr)
+	{
+	}
+	
+	Physics::Physics(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Physics::Physics(const Physics& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Physics::Physics(Physics&& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Physics::~Physics()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Physics& Physics::operator=(const Physics& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Physics& Physics::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Physics& Physics::operator=(Physics&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Physics::operator==(const Physics& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Physics::operator!=(const Physics& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	int32_t Physics::RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<RaycastHit> results)
+	{
+		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit(ray, results.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	System::Array1<RaycastHit> Physics::RaycastAll(UnityEngine::Ray& ray)
+	{
+		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastAllUnityEngineRay(ray);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return System::Array1<RaycastHit>(Plugin::InternalUse::Only, returnValue);
+	}
+}
+
+namespace UnityEngine
+{
+	Color::Color()
+	{
+	}
+}
+
+namespace UnityEngine
+{
+	GradientColorKey::GradientColorKey()
+	{
+	}
+}
+
+namespace UnityEngine
+{
+	Gradient::Gradient(std::nullptr_t n)
+		: System::Object(nullptr)
+	{
+	}
+	
+	Gradient::Gradient(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Gradient::Gradient(const Gradient& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Gradient::Gradient(Gradient&& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Gradient::~Gradient()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Gradient& Gradient::operator=(const Gradient& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Gradient& Gradient::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Gradient& Gradient::operator=(Gradient&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Gradient::operator==(const Gradient& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Gradient::operator!=(const Gradient& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Gradient::Gradient()
+		 : System::Object(nullptr)
+	{
+		auto returnValue = Plugin::UnityEngineGradientConstructor();
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	System::Array1<GradientColorKey> Gradient::GetColorKeys()
+	{
+		auto returnValue = Plugin::UnityEngineGradientPropertyGetColorKeys(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return System::Array1<GradientColorKey>(Plugin::InternalUse::Only, returnValue);
+	}
+	
+	void Gradient::SetColorKeys(System::Array1<GradientColorKey> value)
+	{
+		Plugin::UnityEngineGradientPropertySetColorKeys(Handle, value.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
 	{
 		TestScript::TestScript(std::nullptr_t n)
-			: UnityEngine::MonoBehaviour(0)
+			: UnityEngine::MonoBehaviour(nullptr)
 		{
 		}
 		
@@ -2980,6 +3505,1168 @@ namespace MyGame
 
 namespace System
 {
+	Array1<int32_t>::Array1(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array1<int32_t>::Array1(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array1<int32_t>::Array1(const Array1<int32_t>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array1<int32_t>::Array1(Array1<int32_t>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array1<int32_t>::~Array1<int32_t>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array1<int32_t>& Array1<int32_t>::operator=(const Array1<int32_t>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array1<int32_t>& Array1<int32_t>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array1<int32_t>& Array1<int32_t>::operator=(Array1<int32_t>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array1<int32_t>::operator==(const Array1<int32_t>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array1<int32_t>::operator!=(const Array1<int32_t>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array1<int32_t>::Array1(int32_t length0)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::SystemInt32Array1Constructor1(length0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array1<int32_t>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array1<int32_t>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	int32_t Array1<int32_t>::GetItem(int32_t index0)
+	{
+		auto returnValue = Plugin::SystemInt32Array1GetItem1(Handle, index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Array1<int32_t>::SetItem(int32_t index0, int32_t item)
+	{
+		Plugin::SystemInt32Array1SetItem1(Handle, index0, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
+	Array1<float>::Array1(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array1<float>::Array1(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array1<float>::Array1(const Array1<float>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array1<float>::Array1(Array1<float>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array1<float>::~Array1<float>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array1<float>& Array1<float>::operator=(const Array1<float>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array1<float>& Array1<float>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array1<float>& Array1<float>::operator=(Array1<float>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array1<float>::operator==(const Array1<float>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array1<float>::operator!=(const Array1<float>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array1<float>::Array1(int32_t length0)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::SystemSingleArray1Constructor1(length0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array1<float>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array1<float>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	float Array1<float>::GetItem(int32_t index0)
+	{
+		auto returnValue = Plugin::SystemSingleArray1GetItem1(Handle, index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Array1<float>::SetItem(int32_t index0, float item)
+	{
+		Plugin::SystemSingleArray1SetItem1(Handle, index0, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
+	Array2<float>::Array2(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array2<float>::Array2(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array2<float>::Array2(const Array2<float>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array2<float>::Array2(Array2<float>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array2<float>::~Array2<float>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array2<float>& Array2<float>::operator=(const Array2<float>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array2<float>& Array2<float>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array2<float>& Array2<float>::operator=(Array2<float>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array2<float>::operator==(const Array2<float>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array2<float>::operator!=(const Array2<float>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array2<float>::Array2(int32_t length0, int32_t length1)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::SystemSingleArray2Constructor2(length0, length1);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array2<float>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array2<float>::GetLength(int32_t dimension)
+	{
+		auto returnValue = Plugin::SystemSingleArray2GetLength2(Handle, dimension);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	int32_t Array2<float>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	float Array2<float>::GetItem(int32_t index0, int32_t index1)
+	{
+		auto returnValue = Plugin::SystemSingleArray2GetItem2(Handle, index0, index1);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Array2<float>::SetItem(int32_t index0, int32_t index1, float item)
+	{
+		Plugin::SystemSingleArray2SetItem2(Handle, index0, index1, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
+	Array3<float>::Array3(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array3<float>::Array3(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array3<float>::Array3(const Array3<float>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array3<float>::Array3(Array3<float>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array3<float>::~Array3<float>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array3<float>& Array3<float>::operator=(const Array3<float>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array3<float>& Array3<float>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array3<float>& Array3<float>::operator=(Array3<float>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array3<float>::operator==(const Array3<float>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array3<float>::operator!=(const Array3<float>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array3<float>::Array3(int32_t length0, int32_t length1, int32_t length2)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::SystemSingleArray3Constructor3(length0, length1, length2);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array3<float>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array3<float>::GetLength(int32_t dimension)
+	{
+		auto returnValue = Plugin::SystemSingleArray3GetLength3(Handle, dimension);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	int32_t Array3<float>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	float Array3<float>::GetItem(int32_t index0, int32_t index1, int32_t index2)
+	{
+		auto returnValue = Plugin::SystemSingleArray3GetItem3(Handle, index0, index1, index2);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Array3<float>::SetItem(int32_t index0, int32_t index1, int32_t index2, float item)
+	{
+		Plugin::SystemSingleArray3SetItem3(Handle, index0, index1, index2, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
+	Array1<System::String>::Array1(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array1<System::String>::Array1(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array1<System::String>::Array1(const Array1<System::String>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array1<System::String>::Array1(Array1<System::String>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array1<System::String>::~Array1<System::String>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array1<System::String>& Array1<System::String>::operator=(const Array1<System::String>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array1<System::String>& Array1<System::String>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array1<System::String>& Array1<System::String>::operator=(Array1<System::String>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array1<System::String>::operator==(const Array1<System::String>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array1<System::String>::operator!=(const Array1<System::String>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array1<System::String>::Array1(int32_t length0)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::SystemStringArray1Constructor1(length0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array1<System::String>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array1<System::String>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	System::String Array1<System::String>::GetItem(int32_t index0)
+	{
+		auto returnValue = Plugin::SystemStringArray1GetItem1(Handle, index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return System::String(Plugin::InternalUse::Only, returnValue);
+	}
+	
+	void Array1<System::String>::SetItem(int32_t index0, System::String item)
+	{
+		Plugin::SystemStringArray1SetItem1(Handle, index0, item.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
+	Array1<UnityEngine::Resolution>::Array1(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array1<UnityEngine::Resolution>::Array1(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array1<UnityEngine::Resolution>::Array1(const Array1<UnityEngine::Resolution>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array1<UnityEngine::Resolution>::Array1(Array1<UnityEngine::Resolution>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array1<UnityEngine::Resolution>::~Array1<UnityEngine::Resolution>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array1<UnityEngine::Resolution>& Array1<UnityEngine::Resolution>::operator=(const Array1<UnityEngine::Resolution>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array1<UnityEngine::Resolution>& Array1<UnityEngine::Resolution>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array1<UnityEngine::Resolution>& Array1<UnityEngine::Resolution>::operator=(Array1<UnityEngine::Resolution>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array1<UnityEngine::Resolution>::operator==(const Array1<UnityEngine::Resolution>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array1<UnityEngine::Resolution>::operator!=(const Array1<UnityEngine::Resolution>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array1<UnityEngine::Resolution>::Array1(int32_t length0)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::UnityEngineResolutionArray1Constructor1(length0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array1<UnityEngine::Resolution>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array1<UnityEngine::Resolution>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	UnityEngine::Resolution Array1<UnityEngine::Resolution>::GetItem(int32_t index0)
+	{
+		auto returnValue = Plugin::UnityEngineResolutionArray1GetItem1(Handle, index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Array1<UnityEngine::Resolution>::SetItem(int32_t index0, UnityEngine::Resolution& item)
+	{
+		Plugin::UnityEngineResolutionArray1SetItem1(Handle, index0, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
+	Array1<UnityEngine::RaycastHit>::Array1(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array1<UnityEngine::RaycastHit>::Array1(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array1<UnityEngine::RaycastHit>::Array1(const Array1<UnityEngine::RaycastHit>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array1<UnityEngine::RaycastHit>::Array1(Array1<UnityEngine::RaycastHit>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array1<UnityEngine::RaycastHit>::~Array1<UnityEngine::RaycastHit>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array1<UnityEngine::RaycastHit>& Array1<UnityEngine::RaycastHit>::operator=(const Array1<UnityEngine::RaycastHit>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array1<UnityEngine::RaycastHit>& Array1<UnityEngine::RaycastHit>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array1<UnityEngine::RaycastHit>& Array1<UnityEngine::RaycastHit>::operator=(Array1<UnityEngine::RaycastHit>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array1<UnityEngine::RaycastHit>::operator==(const Array1<UnityEngine::RaycastHit>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array1<UnityEngine::RaycastHit>::operator!=(const Array1<UnityEngine::RaycastHit>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array1<UnityEngine::RaycastHit>::Array1(int32_t length0)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::UnityEngineRaycastHitArray1Constructor1(length0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array1<UnityEngine::RaycastHit>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array1<UnityEngine::RaycastHit>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	UnityEngine::RaycastHit Array1<UnityEngine::RaycastHit>::GetItem(int32_t index0)
+	{
+		auto returnValue = Plugin::UnityEngineRaycastHitArray1GetItem1(Handle, index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return UnityEngine::RaycastHit(Plugin::InternalUse::Only, returnValue);
+	}
+	
+	void Array1<UnityEngine::RaycastHit>::SetItem(int32_t index0, UnityEngine::RaycastHit item)
+	{
+		Plugin::UnityEngineRaycastHitArray1SetItem1(Handle, index0, item.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
+	Array1<UnityEngine::GradientColorKey>::Array1(std::nullptr_t n)
+		: System::Array(nullptr)
+	{
+	}
+	
+	Array1<UnityEngine::GradientColorKey>::Array1(Plugin::InternalUse iu, int32_t handle)
+		: System::Array(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Array1<UnityEngine::GradientColorKey>::Array1(const Array1<UnityEngine::GradientColorKey>& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	Array1<UnityEngine::GradientColorKey>::Array1(Array1<UnityEngine::GradientColorKey>&& other)
+		: System::Array(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Array1<UnityEngine::GradientColorKey>::~Array1<UnityEngine::GradientColorKey>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Array1<UnityEngine::GradientColorKey>& Array1<UnityEngine::GradientColorKey>::operator=(const Array1<UnityEngine::GradientColorKey>& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	Array1<UnityEngine::GradientColorKey>& Array1<UnityEngine::GradientColorKey>::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Array1<UnityEngine::GradientColorKey>& Array1<UnityEngine::GradientColorKey>::operator=(Array1<UnityEngine::GradientColorKey>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Array1<UnityEngine::GradientColorKey>::operator==(const Array1<UnityEngine::GradientColorKey>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Array1<UnityEngine::GradientColorKey>::operator!=(const Array1<UnityEngine::GradientColorKey>& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	Array1<UnityEngine::GradientColorKey>::Array1(int32_t length0)
+		 : System::Array(nullptr)
+	{
+		auto returnValue = Plugin::UnityEngineGradientColorKeyArray1Constructor1(length0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	int32_t Array1<UnityEngine::GradientColorKey>::GetLength()
+	{
+		return Array::GetLength();
+	}
+	
+	int32_t Array1<UnityEngine::GradientColorKey>::GetRank()
+	{
+		return Array::GetRank();
+	}
+	
+	UnityEngine::GradientColorKey Array1<UnityEngine::GradientColorKey>::GetItem(int32_t index0)
+	{
+		auto returnValue = Plugin::UnityEngineGradientColorKeyArray1GetItem1(Handle, index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+	
+	void Array1<UnityEngine::GradientColorKey>::SetItem(int32_t index0, UnityEngine::GradientColorKey& item)
+	{
+		Plugin::UnityEngineGradientColorKeyArray1SetItem1(Handle, index0, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
+namespace System
+{
 	struct NullReferenceExceptionThrower : System::NullReferenceException
 	{
 		NullReferenceExceptionThrower(int32_t handle)
@@ -3018,6 +4705,8 @@ DLLEXPORT void Init(
 	void (*releaseObject)(int32_t handle),
 	int32_t (*stringNew)(const char* chars),
 	void (*setException)(int32_t handle),
+	int32_t (*arrayGetLength)(int32_t handle),
+	int32_t (*arrayGetRank)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
 	int32_t (*systemDiagnosticsStopwatchConstructor)(),
 	int64_t (*systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
@@ -3069,7 +4758,46 @@ DLLEXPORT void Init(
 	int32_t (*systemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString)(int32_t valueHandle),
 	int32_t (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle),
 	void (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle),
-	int32_t (*systemExceptionConstructorSystemString)(int32_t messageHandle)
+	int32_t (*systemExceptionConstructorSystemString)(int32_t messageHandle),
+	int32_t (*unityEngineResolutionPropertyGetWidth)(UnityEngine::Resolution* thiz),
+	void (*unityEngineResolutionPropertySetWidth)(UnityEngine::Resolution* thiz, int32_t value),
+	int32_t (*unityEngineResolutionPropertyGetHeight)(UnityEngine::Resolution* thiz),
+	void (*unityEngineResolutionPropertySetHeight)(UnityEngine::Resolution* thiz, int32_t value),
+	int32_t (*unityEngineResolutionPropertyGetRefreshRate)(UnityEngine::Resolution* thiz),
+	void (*unityEngineResolutionPropertySetRefreshRate)(UnityEngine::Resolution* thiz, int32_t value),
+	int32_t (*unityEngineScreenPropertyGetResolutions)(),
+	UnityEngine::Ray (*unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction),
+	int32_t (*unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(UnityEngine::Ray& ray, int32_t resultsHandle),
+	int32_t (*unityEnginePhysicsMethodRaycastAllUnityEngineRay)(UnityEngine::Ray& ray),
+	int32_t (*unityEngineGradientConstructor)(),
+	int32_t (*unityEngineGradientPropertyGetColorKeys)(int32_t thisHandle),
+	void (*unityEngineGradientPropertySetColorKeys)(int32_t thisHandle, int32_t valueHandle),
+	int32_t (*systemInt32Array1Constructor1)(int32_t length0),
+	int32_t (*systemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0),
+	int32_t (*systemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item),
+	int32_t (*systemSingleArray1Constructor1)(int32_t length0),
+	float (*systemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0),
+	int32_t (*systemSingleArray1SetItem1)(int32_t thisHandle, int32_t index0, float item),
+	int32_t (*systemSingleArray2Constructor2)(int32_t length0, int32_t length1),
+	int32_t (*systemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension),
+	float (*systemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1),
+	int32_t (*systemSingleArray2SetItem2)(int32_t thisHandle, int32_t index0, int32_t index1, float item),
+	int32_t (*systemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2),
+	int32_t (*systemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension),
+	float (*systemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2),
+	int32_t (*systemSingleArray3SetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2, float item),
+	int32_t (*systemStringArray1Constructor1)(int32_t length0),
+	int32_t (*systemStringArray1GetItem1)(int32_t thisHandle, int32_t index0),
+	int32_t (*systemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
+	int32_t (*unityEngineResolutionArray1Constructor1)(int32_t length0),
+	UnityEngine::Resolution (*unityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0),
+	int32_t (*unityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item),
+	int32_t (*unityEngineRaycastHitArray1Constructor1)(int32_t length0),
+	int32_t (*unityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0),
+	int32_t (*unityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
+	int32_t (*unityEngineGradientColorKeyArray1Constructor1)(int32_t length0),
+	UnityEngine::GradientColorKey (*unityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0),
+	int32_t (*unityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item)
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;
@@ -3082,6 +4810,8 @@ DLLEXPORT void Init(
 	Plugin::StringNew = stringNew;
 	Plugin::ReleaseObject = releaseObject;
 	Plugin::SetException = setException;
+	Plugin::ArrayGetLength = arrayGetLength;
+	Plugin::ArrayGetRank = arrayGetRank;
 	/*BEGIN INIT BODY*/
 	Plugin::SystemDiagnosticsStopwatchConstructor = systemDiagnosticsStopwatchConstructor;
 	Plugin::SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds = systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds;
@@ -3136,6 +4866,45 @@ DLLEXPORT void Init(
 	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue;
 	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue;
 	Plugin::SystemExceptionConstructorSystemString = systemExceptionConstructorSystemString;
+	Plugin::UnityEngineResolutionPropertyGetWidth = unityEngineResolutionPropertyGetWidth;
+	Plugin::UnityEngineResolutionPropertySetWidth = unityEngineResolutionPropertySetWidth;
+	Plugin::UnityEngineResolutionPropertyGetHeight = unityEngineResolutionPropertyGetHeight;
+	Plugin::UnityEngineResolutionPropertySetHeight = unityEngineResolutionPropertySetHeight;
+	Plugin::UnityEngineResolutionPropertyGetRefreshRate = unityEngineResolutionPropertyGetRefreshRate;
+	Plugin::UnityEngineResolutionPropertySetRefreshRate = unityEngineResolutionPropertySetRefreshRate;
+	Plugin::UnityEngineScreenPropertyGetResolutions = unityEngineScreenPropertyGetResolutions;
+	Plugin::UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3 = unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3;
+	Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit = unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit;
+	Plugin::UnityEnginePhysicsMethodRaycastAllUnityEngineRay = unityEnginePhysicsMethodRaycastAllUnityEngineRay;
+	Plugin::UnityEngineGradientConstructor = unityEngineGradientConstructor;
+	Plugin::UnityEngineGradientPropertyGetColorKeys = unityEngineGradientPropertyGetColorKeys;
+	Plugin::UnityEngineGradientPropertySetColorKeys = unityEngineGradientPropertySetColorKeys;
+	Plugin::SystemInt32Array1Constructor1 = systemInt32Array1Constructor1;
+	Plugin::SystemInt32Array1GetItem1 = systemInt32Array1GetItem1;
+	Plugin::SystemInt32Array1SetItem1 = systemInt32Array1SetItem1;
+	Plugin::SystemSingleArray1Constructor1 = systemSingleArray1Constructor1;
+	Plugin::SystemSingleArray1GetItem1 = systemSingleArray1GetItem1;
+	Plugin::SystemSingleArray1SetItem1 = systemSingleArray1SetItem1;
+	Plugin::SystemSingleArray2Constructor2 = systemSingleArray2Constructor2;
+	Plugin::SystemSingleArray2GetLength2 = systemSingleArray2GetLength2;
+	Plugin::SystemSingleArray2GetItem2 = systemSingleArray2GetItem2;
+	Plugin::SystemSingleArray2SetItem2 = systemSingleArray2SetItem2;
+	Plugin::SystemSingleArray3Constructor3 = systemSingleArray3Constructor3;
+	Plugin::SystemSingleArray3GetLength3 = systemSingleArray3GetLength3;
+	Plugin::SystemSingleArray3GetItem3 = systemSingleArray3GetItem3;
+	Plugin::SystemSingleArray3SetItem3 = systemSingleArray3SetItem3;
+	Plugin::SystemStringArray1Constructor1 = systemStringArray1Constructor1;
+	Plugin::SystemStringArray1GetItem1 = systemStringArray1GetItem1;
+	Plugin::SystemStringArray1SetItem1 = systemStringArray1SetItem1;
+	Plugin::UnityEngineResolutionArray1Constructor1 = unityEngineResolutionArray1Constructor1;
+	Plugin::UnityEngineResolutionArray1GetItem1 = unityEngineResolutionArray1GetItem1;
+	Plugin::UnityEngineResolutionArray1SetItem1 = unityEngineResolutionArray1SetItem1;
+	Plugin::UnityEngineRaycastHitArray1Constructor1 = unityEngineRaycastHitArray1Constructor1;
+	Plugin::UnityEngineRaycastHitArray1GetItem1 = unityEngineRaycastHitArray1GetItem1;
+	Plugin::UnityEngineRaycastHitArray1SetItem1 = unityEngineRaycastHitArray1SetItem1;
+	Plugin::UnityEngineGradientColorKeyArray1Constructor1 = unityEngineGradientColorKeyArray1Constructor1;
+	Plugin::UnityEngineGradientColorKeyArray1GetItem1 = unityEngineGradientColorKeyArray1GetItem1;
+	Plugin::UnityEngineGradientColorKeyArray1SetItem1 = unityEngineGradientColorKeyArray1SetItem1;
 	/*END INIT BODY*/
 	
 	try

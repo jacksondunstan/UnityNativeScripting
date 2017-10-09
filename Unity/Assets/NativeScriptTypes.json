@@ -411,6 +411,85 @@
 		},
 		{
 			"Name": "System.NullReferenceException"
+		},
+		{
+			"Name": "UnityEngine.Resolution",
+			"Properties": [
+				{
+					"Name": "width",
+					"Get": {},
+					"Set": {}
+				},
+				{
+					"Name": "height",
+					"Get": {},
+					"Set": {}
+				},
+				{
+					"Name": "refreshRate",
+					"Get": {},
+					"Set": {}
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Screen",
+			"Properties": [
+				{
+					"Name": "resolutions",
+					"Get": {}
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Ray",
+			"Constructors": [
+				{
+					"ParamTypes": [
+						"UnityEngine.Vector3",
+						"UnityEngine.Vector3"
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Physics",
+			"Methods": [
+				{
+					"Name": "RaycastNonAlloc",
+					"ParamTypes": [
+						"UnityEngine.Ray",
+						"UnityEngine.RaycastHit[]"
+					]
+				},
+				{
+					"Name": "RaycastAll",
+					"ParamTypes": [
+						"UnityEngine.Ray"
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Color"
+		},
+		{
+			"Name": "UnityEngine.GradientColorKey"
+		},
+		{
+			"Name": "UnityEngine.Gradient",
+			"Constructors": [
+				{
+					"ParamTypes": []
+				}
+			],
+			"Properties": [
+				{
+					"Name": "colorKeys",
+					"Get": {},
+					"Set": {}
+				}
+			]
 		}
 	],
 	"MonoBehaviours": [
@@ -422,6 +501,27 @@
 				"OnCollisionEnter",
 				"Update"
 			]
+		}
+	],
+	"Arrays": [
+		{
+			"Type": "System.Int32"
+		},
+		{
+			"Type": "System.Single",
+			"Ranks": [ 1, 2, 3 ]
+		},
+		{
+			"Type": "System.String"
+		},
+		{
+			"Type": "UnityEngine.Resolution"
+		},
+		{
+			"Type": "UnityEngine.RaycastHit"
+		},
+		{
+			"Type": "UnityEngine.GradientColorKey"
 		}
 	]
 }

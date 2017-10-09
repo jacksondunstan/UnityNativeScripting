@@ -94,11 +94,19 @@ namespace NativeScript
 		}
 		
 		[Serializable]
+		class JsonArray
+		{
+			public string Type;
+			public int[] Ranks;
+		}
+		
+		[Serializable]
 		class JsonDocument
 		{
 			public string[] Assemblies;
 			public JsonType[] Types;
 			public JsonMonoBehaviour[] MonoBehaviours;
+			public JsonArray[] Arrays;
 		}
 		
 		const int InitialStringBuilderCapacity = 1024 * 10;
@@ -500,6 +508,18 @@ namespace NativeScript
 				}
 			}
 			
+			// Generate arrays
+			if (doc.Arrays != null)
+			{
+				foreach (JsonArray array in doc.Arrays)
+				{
+					AppendArray(
+						array,
+						assemblies,
+						builders);
+				}
+			}
+			
 			// Generate exception setters
 			AppendExceptions(
 				doc,
@@ -814,7 +834,9 @@ namespace NativeScript
 			{
 				Type type = parameters[i].DereferencedParameterType;
 				AppendNamespace(type.Namespace, string.Empty, output);
-				output.Append(type.Name);
+				AppendTypeNameWithoutSuffixes(
+					type.Name,
+					output);
 				if (i != len - 1)
 				{
 					output.Append('_');
@@ -835,7 +857,9 @@ namespace NativeScript
 						curType.Namespace,
 						string.Empty,
 						output);
-					output.Append(curType.Name);
+					AppendTypeNameWithoutSuffixes(
+						curType.Name,
+						output);
 					if (i != len - 1)
 					{
 						output.Append('_');
@@ -972,16 +996,63 @@ namespace NativeScript
 			return true;
 		}
 		
-		static void AppendWithoutGenericTypeCountSuffix(
+		static void AppendTypeNameWithoutGenericSuffix(
 			string typeName,
 			StringBuilder output)
 		{
-			// Names are like "List`1" or "Dictionary`2"
-			// Remove the backtick (`) and everything after it
+			// Names are like "List`1"
+			// Remove the ` and everything after it
 			int backtickIndex = typeName.IndexOf('`');
 			if (backtickIndex < 0)
 			{
 				output.Append(typeName);
+			}
+			else
+			{
+				// Append up to (but not including) the `
+				output.Append(
+					typeName,
+					0,
+					backtickIndex);
+				
+				// Find the first non-number after the `
+				int endIndex = backtickIndex + 1;
+				while (
+					endIndex < typeName.Length
+					&& char.IsNumber(typeName[endIndex]))
+				{
+					endIndex++;
+				}
+				
+				// Append everything after the numbers
+				if (endIndex < typeName.Length)
+				{
+					output.Append(
+						typeName,
+						endIndex,
+						typeName.Length - endIndex);
+				}
+			}
+		}
+		
+		static void AppendTypeNameWithoutSuffixes(
+			string typeName,
+			StringBuilder output)
+		{
+			// Names are like "List`1" or "int[]" or "List`1[]"
+			// Remove the first of ` or [ and everything after it
+			int backtickIndex = typeName.IndexOf('`');
+			if (backtickIndex < 0)
+			{
+				int bracketIndex = typeName.IndexOf('[');
+				if (bracketIndex < 0)
+				{
+					output.Append(typeName);
+				}
+				else
+				{
+					output.Append(typeName, 0, bracketIndex);
+				}
 			}
 			else
 			{
@@ -1020,7 +1091,7 @@ namespace NativeScript
 							genericArgTypes.Length,
 							builders.CppTypeDeclarations);
 						builders.CppTypeDeclarations.Append("struct ");
-						AppendWithoutGenericTypeCountSuffix(
+						AppendTypeNameWithoutGenericSuffix(
 							type.Name,
 							builders.CppTypeDeclarations);
 						builders.CppTypeDeclarations.Append(";");
@@ -1068,9 +1139,8 @@ namespace NativeScript
 			Assembly[] assemblies,
 			StringBuilders builders)
 		{
-			// Build type name starting with a lowercase letter
 			builders.TempStrBuilder.Length = 0;
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				type.Name,
 				builders.TempStrBuilder);
 			builders.TempStrBuilder[0] = char.ToLower(
@@ -1105,7 +1175,8 @@ namespace NativeScript
 				// Build function name suffix
 				builders.TempStrBuilder.Length = 0;
 				AppendReleaseFunctionNameSuffix(
-					type,
+					type.Name,
+					type.Namespace,
 					typeParams,
 					builders.TempStrBuilder);
 				string funcNameSuffix = builders.TempStrBuilder.ToString();
@@ -1114,7 +1185,8 @@ namespace NativeScript
 				builders.TempStrBuilder.Length = 0;
 				builders.TempStrBuilder.Append("Release");
 				AppendReleaseFunctionNameSuffix(
-					type,
+					type.Name,
+					type.Namespace,
 					typeParams,
 					builders.TempStrBuilder);
 				string funcName = builders.TempStrBuilder.ToString();
@@ -1184,6 +1256,7 @@ namespace NativeScript
 					funcName,
 					true,
 					null,
+					null,
 					TypeKind.None,
 					parameters,
 					typeof(void),
@@ -1193,6 +1266,7 @@ namespace NativeScript
 				AppendCppInitParam(
 					funcNameLower,
 					true,
+					null,
 					null,
 					TypeKind.None,
 					parameters,
@@ -1303,19 +1377,26 @@ namespace NativeScript
 			
 			// C++ type definition (beginning)
 			AppendCppTypeDefinitionBegin(
-				type,
+				type.Name,
+				type.Namespace,
+				typeKind,
 				typeParams,
-				type.BaseType,
+				type.BaseType.Name,
+				type.BaseType.Namespace,
+				type.BaseType.GetGenericArguments(),
 				isStatic,
 				indent,
 				builders.CppTypeDefinitions);
 			
 			// C++ method definition
 			int cppMethodDefinitionsIndent = AppendCppMethodDefinitionBegin(
-				type,
+				type.Name,
+				type.Namespace,
 				typeKind,
 				typeParams,
-				type.BaseType,
+				type.BaseType.Name,
+				type.BaseType.Namespace,
+				type.BaseType.GetGenericArguments(),
 				isStatic,
 				indent,
 				builders.CppMethodDefinitions);
@@ -1333,7 +1414,8 @@ namespace NativeScript
 				foreach (JsonConstructor jsonCtor in jsonType.Constructors)
 				{
 					AppendConstructor(
-						jsonCtor,
+						jsonCtor.ParamTypes,
+						jsonCtor.Exceptions,
 						type,
 						isStatic,
 						typeKind,
@@ -1426,16 +1508,17 @@ namespace NativeScript
 		}
 		
 		static void AppendReleaseFunctionNameSuffix(
-			Type type,
+			string typeName,
+			string typeNamespace,
 			Type[] typeParams,
 			StringBuilder output)
 		{
 			AppendNamespace(
-				type.Namespace,
+				typeNamespace,
 				string.Empty,
 				output);
-			AppendWithoutGenericTypeCountSuffix(
-				type.Name,
+			AppendTypeNameWithoutSuffixes(
+				typeName,
 				output);
 			if (typeParams != null)
 			{
@@ -1446,7 +1529,7 @@ namespace NativeScript
 						typeParam.Namespace,
 						string.Empty,
 						output);
-					AppendWithoutGenericTypeCountSuffix(
+					AppendTypeNameWithoutSuffixes(
 						typeParam.Name,
 						output);
 					if (i != len - 1)
@@ -1527,7 +1610,8 @@ namespace NativeScript
 		}
 		
 		static void AppendConstructor(
-			JsonConstructor jsonCtor,
+			string[] paramTypeNames,
+			string[] exceptionNames,
 			Type enclosingType,
 			bool enclosingTypeIsStatic,
 			TypeKind enclosingTypeKind,
@@ -1543,7 +1627,7 @@ namespace NativeScript
 			if (enclosingType.IsValueType
 				&& !enclosingType.IsPrimitive
 				&& !enclosingType.IsEnum
-				&& jsonCtor.ParamTypes.Length == 0)
+				&& paramTypeNames.Length == 0)
 			{
 				// Allow parameterless constructor for structs
 				parameters = new ParameterInfo[0];
@@ -1554,13 +1638,13 @@ namespace NativeScript
 				if (enclosingType.IsGenericType)
 				{
 					constructorParamTypeNames = OverrideGenericTypeNames(
-						jsonCtor.ParamTypes,
+						paramTypeNames,
 						genericArgTypes,
 						enclosingTypeParams);
 				}
 				else
 				{
-					constructorParamTypeNames = jsonCtor.ParamTypes;
+					constructorParamTypeNames = paramTypeNames;
 				}
 				parameters = GetConstructorParameters(
 					enclosingType,
@@ -1568,7 +1652,7 @@ namespace NativeScript
 			}
 			
 			Type[] exceptionTypes = GetTypes(
-				jsonCtor.Exceptions,
+				exceptionNames,
 				assemblies);
 			
 			// Build uppercase function name
@@ -1577,7 +1661,7 @@ namespace NativeScript
 				enclosingType.Namespace,
 				string.Empty,
 				builders.TempStrBuilder);
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
@@ -1645,7 +1729,9 @@ namespace NativeScript
 				AppendCsharpFunctionReturn(
 					parameters,
 					enclosingType,
+					enclosingTypeKind,
 					exceptionTypes,
+					true,
 					builders.CsharpFunctions);
 			}
 			else
@@ -1675,7 +1761,9 @@ namespace NativeScript
 				AppendCsharpFunctionReturn(
 					parameters,
 					typeof(int),
+					TypeKind.Primitive,
 					exceptionTypes,
+					true,
 					builders.CsharpFunctions);
 			}
 			
@@ -1683,7 +1771,8 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				true,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				enclosingType,
@@ -1704,7 +1793,7 @@ namespace NativeScript
 			
 			// C++ method definition
 			AppendCppMethodDefinition(
-				enclosingType,
+				enclosingType.Name,
 				null,
 				enclosingType.Name,
 				enclosingTypeParams,
@@ -1721,7 +1810,7 @@ namespace NativeScript
 				AppendCppTypeName(
 					enclosingType.BaseType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("(0)\n");
+				builders.CppMethodDefinitions.Append("(nullptr)\n");
 			}
 			AppendIndent(
 				indent,
@@ -1729,7 +1818,8 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				true,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				enclosingTypeParams,
 				enclosingType,
@@ -1766,7 +1856,8 @@ namespace NativeScript
 					indent + 2,
 					builders.CppMethodDefinitions);
 				AppendReferenceManagedHandleFunctionCall(
-					enclosingType,
+					enclosingType.Name,
+					enclosingType.Namespace,
 					enclosingTypeKind,
 					enclosingTypeParams,
 					"returnValue",
@@ -1791,7 +1882,8 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				true,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				enclosingType,
@@ -1856,6 +1948,8 @@ namespace NativeScript
 				
 				if (getMethod != null)
 				{
+					Type propertyType = property.PropertyType;
+					TypeKind propertyTypeKind = GetTypeKind(propertyType);
 					Type[] exceptionTypes = GetTypes(
 						jsonPropertyGet.Exceptions,
 						assemblies);
@@ -1875,7 +1969,8 @@ namespace NativeScript
 						jsonPropertyGet.IsReadOnly,
 						enclosingType,
 						typeParams,
-						property.PropertyType,
+						propertyType,
+						propertyTypeKind,
 						indent,
 						exceptionTypes,
 						builders);
@@ -1959,7 +2054,7 @@ namespace NativeScript
 			AppendIndent(
 				indent + 1,
 				builders.CppTypeDefinitions);
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.CppTypeDefinitions);
 			builders.CppTypeDefinitions.Append("();\n");
@@ -1967,11 +2062,11 @@ namespace NativeScript
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("::");
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("()\n");
@@ -2029,6 +2124,7 @@ namespace NativeScript
 				field.FieldType,
 				typeGenericArgumentTypes,
 				typeTypeParams);
+			TypeKind fieldTypeKind = GetTypeKind(fieldType);
 			Type[] exceptionTypes = new Type[0];
 			AppendGetter(
 				field.Name,
@@ -2041,6 +2137,7 @@ namespace NativeScript
 				enclosingType,
 				typeTypeParams,
 				fieldType,
+				fieldTypeKind,
 				indent,
 				exceptionTypes,
 				builders);
@@ -2204,6 +2301,8 @@ namespace NativeScript
 					method = method.MakeGenericMethod(methodTypeParams);
 					ParameterInfo[] parameters = ConvertParameters(
 						method.GetParameters());
+					Type returnType = method.ReturnType;
+					TypeKind returnTypeKind = GetTypeKind(returnType);
 					AppendMethod(
 						enclosingType,
 						assemblies,
@@ -2213,7 +2312,8 @@ namespace NativeScript
 						enclosingTypeKind,
 						method.IsStatic,
 						jsonMethod.IsReadOnly,
-						method.ReturnType,
+						returnType,
+						returnTypeKind,
 						typeTypeParams,
 						methodTypeParams,
 						parameters,
@@ -2226,6 +2326,8 @@ namespace NativeScript
 			{
 				ParameterInfo[] parameters = ConvertParameters(
 					method.GetParameters());
+				Type returnType = method.ReturnType;
+				TypeKind returnTypeKind = GetTypeKind(returnType);
 				AppendMethod(
 					enclosingType,
 					assemblies,
@@ -2235,7 +2337,8 @@ namespace NativeScript
 					enclosingTypeKind,
 					method.IsStatic,
 					jsonMethod.IsReadOnly,
-					method.ReturnType,
+					returnType,
+					returnTypeKind,
 					typeTypeParams,
 					null,
 					parameters,
@@ -2313,6 +2416,7 @@ namespace NativeScript
 			bool methodIsStatic,
 			bool isReadOnly,
 			Type returnType,
+			TypeKind returnTypeKind,
 			Type[] enclosingTypeParams,
 			Type[] methodTypeParams,
 			ParameterInfo[] parameters,
@@ -2326,7 +2430,7 @@ namespace NativeScript
 				enclosingType.Namespace,
 				string.Empty,
 				builders.TempStrBuilder);
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
@@ -2406,7 +2510,7 @@ namespace NativeScript
 					case "op_Explicit":
 						builders.TempStrBuilder.Length = 0;
 						builders.TempStrBuilder.Append('(');
-						AppendWithoutGenericTypeCountSuffix(
+						AppendTypeNameWithoutGenericSuffix(
 							returnType.Name,
 							builders.TempStrBuilder);
 						builders.TempStrBuilder.Append(')');
@@ -2518,14 +2622,17 @@ namespace NativeScript
 			AppendCsharpFunctionReturn(
 				parameters,
 				returnType,
+				returnTypeKind,
 				exceptionTypes,
+				false,
 				builders.CsharpFunctions);
 			
 			// C++ function pointer
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				returnType,
@@ -2703,7 +2810,7 @@ namespace NativeScript
 			
 			// C++ method definition
 			AppendCppMethodDefinition(
-				enclosingType,
+				enclosingType.Name,
 				cppReturnType,
 				cppMethodName,
 				enclosingTypeParams,
@@ -2717,7 +2824,8 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				enclosingTypeParams,
 				returnType,
@@ -2727,6 +2835,7 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			AppendCppMethodReturn(
 				returnType,
+				returnTypeKind,
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendIndent(
@@ -2738,7 +2847,8 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				returnType,
@@ -2811,20 +2921,26 @@ namespace NativeScript
 			
 			// C++ Type Definition (begin)
 			AppendCppTypeDefinitionBegin(
-				type,
+				type.Name,
+				type.Namespace,
+				TypeKind.Class,
 				null,
-				typeof(MonoBehaviour),
+				"MonoBehaviour",
+				"UnityEngine",
+				null,
 				false,
 				cppIndent,
-				builders.CppTypeDefinitions
-			);
+				builders.CppTypeDefinitions);
 			
 			// C++ method definition
 			int cppMethodDefinitionsIndent = AppendCppMethodDefinitionBegin(
-				type,
+				type.Name,
+				type.Namespace,
 				TypeKind.Class,
 				null,
-				typeof(MonoBehaviour),
+				"MonoBehaviour",
+				"UnityEngine",
+				null,
 				false,
 				cppIndent,
 				builders.CppMethodDefinitions);
@@ -3126,6 +3242,906 @@ namespace NativeScript
 				false,
 				cppIndent,
 				builders.CppTypeDefinitions);
+		}
+		
+		static void AppendArray(
+			JsonArray jsonArray,
+			Assembly[] assemblies,
+			StringBuilders builders)
+		{
+			// Get element type
+			Type elementType = GetType(
+				jsonArray.Type,
+				assemblies);
+			TypeKind elementTypeKind = GetTypeKind(elementType);
+			
+			// Default ranks to just 1
+			int[] ranks;
+			if (jsonArray.Ranks == null
+				|| jsonArray.Ranks.Length == 0)
+			{
+				ranks = new int[]{ 1 };
+			}
+			else
+			{
+				ranks = jsonArray.Ranks;
+			}
+			
+			foreach (int rank in ranks)
+			{
+				// Build array name
+				builders.TempStrBuilder.Length = 0;
+				builders.TempStrBuilder.Append("Array");
+				builders.TempStrBuilder.Append(rank);
+				string cppArrayTypeName = builders.TempStrBuilder.ToString();
+				
+				// Build "TypeArray" name
+				builders.TempStrBuilder.Length = 0;
+				AppendTypeNameWithoutGenericSuffix(
+					elementType.Name,
+					builders.TempStrBuilder);
+				builders.TempStrBuilder.Append(cppArrayTypeName);
+				string bindingArrayTypeName = builders.TempStrBuilder.ToString();
+				
+				// MakeArrayType() creates a Type for a "vector"
+				// MakeArrayType(int) creates a Type for a multi-dimensional array
+				// Use MakeArrayType() instead of MakeArrayType(1) to create a vector
+				// instead of a multi-dimensional array with one dimension.
+				// This avoids problems like the name being "float[*]", which is
+				// invalid C# code.
+				Type arrayType;
+				if (rank == 1)
+				{
+					arrayType = elementType.MakeArrayType();
+				}
+				else
+				{
+					arrayType = elementType.MakeArrayType(rank);
+				}
+				
+				// C++ type declaration
+				Type[] cppTypeParams = new Type[]{ elementType };
+				int indent = AppendCppTypeDeclaration(
+					"System",
+					cppArrayTypeName,
+					false,
+					cppTypeParams,
+					builders.CppTypeDeclarations);
+				
+				// C++ type definition (beginning)
+				AppendCppTypeDefinitionBegin(
+					cppArrayTypeName,
+					"System",
+					TypeKind.Class,
+					cppTypeParams,
+					"Array",
+					"System",
+					null,
+					false,
+					indent,
+					builders.CppTypeDefinitions);
+				
+				// C++ method definitions (beginning)
+				int cppMethodDefinitionsIndent = AppendCppMethodDefinitionBegin(
+					cppArrayTypeName,
+					"System",
+					TypeKind.Class,
+					cppTypeParams,
+					"Array",
+					"System",
+					null,
+					false,
+					indent,
+					builders.CppMethodDefinitions);
+				
+				AppendArrayConstructor(
+					elementType,
+					arrayType,
+					cppArrayTypeName,
+					rank,
+					bindingArrayTypeName,
+					indent,
+					builders);
+				
+				// Base GetLength
+				AppendArrayCppCallBaseGetIntFunction(
+					indent,
+					cppArrayTypeName,
+					"GetLength",
+					cppTypeParams,
+					builders);
+				
+				// GetLength for multi-dimensional arrays
+				if (rank > 1)
+				{
+					AppendArrayGetLength(
+						elementType,
+						arrayType,
+						cppArrayTypeName,
+						rank,
+						bindingArrayTypeName,
+						indent,
+						builders);
+				}
+				
+				AppendArrayCppCallBaseGetIntFunction(
+					indent,
+					cppArrayTypeName,
+					"GetRank",
+					cppTypeParams,
+					builders);
+				
+				AppendArrayGetItem(
+					elementType,
+					elementTypeKind,
+					arrayType,
+					cppArrayTypeName,
+					rank,
+					bindingArrayTypeName,
+					indent,
+					builders);
+				
+				AppendArraySetItem(
+					elementType,
+					arrayType,
+					cppArrayTypeName,
+					rank,
+					bindingArrayTypeName,
+					indent,
+					builders);
+				
+				AppendCppTypeDefinitionEnd(
+					false,
+					indent,
+					builders.CppTypeDefinitions);
+				
+				// C++ method definitions (ending)
+				AppendCppMethodDefinitionEnd(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+			}
+		}
+		
+		static void AppendArrayConstructor(
+			Type elementType,
+			Type arrayType,
+			string cppArrayTypeName,
+			int rank,
+			string csharpTypeName,
+			int indent,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			AppendNamespace(
+				elementType.Namespace,
+				string.Empty,
+				builders.TempStrBuilder);
+			AppendTypeNameWithoutGenericSuffix(
+				csharpTypeName,
+				builders.TempStrBuilder);
+			builders.TempStrBuilder.Append("Constructor");
+			builders.TempStrBuilder.Append(rank);
+			string funcName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string funcNameLower = builders.TempStrBuilder.ToString();
+			
+			ParameterInfo[] parameters = new ParameterInfo[rank];
+			for (int i = 0; i < rank; ++i)
+			{
+				ParameterInfo info = new ParameterInfo();
+				info.Name = "length" + i;
+				info.ParameterType = typeof(int);
+				info.IsOut = false;
+				info.IsRef = false;
+				info.DereferencedParameterType = info.ParameterType;
+				info.Kind = TypeKind.Primitive;
+				parameters[i] = info;
+			}
+			
+			// C# Delegate Type
+			AppendCsharpDelegateType(
+				funcName,
+				true,
+				arrayType,
+				TypeKind.Class,
+				arrayType,
+				parameters,
+				builders.CsharpDelegateTypes);
+			
+			// C# Init Call
+			AppendCsharpInitCallArg(
+				funcName,
+				builders.CsharpInitCall);
+			
+			// C# Init Param
+			AppendCsharpInitParam(
+				funcNameLower,
+				builders.CsharpInitParams);
+			
+			// C# function
+			AppendCsharpFunctionBeginning(
+				arrayType,
+				funcName,
+				true,
+				TypeKind.Class,
+				arrayType,
+				null,
+				parameters,
+				builders.CsharpFunctions);
+			AppendHandleStoreTypeName(
+				arrayType,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append(".Store(new ");
+			AppendCsharpTypeName(
+				elementType,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append('[');
+			for (int i = 0; i < rank; ++i)
+			{
+				builders.CsharpFunctions.Append("length");
+				builders.CsharpFunctions.Append(i);
+				if (i != rank-1)
+				{
+					builders.CsharpFunctions.Append(", ");
+				}
+			}
+			builders.CsharpFunctions.Append("]);");
+			AppendCsharpFunctionReturn(
+				parameters,
+				arrayType,
+				TypeKind.Class,
+				null,
+				true,
+				builders.CsharpFunctions);
+			
+			// C++ function pointer definition
+			AppendCppFunctionPointerDefinition(
+				funcName,
+				true,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				arrayType,
+				builders.CppFunctionPointers);
+			
+			// C++ init param
+			AppendCppInitParam(
+				funcNameLower,
+				true,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				arrayType,
+				builders.CppInitParams);
+			
+			// C++ init body
+			AppendCppInitBody(
+				funcName,
+				funcNameLower,
+				builders.CppInitBody);
+			
+			// C++ method declaration
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				cppArrayTypeName,
+				false,
+				false,
+				null,
+				null,
+				parameters,
+				builders.CppTypeDefinitions);
+			
+			// C++ method definition
+			Type[] cppTypeParams = new Type[] { elementType };
+			AppendCppMethodDefinition(
+				cppArrayTypeName,
+				null,
+				cppArrayTypeName,
+				cppTypeParams,
+				null,
+				parameters,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(" : ");
+			AppendCppTypeName(
+				"System",
+				"Array",
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("(nullptr)\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendCppPluginFunctionCall(
+				true,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				cppTypeParams,
+				arrayType,
+				funcName,
+				parameters,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"Handle = returnValue;\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"if (returnValue)\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"{\n");
+			AppendIndent(
+				indent + 2,
+				builders.CppMethodDefinitions);
+			AppendReferenceManagedHandleFunctionCall(
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				cppTypeParams,
+				"returnValue",
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(";\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("\n");
+		}
+		
+		static void AppendArrayCppCallBaseGetIntFunction(
+			int indent,
+			string cppArrayTypeName,
+			string baseFunctionName,
+			Type[] cppTypeParams,
+			StringBuilders builders
+		)
+		{
+			ParameterInfo[] parameters = new ParameterInfo[0];
+			
+			// C++ method declaration
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				baseFunctionName,
+				false,
+				false,
+				typeof(int),
+				null,
+				parameters,
+				builders.CppTypeDefinitions);
+			
+			// C++ method definition
+			AppendCppMethodDefinition(
+				cppArrayTypeName,
+				typeof(int),
+				baseFunctionName,
+				cppTypeParams,
+				null,
+				parameters,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(indent + 1, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return Array::");
+			builders.CppMethodDefinitions.Append(baseFunctionName);
+			builders.CppMethodDefinitions.Append("();\n");
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+		}
+		
+		static void AppendArrayGetLength(
+			Type elementType,
+			Type arrayType,
+			string cppArrayTypeName,
+			int rank,
+			string csharpTypeName,
+			int indent,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			AppendNamespace(
+				elementType.Namespace,
+				string.Empty,
+				builders.TempStrBuilder);
+			AppendTypeNameWithoutGenericSuffix(
+				csharpTypeName,
+				builders.TempStrBuilder);
+			builders.TempStrBuilder.Append("GetLength");
+			builders.TempStrBuilder.Append(rank);
+			string funcName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string funcNameLower = builders.TempStrBuilder.ToString();
+			
+			ParameterInfo[] parameters = new ParameterInfo[] {
+				new ParameterInfo {
+					Name = "dimension",
+					ParameterType = typeof(int),
+					IsOut = false,
+					IsRef = false,
+					DereferencedParameterType = typeof(int),
+					Kind = TypeKind.Primitive,
+				}
+			};
+			
+			// C# Delegate Type
+			AppendCsharpDelegateType(
+				funcName,
+				false,
+				arrayType,
+				TypeKind.Class,
+				typeof(int),
+				parameters,
+				builders.CsharpDelegateTypes);
+			
+			// C# Init Call
+			AppendCsharpInitCallArg(
+				funcName,
+				builders.CsharpInitCall);
+			
+			// C# Init Param
+			AppendCsharpInitParam(
+				funcNameLower,
+				builders.CsharpInitParams);
+			
+			// C# function
+			AppendCsharpFunctionBeginning(
+				arrayType,
+				funcName,
+				false,
+				TypeKind.Class,
+				typeof(int),
+				null,
+				parameters,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append(
+				"thiz.GetLength(dimension);");
+			AppendCsharpFunctionReturn(
+				parameters,
+				typeof(int),
+				TypeKind.Primitive,
+				null,
+				false,
+				builders.CsharpFunctions);
+			
+			// C++ function pointer definition
+			AppendCppFunctionPointerDefinition(
+				funcName,
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				arrayType,
+				builders.CppFunctionPointers);
+			
+			// C++ init param
+			AppendCppInitParam(
+				funcNameLower,
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				arrayType,
+				builders.CppInitParams);
+			
+			// C++ init body
+			AppendCppInitBody(
+				funcName,
+				funcNameLower,
+				builders.CppInitBody);
+			
+			// C++ method declaration
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				"GetLength",
+				false,
+				false,
+				typeof(int),
+				null,
+				parameters,
+				builders.CppTypeDefinitions);
+			
+			// C++ method definition
+			Type[] cppTypeParams = new Type[] { elementType };
+			AppendCppMethodDefinition(
+				cppArrayTypeName,
+				typeof(int),
+				"GetLength",
+				cppTypeParams,
+				null,
+				parameters,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendCppPluginFunctionCall(
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				cppTypeParams,
+				typeof(int),
+				funcName,
+				parameters,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendCppMethodReturn(
+				typeof(int),
+				TypeKind.Primitive,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+		}
+		
+		static void AppendArrayGetItem(
+			Type elementType,
+			TypeKind elementTypeKind,
+			Type arrayType,
+			string cppArrayTypeName,
+			int rank,
+			string csharpTypeName,
+			int indent,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			AppendNamespace(
+				elementType.Namespace,
+				string.Empty,
+				builders.TempStrBuilder);
+			AppendTypeNameWithoutGenericSuffix(
+				csharpTypeName,
+				builders.TempStrBuilder);
+			builders.TempStrBuilder.Append("GetItem");
+			builders.TempStrBuilder.Append(rank);
+			string funcName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string funcNameLower = builders.TempStrBuilder.ToString();
+			
+			ParameterInfo[] parameters = new ParameterInfo[rank];
+			for (int i = 0; i < rank; ++i)
+			{
+				ParameterInfo info = new ParameterInfo();
+				info.Name = "index" + i;
+				info.ParameterType = typeof(int);
+				info.IsOut = false;
+				info.IsRef = false;
+				info.DereferencedParameterType = info.ParameterType;
+				info.Kind = GetTypeKind(
+					info.DereferencedParameterType);
+				parameters[i] = info;
+			}
+			
+			// C# Delegate Type
+			AppendCsharpDelegateType(
+				funcName,
+				false,
+				arrayType,
+				TypeKind.Class,
+				elementType,
+				parameters,
+				builders.CsharpDelegateTypes);
+			
+			// C# Init Call
+			AppendCsharpInitCallArg(
+				funcName,
+				builders.CsharpInitCall);
+			
+			// C# Init Param
+			AppendCsharpInitParam(
+				funcNameLower,
+				builders.CsharpInitParams);
+			
+			// C# function
+			AppendCsharpFunctionBeginning(
+				arrayType,
+				funcName,
+				false,
+				TypeKind.Class,
+				elementType,
+				null,
+				parameters,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append("thiz[");
+			for (int i = 0; i < rank; ++i)
+			{
+				builders.CsharpFunctions.Append("index");
+				builders.CsharpFunctions.Append(i);
+				if (i != rank-1)
+				{
+					builders.CsharpFunctions.Append(", ");
+				}
+			}
+			builders.CsharpFunctions.Append("];");
+			AppendCsharpFunctionReturn(
+				parameters,
+				elementType,
+				elementTypeKind,
+				null,
+				false,
+				builders.CsharpFunctions);
+			
+			// C++ function pointer definition
+			AppendCppFunctionPointerDefinition(
+				funcName,
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				elementType,
+				builders.CppFunctionPointers);
+			
+			// C++ init param
+			AppendCppInitParam(
+				funcNameLower,
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				elementType,
+				builders.CppInitParams);
+			
+			// C++ init body
+			AppendCppInitBody(
+				funcName,
+				funcNameLower,
+				builders.CppInitBody);
+			
+			// C++ method declaration
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				"GetItem",
+				false,
+				false,
+				elementType,
+				null,
+				parameters,
+				builders.CppTypeDefinitions);
+			
+			// C++ method definition
+			Type[] cppTypeParams = new Type[] { elementType };
+			AppendCppMethodDefinition(
+				cppArrayTypeName,
+				elementType,
+				"GetItem",
+				cppTypeParams,
+				null,
+				parameters,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendCppPluginFunctionCall(
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				cppTypeParams,
+				elementType,
+				funcName,
+				parameters,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendCppMethodReturn(
+				elementType,
+				elementTypeKind,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+		}
+		
+		static void AppendArraySetItem(
+			Type elementType,
+			Type arrayType,
+			string cppArrayTypeName,
+			int rank,
+			string csharpTypeName,
+			int indent,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			AppendNamespace(
+				elementType.Namespace,
+				string.Empty,
+				builders.TempStrBuilder);
+			AppendTypeNameWithoutGenericSuffix(
+				csharpTypeName,
+				builders.TempStrBuilder);
+			builders.TempStrBuilder.Append("SetItem");
+			builders.TempStrBuilder.Append(rank);
+			string funcName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string funcNameLower = builders.TempStrBuilder.ToString();
+			
+			// Build parameters as indexes then element
+			ParameterInfo[] parameters = new ParameterInfo[rank+1];
+			for (int i = 0; i < rank; ++i)
+			{
+				ParameterInfo info = new ParameterInfo();
+				info.Name = "index" + i;
+				info.ParameterType = typeof(int);
+				info.IsOut = false;
+				info.IsRef = false;
+				info.DereferencedParameterType = info.ParameterType;
+				info.Kind = GetTypeKind(
+					info.DereferencedParameterType);
+				parameters[i] = info;
+			}
+			ParameterInfo lastParamInfo = new ParameterInfo();
+			lastParamInfo.Name = "item";
+			lastParamInfo.ParameterType = elementType;
+			lastParamInfo.IsOut = false;
+			lastParamInfo.IsRef = false;
+			lastParamInfo.DereferencedParameterType = lastParamInfo.ParameterType;
+			lastParamInfo.Kind = GetTypeKind(
+				lastParamInfo.DereferencedParameterType);
+			parameters[rank] = lastParamInfo;
+			
+			// C# Delegate Type
+			AppendCsharpDelegateType(
+				funcName,
+				false,
+				arrayType,
+				TypeKind.Class,
+				typeof(void),
+				parameters,
+				builders.CsharpDelegateTypes);
+			
+			// C# Init Call
+			AppendCsharpInitCallArg(
+				funcName,
+				builders.CsharpInitCall);
+			
+			// C# Init Param
+			AppendCsharpInitParam(
+				funcNameLower,
+				builders.CsharpInitParams);
+			
+			// C# function
+			AppendCsharpFunctionBeginning(
+				arrayType,
+				funcName,
+				false,
+				TypeKind.Class,
+				typeof(void),
+				null,
+				parameters,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append("thiz[");
+			for (int i = 0; i < rank; ++i)
+			{
+				builders.CsharpFunctions.Append("index");
+				builders.CsharpFunctions.Append(i);
+				if (i != rank-1)
+				{
+					builders.CsharpFunctions.Append(", ");
+				}
+			}
+			builders.CsharpFunctions.Append("] = item;");
+			AppendCsharpFunctionReturn(
+				parameters,
+				typeof(void),
+				TypeKind.None,
+				null,
+				false,
+				builders.CsharpFunctions);
+			
+			// C++ function pointer definition
+			AppendCppFunctionPointerDefinition(
+				funcName,
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				arrayType,
+				builders.CppFunctionPointers);
+			
+			// C++ init param
+			AppendCppInitParam(
+				funcNameLower,
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				parameters,
+				arrayType,
+				builders.CppInitParams);
+			
+			// C++ init body
+			AppendCppInitBody(
+				funcName,
+				funcNameLower,
+				builders.CppInitBody);
+			
+			// C++ method declaration
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				"SetItem",
+				false,
+				false,
+				typeof(void),
+				null,
+				parameters,
+				builders.CppTypeDefinitions);
+			
+			// C++ method definition
+			Type[] cppTypeParams = new Type[] { elementType };
+			AppendCppMethodDefinition(
+				cppArrayTypeName,
+				typeof(void),
+				"SetItem",
+				cppTypeParams,
+				null,
+				parameters,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendCppPluginFunctionCall(
+				false,
+				cppArrayTypeName,
+				"System",
+				TypeKind.Class,
+				cppTypeParams,
+				typeof(void),
+				funcName,
+				parameters,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(indent, builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
 		}
 		
 		static void AppendCsharpDelegate(
@@ -3447,6 +4463,7 @@ namespace NativeScript
 			Type enclosingType,
 			Type[] enclosingTypeParams,
 			Type fieldType,
+			TypeKind fieldTypeKind,
 			int indent,
 			Type[] exceptionTypes,
 			StringBuilders builders)
@@ -3466,7 +4483,7 @@ namespace NativeScript
 				enclosingType.Namespace,
 				string.Empty,
 				builders.TempStrBuilder);
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
@@ -3553,14 +4570,17 @@ namespace NativeScript
 			AppendCsharpFunctionReturn(
 				parameters,
 				fieldType,
+				fieldTypeKind,
 				exceptionTypes,
+				false,
 				builders.CsharpFunctions);
 
 			// C++ function pointer
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				fieldType,
@@ -3579,7 +4599,7 @@ namespace NativeScript
 			
 			// C++ method definition
 			AppendCppMethodDefinition(
-				enclosingType,
+				enclosingType.Name,
 				fieldType,
 				methodName,
 				enclosingTypeParams,
@@ -3591,7 +4611,8 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				enclosingTypeParams,
 				fieldType,
@@ -3601,6 +4622,7 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			AppendCppMethodReturn(
 				fieldType,
+				fieldTypeKind,
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendIndent(indent, builders.CppMethodDefinitions);
@@ -3612,7 +4634,8 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				fieldType,
@@ -3655,7 +4678,7 @@ namespace NativeScript
 				enclosingType.Namespace,
 				string.Empty,
 				builders.TempStrBuilder);
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.TempStrBuilder);
 			AppendTypeNames(
@@ -3745,14 +4768,17 @@ namespace NativeScript
 			AppendCsharpFunctionReturn(
 				parameters,
 				typeof(void),
+				TypeKind.None,
 				exceptionTypes,
+				false,
 				builders.CsharpFunctions);
 			
 			// C++ function pointer
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				typeof(void),
@@ -3771,7 +4797,7 @@ namespace NativeScript
 			
 			// C++ method definition
 			AppendCppMethodDefinition(
-				enclosingType,
+				enclosingType.Name,
 				typeof(void),
 				methodName,
 				enclosingTypeParams,
@@ -3783,7 +4809,8 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				enclosingTypeParams,
 				null,
@@ -3800,7 +4827,8 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
-				enclosingType,
+				enclosingType.Name,
+				enclosingType.Namespace,
 				enclosingTypeKind,
 				parameters,
 				typeof(void),
@@ -3827,7 +4855,7 @@ namespace NativeScript
 			if (isStatic)
 			{
 				output.Append("namespace ");
-				AppendWithoutGenericTypeCountSuffix(
+				AppendTypeNameWithoutGenericSuffix(
 					typeName,
 					output);
 				output.Append('\n');
@@ -3843,7 +4871,7 @@ namespace NativeScript
 					output.Append("template<> ");
 				}
 				output.Append("struct ");
-				AppendWithoutGenericTypeCountSuffix(
+				AppendTypeNameWithoutGenericSuffix(
 					typeName,
 					output);
 				AppendCppTypeParameters(
@@ -3860,16 +4888,20 @@ namespace NativeScript
 		}
 		
 		static void AppendCppTypeDefinitionBegin(
-			Type type,
+			string typeName,
+			string typeNamespace,
+			TypeKind typeKind,
 			Type[] typeParams,
-			Type baseType,
+			string baseTypeName,
+			string baseTypeNamespace,
+			Type[] baseTypeTypeParams,
 			bool isStatic,
 			int indent,
 			StringBuilder output
 		)
 		{
 			AppendNamespaceBeginning(
-				type.Namespace,
+				typeNamespace,
 				output);
 			AppendIndent(
 				indent,
@@ -3877,8 +4909,8 @@ namespace NativeScript
 			if (isStatic)
 			{
 				output.Append("namespace ");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					typeName,
 					output);
 			}
 			else
@@ -3888,17 +4920,26 @@ namespace NativeScript
 					output.Append("template<> ");
 				}
 				output.Append("struct ");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					typeName,
 					output);
 				AppendCppTypeParameters(typeParams, output);
-				if (baseType != null
-					&& !IsFullValueType(type))
+				if (baseTypeName != null)
 				{
-					output.Append(" : ");
-					AppendCppTypeName(
-						baseType,
-						output);
+					switch (typeKind)
+					{
+						case TypeKind.Class:
+						case TypeKind.ManagedStruct:
+							output.Append(" : ");
+							AppendCppTypeName(
+								baseTypeNamespace,
+								baseTypeName,
+								output);
+							AppendCppTypeParameters(
+								baseTypeTypeParams,
+								output);
+							break;
+					}
 				}
 			}
 			output.Append('\n');
@@ -3906,138 +4947,144 @@ namespace NativeScript
 				indent,
 				output);
 			output.Append("{\n");
-			if (!isStatic && !IsFullValueType(type))
+			if (!isStatic)
 			{
-				// Constructor from nullptr_t
-				AppendIndent(indent + 1, output);
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("(std::nullptr_t n);\n");
-				
-				// Constructor from handle
-				AppendIndent(indent + 1, output);
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("(Plugin::InternalUse iu, int32_t handle);\n");
-				
-				// Copy constructor
-				AppendIndent(indent + 1, output);
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("& other);\n");
-				
-				// Move constructor
-				AppendIndent(indent + 1, output);
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append('(');
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("&& other);\n");
-				
-				// Destructor
-				AppendIndent(indent + 1, output);
-				output.Append("virtual ~");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("();\n");
-				
-				// Assignment operator to same type
-				AppendIndent(indent + 1, output);
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("& operator=(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("& other);\n");
-				
-				// Assignment operator to nullptr_t
-				AppendIndent(indent + 1, output);
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("& operator=(std::nullptr_t other);\n");
-				
-				// Move assignment operator to same type
-				AppendIndent(indent + 1, output);
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("& operator=(");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("&& other);\n");
-				
-				// Equality operator with same type
-				AppendIndent(indent + 1, output);
-				output.Append("bool operator==(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("& other) const;\n");
-				
-				// Inequality operator with same type
-				AppendIndent(indent + 1, output);
-				output.Append("bool operator!=(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					type.Name,
-					output);
-				AppendCppTypeParameters(
-					typeParams,
-					output);
-				output.Append("& other) const;\n");
+				switch (typeKind)
+				{
+					case TypeKind.Class:
+					case TypeKind.ManagedStruct:
+						// Constructor from nullptr_t
+						AppendIndent(indent + 1, output);
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("(std::nullptr_t n);\n");
+						
+						// Constructor from handle
+						AppendIndent(indent + 1, output);
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("(Plugin::InternalUse iu, int32_t handle);\n");
+						
+						// Copy constructor
+						AppendIndent(indent + 1, output);
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("(const ");
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("& other);\n");
+						
+						// Move constructor
+						AppendIndent(indent + 1, output);
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append('(');
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("&& other);\n");
+						
+						// Destructor
+						AppendIndent(indent + 1, output);
+						output.Append("virtual ~");
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("();\n");
+						
+						// Assignment operator to same type
+						AppendIndent(indent + 1, output);
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("& operator=(const ");
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("& other);\n");
+						
+						// Assignment operator to nullptr_t
+						AppendIndent(indent + 1, output);
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("& operator=(std::nullptr_t other);\n");
+						
+						// Move assignment operator to same type
+						AppendIndent(indent + 1, output);
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("& operator=(");
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("&& other);\n");
+						
+						// Equality operator with same type
+						AppendIndent(indent + 1, output);
+						output.Append("bool operator==(const ");
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("& other) const;\n");
+						
+						// Inequality operator with same type
+						AppendIndent(indent + 1, output);
+						output.Append("bool operator!=(const ");
+						AppendTypeNameWithoutGenericSuffix(
+							typeName,
+							output);
+						AppendCppTypeParameters(
+							typeParams,
+							output);
+						output.Append("& other) const;\n");
+						break;
+				}
 			}
 		}
 		
@@ -4062,45 +5109,53 @@ namespace NativeScript
 		}
 		
 		static int AppendCppMethodDefinitionBegin(
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			Type[] enclosingTypeParams,
-			Type baseType,
+			string baseTypeName,
+			string baseTypeNamespace,
+			Type[] baseTypeTypeParams,
 			bool isStatic,
 			int indent,
 			StringBuilder output)
 		{
 			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
-				enclosingType.Namespace,
+				enclosingTypeNamespace,
 				output);
 			if (!isStatic && (
 				enclosingTypeKind == TypeKind.Class
 				|| enclosingTypeKind == TypeKind.ManagedStruct))
 			{
-				if (baseType == null)
+				if (baseTypeName == null)
 				{
-					baseType = typeof(object);
+					baseTypeName = "Object";
+					baseTypeNamespace = "System";
 				}
 				
 				// Construct with nullptr_t
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				output.Append("(std::nullptr_t n)\n");
 				AppendIndent(indent, output);
 				output.Append("\t: ");
 				AppendCppTypeName(
-					baseType,
+					baseTypeNamespace,
+					baseTypeName,
 					output);
-				output.Append("(0)\n");
+				AppendCppTypeParameters(
+					baseTypeTypeParams,
+					output);
+				output.Append("(nullptr)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				AppendIndent(indent, output);
@@ -4110,21 +5165,25 @@ namespace NativeScript
 				
 				// Construct with handle
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				output.Append("(Plugin::InternalUse iu, int32_t handle)\n");
 				AppendIndent(indent, output);
 				output.Append("\t: ");
 				AppendCppTypeName(
-					baseType,
+					baseTypeNamespace,
+					baseTypeName,
+					output);
+				AppendCppTypeParameters(
+					baseTypeTypeParams,
 					output);
 				output.Append("(iu, handle)\n");
 				AppendIndent(indent, output);
@@ -4135,7 +5194,8 @@ namespace NativeScript
 				output.Append("{\n");
 				AppendIndent(indent + 2, output);
 				AppendReferenceManagedHandleFunctionCall(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeKind,
 					enclosingTypeParams,
 					"handle",
@@ -4150,19 +5210,19 @@ namespace NativeScript
 				
 				// Copy constructor
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				output.Append("(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4171,7 +5231,11 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("\t: ");
 				AppendCppTypeName(
-					baseType,
+					baseTypeNamespace,
+					baseTypeName,
+					output);
+				AppendCppTypeParameters(
+					baseTypeTypeParams,
 					output);
 				output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
 				AppendIndent(indent, output);
@@ -4182,7 +5246,8 @@ namespace NativeScript
 				output.Append("{\n");
 				AppendIndent(indent + 2, output);
 				AppendReferenceManagedHandleFunctionCall(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeKind,
 					enclosingTypeParams,
 					"Handle",
@@ -4197,19 +5262,19 @@ namespace NativeScript
 				
 				// Move constructor
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				output.Append("(");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4218,7 +5283,11 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("\t: ");
 				AppendCppTypeName(
-					baseType,
+					baseTypeNamespace,
+					baseTypeName,
+					output);
+				AppendCppTypeParameters(
+					baseTypeTypeParams,
 					output);
 				output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
 				AppendIndent(indent, output);
@@ -4232,15 +5301,15 @@ namespace NativeScript
 				
 				// Destructor
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::~");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4254,7 +5323,8 @@ namespace NativeScript
 				output.Append("{\n");
 				AppendIndent(indent + 2, output);
 				AppendDereferenceManagedHandleFunctionCall(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeKind,
 					enclosingTypeParams,
 					"Handle",
@@ -4271,22 +5341,22 @@ namespace NativeScript
 				
 				// Assignment operator to same type
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("& ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::operator=(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4295,7 +5365,8 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				AppendSetHandle(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeKind,
 					enclosingTypeParams,
 					indent + 1,
@@ -4311,15 +5382,15 @@ namespace NativeScript
 				
 				// Assignment operator to nullptr_t
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("& ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4334,7 +5405,8 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("\t\t");
 				AppendDereferenceManagedHandleFunctionCall(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeKind,
 					enclosingTypeParams,
 					"Handle",
@@ -4353,22 +5425,22 @@ namespace NativeScript
 				
 				// Move assignment operator to same type
 				AppendIndent(indent, output);
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("& ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::operator=(");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4383,7 +5455,8 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("\t\t");
 				AppendDereferenceManagedHandleFunctionCall(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeKind,
 					enclosingTypeParams,
 					"Handle",
@@ -4405,15 +5478,15 @@ namespace NativeScript
 				// Equality operator with same type
 				AppendIndent(indent, output);
 				output.Append("bool ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::operator==(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4431,15 +5504,15 @@ namespace NativeScript
 				// Inequality operator with same type
 				AppendIndent(indent, output);
 				output.Append("bool ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
 				output.Append("::operator!=(const ");
-				AppendWithoutGenericTypeCountSuffix(
-					enclosingType.Name,
+				AppendTypeNameWithoutGenericSuffix(
+					enclosingTypeName,
 					output);
 				AppendCppTypeParameters(
 					enclosingTypeParams,
@@ -4458,7 +5531,8 @@ namespace NativeScript
 		}
 		
 		static void AppendSetHandle(
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			Type[] enclosingTypeParams,
 			int indent,
@@ -4483,7 +5557,8 @@ namespace NativeScript
 			output.Append("{\n");
 			AppendIndent(indent + 2, output);
 			AppendDereferenceManagedHandleFunctionCall(
-				enclosingType,
+				enclosingTypeName,
+				enclosingTypeNamespace,
 				enclosingTypeKind,
 				enclosingTypeParams,
 				thisHandleExpression,
@@ -4504,7 +5579,8 @@ namespace NativeScript
 			output.Append("{\n");
 			AppendIndent(indent + 2, output);
 			AppendReferenceManagedHandleFunctionCall(
-				enclosingType,
+				enclosingTypeName,
+				enclosingTypeNamespace,
 				enclosingTypeKind,
 				enclosingTypeParams,
 				thisHandleExpression,
@@ -4517,7 +5593,8 @@ namespace NativeScript
 		}
 		
 		static void AppendReferenceManagedHandleFunctionCall(
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			Type[] enclosingTypeParams,
 			string handleVariable,
@@ -4527,7 +5604,8 @@ namespace NativeScript
 			{
 				output.Append("Plugin::ReferenceManaged");
 				AppendReleaseFunctionNameSuffix(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeParams,
 					output);
 				output.Append("(Handle)");
@@ -4541,7 +5619,8 @@ namespace NativeScript
 		}
 		
 		static void AppendDereferenceManagedHandleFunctionCall(
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			Type[] enclosingTypeParams,
 			string handleVariable,
@@ -4551,7 +5630,8 @@ namespace NativeScript
 			{
 				output.Append("Plugin::DereferenceManaged");
 				AppendReleaseFunctionNameSuffix(
-					enclosingType,
+					enclosingTypeName,
+					enclosingTypeNamespace,
 					enclosingTypeParams,
 					output);
 				output.Append("(Handle)");
@@ -4870,7 +5950,9 @@ namespace NativeScript
 		static void AppendCsharpFunctionReturn(
 			ParameterInfo[] parameters,
 			Type returnType,
+			TypeKind returnTypeKind,
 			Type[] exceptionTypes,
+			bool forceReturnReturnValue,
 			StringBuilder output)
 		{
 			// Store reference out and ref params and overwrite handles
@@ -4909,7 +5991,11 @@ namespace NativeScript
 			if (!returnType.Equals(typeof(void)))
 			{
 				output.Append("\n\t\t\t\treturn ");
-				if (IsFullValueType(returnType))
+				if (
+					forceReturnReturnValue
+					|| returnTypeKind == TypeKind.Enum
+					|| returnTypeKind == TypeKind.FullStruct
+					|| returnTypeKind == TypeKind.Primitive)
 				{
 					output.Append("returnValue");
 				}
@@ -4918,7 +6004,16 @@ namespace NativeScript
 					AppendHandleStoreTypeName(
 						returnType,
 						output);
-					output.Append(".GetHandle(returnValue)");
+					output.Append('.');
+					if (returnTypeKind == TypeKind.Class)
+					{
+						output.Append("GetHandle");
+					}
+					else
+					{
+						output.Append("Store");
+					}
+					output.Append("(returnValue)");
 				}
 				output.Append(';');
 			}
@@ -4937,7 +6032,8 @@ namespace NativeScript
 		{
 			output.Append('\n');
 			output.Append("\t\t\t}\n");
-			if (Array.IndexOf(
+			if (exceptionTypes == null
+				|| Array.IndexOf(
 				exceptionTypes,
 				typeof(NullReferenceException)) < 0)
 			{
@@ -4946,12 +6042,15 @@ namespace NativeScript
 					returnType,
 					output);
 			}
-			foreach (Type exceptionType in exceptionTypes)
+			if (exceptionTypes != null)
 			{
-				AppendCsharpCatchException(
-					exceptionType,
-					returnType,
-					output);
+				foreach (Type exceptionType in exceptionTypes)
+				{
+					AppendCsharpCatchException(
+						exceptionType,
+						returnType,
+						output);
+				}
 			}
 			AppendCsharpCatchException(
 				typeof(Exception),
@@ -4972,6 +6071,7 @@ namespace NativeScript
 				output);
 			output.Append(" ex)\n");
 			output.Append("\t\t\t{\n");
+			output.Append("\t\t\t\tUnityEngine.Debug.LogException(ex);\n");
 			output.Append("\t\t\t\tNativeScript.Bindings.");
 			AppendCsharpSetCsharpExceptionFunctionName(
 				exceptionType,
@@ -5007,7 +6107,7 @@ namespace NativeScript
 					exceptionType.Namespace,
 					string.Empty,
 					output);
-				AppendWithoutGenericTypeCountSuffix(
+				AppendTypeNameWithoutGenericSuffix(
 					exceptionType.Name,
 					output);
 			}
@@ -5144,7 +6244,7 @@ namespace NativeScript
 		}
 		
 		static void AppendCppMethodDefinition(
-			Type enclosingType,
+			string enclosingTypeName,
 			Type returnType,
 			string methodName,
 			Type[] typeTypeParams,
@@ -5174,8 +6274,8 @@ namespace NativeScript
 			}
 			
 			// Type name
-			AppendWithoutGenericTypeCountSuffix(
-				enclosingType.Name,
+			AppendTypeNameWithoutGenericSuffix(
+				enclosingTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeTypeParams,
@@ -5183,7 +6283,7 @@ namespace NativeScript
 			output.Append("::");
 			
 			// Method name
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				methodName,
 				output);
 			
@@ -5202,6 +6302,7 @@ namespace NativeScript
 		
 		static void AppendCppMethodReturn(
 			Type returnType,
+			TypeKind returnTypeKind,
 			int indent,
 			StringBuilder output)
 		{
@@ -5209,16 +6310,19 @@ namespace NativeScript
 			{
 				AppendIndent(indent, output);
 				output.Append("return ");
-				if (IsFullValueType(returnType))
+				switch (returnTypeKind)
 				{
-					output.Append("returnValue");
-				}
-				else
-				{
-					AppendCppTypeName(
-						returnType,
-						output);
-					output.Append("(Plugin::InternalUse::Only, returnValue)");
+					case TypeKind.Enum:
+					case TypeKind.FullStruct:
+					case TypeKind.Primitive:
+						output.Append("returnValue");
+						break;
+					default:
+						AppendCppTypeName(
+							returnType,
+							output);
+						output.Append("(Plugin::InternalUse::Only, returnValue)");
+						break;
 				}
 				output.Append(";\n");
 			}
@@ -5226,7 +6330,8 @@ namespace NativeScript
 		
 		static void AppendCppPluginFunctionCall(
 			bool isStatic,
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			Type[] enclosingTypeParams,
 			Type returnType,
@@ -5330,7 +6435,8 @@ namespace NativeScript
 					&& (param.IsOut || param.IsRef))
 				{
 					AppendSetHandle(
-						enclosingType,
+						enclosingTypeName,
+						enclosingTypeNamespace,
 						enclosingTypeKind,
 						enclosingTypeParams,
 						indent,
@@ -5344,7 +6450,8 @@ namespace NativeScript
 		static void AppendCppInitParam(
 			string funcName,
 			bool isStatic,
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
 			Type returnType,
@@ -5355,7 +6462,8 @@ namespace NativeScript
 			AppendCppFunctionPointer(
 				funcName,
 				isStatic,
-				enclosingType,
+				enclosingTypeName,
+				enclosingTypeNamespace,
 				enclosingTypeKind,
 				parameters,
 				returnType,
@@ -5368,7 +6476,8 @@ namespace NativeScript
 		static void AppendCppFunctionPointerDefinition(
 			string funcName,
 			bool isStatic,
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
 			Type returnType,
@@ -5379,7 +6488,8 @@ namespace NativeScript
 			AppendCppFunctionPointer(
 				funcName,
 				isStatic,
-				enclosingType,
+				enclosingTypeName,
+				enclosingTypeNamespace,
 				enclosingTypeKind,
 				parameters,
 				returnType,
@@ -5392,7 +6502,8 @@ namespace NativeScript
 		static void AppendCppFunctionPointer(
 			string funcName,
 			bool isStatic,
-			Type enclosingType,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
 			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
 			Type returnType,
@@ -5419,7 +6530,8 @@ namespace NativeScript
 					case TypeKind.FullStruct:
 					case TypeKind.Primitive:
 						AppendCppTypeName(
-							enclosingType,
+							enclosingTypeNamespace,
+							enclosingTypeName,
 							output);
 						output.Append("* thiz");
 						break;
@@ -5534,7 +6646,7 @@ namespace NativeScript
 			
 			// Method name might be a constructor/type name, so remove suffix
 			// just in case
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				methodName,
 				output);
 			
@@ -5610,7 +6722,7 @@ namespace NativeScript
 			{
 				output.Append(type.Namespace);
 				output.Append('.');
-				AppendWithoutGenericTypeCountSuffix(
+				AppendTypeNameWithoutGenericSuffix(
 					type.Name,
 					output);
 				Type[] genTypes = type.GetGenericArguments();
@@ -5680,6 +6792,24 @@ namespace NativeScript
 			{
 				output.Append("System::String");
 			}
+			else if (type.IsArray)
+			{
+				output.Append("System::Array");
+				output.Append(type.GetArrayRank());
+				output.Append('<');
+				int rank = type.GetArrayRank();
+				for (int i = 0; i < rank; ++i)
+				{
+					AppendTypeNameWithoutSuffixes(
+						type.Name,
+						output);
+					if (i != rank -1)
+					{
+						output.Append(", ");
+					}
+				}
+				output.Append('>');
+			}
 			else
 			{
 				AppendCppTypeName(
@@ -5700,7 +6830,7 @@ namespace NativeScript
 		{
 			AppendNamespace(namespaceName, "::", output);
 			output.Append("::");
-			AppendWithoutGenericTypeCountSuffix(
+			AppendTypeNameWithoutGenericSuffix(
 				name,
 				output);
 		}
