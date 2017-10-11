@@ -1047,7 +1047,7 @@ namespace UnityEngine
 		Screen& operator=(Screen&& other);
 		bool operator==(const Screen& other) const;
 		bool operator!=(const Screen& other) const;
-		static System::Array1<Resolution> GetResolutions();
+		static System::Array1<UnityEngine::Resolution> GetResolutions();
 	};
 }
 
@@ -1076,8 +1076,8 @@ namespace UnityEngine
 		Physics& operator=(Physics&& other);
 		bool operator==(const Physics& other) const;
 		bool operator!=(const Physics& other) const;
-		static int32_t RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<RaycastHit> results);
-		static System::Array1<RaycastHit> RaycastAll(UnityEngine::Ray& ray);
+		static int32_t RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<UnityEngine::RaycastHit> results);
+		static System::Array1<UnityEngine::RaycastHit> RaycastAll(UnityEngine::Ray& ray);
 	};
 }
 
@@ -1118,8 +1118,8 @@ namespace UnityEngine
 		bool operator==(const Gradient& other) const;
 		bool operator!=(const Gradient& other) const;
 		Gradient();
-		System::Array1<GradientColorKey> GetColorKeys();
-		void SetColorKeys(System::Array1<GradientColorKey> value);
+		System::Array1<UnityEngine::GradientColorKey> GetColorKeys();
+		void SetColorKeys(System::Array1<UnityEngine::GradientColorKey> value);
 	};
 }
 

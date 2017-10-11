@@ -3116,7 +3116,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	System::Array1<Resolution> Screen::GetResolutions()
+	System::Array1<UnityEngine::Resolution> Screen::GetResolutions()
 	{
 		auto returnValue = Plugin::UnityEngineScreenPropertyGetResolutions();
 		if (Plugin::unhandledCsharpException)
@@ -3126,7 +3126,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return System::Array1<Resolution>(Plugin::InternalUse::Only, returnValue);
+		return System::Array1<UnityEngine::Resolution>(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -3238,7 +3238,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	int32_t Physics::RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<RaycastHit> results)
+	int32_t Physics::RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<UnityEngine::RaycastHit> results)
 	{
 		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit(ray, results.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -3251,7 +3251,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	System::Array1<RaycastHit> Physics::RaycastAll(UnityEngine::Ray& ray)
+	System::Array1<UnityEngine::RaycastHit> Physics::RaycastAll(UnityEngine::Ray& ray)
 	{
 		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastAllUnityEngineRay(ray);
 		if (Plugin::unhandledCsharpException)
@@ -3261,7 +3261,7 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return System::Array1<RaycastHit>(Plugin::InternalUse::Only, returnValue);
+		return System::Array1<UnityEngine::RaycastHit>(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -3385,7 +3385,7 @@ namespace UnityEngine
 		}
 	}
 	
-	System::Array1<GradientColorKey> Gradient::GetColorKeys()
+	System::Array1<UnityEngine::GradientColorKey> Gradient::GetColorKeys()
 	{
 		auto returnValue = Plugin::UnityEngineGradientPropertyGetColorKeys(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -3395,10 +3395,10 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return System::Array1<GradientColorKey>(Plugin::InternalUse::Only, returnValue);
+		return System::Array1<UnityEngine::GradientColorKey>(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	void Gradient::SetColorKeys(System::Array1<GradientColorKey> value)
+	void Gradient::SetColorKeys(System::Array1<UnityEngine::GradientColorKey> value)
 	{
 		Plugin::UnityEngineGradientPropertySetColorKeys(Handle, value.Handle);
 		if (Plugin::unhandledCsharpException)

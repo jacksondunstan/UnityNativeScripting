@@ -2267,7 +2267,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Int32[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (int[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz[index0];
 				return returnValue;
 			}
@@ -2290,7 +2290,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Int32[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (int[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz[index0] = item;
 			}
 			catch (System.NullReferenceException ex)
@@ -2332,7 +2332,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz[index0];
 				return returnValue;
 			}
@@ -2355,7 +2355,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz[index0] = item;
 			}
 			catch (System.NullReferenceException ex)
@@ -2397,7 +2397,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz.GetLength(dimension);
 				return returnValue;
 			}
@@ -2420,7 +2420,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz[index0, index1];
 				return returnValue;
 			}
@@ -2443,7 +2443,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz[index0, index1] = item;
 			}
 			catch (System.NullReferenceException ex)
@@ -2485,7 +2485,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[,,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[,,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz.GetLength(dimension);
 				return returnValue;
 			}
@@ -2508,7 +2508,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[,,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[,,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz[index0, index1, index2];
 				return returnValue;
 			}
@@ -2531,7 +2531,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.Single[,,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (float[,,])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz[index0, index1, index2] = item;
 			}
 			catch (System.NullReferenceException ex)
@@ -2573,7 +2573,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.String[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (string[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var returnValue = thiz[index0];
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
@@ -2596,7 +2596,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var thiz = (System.String[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var thiz = (string[])NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var item = (string)NativeScript.Bindings.ObjectStore.Get(itemHandle);
 				thiz[index0] = item;
 			}

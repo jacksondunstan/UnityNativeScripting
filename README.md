@@ -179,7 +179,7 @@ The code generator supports:
 * Methods (including generic parameters and return types)
 * Fields (including generic types)
 * Properties (getters and setters) (including generic types)
-* `MonoBehaviour` classes with "message" functions like `Update` (except `OnAudioFilterRead`)
+* `MonoBehaviour` classes with "message" functions like `Update`
 * `out` and `ref` parameters
 * Enumerations
 * Exceptions

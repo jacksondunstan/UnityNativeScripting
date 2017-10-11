@@ -235,8 +235,7 @@ namespace NativeScript
 			new MessageInfo("OnApplicationFocus", typeof(bool)),
 			new MessageInfo("OnApplicationPause", typeof(bool)),
 			new MessageInfo("OnApplicationQuit"),
-			// TODO re-enable when arrays are supported
-			// new MessageInfo("OnAudioFilterRead", typeof(float[]), typeof(int)),
+			new MessageInfo("OnAudioFilterRead", typeof(float[]), typeof(int)),
 			new MessageInfo("OnBecameInvisible"),
 			new MessageInfo("OnBecameVisible"),
 			new MessageInfo("OnCollisionEnter", typeof(Collision)),
@@ -6718,6 +6717,15 @@ namespace NativeScript
 			{
 				output.Append("string");
 			}
+			else if (type.IsArray)
+			{
+				AppendCsharpTypeName(
+					type.GetElementType(),
+					output);
+				output.Append('[');
+				output.Append(',', type.GetArrayRank()-1);
+				output.Append(']');
+			}
 			else
 			{
 				output.Append(type.Namespace);
@@ -6794,14 +6802,15 @@ namespace NativeScript
 			}
 			else if (type.IsArray)
 			{
-				output.Append("System::Array");
-				output.Append(type.GetArrayRank());
-				output.Append('<');
 				int rank = type.GetArrayRank();
+				output.Append("System::Array");
+				output.Append(rank);
+				output.Append('<');
+				Type elementType = type.GetElementType();
 				for (int i = 0; i < rank; ++i)
 				{
-					AppendTypeNameWithoutSuffixes(
-						type.Name,
+					AppendCppTypeName(
+						elementType,
 						output);
 					if (i != rank -1)
 					{
