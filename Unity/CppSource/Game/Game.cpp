@@ -9,7 +9,6 @@
 /// </license>
 
 #include "Bindings.h"
-#include <stdio.h>
 
 using namespace System;
 using namespace UnityEngine;

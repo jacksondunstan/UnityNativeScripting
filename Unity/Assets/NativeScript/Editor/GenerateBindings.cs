@@ -5313,7 +5313,7 @@ namespace NativeScript
 			builders.CsharpFunctions.Append("\t\t\t{\n");
 			builders.CsharpFunctions.Append("\t\t\t\tCppHandle = cppHandle;\n");
 			builders.CsharpFunctions.Append("\t\t\t\tDelegate = Invoke;\n");
-			builders.CsharpFunctions.Append("\t\t\t}");
+			builders.CsharpFunctions.Append("\t\t\t}\n");
 			builders.CsharpFunctions.Append("\t\t\t\n");
 			builders.CsharpFunctions.Append("\t\t\tpublic ");
 			AppendCsharpTypeName(

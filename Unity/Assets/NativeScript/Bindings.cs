@@ -3053,7 +3053,8 @@ namespace NativeScript
 			{
 				CppHandle = cppHandle;
 				Delegate = Invoke;
-			}			
+			}
+			
 			public void Invoke()
 			{
 				if (CppHandle != 0)
@@ -3185,7 +3186,8 @@ namespace NativeScript
 			{
 				CppHandle = cppHandle;
 				Delegate = Invoke;
-			}			
+			}
+			
 			public void Invoke(float obj)
 			{
 				if (CppHandle != 0)
@@ -3317,7 +3319,8 @@ namespace NativeScript
 			{
 				CppHandle = cppHandle;
 				Delegate = Invoke;
-			}			
+			}
+			
 			public void Invoke(float arg1, float arg2)
 			{
 				if (CppHandle != 0)
@@ -3449,7 +3452,8 @@ namespace NativeScript
 			{
 				CppHandle = cppHandle;
 				Delegate = Invoke;
-			}			
+			}
+			
 			public double Invoke(int arg1, float arg2)
 			{
 				if (CppHandle != 0)
@@ -3586,7 +3590,8 @@ namespace NativeScript
 			{
 				CppHandle = cppHandle;
 				Delegate = Invoke;
-			}			
+			}
+			
 			public string Invoke(short arg1, int arg2)
 			{
 				if (CppHandle != 0)
@@ -3723,7 +3728,8 @@ namespace NativeScript
 			{
 				CppHandle = cppHandle;
 				Delegate = Invoke;
-			}			
+			}
+			
 			public void Invoke(string[] args)
 			{
 				if (CppHandle != 0)
