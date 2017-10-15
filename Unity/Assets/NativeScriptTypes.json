@@ -523,5 +523,53 @@
 		{
 			"Type": "UnityEngine.GradientColorKey"
 		}
+	],
+	"Delegates": [
+		{
+			"Type": "System.Action"
+		},
+		{
+			"Type": "System.Action`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.Single"
+					]
+				}
+			]
+		},
+		{
+			"Type": "System.Action`2",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.Single",
+						"System.Single"
+					],
+					"MaxSimultaneous": 100
+				}
+			]
+		},
+		{
+			"Type": "System.Func`3",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.Int32",
+						"System.Single",
+						"System.Double"
+					],
+					"MaxSimultaneous": 50
+				},
+				{
+					"Types": [
+						"System.Int16",
+						"System.Int32",
+						"System.String"
+					],
+					"MaxSimultaneous": 25
+				}
+			]
+		}
 	]
 }

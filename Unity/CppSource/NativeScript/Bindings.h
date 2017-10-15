@@ -522,6 +522,51 @@ namespace System
 {
 	template<> struct Array1<UnityEngine::GradientColorKey>;
 }
+
+namespace System
+{
+	struct Action;
+}
+
+namespace System
+{
+	template<typename T0> struct Action1;
+}
+
+namespace System
+{
+	template<> struct Action1<float>;
+}
+
+namespace System
+{
+	template<typename T0, typename T1> struct Action2;
+}
+
+namespace System
+{
+	template<> struct Action2<float, float>;
+}
+
+namespace System
+{
+	template<typename T0, typename T1, typename T2> struct Func3;
+}
+
+namespace System
+{
+	template<typename T0, typename T1, typename T2> struct Func3;
+}
+
+namespace System
+{
+	template<> struct Func3<int32_t, float, double>;
+}
+
+namespace System
+{
+	template<> struct Func3<int16_t, int32_t, System::String>;
+}
 /*END TYPE DECLARATIONS*/
 
 /*BEGIN TYPE DEFINITIONS*/
@@ -1322,6 +1367,126 @@ namespace System
 		int32_t GetRank();
 		UnityEngine::GradientColorKey GetItem(int32_t index0);
 		void SetItem(int32_t index0, UnityEngine::GradientColorKey& item);
+	};
+}
+
+namespace System
+{
+	struct Action : System::Object
+	{
+		Action(std::nullptr_t n);
+		Action(Plugin::InternalUse iu, int32_t handle);
+		Action(const Action& other);
+		Action(Action&& other);
+		virtual ~Action();
+		Action& operator=(const Action& other);
+		Action& operator=(std::nullptr_t other);
+		Action& operator=(Action&& other);
+		bool operator==(const Action& other) const;
+		bool operator!=(const Action& other) const;
+		int32_t CppHandle;
+		int32_t DelegateHandle;
+		Action();
+		void Invoke();
+		virtual void operator()() = 0;
+		void operator+=(System::Action& del);
+		void operator-=(System::Action& del);
+	};
+}
+
+namespace System
+{
+	template<> struct Action1<float> : System::Object
+	{
+		Action1<float>(std::nullptr_t n);
+		Action1<float>(Plugin::InternalUse iu, int32_t handle);
+		Action1<float>(const Action1<float>& other);
+		Action1<float>(Action1<float>&& other);
+		virtual ~Action1<float>();
+		Action1<float>& operator=(const Action1<float>& other);
+		Action1<float>& operator=(std::nullptr_t other);
+		Action1<float>& operator=(Action1<float>&& other);
+		bool operator==(const Action1<float>& other) const;
+		bool operator!=(const Action1<float>& other) const;
+		int32_t CppHandle;
+		int32_t DelegateHandle;
+		Action1();
+		void Invoke(float obj);
+		virtual void operator()(float obj) = 0;
+		void operator+=(System::Action1<float>& del);
+		void operator-=(System::Action1<float>& del);
+	};
+}
+
+namespace System
+{
+	template<> struct Action2<float, float> : System::Object
+	{
+		Action2<float, float>(std::nullptr_t n);
+		Action2<float, float>(Plugin::InternalUse iu, int32_t handle);
+		Action2<float, float>(const Action2<float, float>& other);
+		Action2<float, float>(Action2<float, float>&& other);
+		virtual ~Action2<float, float>();
+		Action2<float, float>& operator=(const Action2<float, float>& other);
+		Action2<float, float>& operator=(std::nullptr_t other);
+		Action2<float, float>& operator=(Action2<float, float>&& other);
+		bool operator==(const Action2<float, float>& other) const;
+		bool operator!=(const Action2<float, float>& other) const;
+		int32_t CppHandle;
+		int32_t DelegateHandle;
+		Action2();
+		void Invoke(float arg1, float arg2);
+		virtual void operator()(float arg1, float arg2) = 0;
+		void operator+=(System::Action2<float, float>& del);
+		void operator-=(System::Action2<float, float>& del);
+	};
+}
+
+namespace System
+{
+	template<> struct Func3<int32_t, float, double> : System::Object
+	{
+		Func3<int32_t, float, double>(std::nullptr_t n);
+		Func3<int32_t, float, double>(Plugin::InternalUse iu, int32_t handle);
+		Func3<int32_t, float, double>(const Func3<int32_t, float, double>& other);
+		Func3<int32_t, float, double>(Func3<int32_t, float, double>&& other);
+		virtual ~Func3<int32_t, float, double>();
+		Func3<int32_t, float, double>& operator=(const Func3<int32_t, float, double>& other);
+		Func3<int32_t, float, double>& operator=(std::nullptr_t other);
+		Func3<int32_t, float, double>& operator=(Func3<int32_t, float, double>&& other);
+		bool operator==(const Func3<int32_t, float, double>& other) const;
+		bool operator!=(const Func3<int32_t, float, double>& other) const;
+		int32_t CppHandle;
+		int32_t DelegateHandle;
+		Func3();
+		double Invoke(int32_t arg1, float arg2);
+		virtual double operator()(int32_t arg1, float arg2) = 0;
+		void operator+=(System::Func3<int32_t, float, double>& del);
+		void operator-=(System::Func3<int32_t, float, double>& del);
+	};
+}
+
+namespace System
+{
+	template<> struct Func3<int16_t, int32_t, System::String> : System::Object
+	{
+		Func3<int16_t, int32_t, System::String>(std::nullptr_t n);
+		Func3<int16_t, int32_t, System::String>(Plugin::InternalUse iu, int32_t handle);
+		Func3<int16_t, int32_t, System::String>(const Func3<int16_t, int32_t, System::String>& other);
+		Func3<int16_t, int32_t, System::String>(Func3<int16_t, int32_t, System::String>&& other);
+		virtual ~Func3<int16_t, int32_t, System::String>();
+		Func3<int16_t, int32_t, System::String>& operator=(const Func3<int16_t, int32_t, System::String>& other);
+		Func3<int16_t, int32_t, System::String>& operator=(std::nullptr_t other);
+		Func3<int16_t, int32_t, System::String>& operator=(Func3<int16_t, int32_t, System::String>&& other);
+		bool operator==(const Func3<int16_t, int32_t, System::String>& other) const;
+		bool operator!=(const Func3<int16_t, int32_t, System::String>& other) const;
+		int32_t CppHandle;
+		int32_t DelegateHandle;
+		Func3();
+		System::String Invoke(int16_t arg1, int32_t arg2);
+		virtual System::String operator()(int16_t arg1, int32_t arg2) = 0;
+		void operator+=(System::Func3<int16_t, int32_t, System::String>& del);
+		void operator-=(System::Func3<int16_t, int32_t, System::String>& del);
 	};
 }
 /*END TYPE DEFINITIONS*/
