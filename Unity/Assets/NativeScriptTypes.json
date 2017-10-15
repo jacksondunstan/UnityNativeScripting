@@ -490,6 +490,21 @@
 					"Set": {}
 				}
 			]
+		},
+		{
+			"Name": "System.AppDomainSetup",
+			"Constructors": [
+				{
+					"ParamTypes": []
+				}
+			],
+			"Properties": [
+				{
+					"Name": "AppDomainInitializer",
+					"Get": {},
+					"Set": {}
+				}
+			]
 		}
 	],
 	"MonoBehaviours": [
@@ -570,6 +585,9 @@
 					"MaxSimultaneous": 25
 				}
 			]
+		},
+		{
+			"Type": "System.AppDomainInitializer"
 		}
 	]
 }

@@ -337,6 +337,9 @@ namespace NativeScript
 			IntPtr unityEngineGradientConstructor,
 			IntPtr unityEngineGradientPropertyGetColorKeys,
 			IntPtr unityEngineGradientPropertySetColorKeys,
+			IntPtr systemAppDomainSetupConstructor,
+			IntPtr systemAppDomainSetupPropertyGetAppDomainInitializer,
+			IntPtr systemAppDomainSetupPropertySetAppDomainInitializer,
 			IntPtr systemInt32Array1Constructor1,
 			IntPtr systemInt32Array1GetItem1,
 			IntPtr systemInt32Array1SetItem1,
@@ -363,31 +366,36 @@ namespace NativeScript
 			IntPtr unityEngineGradientColorKeyArray1Constructor1,
 			IntPtr unityEngineGradientColorKeyArray1GetItem1,
 			IntPtr unityEngineGradientColorKeyArray1SetItem1,
-			IntPtr ReleaseSystemAction,
-			IntPtr SystemActionConstructor,
-			IntPtr SystemActionInvoke,
-			IntPtr SystemActionAdd,
-			IntPtr SystemActionRemove,
-			IntPtr ReleaseSystemActionSystemSingle,
-			IntPtr SystemActionSystemSingleConstructor,
-			IntPtr SystemActionSystemSingleInvoke,
-			IntPtr SystemActionSystemSingleAdd,
-			IntPtr SystemActionSystemSingleRemove,
-			IntPtr ReleaseSystemActionSystemSingle_SystemSingle,
-			IntPtr SystemActionSystemSingle_SystemSingleConstructor,
-			IntPtr SystemActionSystemSingle_SystemSingleInvoke,
-			IntPtr SystemActionSystemSingle_SystemSingleAdd,
-			IntPtr SystemActionSystemSingle_SystemSingleRemove,
-			IntPtr ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove,
-			IntPtr ReleaseSystemFuncSystemInt16_SystemInt32_SystemString,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringConstructor,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringInvoke,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringAdd,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringRemove
+			IntPtr releaseSystemAction,
+			IntPtr systemActionConstructor,
+			IntPtr systemActionInvoke,
+			IntPtr systemActionAdd,
+			IntPtr systemActionRemove,
+			IntPtr releaseSystemActionSystemSingle,
+			IntPtr systemActionSystemSingleConstructor,
+			IntPtr systemActionSystemSingleInvoke,
+			IntPtr systemActionSystemSingleAdd,
+			IntPtr systemActionSystemSingleRemove,
+			IntPtr releaseSystemActionSystemSingle_SystemSingle,
+			IntPtr systemActionSystemSingle_SystemSingleConstructor,
+			IntPtr systemActionSystemSingle_SystemSingleInvoke,
+			IntPtr systemActionSystemSingle_SystemSingleAdd,
+			IntPtr systemActionSystemSingle_SystemSingleRemove,
+			IntPtr releaseSystemFuncSystemInt32_SystemSingle_SystemDouble,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleAdd,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleRemove,
+			IntPtr releaseSystemFuncSystemInt16_SystemInt32_SystemString,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringConstructor,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringInvoke,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringAdd,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringRemove,
+			IntPtr releaseSystemAppDomainInitializer,
+			IntPtr systemAppDomainInitializerConstructor,
+			IntPtr systemAppDomainInitializerInvoke,
+			IntPtr systemAppDomainInitializerAdd,
+			IntPtr systemAppDomainInitializerRemove
 			/*END INIT PARAMS*/);
 		
 		public delegate void SetCsharpExceptionDelegate(int handle);
@@ -419,6 +427,9 @@ namespace NativeScript
 		
 		public delegate int SystemFuncSystemInt16_SystemInt32_SystemStringCppInvokeDelegate(int thisHandle, short param0, int param1);
 		public static SystemFuncSystemInt16_SystemInt32_SystemStringCppInvokeDelegate SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke;
+		
+		public delegate void SystemAppDomainInitializerCppInvokeDelegate(int thisHandle, int param0);
+		public static SystemAppDomainInitializerCppInvokeDelegate SystemAppDomainInitializerCppInvoke;
 		
 		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegate(int param0);
 		public static SetCsharpExceptionSystemNullReferenceExceptionDelegate SetCsharpExceptionSystemNullReferenceException;
@@ -584,6 +595,9 @@ namespace NativeScript
 			IntPtr unityEngineGradientConstructor,
 			IntPtr unityEngineGradientPropertyGetColorKeys,
 			IntPtr unityEngineGradientPropertySetColorKeys,
+			IntPtr systemAppDomainSetupConstructor,
+			IntPtr systemAppDomainSetupPropertyGetAppDomainInitializer,
+			IntPtr systemAppDomainSetupPropertySetAppDomainInitializer,
 			IntPtr systemInt32Array1Constructor1,
 			IntPtr systemInt32Array1GetItem1,
 			IntPtr systemInt32Array1SetItem1,
@@ -610,31 +624,36 @@ namespace NativeScript
 			IntPtr unityEngineGradientColorKeyArray1Constructor1,
 			IntPtr unityEngineGradientColorKeyArray1GetItem1,
 			IntPtr unityEngineGradientColorKeyArray1SetItem1,
-			IntPtr ReleaseSystemAction,
-			IntPtr SystemActionConstructor,
-			IntPtr SystemActionInvoke,
-			IntPtr SystemActionAdd,
-			IntPtr SystemActionRemove,
-			IntPtr ReleaseSystemActionSystemSingle,
-			IntPtr SystemActionSystemSingleConstructor,
-			IntPtr SystemActionSystemSingleInvoke,
-			IntPtr SystemActionSystemSingleAdd,
-			IntPtr SystemActionSystemSingleRemove,
-			IntPtr ReleaseSystemActionSystemSingle_SystemSingle,
-			IntPtr SystemActionSystemSingle_SystemSingleConstructor,
-			IntPtr SystemActionSystemSingle_SystemSingleInvoke,
-			IntPtr SystemActionSystemSingle_SystemSingleAdd,
-			IntPtr SystemActionSystemSingle_SystemSingleRemove,
-			IntPtr ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd,
-			IntPtr SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove,
-			IntPtr ReleaseSystemFuncSystemInt16_SystemInt32_SystemString,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringConstructor,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringInvoke,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringAdd,
-			IntPtr SystemFuncSystemInt16_SystemInt32_SystemStringRemove
+			IntPtr releaseSystemAction,
+			IntPtr systemActionConstructor,
+			IntPtr systemActionInvoke,
+			IntPtr systemActionAdd,
+			IntPtr systemActionRemove,
+			IntPtr releaseSystemActionSystemSingle,
+			IntPtr systemActionSystemSingleConstructor,
+			IntPtr systemActionSystemSingleInvoke,
+			IntPtr systemActionSystemSingleAdd,
+			IntPtr systemActionSystemSingleRemove,
+			IntPtr releaseSystemActionSystemSingle_SystemSingle,
+			IntPtr systemActionSystemSingle_SystemSingleConstructor,
+			IntPtr systemActionSystemSingle_SystemSingleInvoke,
+			IntPtr systemActionSystemSingle_SystemSingleAdd,
+			IntPtr systemActionSystemSingle_SystemSingleRemove,
+			IntPtr releaseSystemFuncSystemInt32_SystemSingle_SystemDouble,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleAdd,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleRemove,
+			IntPtr releaseSystemFuncSystemInt16_SystemInt32_SystemString,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringConstructor,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringInvoke,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringAdd,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringRemove,
+			IntPtr releaseSystemAppDomainInitializer,
+			IntPtr systemAppDomainInitializerConstructor,
+			IntPtr systemAppDomainInitializerInvoke,
+			IntPtr systemAppDomainInitializerAdd,
+			IntPtr systemAppDomainInitializerRemove
 			/*END INIT PARAMS*/);
 		
 		[DllImport(PluginName)]
@@ -667,6 +686,9 @@ namespace NativeScript
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemAppDomainInitializerCppInvoke(int thisHandle, int param0);
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle, int param0);
@@ -742,6 +764,9 @@ namespace NativeScript
 		delegate int UnityEngineGradientConstructorDelegate();
 		delegate int UnityEngineGradientPropertyGetColorKeysDelegate(int thisHandle);
 		delegate void UnityEngineGradientPropertySetColorKeysDelegate(int thisHandle, int valueHandle);
+		delegate int SystemAppDomainSetupConstructorDelegate();
+		delegate int SystemAppDomainSetupPropertyGetAppDomainInitializerDelegate(int thisHandle);
+		delegate void SystemAppDomainSetupPropertySetAppDomainInitializerDelegate(int thisHandle, int valueHandle);
 		delegate int SystemInt32Array1Constructor1Delegate(int length0);
 		delegate int SystemInt32Array1GetItem1Delegate(int thisHandle, int index0);
 		delegate void SystemInt32Array1SetItem1Delegate(int thisHandle, int index0, int item);
@@ -768,31 +793,36 @@ namespace NativeScript
 		delegate int UnityEngineGradientColorKeyArray1Constructor1Delegate(int length0);
 		delegate UnityEngine.GradientColorKey UnityEngineGradientColorKeyArray1GetItem1Delegate(int thisHandle, int index0);
 		delegate void UnityEngineGradientColorKeyArray1SetItem1Delegate(int thisHandle, int index0, ref UnityEngine.GradientColorKey item);
-		delegate void SystemActionConstructorDelegate(int cppHandle, ref int handle, ref int delegateHandle);
-		delegate void ReleaseSystemActionDelegate(int handle, int delegateHandle);
+		delegate void SystemActionConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemActionDelegate(int handle, int classHandle);
 		delegate void SystemActionInvokeDelegate(int thisHandle);
 		delegate void SystemActionAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemActionRemoveDelegate(int thisHandle, int delHandle);
-		delegate void SystemActionSystemSingleConstructorDelegate(int cppHandle, ref int handle, ref int delegateHandle);
-		delegate void ReleaseSystemActionSystemSingleDelegate(int handle, int delegateHandle);
+		delegate void SystemActionSystemSingleConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemActionSystemSingleDelegate(int handle, int classHandle);
 		delegate void SystemActionSystemSingleInvokeDelegate(int thisHandle, float obj);
 		delegate void SystemActionSystemSingleAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemActionSystemSingleRemoveDelegate(int thisHandle, int delHandle);
-		delegate void SystemActionSystemSingle_SystemSingleConstructorDelegate(int cppHandle, ref int handle, ref int delegateHandle);
-		delegate void ReleaseSystemActionSystemSingle_SystemSingleDelegate(int handle, int delegateHandle);
+		delegate void SystemActionSystemSingle_SystemSingleConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemActionSystemSingle_SystemSingleDelegate(int handle, int classHandle);
 		delegate void SystemActionSystemSingle_SystemSingleInvokeDelegate(int thisHandle, float arg1, float arg2);
 		delegate void SystemActionSystemSingle_SystemSingleAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemActionSystemSingle_SystemSingleRemoveDelegate(int thisHandle, int delHandle);
-		delegate void SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructorDelegate(int cppHandle, ref int handle, ref int delegateHandle);
-		delegate void ReleaseSystemFuncSystemInt32_SystemSingle_SystemDoubleDelegate(int handle, int delegateHandle);
+		delegate void SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemFuncSystemInt32_SystemSingle_SystemDoubleDelegate(int handle, int classHandle);
 		delegate double SystemFuncSystemInt32_SystemSingle_SystemDoubleInvokeDelegate(int thisHandle, int arg1, float arg2);
 		delegate void SystemFuncSystemInt32_SystemSingle_SystemDoubleAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemFuncSystemInt32_SystemSingle_SystemDoubleRemoveDelegate(int thisHandle, int delHandle);
-		delegate void SystemFuncSystemInt16_SystemInt32_SystemStringConstructorDelegate(int cppHandle, ref int handle, ref int delegateHandle);
-		delegate void ReleaseSystemFuncSystemInt16_SystemInt32_SystemStringDelegate(int handle, int delegateHandle);
+		delegate void SystemFuncSystemInt16_SystemInt32_SystemStringConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemFuncSystemInt16_SystemInt32_SystemStringDelegate(int handle, int classHandle);
 		delegate int SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate(int thisHandle, short arg1, int arg2);
 		delegate void SystemFuncSystemInt16_SystemInt32_SystemStringAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemFuncSystemInt16_SystemInt32_SystemStringRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemAppDomainInitializerConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemAppDomainInitializerDelegate(int handle, int classHandle);
+		delegate void SystemAppDomainInitializerInvokeDelegate(int thisHandle, int argsHandle);
+		delegate void SystemAppDomainInitializerAddDelegate(int thisHandle, int delHandle);
+		delegate void SystemAppDomainInitializerRemoveDelegate(int thisHandle, int delHandle);
 		/*END DELEGATE TYPES*/
 		
 		public static Exception UnhandledCppException;
@@ -836,6 +866,7 @@ namespace NativeScript
 			SystemActionSystemSingle_SystemSingleCppInvoke = GetDelegate<SystemActionSystemSingle_SystemSingleCppInvokeDelegate>(libraryHandle, "SystemActionSystemSingle_SystemSingleCppInvoke");
 			SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke = GetDelegate<SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvokeDelegate>(libraryHandle, "SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke");
 			SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke = GetDelegate<SystemFuncSystemInt16_SystemInt32_SystemStringCppInvokeDelegate>(libraryHandle, "SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke");
+			SystemAppDomainInitializerCppInvoke = GetDelegate<SystemAppDomainInitializerCppInvokeDelegate>(libraryHandle, "SystemAppDomainInitializerCppInvoke");
 			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegate>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
@@ -912,6 +943,9 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGradientConstructorDelegate(UnityEngineGradientConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGradientPropertyGetColorKeysDelegate(UnityEngineGradientPropertyGetColorKeys)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGradientPropertySetColorKeysDelegate(UnityEngineGradientPropertySetColorKeys)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainSetupConstructorDelegate(SystemAppDomainSetupConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainSetupPropertyGetAppDomainInitializerDelegate(SystemAppDomainSetupPropertyGetAppDomainInitializer)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainSetupPropertySetAppDomainInitializerDelegate(SystemAppDomainSetupPropertySetAppDomainInitializer)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1Constructor1Delegate(SystemInt32Array1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1GetItem1Delegate(SystemInt32Array1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1SetItem1Delegate(SystemInt32Array1SetItem1)),
@@ -962,7 +996,12 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringConstructorDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringAddDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringAdd)),
-				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringRemoveDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringRemove))
+				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringRemoveDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringRemove)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemAppDomainInitializerDelegate(ReleaseSystemAppDomainInitializer)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerConstructorDelegate(SystemAppDomainInitializerConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerInvokeDelegate(SystemAppDomainInitializerInvoke)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerAddDelegate(SystemAppDomainInitializerAdd)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerRemoveDelegate(SystemAppDomainInitializerRemove))
 				/*END INIT CALL*/
 				);
 			if (UnhandledCppException != null)
@@ -2371,6 +2410,72 @@ namespace NativeScript
 			}
 		}
 		
+		[MonoPInvokeCallback(typeof(SystemAppDomainSetupConstructorDelegate))]
+		static int SystemAppDomainSetupConstructor()
+		{
+			try
+			{
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.AppDomainSetup());
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemAppDomainSetupPropertyGetAppDomainInitializerDelegate))]
+		static int SystemAppDomainSetupPropertyGetAppDomainInitializer(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.AppDomainSetup)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.AppDomainInitializer;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemAppDomainSetupPropertySetAppDomainInitializerDelegate))]
+		static void SystemAppDomainSetupPropertySetAppDomainInitializer(int thisHandle, int valueHandle)
+		{
+			try
+			{
+				var thiz = (System.AppDomainSetup)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var value = (System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(valueHandle);
+				thiz.AppDomainInitializer = value;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(SystemInt32Array1Constructor1Delegate))]
 		static int SystemInt32Array1Constructor1(int length0)
 		{
@@ -2953,19 +3058,26 @@ namespace NativeScript
 			{
 				if (CppHandle != 0)
 				{
-					SystemActionCppInvoke(CppHandle);
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemActionCppInvoke(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
 				}
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemActionConstructorDelegate))]
-		static void SystemActionConstructor(int cppHandle, ref int handle, ref int delegateHandle)
+		static void SystemActionConstructor(int cppHandle, ref int handle, ref int classHandle)
 		{
 			try
 			{
 				var thiz = new SystemAction(cppHandle);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				delegateHandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -2980,13 +3092,16 @@ namespace NativeScript
 		}
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemActionDelegate))]
-		static void ReleaseSystemAction(int handle, int delegateHandle)
+		static void ReleaseSystemAction(int handle, int classHandle)
 		{
 			try
 			{
-				var thiz = (SystemAction)NativeScript.Bindings.ObjectStore.Remove(handle);
-				thiz.CppHandle = 0;
-				NativeScript.Bindings.ObjectStore.Remove(delegateHandle);
+				if (classHandle != 0)
+				{
+					var thiz = (SystemAction)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3005,8 +3120,7 @@ namespace NativeScript
 		{
 			try
 			{
-				((SystemAction)NativeScript.Bindings.ObjectStore.Get(thisHandle)).Delegate();
-
+				((System.Action)NativeScript.Bindings.ObjectStore.Get(thisHandle))();
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3025,9 +3139,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Action)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Action)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemAction)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate += del;
+				thiz += del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3046,9 +3160,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Action)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Action)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemAction)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate -= del;
+				thiz -= del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3076,19 +3190,26 @@ namespace NativeScript
 			{
 				if (CppHandle != 0)
 				{
-					SystemActionSystemSingleCppInvoke(CppHandle, obj);
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemActionSystemSingleCppInvoke(thisHandle, obj);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
 				}
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemActionSystemSingleConstructorDelegate))]
-		static void SystemActionSystemSingleConstructor(int cppHandle, ref int handle, ref int delegateHandle)
+		static void SystemActionSystemSingleConstructor(int cppHandle, ref int handle, ref int classHandle)
 		{
 			try
 			{
 				var thiz = new SystemActionSystemSingle(cppHandle);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				delegateHandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3103,13 +3224,16 @@ namespace NativeScript
 		}
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemActionSystemSingleDelegate))]
-		static void ReleaseSystemActionSystemSingle(int handle, int delegateHandle)
+		static void ReleaseSystemActionSystemSingle(int handle, int classHandle)
 		{
 			try
 			{
-				var thiz = (SystemActionSystemSingle)NativeScript.Bindings.ObjectStore.Remove(handle);
-				thiz.CppHandle = 0;
-				NativeScript.Bindings.ObjectStore.Remove(delegateHandle);
+				if (classHandle != 0)
+				{
+					var thiz = (SystemActionSystemSingle)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3128,8 +3252,7 @@ namespace NativeScript
 		{
 			try
 			{
-				((SystemActionSystemSingle)NativeScript.Bindings.ObjectStore.Get(thisHandle)).Delegate(obj);
-
+				((System.Action<float>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(obj);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3148,9 +3271,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Action<float>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Action<float>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemActionSystemSingle)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate += del;
+				thiz += del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3169,9 +3292,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Action<float>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Action<float>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemActionSystemSingle)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate -= del;
+				thiz -= del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3199,19 +3322,26 @@ namespace NativeScript
 			{
 				if (CppHandle != 0)
 				{
-					SystemActionSystemSingle_SystemSingleCppInvoke(CppHandle, arg1, arg2);
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemActionSystemSingle_SystemSingleCppInvoke(thisHandle, arg1, arg2);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
 				}
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemActionSystemSingle_SystemSingleConstructorDelegate))]
-		static void SystemActionSystemSingle_SystemSingleConstructor(int cppHandle, ref int handle, ref int delegateHandle)
+		static void SystemActionSystemSingle_SystemSingleConstructor(int cppHandle, ref int handle, ref int classHandle)
 		{
 			try
 			{
 				var thiz = new SystemActionSystemSingle_SystemSingle(cppHandle);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				delegateHandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3226,13 +3356,16 @@ namespace NativeScript
 		}
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemActionSystemSingle_SystemSingleDelegate))]
-		static void ReleaseSystemActionSystemSingle_SystemSingle(int handle, int delegateHandle)
+		static void ReleaseSystemActionSystemSingle_SystemSingle(int handle, int classHandle)
 		{
 			try
 			{
-				var thiz = (SystemActionSystemSingle_SystemSingle)NativeScript.Bindings.ObjectStore.Remove(handle);
-				thiz.CppHandle = 0;
-				NativeScript.Bindings.ObjectStore.Remove(delegateHandle);
+				if (classHandle != 0)
+				{
+					var thiz = (SystemActionSystemSingle_SystemSingle)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3251,8 +3384,7 @@ namespace NativeScript
 		{
 			try
 			{
-				((SystemActionSystemSingle_SystemSingle)NativeScript.Bindings.ObjectStore.Get(thisHandle)).Delegate(arg1, arg2);
-
+				((System.Action<float, float>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3271,9 +3403,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Action<float, float>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Action<float, float>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemActionSystemSingle_SystemSingle)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate += del;
+				thiz += del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3292,9 +3424,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Action<float, float>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Action<float, float>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemActionSystemSingle_SystemSingle)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate -= del;
+				thiz -= del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3322,23 +3454,28 @@ namespace NativeScript
 			{
 				if (CppHandle != 0)
 				{
-					return SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke(CppHandle, arg1, arg2);
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke(thisHandle, arg1, arg2);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
 				}
-				else
-				{
-					return default(double);
-				}
+				return default(double);
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructorDelegate))]
-		static void SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(int cppHandle, ref int handle, ref int delegateHandle)
+		static void SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(int cppHandle, ref int handle, ref int classHandle)
 		{
 			try
 			{
 				var thiz = new SystemFuncSystemInt32_SystemSingle_SystemDouble(cppHandle);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				delegateHandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3353,13 +3490,16 @@ namespace NativeScript
 		}
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemFuncSystemInt32_SystemSingle_SystemDoubleDelegate))]
-		static void ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble(int handle, int delegateHandle)
+		static void ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble(int handle, int classHandle)
 		{
 			try
 			{
-				var thiz = (SystemFuncSystemInt32_SystemSingle_SystemDouble)NativeScript.Bindings.ObjectStore.Remove(handle);
-				thiz.CppHandle = 0;
-				NativeScript.Bindings.ObjectStore.Remove(delegateHandle);
+				if (classHandle != 0)
+				{
+					var thiz = (SystemFuncSystemInt32_SystemSingle_SystemDouble)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3378,8 +3518,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var returnValue = ((SystemFuncSystemInt32_SystemSingle_SystemDouble)NativeScript.Bindings.ObjectStore.Get(thisHandle)).Delegate(arg1, arg2);
-
+				var returnValue = ((System.Func<int, float, double>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
 				return returnValue;
 			}
 			catch (System.NullReferenceException ex)
@@ -3401,9 +3540,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Func<int, float, double>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Func<int, float, double>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemFuncSystemInt32_SystemSingle_SystemDouble)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate += del;
+				thiz += del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3422,9 +3561,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Func<int, float, double>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Func<int, float, double>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemFuncSystemInt32_SystemSingle_SystemDouble)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate -= del;
+				thiz -= del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3452,23 +3591,28 @@ namespace NativeScript
 			{
 				if (CppHandle != 0)
 				{
-					return (string)NativeScript.Bindings.ObjectStore.Get(SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke(CppHandle, arg1, arg2));
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke(thisHandle, arg1, arg2);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return (string)NativeScript.Bindings.ObjectStore.Get(returnVal);
 				}
-				else
-				{
-					return default(string);
-				}
+				return default(string);
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemFuncSystemInt16_SystemInt32_SystemStringConstructorDelegate))]
-		static void SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(int cppHandle, ref int handle, ref int delegateHandle)
+		static void SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(int cppHandle, ref int handle, ref int classHandle)
 		{
 			try
 			{
 				var thiz = new SystemFuncSystemInt16_SystemInt32_SystemString(cppHandle);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				delegateHandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3483,13 +3627,16 @@ namespace NativeScript
 		}
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemFuncSystemInt16_SystemInt32_SystemStringDelegate))]
-		static void ReleaseSystemFuncSystemInt16_SystemInt32_SystemString(int handle, int delegateHandle)
+		static void ReleaseSystemFuncSystemInt16_SystemInt32_SystemString(int handle, int classHandle)
 		{
 			try
 			{
-				var thiz = (SystemFuncSystemInt16_SystemInt32_SystemString)NativeScript.Bindings.ObjectStore.Remove(handle);
-				thiz.CppHandle = 0;
-				NativeScript.Bindings.ObjectStore.Remove(delegateHandle);
+				if (classHandle != 0)
+				{
+					var thiz = (SystemFuncSystemInt16_SystemInt32_SystemString)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3508,8 +3655,7 @@ namespace NativeScript
 		{
 			try
 			{
-				var returnValue = ((SystemFuncSystemInt16_SystemInt32_SystemString)NativeScript.Bindings.ObjectStore.Get(thisHandle)).Delegate(arg1, arg2);
-
+				var returnValue = ((System.Func<short, int, string>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
 				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
 			catch (System.NullReferenceException ex)
@@ -3531,9 +3677,9 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Func<short, int, string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Func<short, int, string>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemFuncSystemInt16_SystemInt32_SystemString)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate += del;
+				thiz += del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3552,9 +3698,143 @@ namespace NativeScript
 		{
 			try
 			{
+				var thiz = (System.Func<short, int, string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.Func<short, int, string>)NativeScript.Bindings.ObjectStore.Get(delHandle);
-				var thiz = (SystemFuncSystemInt16_SystemInt32_SystemString)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				thiz.Delegate -= del;
+				thiz -= del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		class SystemAppDomainInitializer
+		{
+			public int CppHandle;
+			public System.AppDomainInitializer Delegate;
+			
+			public SystemAppDomainInitializer(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = Invoke;
+			}			
+			public void Invoke(string[] args)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int argsHandle = NativeScript.Bindings.ObjectStore.GetHandle(args);
+					NativeScript.Bindings.SystemAppDomainInitializerCppInvoke(thisHandle, argsHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemAppDomainInitializerConstructorDelegate))]
+		static void SystemAppDomainInitializerConstructor(int cppHandle, ref int handle, ref int classHandle)
+		{
+			try
+			{
+				var thiz = new SystemAppDomainInitializer(cppHandle);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemAppDomainInitializerDelegate))]
+		static void ReleaseSystemAppDomainInitializer(int handle, int classHandle)
+		{
+			try
+			{
+				if (classHandle != 0)
+				{
+					var thiz = (SystemAppDomainInitializer)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemAppDomainInitializerInvokeDelegate))]
+		static void SystemAppDomainInitializerInvoke(int thisHandle, int argsHandle)
+		{
+			try
+			{
+				var args = (string[])NativeScript.Bindings.ObjectStore.Get(argsHandle);
+				((System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(thisHandle))(args);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemAppDomainInitializerAddDelegate))]
+		static void SystemAppDomainInitializerAdd(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemAppDomainInitializerRemoveDelegate))]
+		static void SystemAppDomainInitializerRemove(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz -= del;
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3604,7 +3884,7 @@ namespace MyGame
 			
 			public void OnCollisionEnter(UnityEngine.Collision param0)
 			{
-				int param0Handle = NativeScript.Bindings.ObjectStore.Store(param0);
+				int param0Handle = NativeScript.Bindings.ObjectStore.GetHandle(param0);
 				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
 				NativeScript.Bindings.MyGameMonoBehavioursTestScriptOnCollisionEnter(thisHandle, param0Handle);
 				if (NativeScript.Bindings.UnhandledCppException != null)

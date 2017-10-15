@@ -178,6 +178,7 @@ namespace System
 		String& operator=(const String& other);
 		String& operator=(std::nullptr_t other);
 		String& operator=(String&& other);
+		String();
 		String(const char* chars);
 	};
 	
@@ -475,6 +476,11 @@ namespace UnityEngine
 	struct Gradient;
 }
 
+namespace System
+{
+	struct AppDomainSetup;
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -566,6 +572,11 @@ namespace System
 namespace System
 {
 	template<> struct Func3<int16_t, int32_t, System::String>;
+}
+
+namespace System
+{
+	struct AppDomainInitializer;
 }
 /*END TYPE DECLARATIONS*/
 
@@ -1168,6 +1179,26 @@ namespace UnityEngine
 	};
 }
 
+namespace System
+{
+	struct AppDomainSetup : System::Object
+	{
+		AppDomainSetup(std::nullptr_t n);
+		AppDomainSetup(Plugin::InternalUse iu, int32_t handle);
+		AppDomainSetup(const AppDomainSetup& other);
+		AppDomainSetup(AppDomainSetup&& other);
+		virtual ~AppDomainSetup();
+		AppDomainSetup& operator=(const AppDomainSetup& other);
+		AppDomainSetup& operator=(std::nullptr_t other);
+		AppDomainSetup& operator=(AppDomainSetup&& other);
+		bool operator==(const AppDomainSetup& other) const;
+		bool operator!=(const AppDomainSetup& other) const;
+		AppDomainSetup();
+		System::AppDomainInitializer GetAppDomainInitializer();
+		void SetAppDomainInitializer(System::AppDomainInitializer value);
+	};
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -1385,10 +1416,10 @@ namespace System
 		bool operator==(const Action& other) const;
 		bool operator!=(const Action& other) const;
 		int32_t CppHandle;
-		int32_t DelegateHandle;
+		int32_t ClassHandle;
 		Action();
 		void Invoke();
-		virtual void operator()() = 0;
+		virtual void operator()();
 		void operator+=(System::Action& del);
 		void operator-=(System::Action& del);
 	};
@@ -1409,10 +1440,10 @@ namespace System
 		bool operator==(const Action1<float>& other) const;
 		bool operator!=(const Action1<float>& other) const;
 		int32_t CppHandle;
-		int32_t DelegateHandle;
+		int32_t ClassHandle;
 		Action1();
 		void Invoke(float obj);
-		virtual void operator()(float obj) = 0;
+		virtual void operator()(float obj);
 		void operator+=(System::Action1<float>& del);
 		void operator-=(System::Action1<float>& del);
 	};
@@ -1433,10 +1464,10 @@ namespace System
 		bool operator==(const Action2<float, float>& other) const;
 		bool operator!=(const Action2<float, float>& other) const;
 		int32_t CppHandle;
-		int32_t DelegateHandle;
+		int32_t ClassHandle;
 		Action2();
 		void Invoke(float arg1, float arg2);
-		virtual void operator()(float arg1, float arg2) = 0;
+		virtual void operator()(float arg1, float arg2);
 		void operator+=(System::Action2<float, float>& del);
 		void operator-=(System::Action2<float, float>& del);
 	};
@@ -1457,10 +1488,10 @@ namespace System
 		bool operator==(const Func3<int32_t, float, double>& other) const;
 		bool operator!=(const Func3<int32_t, float, double>& other) const;
 		int32_t CppHandle;
-		int32_t DelegateHandle;
+		int32_t ClassHandle;
 		Func3();
 		double Invoke(int32_t arg1, float arg2);
-		virtual double operator()(int32_t arg1, float arg2) = 0;
+		virtual double operator()(int32_t arg1, float arg2);
 		void operator+=(System::Func3<int32_t, float, double>& del);
 		void operator-=(System::Func3<int32_t, float, double>& del);
 	};
@@ -1481,12 +1512,36 @@ namespace System
 		bool operator==(const Func3<int16_t, int32_t, System::String>& other) const;
 		bool operator!=(const Func3<int16_t, int32_t, System::String>& other) const;
 		int32_t CppHandle;
-		int32_t DelegateHandle;
+		int32_t ClassHandle;
 		Func3();
 		System::String Invoke(int16_t arg1, int32_t arg2);
-		virtual System::String operator()(int16_t arg1, int32_t arg2) = 0;
+		virtual System::String operator()(int16_t arg1, int32_t arg2);
 		void operator+=(System::Func3<int16_t, int32_t, System::String>& del);
 		void operator-=(System::Func3<int16_t, int32_t, System::String>& del);
+	};
+}
+
+namespace System
+{
+	struct AppDomainInitializer : System::Object
+	{
+		AppDomainInitializer(std::nullptr_t n);
+		AppDomainInitializer(Plugin::InternalUse iu, int32_t handle);
+		AppDomainInitializer(const AppDomainInitializer& other);
+		AppDomainInitializer(AppDomainInitializer&& other);
+		virtual ~AppDomainInitializer();
+		AppDomainInitializer& operator=(const AppDomainInitializer& other);
+		AppDomainInitializer& operator=(std::nullptr_t other);
+		AppDomainInitializer& operator=(AppDomainInitializer&& other);
+		bool operator==(const AppDomainInitializer& other) const;
+		bool operator!=(const AppDomainInitializer& other) const;
+		int32_t CppHandle;
+		int32_t ClassHandle;
+		AppDomainInitializer();
+		void Invoke(System::Array1<System::String> args);
+		virtual void operator()(System::Array1<System::String> args);
+		void operator+=(System::AppDomainInitializer& del);
+		void operator-=(System::AppDomainInitializer& del);
 	};
 }
 /*END TYPE DEFINITIONS*/

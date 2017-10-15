@@ -103,6 +103,9 @@ namespace Plugin
 	int32_t (*UnityEngineGradientConstructor)();
 	int32_t (*UnityEngineGradientPropertyGetColorKeys)(int32_t thisHandle);
 	void (*UnityEngineGradientPropertySetColorKeys)(int32_t thisHandle, int32_t valueHandle);
+	int32_t (*SystemAppDomainSetupConstructor)();
+	int32_t (*SystemAppDomainSetupPropertyGetAppDomainInitializer)(int32_t thisHandle);
+	void (*SystemAppDomainSetupPropertySetAppDomainInitializer)(int32_t thisHandle, int32_t valueHandle);
 	int32_t (*SystemInt32Array1Constructor1)(int32_t length0);
 	int32_t (*SystemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*SystemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item);
@@ -129,31 +132,36 @@ namespace Plugin
 	int32_t (*UnityEngineGradientColorKeyArray1Constructor1)(int32_t length0);
 	UnityEngine::GradientColorKey (*UnityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*UnityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item);
-	void (*ReleaseSystemAction)(int32_t handle, int32_t delegateHandle);
-	void (*SystemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle);
+	void (*ReleaseSystemAction)(int32_t handle, int32_t classHandle);
+	void (*SystemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*SystemActionInvoke)(int32_t thisHandle);
 	void (*SystemActionAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemActionRemove)(int32_t thisHandle, int32_t delHandle);
-	void (*ReleaseSystemActionSystemSingle)(int32_t handle, int32_t delegateHandle);
-	void (*SystemActionSystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle);
+	void (*ReleaseSystemActionSystemSingle)(int32_t handle, int32_t classHandle);
+	void (*SystemActionSystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*SystemActionSystemSingleInvoke)(int32_t thisHandle, float obj);
 	void (*SystemActionSystemSingleAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemActionSystemSingleRemove)(int32_t thisHandle, int32_t delHandle);
-	void (*ReleaseSystemActionSystemSingle_SystemSingle)(int32_t handle, int32_t delegateHandle);
-	void (*SystemActionSystemSingle_SystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle);
+	void (*ReleaseSystemActionSystemSingle_SystemSingle)(int32_t handle, int32_t classHandle);
+	void (*SystemActionSystemSingle_SystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*SystemActionSystemSingle_SystemSingleInvoke)(int32_t thisHandle, float arg1, float arg2);
 	void (*SystemActionSystemSingle_SystemSingleAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemActionSystemSingle_SystemSingleRemove)(int32_t thisHandle, int32_t delHandle);
-	void (*ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble)(int32_t handle, int32_t delegateHandle);
-	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle);
+	void (*ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble)(int32_t handle, int32_t classHandle);
+	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	double (*SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2);
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove)(int32_t thisHandle, int32_t delHandle);
-	void (*ReleaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t delegateHandle);
-	void (*SystemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle);
+	void (*ReleaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t classHandle);
+	void (*SystemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	int32_t (*SystemFuncSystemInt16_SystemInt32_SystemStringInvoke)(int32_t thisHandle, int16_t arg1, int32_t arg2);
 	void (*SystemFuncSystemInt16_SystemInt32_SystemStringAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemFuncSystemInt16_SystemInt32_SystemStringRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*ReleaseSystemAppDomainInitializer)(int32_t handle, int32_t classHandle);
+	void (*SystemAppDomainInitializerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
+	void (*SystemAppDomainInitializerInvoke)(int32_t thisHandle, int32_t argsHandle);
+	void (*SystemAppDomainInitializerAdd)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemAppDomainInitializerRemove)(int32_t thisHandle, int32_t delHandle);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -364,6 +372,31 @@ namespace Plugin
 		*pRelease = (System::Func3<int16_t, int32_t, System::String>*)NextFreeSystemFuncSystemInt16_SystemInt32_SystemString;
 		NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = pRelease;
 	}
+	int32_t SystemAppDomainInitializerFreeListSize;
+	System::AppDomainInitializer** SystemAppDomainInitializerFreeList;
+	System::AppDomainInitializer** NextFreeSystemAppDomainInitializer;
+	
+	int32_t StoreSystemAppDomainInitializer(System::AppDomainInitializer* del)
+	{
+		assert(NextFreeSystemAppDomainInitializer != nullptr);
+		System::AppDomainInitializer** pNext = NextFreeSystemAppDomainInitializer;
+		NextFreeSystemAppDomainInitializer = (System::AppDomainInitializer**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemAppDomainInitializerFreeList);
+	}
+	
+	System::AppDomainInitializer* GetSystemAppDomainInitializer(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemAppDomainInitializerFreeListSize);
+		return SystemAppDomainInitializerFreeList[handle];
+	}
+	
+	void RemoveSystemAppDomainInitializer(int32_t handle)
+	{
+		System::AppDomainInitializer** pRelease = SystemAppDomainInitializerFreeList + handle;
+		*pRelease = (System::AppDomainInitializer*)NextFreeSystemAppDomainInitializer;
+		NextFreeSystemAppDomainInitializer = pRelease;
+	}
 
 	/*END GLOBAL STATE AND FUNCTIONS*/
 }
@@ -492,6 +525,11 @@ namespace System
 		return *this;
 	}
 	
+	String::String()
+		: Object(nullptr)
+	{
+	}
+	
 	String::String(const char* chars)
 		: Object(Plugin::InternalUse::Only, Plugin::StringNew(chars))
 	{
@@ -524,7 +562,7 @@ namespace System
 	namespace Diagnostics
 	{
 		Stopwatch::Stopwatch(std::nullptr_t n)
-			: System::Object(nullptr)
+			: Stopwatch(Plugin::InternalUse::Only, 0)
 		{
 		}
 		
@@ -538,16 +576,12 @@ namespace System
 		}
 		
 		Stopwatch::Stopwatch(const Stopwatch& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
+			: Stopwatch(Plugin::InternalUse::Only, other.Handle)
 		{
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
 		}
 		
 		Stopwatch::Stopwatch(Stopwatch&& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
+			: Stopwatch(Plugin::InternalUse::Only, other.Handle)
 		{
 			other.Handle = 0;
 		}
@@ -669,7 +703,7 @@ namespace System
 namespace UnityEngine
 {
 	Object::Object(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Object(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -683,16 +717,12 @@ namespace UnityEngine
 	}
 	
 	Object::Object(const Object& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Object(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Object::Object(Object&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Object(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -809,7 +839,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	GameObject::GameObject(std::nullptr_t n)
-		: UnityEngine::Object(nullptr)
+		: GameObject(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -823,16 +853,12 @@ namespace UnityEngine
 	}
 	
 	GameObject::GameObject(const GameObject& other)
-		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
+		: GameObject(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	GameObject::GameObject(GameObject&& other)
-		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
+		: GameObject(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -960,7 +986,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Component::Component(std::nullptr_t n)
-		: UnityEngine::Object(nullptr)
+		: Component(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -974,16 +1000,12 @@ namespace UnityEngine
 	}
 	
 	Component::Component(const Component& other)
-		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
+		: Component(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Component::Component(Component&& other)
-		: UnityEngine::Object(Plugin::InternalUse::Only, other.Handle)
+		: Component(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1062,7 +1084,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Transform::Transform(std::nullptr_t n)
-		: UnityEngine::Component(nullptr)
+		: Transform(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -1076,16 +1098,12 @@ namespace UnityEngine
 	}
 	
 	Transform::Transform(const Transform& other)
-		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
+		: Transform(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Transform::Transform(Transform&& other)
-		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
+		: Transform(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1176,7 +1194,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Debug::Debug(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Debug(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -1190,16 +1208,12 @@ namespace UnityEngine
 	}
 	
 	Debug::Debug(const Debug& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Debug(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Debug::Debug(Debug&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Debug(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1332,7 +1346,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Collision::Collision(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Collision(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -1346,16 +1360,12 @@ namespace UnityEngine
 	}
 	
 	Collision::Collision(const Collision& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Collision(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Collision::Collision(Collision&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Collision(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1421,7 +1431,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Behaviour::Behaviour(std::nullptr_t n)
-		: UnityEngine::Component(nullptr)
+		: Behaviour(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -1435,16 +1445,12 @@ namespace UnityEngine
 	}
 	
 	Behaviour::Behaviour(const Behaviour& other)
-		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
+		: Behaviour(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Behaviour::Behaviour(Behaviour&& other)
-		: UnityEngine::Component(Plugin::InternalUse::Only, other.Handle)
+		: Behaviour(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1510,7 +1516,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	MonoBehaviour::MonoBehaviour(std::nullptr_t n)
-		: UnityEngine::Behaviour(nullptr)
+		: MonoBehaviour(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -1524,16 +1530,12 @@ namespace UnityEngine
 	}
 	
 	MonoBehaviour::MonoBehaviour(const MonoBehaviour& other)
-		: UnityEngine::Behaviour(Plugin::InternalUse::Only, other.Handle)
+		: MonoBehaviour(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	MonoBehaviour::MonoBehaviour(MonoBehaviour&& other)
-		: UnityEngine::Behaviour(Plugin::InternalUse::Only, other.Handle)
+		: MonoBehaviour(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1599,7 +1601,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	AudioSettings::AudioSettings(std::nullptr_t n)
-		: System::Object(nullptr)
+		: AudioSettings(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -1613,16 +1615,12 @@ namespace UnityEngine
 	}
 	
 	AudioSettings::AudioSettings(const AudioSettings& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: AudioSettings(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	AudioSettings::AudioSettings(AudioSettings&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: AudioSettings(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -1702,7 +1700,7 @@ namespace UnityEngine
 	namespace Networking
 	{
 		NetworkTransport::NetworkTransport(std::nullptr_t n)
-			: System::Object(nullptr)
+			: NetworkTransport(Plugin::InternalUse::Only, 0)
 		{
 		}
 		
@@ -1716,16 +1714,12 @@ namespace UnityEngine
 		}
 		
 		NetworkTransport::NetworkTransport(const NetworkTransport& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
+			: NetworkTransport(Plugin::InternalUse::Only, other.Handle)
 		{
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
 		}
 		
 		NetworkTransport::NetworkTransport(NetworkTransport&& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
+			: NetworkTransport(Plugin::InternalUse::Only, other.Handle)
 		{
 			other.Handle = 0;
 		}
@@ -1932,7 +1926,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	RaycastHit::RaycastHit(std::nullptr_t n)
-		: System::ValueType(nullptr)
+		: RaycastHit(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -1946,16 +1940,12 @@ namespace UnityEngine
 	}
 	
 	RaycastHit::RaycastHit(const RaycastHit& other)
-		: System::ValueType(Plugin::InternalUse::Only, other.Handle)
+		: RaycastHit(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedUnityEngineRaycastHit(Handle);
-		}
 	}
 	
 	RaycastHit::RaycastHit(RaycastHit&& other)
-		: System::ValueType(Plugin::InternalUse::Only, other.Handle)
+		: RaycastHit(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -2063,7 +2053,7 @@ namespace System
 		namespace Generic
 		{
 			KeyValuePair<System::String, double>::KeyValuePair(std::nullptr_t n)
-				: System::ValueType(nullptr)
+				: KeyValuePair(Plugin::InternalUse::Only, 0)
 			{
 			}
 			
@@ -2077,16 +2067,12 @@ namespace System
 			}
 			
 			KeyValuePair<System::String, double>::KeyValuePair(const KeyValuePair<System::String, double>& other)
-				: System::ValueType(Plugin::InternalUse::Only, other.Handle)
+				: KeyValuePair(Plugin::InternalUse::Only, other.Handle)
 			{
-				if (Handle)
-				{
-					Plugin::ReferenceManagedSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(Handle);
-				}
 			}
 			
 			KeyValuePair<System::String, double>::KeyValuePair(KeyValuePair<System::String, double>&& other)
-				: System::ValueType(Plugin::InternalUse::Only, other.Handle)
+				: KeyValuePair(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2202,7 +2188,7 @@ namespace System
 		namespace Generic
 		{
 			List<System::String>::List(std::nullptr_t n)
-				: System::Object(nullptr)
+				: List(Plugin::InternalUse::Only, 0)
 			{
 			}
 			
@@ -2216,16 +2202,12 @@ namespace System
 			}
 			
 			List<System::String>::List(const List<System::String>& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: List(Plugin::InternalUse::Only, other.Handle)
 			{
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
 			}
 			
 			List<System::String>::List(List<System::String>&& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: List(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2352,7 +2334,7 @@ namespace System
 		namespace Generic
 		{
 			LinkedListNode<System::String>::LinkedListNode(std::nullptr_t n)
-				: System::Object(nullptr)
+				: LinkedListNode(Plugin::InternalUse::Only, 0)
 			{
 			}
 			
@@ -2366,16 +2348,12 @@ namespace System
 			}
 			
 			LinkedListNode<System::String>::LinkedListNode(const LinkedListNode<System::String>& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: LinkedListNode(Plugin::InternalUse::Only, other.Handle)
 			{
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
 			}
 			
 			LinkedListNode<System::String>::LinkedListNode(LinkedListNode<System::String>&& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: LinkedListNode(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2490,7 +2468,7 @@ namespace System
 		namespace CompilerServices
 		{
 			StrongBox<System::String>::StrongBox(std::nullptr_t n)
-				: System::Object(nullptr)
+				: StrongBox(Plugin::InternalUse::Only, 0)
 			{
 			}
 			
@@ -2504,16 +2482,12 @@ namespace System
 			}
 			
 			StrongBox<System::String>::StrongBox(const StrongBox<System::String>& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: StrongBox(Plugin::InternalUse::Only, other.Handle)
 			{
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
 			}
 			
 			StrongBox<System::String>::StrongBox(StrongBox<System::String>&& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: StrongBox(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2628,7 +2602,7 @@ namespace System
 		namespace ObjectModel
 		{
 			Collection<int32_t>::Collection(std::nullptr_t n)
-				: System::Object(nullptr)
+				: Collection(Plugin::InternalUse::Only, 0)
 			{
 			}
 			
@@ -2642,16 +2616,12 @@ namespace System
 			}
 			
 			Collection<int32_t>::Collection(const Collection<int32_t>& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: Collection(Plugin::InternalUse::Only, other.Handle)
 			{
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
 			}
 			
 			Collection<int32_t>::Collection(Collection<int32_t>&& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+				: Collection(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2723,7 +2693,7 @@ namespace System
 		namespace ObjectModel
 		{
 			KeyedCollection<System::String, int32_t>::KeyedCollection(std::nullptr_t n)
-				: System::Collections::ObjectModel::Collection<int32_t>(nullptr)
+				: KeyedCollection(Plugin::InternalUse::Only, 0)
 			{
 			}
 			
@@ -2737,16 +2707,12 @@ namespace System
 			}
 			
 			KeyedCollection<System::String, int32_t>::KeyedCollection(const KeyedCollection<System::String, int32_t>& other)
-				: System::Collections::ObjectModel::Collection<int32_t>(Plugin::InternalUse::Only, other.Handle)
+				: KeyedCollection(Plugin::InternalUse::Only, other.Handle)
 			{
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
 			}
 			
 			KeyedCollection<System::String, int32_t>::KeyedCollection(KeyedCollection<System::String, int32_t>&& other)
-				: System::Collections::ObjectModel::Collection<int32_t>(Plugin::InternalUse::Only, other.Handle)
+				: KeyedCollection(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
@@ -2814,7 +2780,7 @@ namespace System
 namespace System
 {
 	Exception::Exception(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Exception(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -2828,16 +2794,12 @@ namespace System
 	}
 	
 	Exception::Exception(const Exception& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Exception(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Exception::Exception(Exception&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Exception(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -2921,7 +2883,7 @@ namespace System
 namespace System
 {
 	SystemException::SystemException(std::nullptr_t n)
-		: System::Exception(nullptr)
+		: SystemException(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -2935,16 +2897,12 @@ namespace System
 	}
 	
 	SystemException::SystemException(const SystemException& other)
-		: System::Exception(Plugin::InternalUse::Only, other.Handle)
+		: SystemException(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	SystemException::SystemException(SystemException&& other)
-		: System::Exception(Plugin::InternalUse::Only, other.Handle)
+		: SystemException(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -3010,7 +2968,7 @@ namespace System
 namespace System
 {
 	NullReferenceException::NullReferenceException(std::nullptr_t n)
-		: System::SystemException(nullptr)
+		: NullReferenceException(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -3024,16 +2982,12 @@ namespace System
 	}
 	
 	NullReferenceException::NullReferenceException(const NullReferenceException& other)
-		: System::SystemException(Plugin::InternalUse::Only, other.Handle)
+		: NullReferenceException(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	NullReferenceException::NullReferenceException(NullReferenceException&& other)
-		: System::SystemException(Plugin::InternalUse::Only, other.Handle)
+		: NullReferenceException(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -3181,7 +3135,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Screen::Screen(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Screen(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -3195,16 +3149,12 @@ namespace UnityEngine
 	}
 	
 	Screen::Screen(const Screen& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Screen(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Screen::Screen(Screen&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Screen(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -3303,7 +3253,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Physics::Physics(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Physics(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -3317,16 +3267,12 @@ namespace UnityEngine
 	}
 	
 	Physics::Physics(const Physics& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Physics(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Physics::Physics(Physics&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Physics(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -3432,7 +3378,7 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Gradient::Gradient(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Gradient(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -3446,16 +3392,12 @@ namespace UnityEngine
 	}
 	
 	Gradient::Gradient(const Gradient& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Gradient(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Gradient::Gradient(Gradient&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Gradient(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -3561,12 +3503,140 @@ namespace UnityEngine
 	}
 }
 
+namespace System
+{
+	AppDomainSetup::AppDomainSetup(std::nullptr_t n)
+		: AppDomainSetup(Plugin::InternalUse::Only, 0)
+	{
+	}
+	
+	AppDomainSetup::AppDomainSetup(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	AppDomainSetup::AppDomainSetup(const AppDomainSetup& other)
+		: AppDomainSetup(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	AppDomainSetup::AppDomainSetup(AppDomainSetup&& other)
+		: AppDomainSetup(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	AppDomainSetup::~AppDomainSetup()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	AppDomainSetup& AppDomainSetup::operator=(const AppDomainSetup& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	AppDomainSetup& AppDomainSetup::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	AppDomainSetup& AppDomainSetup::operator=(AppDomainSetup&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool AppDomainSetup::operator==(const AppDomainSetup& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool AppDomainSetup::operator!=(const AppDomainSetup& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	AppDomainSetup::AppDomainSetup()
+		 : System::Object(nullptr)
+	{
+		auto returnValue = Plugin::SystemAppDomainSetupConstructor();
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedClass(returnValue);
+		}
+	}
+	
+	System::AppDomainInitializer AppDomainSetup::GetAppDomainInitializer()
+	{
+		auto returnValue = Plugin::SystemAppDomainSetupPropertyGetAppDomainInitializer(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return System::AppDomainInitializer(Plugin::InternalUse::Only, returnValue);
+	}
+	
+	void AppDomainSetup::SetAppDomainInitializer(System::AppDomainInitializer value)
+	{
+		Plugin::SystemAppDomainSetupPropertySetAppDomainInitializer(Handle, value.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
 	{
 		TestScript::TestScript(std::nullptr_t n)
-			: UnityEngine::MonoBehaviour(nullptr)
+			: TestScript(Plugin::InternalUse::Only, 0)
 		{
 		}
 		
@@ -3580,16 +3650,12 @@ namespace MyGame
 		}
 		
 		TestScript::TestScript(const TestScript& other)
-			: UnityEngine::MonoBehaviour(Plugin::InternalUse::Only, other.Handle)
+			: TestScript(Plugin::InternalUse::Only, other.Handle)
 		{
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
 		}
 		
 		TestScript::TestScript(TestScript&& other)
-			: UnityEngine::MonoBehaviour(Plugin::InternalUse::Only, other.Handle)
+			: TestScript(Plugin::InternalUse::Only, other.Handle)
 		{
 			other.Handle = 0;
 		}
@@ -3656,7 +3722,7 @@ namespace MyGame
 namespace System
 {
 	Array1<int32_t>::Array1(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -3670,16 +3736,12 @@ namespace System
 	}
 	
 	Array1<int32_t>::Array1(const Array1<int32_t>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array1<int32_t>::Array1(Array1<int32_t>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -3798,7 +3860,7 @@ namespace System
 namespace System
 {
 	Array1<float>::Array1(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -3812,16 +3874,12 @@ namespace System
 	}
 	
 	Array1<float>::Array1(const Array1<float>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array1<float>::Array1(Array1<float>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -3940,7 +3998,7 @@ namespace System
 namespace System
 {
 	Array2<float>::Array2(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array2(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -3954,16 +4012,12 @@ namespace System
 	}
 	
 	Array2<float>::Array2(const Array2<float>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array2(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array2<float>::Array2(Array2<float>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array2(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -4095,7 +4149,7 @@ namespace System
 namespace System
 {
 	Array3<float>::Array3(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array3(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -4109,16 +4163,12 @@ namespace System
 	}
 	
 	Array3<float>::Array3(const Array3<float>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array3(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array3<float>::Array3(Array3<float>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array3(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -4250,7 +4300,7 @@ namespace System
 namespace System
 {
 	Array1<System::String>::Array1(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -4264,16 +4314,12 @@ namespace System
 	}
 	
 	Array1<System::String>::Array1(const Array1<System::String>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array1<System::String>::Array1(Array1<System::String>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -4392,7 +4438,7 @@ namespace System
 namespace System
 {
 	Array1<UnityEngine::Resolution>::Array1(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -4406,16 +4452,12 @@ namespace System
 	}
 	
 	Array1<UnityEngine::Resolution>::Array1(const Array1<UnityEngine::Resolution>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array1<UnityEngine::Resolution>::Array1(Array1<UnityEngine::Resolution>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -4534,7 +4576,7 @@ namespace System
 namespace System
 {
 	Array1<UnityEngine::RaycastHit>::Array1(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -4548,16 +4590,12 @@ namespace System
 	}
 	
 	Array1<UnityEngine::RaycastHit>::Array1(const Array1<UnityEngine::RaycastHit>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array1<UnityEngine::RaycastHit>::Array1(Array1<UnityEngine::RaycastHit>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -4676,7 +4714,7 @@ namespace System
 namespace System
 {
 	Array1<UnityEngine::GradientColorKey>::Array1(std::nullptr_t n)
-		: System::Array(nullptr)
+		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
@@ -4690,16 +4728,12 @@ namespace System
 	}
 	
 	Array1<UnityEngine::GradientColorKey>::Array1(const Array1<UnityEngine::GradientColorKey>& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Array1<UnityEngine::GradientColorKey>::Array1(Array1<UnityEngine::GradientColorKey>&& other)
-		: System::Array(Plugin::InternalUse::Only, other.Handle)
+		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -4818,30 +4852,17 @@ namespace System
 namespace System
 {
 	Action::Action(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Action(Plugin::InternalUse::Only, 0)
 	{
-	}
-	
-	Action::Action(Plugin::InternalUse iu, int32_t handle)
-		: System::Object(iu, handle)
-	{
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-		}
 	}
 	
 	Action::Action(const Action& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Action(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Action::Action(Action&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Action(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -4898,7 +4919,7 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemAction(this);
-		Plugin::SystemActionConstructor(CppHandle, &Handle, &DelegateHandle);
+		Plugin::SystemActionConstructor(CppHandle, &Handle, &ClassHandle);
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -4914,6 +4935,32 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	Action::Action(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		ClassHandle = 0;
+		CppHandle = Plugin::StoreSystemAction(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemAction(CppHandle);
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	void Action::operator()()
+	{
 	}
 	
 	void Action::Invoke()
@@ -4932,7 +4979,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::ReleaseSystemAction(Handle, DelegateHandle);
+			Plugin::ReleaseSystemAction(Handle, ClassHandle);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4941,13 +4988,14 @@ namespace System
 				delete ex;
 			}
 			Plugin::RemoveSystemAction(CppHandle);
+			ClassHandle = 0;
 			Handle = 0;
 		}
 	}
 	
 	void Action::operator+=(System::Action& del)
 	{
-		Plugin::SystemActionAdd(Handle, del.DelegateHandle);
+		Plugin::SystemActionAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4959,7 +5007,7 @@ namespace System
 	
 	void Action::operator-=(System::Action& del)
 	{
-		Plugin::SystemActionRemove(Handle, del.DelegateHandle);
+		Plugin::SystemActionRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4978,30 +5026,17 @@ namespace System
 namespace System
 {
 	Action1<float>::Action1(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Action1(Plugin::InternalUse::Only, 0)
 	{
-	}
-	
-	Action1<float>::Action1(Plugin::InternalUse iu, int32_t handle)
-		: System::Object(iu, handle)
-	{
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-		}
 	}
 	
 	Action1<float>::Action1(const Action1<float>& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Action1(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Action1<float>::Action1(Action1<float>&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Action1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -5058,7 +5093,7 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
-		Plugin::SystemActionSystemSingleConstructor(CppHandle, &Handle, &DelegateHandle);
+		Plugin::SystemActionSystemSingleConstructor(CppHandle, &Handle, &ClassHandle);
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -5074,6 +5109,32 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	Action1<float>::Action1(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		ClassHandle = 0;
+		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemActionSystemSingle(CppHandle);
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	void Action1<float>::operator()(float obj)
+	{
 	}
 	
 	void Action1<float>::Invoke(float obj)
@@ -5092,7 +5153,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::ReleaseSystemActionSystemSingle(Handle, DelegateHandle);
+			Plugin::ReleaseSystemActionSystemSingle(Handle, ClassHandle);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5101,13 +5162,14 @@ namespace System
 				delete ex;
 			}
 			Plugin::RemoveSystemActionSystemSingle(CppHandle);
+			ClassHandle = 0;
 			Handle = 0;
 		}
 	}
 	
 	void Action1<float>::operator+=(System::Action1<float>& del)
 	{
-		Plugin::SystemActionSystemSingleAdd(Handle, del.DelegateHandle);
+		Plugin::SystemActionSystemSingleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5119,7 +5181,7 @@ namespace System
 	
 	void Action1<float>::operator-=(System::Action1<float>& del)
 	{
-		Plugin::SystemActionSystemSingleRemove(Handle, del.DelegateHandle);
+		Plugin::SystemActionSystemSingleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5138,30 +5200,17 @@ namespace System
 namespace System
 {
 	Action2<float, float>::Action2(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Action2(Plugin::InternalUse::Only, 0)
 	{
-	}
-	
-	Action2<float, float>::Action2(Plugin::InternalUse iu, int32_t handle)
-		: System::Object(iu, handle)
-	{
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-		}
 	}
 	
 	Action2<float, float>::Action2(const Action2<float, float>& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Action2(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Action2<float, float>::Action2(Action2<float, float>&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Action2(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -5218,7 +5267,7 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
-		Plugin::SystemActionSystemSingle_SystemSingleConstructor(CppHandle, &Handle, &DelegateHandle);
+		Plugin::SystemActionSystemSingle_SystemSingleConstructor(CppHandle, &Handle, &ClassHandle);
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -5234,6 +5283,32 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	Action2<float, float>::Action2(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		ClassHandle = 0;
+		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemActionSystemSingle_SystemSingle(CppHandle);
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	void Action2<float, float>::operator()(float arg1, float arg2)
+	{
 	}
 	
 	void Action2<float, float>::Invoke(float arg1, float arg2)
@@ -5252,7 +5327,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::ReleaseSystemActionSystemSingle_SystemSingle(Handle, DelegateHandle);
+			Plugin::ReleaseSystemActionSystemSingle_SystemSingle(Handle, ClassHandle);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5261,13 +5336,14 @@ namespace System
 				delete ex;
 			}
 			Plugin::RemoveSystemActionSystemSingle_SystemSingle(CppHandle);
+			ClassHandle = 0;
 			Handle = 0;
 		}
 	}
 	
 	void Action2<float, float>::operator+=(System::Action2<float, float>& del)
 	{
-		Plugin::SystemActionSystemSingle_SystemSingleAdd(Handle, del.DelegateHandle);
+		Plugin::SystemActionSystemSingle_SystemSingleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5279,7 +5355,7 @@ namespace System
 	
 	void Action2<float, float>::operator-=(System::Action2<float, float>& del)
 	{
-		Plugin::SystemActionSystemSingle_SystemSingleRemove(Handle, del.DelegateHandle);
+		Plugin::SystemActionSystemSingle_SystemSingleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5298,30 +5374,17 @@ namespace System
 namespace System
 {
 	Func3<int32_t, float, double>::Func3(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Func3(Plugin::InternalUse::Only, 0)
 	{
-	}
-	
-	Func3<int32_t, float, double>::Func3(Plugin::InternalUse iu, int32_t handle)
-		: System::Object(iu, handle)
-	{
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-		}
 	}
 	
 	Func3<int32_t, float, double>::Func3(const Func3<int32_t, float, double>& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Func3(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Func3<int32_t, float, double>::Func3(Func3<int32_t, float, double>&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Func3(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -5378,7 +5441,7 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
-		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(CppHandle, &Handle, &DelegateHandle);
+		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(CppHandle, &Handle, &ClassHandle);
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -5394,6 +5457,33 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	Func3<int32_t, float, double>::Func3(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		ClassHandle = 0;
+		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemFuncSystemInt32_SystemSingle_SystemDouble(CppHandle);
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	double Func3<int32_t, float, double>::operator()(int32_t arg1, float arg2)
+	{
+		return {};
 	}
 	
 	double Func3<int32_t, float, double>::Invoke(int32_t arg1, float arg2)
@@ -5413,7 +5503,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble(Handle, DelegateHandle);
+			Plugin::ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble(Handle, ClassHandle);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5422,13 +5512,14 @@ namespace System
 				delete ex;
 			}
 			Plugin::RemoveSystemFuncSystemInt32_SystemSingle_SystemDouble(CppHandle);
+			ClassHandle = 0;
 			Handle = 0;
 		}
 	}
 	
 	void Func3<int32_t, float, double>::operator+=(System::Func3<int32_t, float, double>& del)
 	{
-		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd(Handle, del.DelegateHandle);
+		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5440,7 +5531,7 @@ namespace System
 	
 	void Func3<int32_t, float, double>::operator-=(System::Func3<int32_t, float, double>& del)
 	{
-		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove(Handle, del.DelegateHandle);
+		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5459,30 +5550,17 @@ namespace System
 namespace System
 {
 	Func3<int16_t, int32_t, System::String>::Func3(std::nullptr_t n)
-		: System::Object(nullptr)
+		: Func3(Plugin::InternalUse::Only, 0)
 	{
-	}
-	
-	Func3<int16_t, int32_t, System::String>::Func3(Plugin::InternalUse iu, int32_t handle)
-		: System::Object(iu, handle)
-	{
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-		}
 	}
 	
 	Func3<int16_t, int32_t, System::String>::Func3(const Func3<int16_t, int32_t, System::String>& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Func3(Plugin::InternalUse::Only, other.Handle)
 	{
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
 	}
 	
 	Func3<int16_t, int32_t, System::String>::Func3(Func3<int16_t, int32_t, System::String>&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
+		: Func3(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
 	}
@@ -5539,7 +5617,7 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
-		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(CppHandle, &Handle, &DelegateHandle);
+		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(CppHandle, &Handle, &ClassHandle);
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -5555,6 +5633,33 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	Func3<int16_t, int32_t, System::String>::Func3(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		ClassHandle = 0;
+		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemFuncSystemInt16_SystemInt32_SystemString(CppHandle);
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	System::String Func3<int16_t, int32_t, System::String>::operator()(int16_t arg1, int32_t arg2)
+	{
+		return {};
 	}
 	
 	System::String Func3<int16_t, int32_t, System::String>::Invoke(int16_t arg1, int32_t arg2)
@@ -5574,7 +5679,7 @@ namespace System
 	{
 		if (Handle)
 		{
-			Plugin::ReleaseSystemFuncSystemInt16_SystemInt32_SystemString(Handle, DelegateHandle);
+			Plugin::ReleaseSystemFuncSystemInt16_SystemInt32_SystemString(Handle, ClassHandle);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5583,13 +5688,14 @@ namespace System
 				delete ex;
 			}
 			Plugin::RemoveSystemFuncSystemInt16_SystemInt32_SystemString(CppHandle);
+			ClassHandle = 0;
 			Handle = 0;
 		}
 	}
 	
 	void Func3<int16_t, int32_t, System::String>::operator+=(System::Func3<int16_t, int32_t, System::String>& del)
 	{
-		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd(Handle, del.DelegateHandle);
+		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5601,7 +5707,7 @@ namespace System
 	
 	void Func3<int16_t, int32_t, System::String>::operator-=(System::Func3<int16_t, int32_t, System::String>& del)
 	{
-		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringRemove(Handle, del.DelegateHandle);
+		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5614,6 +5720,180 @@ namespace System
 	DLLEXPORT int32_t SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke(int32_t cppHandle, int16_t arg1, int32_t arg2)
 	{
 		return (*Plugin::GetSystemFuncSystemInt16_SystemInt32_SystemString(cppHandle))(arg1, arg2).Handle;
+	}
+}
+
+namespace System
+{
+	AppDomainInitializer::AppDomainInitializer(std::nullptr_t n)
+		: AppDomainInitializer(Plugin::InternalUse::Only, 0)
+	{
+	}
+	
+	AppDomainInitializer::AppDomainInitializer(const AppDomainInitializer& other)
+		: AppDomainInitializer(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	AppDomainInitializer::AppDomainInitializer(AppDomainInitializer&& other)
+		: AppDomainInitializer(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	AppDomainInitializer& AppDomainInitializer::operator=(const AppDomainInitializer& other)
+	{
+		if (this->Handle != other.Handle)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+		}
+		return *this;
+	}
+	
+	AppDomainInitializer& AppDomainInitializer::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	AppDomainInitializer& AppDomainInitializer::operator=(AppDomainInitializer&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool AppDomainInitializer::operator==(const AppDomainInitializer& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool AppDomainInitializer::operator!=(const AppDomainInitializer& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	AppDomainInitializer::AppDomainInitializer()
+		 : System::Object(nullptr)
+	{
+		CppHandle = Plugin::StoreSystemAppDomainInitializer(this);
+		Plugin::SystemAppDomainInitializerConstructor(CppHandle, &Handle, &ClassHandle);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemAppDomainInitializer(CppHandle);
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	AppDomainInitializer::AppDomainInitializer(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		ClassHandle = 0;
+		CppHandle = Plugin::StoreSystemAppDomainInitializer(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemAppDomainInitializer(CppHandle);
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	void AppDomainInitializer::operator()(System::Array1<System::String> args)
+	{
+	}
+	
+	void AppDomainInitializer::Invoke(System::Array1<System::String> args)
+	{
+		Plugin::SystemAppDomainInitializerInvoke(Handle, args.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	AppDomainInitializer::~AppDomainInitializer()
+	{
+		if (Handle)
+		{
+			Plugin::ReleaseSystemAppDomainInitializer(Handle, ClassHandle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			Plugin::RemoveSystemAppDomainInitializer(CppHandle);
+			ClassHandle = 0;
+			Handle = 0;
+		}
+	}
+	
+	void AppDomainInitializer::operator+=(System::AppDomainInitializer& del)
+	{
+		Plugin::SystemAppDomainInitializerAdd(Handle, del.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	void AppDomainInitializer::operator-=(System::AppDomainInitializer& del)
+	{
+		Plugin::SystemAppDomainInitializerRemove(Handle, del.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	DLLEXPORT void SystemAppDomainInitializerCppInvoke(int32_t cppHandle, int32_t argsHandle)
+	{
+		(*Plugin::GetSystemAppDomainInitializer(cppHandle))(System::Array1<System::String>(Plugin::InternalUse::Only, argsHandle));
 	}
 }
 
@@ -5722,6 +6002,9 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGradientConstructor)(),
 	int32_t (*unityEngineGradientPropertyGetColorKeys)(int32_t thisHandle),
 	void (*unityEngineGradientPropertySetColorKeys)(int32_t thisHandle, int32_t valueHandle),
+	int32_t (*systemAppDomainSetupConstructor)(),
+	int32_t (*systemAppDomainSetupPropertyGetAppDomainInitializer)(int32_t thisHandle),
+	void (*systemAppDomainSetupPropertySetAppDomainInitializer)(int32_t thisHandle, int32_t valueHandle),
 	int32_t (*systemInt32Array1Constructor1)(int32_t length0),
 	int32_t (*systemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*systemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item),
@@ -5748,31 +6031,36 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGradientColorKeyArray1Constructor1)(int32_t length0),
 	UnityEngine::GradientColorKey (*unityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*unityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item),
-	void (*releaseSystemAction)(int32_t handle, int32_t delegateHandle),
-	void (*systemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle),
+	void (*releaseSystemAction)(int32_t handle, int32_t classHandle),
+	void (*systemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*systemActionInvoke)(int32_t thisHandle),
 	void (*systemActionAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemActionRemove)(int32_t thisHandle, int32_t delHandle),
-	void (*releaseSystemActionSystemSingle)(int32_t handle, int32_t delegateHandle),
-	void (*systemActionSystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle),
+	void (*releaseSystemActionSystemSingle)(int32_t handle, int32_t classHandle),
+	void (*systemActionSystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*systemActionSystemSingleInvoke)(int32_t thisHandle, float obj),
 	void (*systemActionSystemSingleAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemActionSystemSingleRemove)(int32_t thisHandle, int32_t delHandle),
-	void (*releaseSystemActionSystemSingle_SystemSingle)(int32_t handle, int32_t delegateHandle),
-	void (*systemActionSystemSingle_SystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle),
+	void (*releaseSystemActionSystemSingle_SystemSingle)(int32_t handle, int32_t classHandle),
+	void (*systemActionSystemSingle_SystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*systemActionSystemSingle_SystemSingleInvoke)(int32_t thisHandle, float arg1, float arg2),
 	void (*systemActionSystemSingle_SystemSingleAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemActionSystemSingle_SystemSingleRemove)(int32_t thisHandle, int32_t delHandle),
-	void (*releaseSystemFuncSystemInt32_SystemSingle_SystemDouble)(int32_t handle, int32_t delegateHandle),
-	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle),
+	void (*releaseSystemFuncSystemInt32_SystemSingle_SystemDouble)(int32_t handle, int32_t classHandle),
+	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	double (*systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2),
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleRemove)(int32_t thisHandle, int32_t delHandle),
-	void (*releaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t delegateHandle),
-	void (*systemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* delegateHandle),
+	void (*releaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t classHandle),
+	void (*systemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	int32_t (*systemFuncSystemInt16_SystemInt32_SystemStringInvoke)(int32_t thisHandle, int16_t arg1, int32_t arg2),
 	void (*systemFuncSystemInt16_SystemInt32_SystemStringAdd)(int32_t thisHandle, int32_t delHandle),
-	void (*systemFuncSystemInt16_SystemInt32_SystemStringRemove)(int32_t thisHandle, int32_t delHandle)
+	void (*systemFuncSystemInt16_SystemInt32_SystemStringRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*releaseSystemAppDomainInitializer)(int32_t handle, int32_t classHandle),
+	void (*systemAppDomainInitializerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
+	void (*systemAppDomainInitializerInvoke)(int32_t thisHandle, int32_t argsHandle),
+	void (*systemAppDomainInitializerAdd)(int32_t thisHandle, int32_t delHandle),
+	void (*systemAppDomainInitializerRemove)(int32_t thisHandle, int32_t delHandle)
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;
@@ -5852,6 +6140,9 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineGradientConstructor = unityEngineGradientConstructor;
 	Plugin::UnityEngineGradientPropertyGetColorKeys = unityEngineGradientPropertyGetColorKeys;
 	Plugin::UnityEngineGradientPropertySetColorKeys = unityEngineGradientPropertySetColorKeys;
+	Plugin::SystemAppDomainSetupConstructor = systemAppDomainSetupConstructor;
+	Plugin::SystemAppDomainSetupPropertyGetAppDomainInitializer = systemAppDomainSetupPropertyGetAppDomainInitializer;
+	Plugin::SystemAppDomainSetupPropertySetAppDomainInitializer = systemAppDomainSetupPropertySetAppDomainInitializer;
 	Plugin::SystemInt32Array1Constructor1 = systemInt32Array1Constructor1;
 	Plugin::SystemInt32Array1GetItem1 = systemInt32Array1GetItem1;
 	Plugin::SystemInt32Array1SetItem1 = systemInt32Array1SetItem1;
@@ -5943,6 +6234,19 @@ DLLEXPORT void Init(
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringInvoke = systemFuncSystemInt16_SystemInt32_SystemStringInvoke;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd = systemFuncSystemInt16_SystemInt32_SystemStringAdd;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringRemove = systemFuncSystemInt16_SystemInt32_SystemStringRemove;
+	SystemAppDomainInitializerFreeListSize = maxManagedObjects;
+	SystemAppDomainInitializerFreeList = new System::AppDomainInitializer*[SystemAppDomainInitializerFreeListSize];
+	for (int32_t i = 0, end = SystemAppDomainInitializerFreeListSize - 1; i < end; ++i)
+	{
+		SystemAppDomainInitializerFreeList[i] = (System::AppDomainInitializer*)(SystemAppDomainInitializerFreeList + i + 1);
+	}
+	SystemAppDomainInitializerFreeList[SystemAppDomainInitializerFreeListSize - 1] = nullptr;
+	NextFreeSystemAppDomainInitializer = SystemAppDomainInitializerFreeList + 1;
+	Plugin::ReleaseSystemAppDomainInitializer = releaseSystemAppDomainInitializer;
+	Plugin::SystemAppDomainInitializerConstructor = systemAppDomainInitializerConstructor;
+	Plugin::SystemAppDomainInitializerInvoke = systemAppDomainInitializerInvoke;
+	Plugin::SystemAppDomainInitializerAdd = systemAppDomainInitializerAdd;
+	Plugin::SystemAppDomainInitializerRemove = systemAppDomainInitializerRemove;
 	/*END INIT BODY*/
 	
 	try

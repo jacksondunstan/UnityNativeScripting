@@ -58,6 +58,17 @@ struct FuncReturningString : System::Func3<int16_t, int32_t, String>
 	}
 };
 
+struct MyAppDomainInitializer : AppDomainInitializer
+{
+	void operator()(System::Array1<System::String> args) override
+	{
+		for (int i = 0, len = args.GetLength(); i < len; ++i)
+		{
+			Debug::Log(args.GetItem(i));
+		}
+	}
+};
+
 // Called when the plugin is initialized
 // This is mostly full of test code. Feel free to remove it all.
 void PluginMain()
@@ -88,6 +99,13 @@ void PluginMain()
 	
 	PlainAction pa;
 	pa.Invoke();
+	
+	MyAppDomainInitializer madi;
+	AppDomainSetup ads;
+	ads.SetAppDomainInitializer(madi);
+	Array1<String> invokeParams(1);
+	invokeParams.SetItem(0, "Hello");
+	ads.GetAppDomainInitializer().Invoke(invokeParams);
 	
 	GameObject go(String("GameObject with a TestScript"));
 	go.AddComponent<MyGame::MonoBehaviours::TestScript>();
