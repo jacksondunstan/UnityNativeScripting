@@ -185,10 +185,12 @@ The code generator supports:
 * Exceptions
 * Overloaded operators
 * Arrays (single- and multi-dimensional)
+* Delegates
 
 The code generator does not support (yet):
 
-* Delegates
+* Events
+* Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
 * `Array` methods (e.g. `IndexOf`)
 * Default parameters
