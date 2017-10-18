@@ -79,20 +79,20 @@ While IL2CPP transforms C# into C++ already, it generates a lot of overhead. The
 * Platform-dependent compilation via the [usual flags](https://docs.unity3d.com/Manual/PlatformDependentCompilation.html) (e.g. `#if UNITY_EDITOR`)
 * [CMake](https://cmake.org/) build system sets up any IDE project or command-line build
 * Code generator exposes any C# API (Unity, .NET, custom DLLs) with a simple JSON config file and runs from a menu in the Unity editor. It supports a wide range of features:
- * Class types
- * Struct types
- * Enumeration types
- * Base classes
- * Constructors
- * Methods
- * Fields
- * Properties (getters and setters)
- * `MonoBehaviour` classes with "message" functions like `Update`
- * `out` and `ref` parameters
- * Exceptions
- * Overloaded operators
- * Arrays (single- and multi-dimensional)
- * Delegates
+    * Class types
+    * Struct types
+    * Enumeration types
+    * Base classes
+    * Constructors
+    * Methods
+    * Fields
+    * Properties (getters and setters)
+    * `MonoBehaviour` classes with "message" functions like `Update`
+    * `out` and `ref` parameters
+    * Exceptions
+    * Overloaded operators
+    * Arrays (single- and multi-dimensional)
+    * Delegates
 
 # Performance
 
