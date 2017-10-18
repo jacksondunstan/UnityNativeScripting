@@ -33,6 +33,8 @@ A significant amount of effort is required to work around the GC and the resulti
 
 C++ has no required garbage collector and features optional automatic memory management via "smart pointer" types like [shared_ptr](http://en.cppreference.com/w/cpp/memory/shared_ptr). It offers excellent alternatives to Unity's primitive garbage collector.
 
+While using some .NET APIs will still involve garbage creation, the problem is contained to only those APIs rather than being a pervasive issue for all your code.
+
 ## Total Control
 
 By using C++ directly, you gain complete control over the code the CPU will execute. It's much easier to generate optimal code with a C++ compiler than with a C# compiler, IL2CPP, and finally a C++ compiler. Cut out the middle-man and you can take advantage of compiler intrinsics or assembly to directly write machine code using powerful CPU features like [SIMD](http://jacksondunstan.com/articles/3890) and hardware AES encryption for massive performance gains.
@@ -66,7 +68,6 @@ While IL2CPP transforms C# into C++ already, it generates a lot of overhead. The
 	transform.SetPosition(position);
 
 * No need to reload the Unity editor when changing C++
-* Code generator exposes any C# API (Unity, .NET, custom DLLs) with a simple JSON config file
 * Handle `MonoBehaviour` messages in C++
 
 >
@@ -77,12 +78,27 @@ While IL2CPP transforms C# into C++ already, it generates a lot of overhead. The
 
 * Platform-dependent compilation via the [usual flags](https://docs.unity3d.com/Manual/PlatformDependentCompilation.html) (e.g. `#if UNITY_EDITOR`)
 * [CMake](https://cmake.org/) build system sets up any IDE project or command-line build
+* Code generator exposes any C# API (Unity, .NET, custom DLLs) with a simple JSON config file and runs from a menu in the Unity editor. It supports a wide range of features:
+ * Class types
+ * Struct types
+ * Enumeration types
+ * Base classes
+ * Constructors
+ * Methods
+ * Fields
+ * Properties (getters and setters)
+ * `MonoBehaviour` classes with "message" functions like `Update`
+ * `out` and `ref` parameters
+ * Exceptions
+ * Overloaded operators
+ * Arrays (single- and multi-dimensional)
+ * Delegates
 
 # Performance
 
-[Article](http://jacksondunstan.com/articles/3952).
+Most projects will see a net performance win by reducing garbage collection, eliminating IL2CPP overhead, and access to compiler intrinsics and assembly. Calls from C++ into C# incur a minor performance penalty, so if most of your code is calls to .NET APIs then you may experience a net performance loss.
 
-tl;dr - Most projects will not be noticeably impacted by C++ overhead and many projects will benefit from reducing garbage collection, eliminating IL2CPP overhead, and access to compiler intrinsics and assembly.
+For testing and benchmarks, see this [article](http://jacksondunstan.com/articles/3952).
 
 # Project Structure
 
@@ -170,24 +186,7 @@ To run the code generator, choose `NativeScript > Generate Bindings` from the Un
 
 To configure the code generator, open `NativeScriptTypes.json` and notice the existing examples. Add on to this file to expose more C# APIs from Unity, .NET, or custom DLLs to your C++ code.
 
-The code generator supports:
-
-* Class types (including generics)
-* Struct types (including generics)
-* Base classes (including generics)
-* Constructors (including generic parameters)
-* Methods (including generic parameters and return types)
-* Fields (including generic types)
-* Properties (getters and setters) (including generic types)
-* `MonoBehaviour` classes with "message" functions like `Update`
-* `out` and `ref` parameters
-* Enumerations
-* Exceptions
-* Overloaded operators
-* Arrays (single- and multi-dimensional)
-* Delegates
-
-The code generator does not support (yet):
+Note that the code generator does not support (yet):
 
 * Events
 * Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
@@ -196,7 +195,7 @@ The code generator does not support (yet):
 * Default parameters
 * Interfaces
 * `decimal`
-* Pointers
+* C# pointers
 
 # Updating To A New Version
 
