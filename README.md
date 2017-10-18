@@ -17,7 +17,7 @@ This project aims to give you a viable alternative to C#. Scripting in C++ isn't
 
 ## Fast Compile Times
 
-C++ compiles much more quickly than C#. Moderate size projects typically take 10+ seconds to compile in C# but only about 1 second to compile in C++. Faster compilation adds up over time to productivity gains. Quicker iteration times make it easier to stay in the "flow" of programming.
+C++ [compiles much more quickly](https://github.com/jacksondunstan/cscppcompiletimes) than C#. Incremental builds when just one file changes-- the most common builds-- can be 15x faster than with C#. Faster compilation adds up over time to productivity gains. Quicker iteration times make it easier to stay in the "flow" of programming.
 
 ## Fast Device Build Times
 
