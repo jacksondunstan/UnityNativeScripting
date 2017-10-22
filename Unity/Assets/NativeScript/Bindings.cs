@@ -340,6 +340,10 @@ namespace NativeScript
 			IntPtr systemAppDomainSetupConstructor,
 			IntPtr systemAppDomainSetupPropertyGetAppDomainInitializer,
 			IntPtr systemAppDomainSetupPropertySetAppDomainInitializer,
+			IntPtr unityEngineApplicationAddEventOnBeforeRender,
+			IntPtr unityEngineApplicationRemoveEventOnBeforeRender,
+			IntPtr unityEngineSceneManagementSceneManagerAddEventSceneLoaded,
+			IntPtr unityEngineSceneManagementSceneManagerRemoveEventSceneLoaded,
 			IntPtr systemInt32Array1Constructor1,
 			IntPtr systemInt32Array1GetItem1,
 			IntPtr systemInt32Array1SetItem1,
@@ -395,7 +399,17 @@ namespace NativeScript
 			IntPtr systemAppDomainInitializerConstructor,
 			IntPtr systemAppDomainInitializerInvoke,
 			IntPtr systemAppDomainInitializerAdd,
-			IntPtr systemAppDomainInitializerRemove
+			IntPtr systemAppDomainInitializerRemove,
+			IntPtr releaseUnityEngineEventsUnityAction,
+			IntPtr unityEngineEventsUnityActionConstructor,
+			IntPtr unityEngineEventsUnityActionInvoke,
+			IntPtr unityEngineEventsUnityActionAdd,
+			IntPtr unityEngineEventsUnityActionRemove,
+			IntPtr releaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove
 			/*END INIT PARAMS*/);
 		
 		public delegate void SetCsharpExceptionDelegate(int handle);
@@ -430,6 +444,12 @@ namespace NativeScript
 		
 		public delegate void SystemAppDomainInitializerCppInvokeDelegate(int thisHandle, int param0);
 		public static SystemAppDomainInitializerCppInvokeDelegate SystemAppDomainInitializerCppInvoke;
+		
+		public delegate void UnityEngineEventsUnityActionCppInvokeDelegate(int thisHandle);
+		public static UnityEngineEventsUnityActionCppInvokeDelegate UnityEngineEventsUnityActionCppInvoke;
+		
+		public delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvokeDelegate(int thisHandle, UnityEngine.SceneManagement.Scene param0, UnityEngine.SceneManagement.LoadSceneMode param1);
+		public static UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvokeDelegate UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke;
 		
 		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegate(int param0);
 		public static SetCsharpExceptionSystemNullReferenceExceptionDelegate SetCsharpExceptionSystemNullReferenceException;
@@ -598,6 +618,10 @@ namespace NativeScript
 			IntPtr systemAppDomainSetupConstructor,
 			IntPtr systemAppDomainSetupPropertyGetAppDomainInitializer,
 			IntPtr systemAppDomainSetupPropertySetAppDomainInitializer,
+			IntPtr unityEngineApplicationAddEventOnBeforeRender,
+			IntPtr unityEngineApplicationRemoveEventOnBeforeRender,
+			IntPtr unityEngineSceneManagementSceneManagerAddEventSceneLoaded,
+			IntPtr unityEngineSceneManagementSceneManagerRemoveEventSceneLoaded,
 			IntPtr systemInt32Array1Constructor1,
 			IntPtr systemInt32Array1GetItem1,
 			IntPtr systemInt32Array1SetItem1,
@@ -653,7 +677,17 @@ namespace NativeScript
 			IntPtr systemAppDomainInitializerConstructor,
 			IntPtr systemAppDomainInitializerInvoke,
 			IntPtr systemAppDomainInitializerAdd,
-			IntPtr systemAppDomainInitializerRemove
+			IntPtr systemAppDomainInitializerRemove,
+			IntPtr releaseUnityEngineEventsUnityAction,
+			IntPtr unityEngineEventsUnityActionConstructor,
+			IntPtr unityEngineEventsUnityActionInvoke,
+			IntPtr unityEngineEventsUnityActionAdd,
+			IntPtr unityEngineEventsUnityActionRemove,
+			IntPtr releaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove
 			/*END INIT PARAMS*/);
 		
 		[DllImport(PluginName)]
@@ -689,6 +723,12 @@ namespace NativeScript
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SystemAppDomainInitializerCppInvoke(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void UnityEngineEventsUnityActionCppInvoke(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke(int thisHandle, UnityEngine.SceneManagement.Scene param0, int param1);
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle, int param0);
@@ -767,6 +807,10 @@ namespace NativeScript
 		delegate int SystemAppDomainSetupConstructorDelegate();
 		delegate int SystemAppDomainSetupPropertyGetAppDomainInitializerDelegate(int thisHandle);
 		delegate void SystemAppDomainSetupPropertySetAppDomainInitializerDelegate(int thisHandle, int valueHandle);
+		delegate void UnityEngineApplicationAddEventOnBeforeRenderDelegate(int delHandle);
+		delegate void UnityEngineApplicationRemoveEventOnBeforeRenderDelegate(int delHandle);
+		delegate void UnityEngineSceneManagementSceneManagerAddEventSceneLoadedDelegate(int delHandle);
+		delegate void UnityEngineSceneManagementSceneManagerRemoveEventSceneLoadedDelegate(int delHandle);
 		delegate int SystemInt32Array1Constructor1Delegate(int length0);
 		delegate int SystemInt32Array1GetItem1Delegate(int thisHandle, int index0);
 		delegate void SystemInt32Array1SetItem1Delegate(int thisHandle, int index0, int item);
@@ -823,6 +867,16 @@ namespace NativeScript
 		delegate void SystemAppDomainInitializerInvokeDelegate(int thisHandle, int argsHandle);
 		delegate void SystemAppDomainInitializerAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemAppDomainInitializerRemoveDelegate(int thisHandle, int delHandle);
+		delegate void UnityEngineEventsUnityActionConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseUnityEngineEventsUnityActionDelegate(int handle, int classHandle);
+		delegate void UnityEngineEventsUnityActionInvokeDelegate(int thisHandle);
+		delegate void UnityEngineEventsUnityActionAddDelegate(int thisHandle, int delHandle);
+		delegate void UnityEngineEventsUnityActionRemoveDelegate(int thisHandle, int delHandle);
+		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeDelegate(int handle, int classHandle);
+		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(int thisHandle, ref UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1);
+		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAddDelegate(int thisHandle, int delHandle);
+		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate(int thisHandle, int delHandle);
 		/*END DELEGATE TYPES*/
 		
 		public static Exception UnhandledCppException;
@@ -867,6 +921,8 @@ namespace NativeScript
 			SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke = GetDelegate<SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvokeDelegate>(libraryHandle, "SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke");
 			SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke = GetDelegate<SystemFuncSystemInt16_SystemInt32_SystemStringCppInvokeDelegate>(libraryHandle, "SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke");
 			SystemAppDomainInitializerCppInvoke = GetDelegate<SystemAppDomainInitializerCppInvokeDelegate>(libraryHandle, "SystemAppDomainInitializerCppInvoke");
+			UnityEngineEventsUnityActionCppInvoke = GetDelegate<UnityEngineEventsUnityActionCppInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionCppInvoke");
+			UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke = GetDelegate<UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke");
 			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegate>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
@@ -946,6 +1002,10 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainSetupConstructorDelegate(SystemAppDomainSetupConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainSetupPropertyGetAppDomainInitializerDelegate(SystemAppDomainSetupPropertyGetAppDomainInitializer)),
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainSetupPropertySetAppDomainInitializerDelegate(SystemAppDomainSetupPropertySetAppDomainInitializer)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineApplicationAddEventOnBeforeRenderDelegate(UnityEngineApplicationAddEventOnBeforeRender)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineApplicationRemoveEventOnBeforeRenderDelegate(UnityEngineApplicationRemoveEventOnBeforeRender)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineSceneManagementSceneManagerAddEventSceneLoadedDelegate(UnityEngineSceneManagementSceneManagerAddEventSceneLoaded)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineSceneManagementSceneManagerRemoveEventSceneLoadedDelegate(UnityEngineSceneManagementSceneManagerRemoveEventSceneLoaded)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1Constructor1Delegate(SystemInt32Array1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1GetItem1Delegate(SystemInt32Array1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1SetItem1Delegate(SystemInt32Array1SetItem1)),
@@ -1001,7 +1061,17 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerConstructorDelegate(SystemAppDomainInitializerConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerInvokeDelegate(SystemAppDomainInitializerInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerAddDelegate(SystemAppDomainInitializerAdd)),
-				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerRemoveDelegate(SystemAppDomainInitializerRemove))
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerRemoveDelegate(SystemAppDomainInitializerRemove)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEngineEventsUnityActionDelegate(ReleaseUnityEngineEventsUnityAction)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionConstructorDelegate(UnityEngineEventsUnityActionConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionInvokeDelegate(UnityEngineEventsUnityActionInvoke)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionAddDelegate(UnityEngineEventsUnityActionAdd)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionRemoveDelegate(UnityEngineEventsUnityActionRemove)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeDelegate(ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructorDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAddDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove))
 				/*END INIT CALL*/
 				);
 			if (UnhandledCppException != null)
@@ -2476,6 +2546,86 @@ namespace NativeScript
 			}
 		}
 		
+		[MonoPInvokeCallback(typeof(UnityEngineApplicationAddEventOnBeforeRenderDelegate))]
+		static void UnityEngineApplicationAddEventOnBeforeRender(int delHandle)
+		{
+			try
+			{
+				var del = (UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				UnityEngine.Application.onBeforeRender += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineApplicationRemoveEventOnBeforeRenderDelegate))]
+		static void UnityEngineApplicationRemoveEventOnBeforeRender(int delHandle)
+		{
+			try
+			{
+				var del = (UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				UnityEngine.Application.onBeforeRender += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineSceneManagementSceneManagerAddEventSceneLoadedDelegate))]
+		static void UnityEngineSceneManagementSceneManagerAddEventSceneLoaded(int delHandle)
+		{
+			try
+			{
+				var del = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				UnityEngine.SceneManagement.SceneManager.sceneLoaded += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineSceneManagementSceneManagerRemoveEventSceneLoadedDelegate))]
+		static void UnityEngineSceneManagementSceneManagerRemoveEventSceneLoaded(int delHandle)
+		{
+			try
+			{
+				var del = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				UnityEngine.SceneManagement.SceneManager.sceneLoaded += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(SystemInt32Array1Constructor1Delegate))]
 		static int SystemInt32Array1Constructor1(int length0)
 		{
@@ -3840,6 +3990,272 @@ namespace NativeScript
 			{
 				var thiz = (System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz -= del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		class UnityEngineEventsUnityAction
+		{
+			public int CppHandle;
+			public UnityEngine.Events.UnityAction Delegate;
+			
+			public UnityEngineEventsUnityAction(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = Invoke;
+			}
+			
+			public void Invoke()
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.UnityEngineEventsUnityActionCppInvoke(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionConstructorDelegate))]
+		static void UnityEngineEventsUnityActionConstructor(int cppHandle, ref int handle, ref int classHandle)
+		{
+			try
+			{
+				var thiz = new UnityEngineEventsUnityAction(cppHandle);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseUnityEngineEventsUnityActionDelegate))]
+		static void ReleaseUnityEngineEventsUnityAction(int handle, int classHandle)
+		{
+			try
+			{
+				if (classHandle != 0)
+				{
+					var thiz = (UnityEngineEventsUnityAction)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionInvokeDelegate))]
+		static void UnityEngineEventsUnityActionInvoke(int thisHandle)
+		{
+			try
+			{
+				((UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(thisHandle))();
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionAddDelegate))]
+		static void UnityEngineEventsUnityActionAdd(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionRemoveDelegate))]
+		static void UnityEngineEventsUnityActionRemove(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz -= del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		class UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode
+		{
+			public int CppHandle;
+			public UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode> Delegate;
+			
+			public UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = Invoke;
+			}
+			
+			public void Invoke(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke(thisHandle, arg0, arg1);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructorDelegate))]
+		static void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor(int cppHandle, ref int handle, ref int classHandle)
+		{
+			try
+			{
+				var thiz = new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(cppHandle);
+				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeDelegate))]
+		static void ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(int handle, int classHandle)
+		{
+			try
+			{
+				if (classHandle != 0)
+				{
+					var thiz = (UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate))]
+		static void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(int thisHandle, ref UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
+		{
+			try
+			{
+				((UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg0, arg1);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAddDelegate))]
+		static void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate))]
+		static void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(delHandle);
 				thiz -= del;
 			}
 			catch (System.NullReferenceException ex)

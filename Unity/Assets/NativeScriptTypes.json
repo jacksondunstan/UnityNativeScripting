@@ -505,6 +505,28 @@
 					"Set": {}
 				}
 			]
+		},
+		{
+			"Name": "UnityEngine.Application",
+			"Events": [
+				{
+					"Name": "onBeforeRender"
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.SceneManagement.SceneManager",
+			"Events": [
+				{
+					"Name": "sceneLoaded"
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.SceneManagement.Scene"
+		},
+		{
+			"Name": "UnityEngine.SceneManagement.LoadSceneMode"
 		}
 	],
 	"MonoBehaviours": [
@@ -588,6 +610,21 @@
 		},
 		{
 			"Type": "System.AppDomainInitializer"
+		},
+		{
+			"Type": "UnityEngine.Events.UnityAction"
+		},
+		{
+			"Type": "UnityEngine.Events.UnityAction`2",
+			"GenericParams": [
+				{
+					"Types": [
+						"UnityEngine.SceneManagement.Scene",
+						"UnityEngine.SceneManagement.LoadSceneMode"
+					],
+					"MaxSimultaneous": 10
+				}
+			]
 		}
 	]
 }

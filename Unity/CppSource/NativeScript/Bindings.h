@@ -481,6 +481,39 @@ namespace System
 	struct AppDomainSetup;
 }
 
+namespace UnityEngine
+{
+	struct Application;
+}
+
+namespace UnityEngine
+{
+	namespace SceneManagement
+	{
+		struct SceneManager;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace SceneManagement
+	{
+		struct Scene;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace SceneManagement
+	{
+		enum struct LoadSceneMode : int32_t
+		{
+			Single = 0,
+			Additive = 1
+		};
+	}
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -577,6 +610,30 @@ namespace System
 namespace System
 {
 	struct AppDomainInitializer;
+}
+
+namespace UnityEngine
+{
+	namespace Events
+	{
+		struct UnityAction;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Events
+	{
+		template<typename T0, typename T1> struct UnityAction2;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Events
+	{
+		template<> struct UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>;
+	}
 }
 /*END TYPE DECLARATIONS*/
 
@@ -1199,6 +1256,59 @@ namespace System
 	};
 }
 
+namespace UnityEngine
+{
+	struct Application : System::Object
+	{
+		Application(std::nullptr_t n);
+		Application(Plugin::InternalUse iu, int32_t handle);
+		Application(const Application& other);
+		Application(Application&& other);
+		virtual ~Application();
+		Application& operator=(const Application& other);
+		Application& operator=(std::nullptr_t other);
+		Application& operator=(Application&& other);
+		bool operator==(const Application& other) const;
+		bool operator!=(const Application& other) const;
+		static void AddOnBeforeRender(UnityEngine::Events::UnityAction del);
+		static void RemoveOnBeforeRender(UnityEngine::Events::UnityAction del);
+	};
+}
+
+namespace UnityEngine
+{
+	namespace SceneManagement
+	{
+		struct SceneManager : System::Object
+		{
+			SceneManager(std::nullptr_t n);
+			SceneManager(Plugin::InternalUse iu, int32_t handle);
+			SceneManager(const SceneManager& other);
+			SceneManager(SceneManager&& other);
+			virtual ~SceneManager();
+			SceneManager& operator=(const SceneManager& other);
+			SceneManager& operator=(std::nullptr_t other);
+			SceneManager& operator=(SceneManager&& other);
+			bool operator==(const SceneManager& other) const;
+			bool operator!=(const SceneManager& other) const;
+			static void AddSceneLoaded(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode> del);
+			static void RemoveSceneLoaded(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode> del);
+		};
+	}
+}
+
+namespace UnityEngine
+{
+	namespace SceneManagement
+	{
+		struct Scene
+		{
+			Scene();
+			int32_t m_Handle;
+		};
+	}
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -1543,5 +1653,59 @@ namespace System
 		void operator+=(System::AppDomainInitializer& del);
 		void operator-=(System::AppDomainInitializer& del);
 	};
+}
+
+namespace UnityEngine
+{
+	namespace Events
+	{
+		struct UnityAction : System::Object
+		{
+			UnityAction(std::nullptr_t n);
+			UnityAction(Plugin::InternalUse iu, int32_t handle);
+			UnityAction(const UnityAction& other);
+			UnityAction(UnityAction&& other);
+			virtual ~UnityAction();
+			UnityAction& operator=(const UnityAction& other);
+			UnityAction& operator=(std::nullptr_t other);
+			UnityAction& operator=(UnityAction&& other);
+			bool operator==(const UnityAction& other) const;
+			bool operator!=(const UnityAction& other) const;
+			int32_t CppHandle;
+			int32_t ClassHandle;
+			UnityAction();
+			void Invoke();
+			virtual void operator()();
+			void operator+=(UnityEngine::Events::UnityAction& del);
+			void operator-=(UnityEngine::Events::UnityAction& del);
+		};
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Events
+	{
+		template<> struct UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode> : System::Object
+		{
+			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>(std::nullptr_t n);
+			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>(Plugin::InternalUse iu, int32_t handle);
+			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>(const UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& other);
+			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>(UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>&& other);
+			virtual ~UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>();
+			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& operator=(const UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& other);
+			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& operator=(std::nullptr_t other);
+			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& operator=(UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>&& other);
+			bool operator==(const UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& other) const;
+			bool operator!=(const UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& other) const;
+			int32_t CppHandle;
+			int32_t ClassHandle;
+			UnityAction2();
+			void Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+			virtual void operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+			void operator+=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
+			void operator-=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
+		};
+	}
 }
 /*END TYPE DEFINITIONS*/
