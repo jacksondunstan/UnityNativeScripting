@@ -93,6 +93,7 @@ While IL2CPP transforms C# into C++ already, it generates a lot of overhead. The
     * Overloaded operators
     * Arrays (single- and multi-dimensional)
     * Delegates
+    * Events
 
 # Performance
 
@@ -188,7 +189,6 @@ To configure the code generator, open `NativeScriptTypes.json` and notice the ex
 
 Note that the code generator does not support (yet):
 
-* Events
 * Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
 * `Array` methods (e.g. `IndexOf`)
