@@ -164,6 +164,8 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public StringBuilder CppGlobalStateAndFunctions =
 				new StringBuilder(InitialStringBuilderCapacity);
+			public StringBuilder CppBoxingMethodDeclarations =
+				new StringBuilder(InitialStringBuilderCapacity);
 			public StringBuilder TempStrBuilder =
 				new StringBuilder(InitialStringBuilderCapacity);
 		}
@@ -306,6 +308,21 @@ namespace NativeScript
 			new MessageInfo("Reset"),
 			new MessageInfo("Start"),
 			new MessageInfo("Update"),
+		};
+		
+		private static readonly Type[] PRIMITIVE_TYPES = new [] {
+			typeof(bool),
+			typeof(sbyte),
+			typeof(byte),
+			typeof(short),
+			typeof(ushort),
+			typeof(int),
+			typeof(uint),
+			typeof(long),
+			typeof(ulong),
+			typeof(char),
+			typeof(float),
+			typeof(double),
 		};
 		
 		const string PostCompileWorkPref = "NativeScriptGenerateBindingsPostCompileWork";
@@ -509,6 +526,17 @@ namespace NativeScript
 			{
 				AppendType(
 					jsonType,
+					assemblies,
+					builders);
+			}
+			
+			// Generate boxing and unboxing for primitive types
+			foreach (Type type in PRIMITIVE_TYPES)
+			{
+				AppendBoxingUnboxing(
+					type,
+					TypeKind.Primitive,
+					null,
 					assemblies,
 					builders);
 			}
@@ -1147,10 +1175,17 @@ namespace NativeScript
 			StringBuilders builders)
 		{
 			Type type = GetType(jsonType.Name, assemblies);
-			if (type.IsEnum)
+			TypeKind typeKind = GetTypeKind(type);
+			if (typeKind == TypeKind.Enum)
 			{
 				AppendEnum(
 					type,
+					assemblies,
+					builders);
+				AppendBoxingUnboxing(
+					type,
+					typeKind,
+					null,
 					assemblies,
 					builders);
 			}
@@ -1188,6 +1223,15 @@ namespace NativeScript
 							maxSimultaneous,
 							assemblies,
 							builders);
+						if (typeKind != TypeKind.Class)
+						{
+							AppendBoxingUnboxing(
+								genericType,
+								typeKind,
+								typeParams,
+								assemblies,
+								builders);
+						}
 					}
 				}
 				else
@@ -1203,6 +1247,15 @@ namespace NativeScript
 						maxSimultaneous,
 						assemblies,
 						builders);
+					if (typeKind != TypeKind.Class)
+					{
+						AppendBoxingUnboxing(
+							type,
+							typeKind,
+							null,
+							assemblies,
+							builders);
+					}
 				}
 			}
 		}
@@ -1651,6 +1704,362 @@ namespace NativeScript
 				indent,
 				builders.CppTypeDeclarations);
 			builders.CppTypeDeclarations.Append('\n');
+		}
+		
+		static void AppendBoxingUnboxing(
+			Type type,
+			TypeKind typeKind,
+			Type[] typeParams,
+			Assembly[] assemblies,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append("Box");
+			AppendTypeNameWithoutSuffixes(
+				type.Name,
+				builders.TempStrBuilder);
+			AppendTypeNames(
+				typeParams,
+				builders.TempStrBuilder);
+			string boxFuncName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string boxFuncNameLower = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append("Unbox");
+			AppendTypeNameWithoutSuffixes(
+				type.Name,
+				builders.TempStrBuilder);
+			AppendTypeNames(
+				typeParams,
+				builders.TempStrBuilder);
+			string unboxFuncName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string unboxFuncNameLower = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append("operator ");
+			AppendCppTypeName(
+				type,
+				builders.TempStrBuilder);
+			string unboxMethodDefinitionName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append("explicit ");
+			builders.TempStrBuilder.Append(unboxMethodDefinitionName);
+			string unboxMethodDeclarationName = builders.TempStrBuilder.ToString();
+			
+			ParameterInfo[] boxParams = new [] {
+				new ParameterInfo
+				{
+					Name = "val",
+					ParameterType = type,
+					DereferencedParameterType = type,
+					IsOut = false,
+					IsRef = false,
+					Kind = typeKind
+				}
+			};
+			
+			ParameterInfo[] unboxParams = new [] {
+				new ParameterInfo
+				{
+					Name = "val",
+					ParameterType = typeof(object),
+					DereferencedParameterType = typeof(object),
+					IsOut = false,
+					IsRef = false,
+					Kind = TypeKind.Class
+				}
+			};
+			
+			ParameterInfo[] unboxCppParams = new ParameterInfo[0];
+			
+			// C# init params
+			AppendCsharpInitParam(
+				boxFuncNameLower,
+				builders.CsharpInitParams);
+			AppendCsharpInitParam(
+				unboxFuncNameLower,
+				builders.CsharpInitParams);
+			
+			// C# delegate types
+			AppendCsharpDelegateType(
+				boxFuncName,
+				true,
+				type,
+				typeKind,
+				typeof(object),
+				boxParams,
+				builders.CsharpDelegateTypes);
+			AppendCsharpDelegateType(
+				unboxFuncName,
+				true,
+				type,
+				typeKind,
+				type,
+				unboxParams,
+				builders.CsharpDelegateTypes);
+			
+			// C# init call args
+			AppendCsharpInitCallArg(
+				boxFuncName,
+				builders.CsharpInitCall);
+			AppendCsharpInitCallArg(
+				unboxFuncName,
+				builders.CsharpInitCall);
+			
+			// C# box function
+			AppendCsharpFunctionBeginning(
+				typeof(object),
+				boxFuncName,
+				true,
+				TypeKind.Class,
+				typeof(object),
+				typeParams,
+				boxParams,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append(
+				"NativeScript.Bindings.ObjectStore.Store((object)val);");
+			AppendCsharpFunctionReturn(
+				boxParams,
+				typeof(object),
+				TypeKind.Class,
+				null,
+				true,
+				builders.CsharpFunctions);
+			
+			// C# unbox function
+			AppendCsharpFunctionBeginning(
+				typeof(object),
+				unboxFuncName,
+				true,
+				TypeKind.Class,
+				type,
+				null,
+				unboxParams,
+				builders.CsharpFunctions);
+			switch (typeKind)
+			{
+				case TypeKind.Class:
+				case TypeKind.ManagedStruct:
+					AppendHandleStoreTypeName(
+						type,
+						builders.CsharpFunctions);
+					builders.CsharpFunctions.Append(".Store((");
+					AppendCsharpTypeName(
+						type,
+						builders.CsharpFunctions);
+					builders.CsharpFunctions.Append(")val);");
+					break;
+				default:
+					builders.CsharpFunctions.Append('(');
+					AppendCsharpTypeName(
+						type,
+						builders.CsharpFunctions);
+					builders.CsharpFunctions.Append(")val;");
+					break;
+			}
+			AppendCsharpFunctionReturn(
+				unboxParams,
+				type,
+				typeKind,
+				null,
+				true,
+				builders.CsharpFunctions);
+			
+			// C++ function pointers
+			AppendCppFunctionPointerDefinition(
+				boxFuncName,
+				true,
+				type.Name,
+				type.Namespace,
+				typeKind,
+				boxParams,
+				typeof(object),
+				builders.CppFunctionPointers);
+			AppendCppFunctionPointerDefinition(
+				unboxFuncName,
+				true,
+				type.Name,
+				type.Namespace,
+				typeKind,
+				unboxParams,
+				type,
+				builders.CppFunctionPointers);
+			
+			// C++ method declarations
+			AppendIndent(
+				2,
+				builders.CppBoxingMethodDeclarations);
+			AppendCppMethodDeclaration(
+				"Object",
+				false,
+				false,
+				false,
+				null,
+				null,
+				boxParams,
+				builders.CppBoxingMethodDeclarations);
+			AppendIndent(
+				2,
+				builders.CppBoxingMethodDeclarations);
+			AppendCppMethodDeclaration(
+				unboxMethodDeclarationName,
+				false,
+				false,
+				false,
+				null,
+				null,
+				unboxCppParams,
+				builders.CppBoxingMethodDeclarations);
+			
+			// C++ method definitions (begin)
+			int indent = AppendNamespaceBeginning(
+				"System",
+				builders.CppMethodDefinitions);
+			
+			// C++ box method definition
+			AppendCppMethodDefinitionBegin(
+				"Object",
+				null,
+				"Object",
+				null,
+				null,
+				boxParams,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("int32_t handle = Plugin::");
+			builders.CppMethodDefinitions.Append(boxFuncName);
+			builders.CppMethodDefinitions.Append("(val");
+			if (typeKind == TypeKind.ManagedStruct)
+			{
+				builders.CppMethodDefinitions.Append(".Handle");
+			}
+			builders.CppMethodDefinitions.Append(");\n");
+			AppendCppUnhandledExceptionHandling(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"if (handle)\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"{\n");
+			AppendIndent(
+				indent + 2,
+				builders.CppMethodDefinitions);
+			AppendReferenceManagedHandleFunctionCall(
+				"Object",
+				"System",
+				TypeKind.Class,
+				null,
+				"handle",
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(";\n");
+			AppendIndent(
+				indent + 2,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("Handle = handle;\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n\t\n");
+			
+			// C++ unbox method definition
+			AppendCppMethodDefinitionBegin(
+				"Object",
+				null,
+				unboxMethodDefinitionName,
+				null,
+				null,
+				unboxCppParams,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendCppTypeName(
+				type,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(" returnVal(");
+			if (typeKind == TypeKind.ManagedStruct)
+			{
+				builders.CppMethodDefinitions.Append("Plugin::InternalUse::Only, ");
+			}
+			builders.CppMethodDefinitions.Append("Plugin::");
+			builders.CppMethodDefinitions.Append(unboxFuncName);
+			builders.CppMethodDefinitions.Append("(Handle));\n");
+			AppendCppUnhandledExceptionHandling(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return returnVal;\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n\t\n");
+			
+			// C++ method definitions (end)
+			AppendCppMethodDefinitionsEnd(
+				indent,
+				builders.CppMethodDefinitions);
+			
+			// C++ init params
+			AppendCppInitParam(
+				boxFuncNameLower,
+				true,
+				type.Name,
+				type.Namespace,
+				typeKind,
+				boxParams,
+				typeof(object),
+				builders.CppInitParams);
+			AppendCppInitParam(
+				unboxFuncNameLower,
+				true,
+				type.Name,
+				type.Namespace,
+				typeKind,
+				unboxParams,
+				type,
+				builders.CppInitParams);
+			
+			// C++ init body
+			AppendCppInitBody(
+				boxFuncName,
+				boxFuncNameLower,
+				builders.CppInitBody);
+			AppendCppInitBody(
+				unboxFuncName,
+				unboxFuncNameLower,
+				builders.CppInitBody);
 		}
 		
 		static void AppendHandleStoreTypeName(
@@ -9491,6 +9900,11 @@ namespace NativeScript
 				"/*BEGIN GLOBAL STATE AND FUNCTIONS*/\n",
 				"\n\t/*END GLOBAL STATE AND FUNCTIONS*/",
 				builders.CppGlobalStateAndFunctions.ToString());
+			cppHeaderContents = InjectIntoString(
+				cppHeaderContents,
+				"*BEGIN BOXING METHOD DECLARATIONS*/\n",
+				"\n\t\t/*END BOXING METHOD DECLARATIONS*/",
+				builders.CppBoxingMethodDeclarations.ToString());
 			
 			File.WriteAllText(CsharpPath, csharpContents);
 			File.WriteAllText(CppHeaderPath, cppHeaderContents);

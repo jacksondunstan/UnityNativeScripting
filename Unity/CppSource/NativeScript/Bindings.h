@@ -150,46 +150,10 @@ namespace System
 
 namespace System
 {
-	struct Object
-	{
-		int32_t Handle;
-		Object(Plugin::InternalUse iu, int32_t handle);
-		Object(std::nullptr_t n);
-		virtual ~Object() = default;
-		bool operator==(std::nullptr_t other) const;
-		bool operator!=(std::nullptr_t other) const;
-		virtual void ThrowReferenceToThis();
-	};
-	
-	struct ValueType
-	{
-		int32_t Handle;
-		ValueType(Plugin::InternalUse iu, int32_t handle);
-		ValueType(std::nullptr_t n);
-	};
-	
-	struct String : Object
-	{
-		String(Plugin::InternalUse iu, int32_t handle);
-		String(std::nullptr_t n);
-		String(const String& other);
-		String(String&& other);
-		virtual ~String();
-		String& operator=(const String& other);
-		String& operator=(std::nullptr_t other);
-		String& operator=(String&& other);
-		String();
-		String(const char* chars);
-	};
-	
-	struct Array : Object
-	{
-		Array(Plugin::InternalUse iu, int32_t handle);
-		Array(std::nullptr_t n);
-		int32_t GetLength();
-		int32_t GetRank();
-	};
-	
+	struct Object;
+	struct ValueType;
+	struct String;
+	struct Array;
 	template <typename TElement> struct Array1;
 	template <typename TElement> struct Array2;
 	template <typename TElement> struct Array3;
@@ -636,6 +600,103 @@ namespace UnityEngine
 	}
 }
 /*END TYPE DECLARATIONS*/
+
+////////////////////////////////////////////////////////////////
+// C# type definitions
+////////////////////////////////////////////////////////////////
+
+namespace System
+{
+	struct Object
+	{
+		int32_t Handle;
+		Object(Plugin::InternalUse iu, int32_t handle);
+		Object(std::nullptr_t n);
+		virtual ~Object() = default;
+		bool operator==(std::nullptr_t other) const;
+		bool operator!=(std::nullptr_t other) const;
+		virtual void ThrowReferenceToThis();
+		
+		/*BEGIN BOXING METHOD DECLARATIONS*/
+		Object(UnityEngine::Vector3& val);
+		explicit operator UnityEngine::Vector3();
+		Object(UnityEngine::Matrix4x4& val);
+		explicit operator UnityEngine::Matrix4x4();
+		Object(UnityEngine::RaycastHit val);
+		explicit operator UnityEngine::RaycastHit();
+		Object(UnityEngine::QueryTriggerInteraction val);
+		explicit operator UnityEngine::QueryTriggerInteraction();
+		Object(System::Collections::Generic::KeyValuePair<System::String, double> val);
+		explicit operator System::Collections::Generic::KeyValuePair<System::String, double>();
+		Object(UnityEngine::Resolution& val);
+		explicit operator UnityEngine::Resolution();
+		Object(UnityEngine::Ray& val);
+		explicit operator UnityEngine::Ray();
+		Object(UnityEngine::Color& val);
+		explicit operator UnityEngine::Color();
+		Object(UnityEngine::GradientColorKey& val);
+		explicit operator UnityEngine::GradientColorKey();
+		Object(UnityEngine::SceneManagement::Scene& val);
+		explicit operator UnityEngine::SceneManagement::Scene();
+		Object(UnityEngine::SceneManagement::LoadSceneMode val);
+		explicit operator UnityEngine::SceneManagement::LoadSceneMode();
+		Object(System::Boolean val);
+		explicit operator System::Boolean();
+		Object(int8_t val);
+		explicit operator int8_t();
+		Object(uint8_t val);
+		explicit operator uint8_t();
+		Object(int16_t val);
+		explicit operator int16_t();
+		Object(uint16_t val);
+		explicit operator uint16_t();
+		Object(int32_t val);
+		explicit operator int32_t();
+		Object(uint32_t val);
+		explicit operator uint32_t();
+		Object(int64_t val);
+		explicit operator int64_t();
+		Object(uint64_t val);
+		explicit operator uint64_t();
+		Object(System::Char val);
+		explicit operator System::Char();
+		Object(float val);
+		explicit operator float();
+		Object(double val);
+		explicit operator double();
+
+		/*END BOXING METHOD DECLARATIONS*/
+	};
+	
+	struct ValueType
+	{
+		int32_t Handle;
+		ValueType(Plugin::InternalUse iu, int32_t handle);
+		ValueType(std::nullptr_t n);
+	};
+	
+	struct String : Object
+	{
+		String(Plugin::InternalUse iu, int32_t handle);
+		String(std::nullptr_t n);
+		String(const String& other);
+		String(String&& other);
+		virtual ~String();
+		String& operator=(const String& other);
+		String& operator=(std::nullptr_t other);
+		String& operator=(String&& other);
+		String();
+		String(const char* chars);
+	};
+	
+	struct Array : Object
+	{
+		Array(Plugin::InternalUse iu, int32_t handle);
+		Array(std::nullptr_t n);
+		int32_t GetLength();
+		int32_t GetRank();
+	};
+}
 
 /*BEGIN TYPE DEFINITIONS*/
 namespace System

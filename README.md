@@ -12,6 +12,7 @@ This project aims to give you a viable alternative to C#. Scripting in C++ isn't
 * Low performance overhead
 * Easy integration with any Unity project
 * Fast compile, build, and code generation times
+* Don't lose support from Unity Technologies
 
 # Reasons to Prefer C++ Over C# #
 
@@ -94,12 +95,13 @@ While IL2CPP transforms C# into C++ already, it generates a lot of overhead. The
     * Arrays (single- and multi-dimensional)
     * Delegates
     * Events
+    * Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
 
 # Performance
 
-Most projects will see a net performance win by reducing garbage collection, eliminating IL2CPP overhead, and access to compiler intrinsics and assembly. Calls from C++ into C# incur a minor performance penalty, so if most of your code is calls to .NET APIs then you may experience a net performance loss.
+Almost all projects will see a net performance win by reducing garbage collection, eliminating IL2CPP overhead, and access to compiler intrinsics and assembly. Calls from C++ into C# incur only a minor performance penalty. In the rare case that almost all of your code is calls to .NET APIs then you may experience a net performance loss.
 
-For testing and benchmarks, see this [article](http://jacksondunstan.com/articles/3952).
+[Testing and benchmarks article](http://jacksondunstan.com/articles/3952)
 
 # Project Structure
 
@@ -189,9 +191,9 @@ To configure the code generator, open `NativeScriptTypes.json` and notice the ex
 
 Note that the code generator does not support (yet):
 
-* Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
 * `Array` methods (e.g. `IndexOf`)
+* `string` methods (e.g. `Substring`)
 * Default parameters
 * Interfaces
 * `decimal`
