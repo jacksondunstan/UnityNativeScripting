@@ -390,30 +390,30 @@ namespace NativeScript
 			IntPtr unboxSingle,
 			IntPtr boxDouble,
 			IntPtr unboxDouble,
-			IntPtr systemInt32Array1Constructor1,
+			IntPtr systemSystemInt32Array1Constructor1,
 			IntPtr systemInt32Array1GetItem1,
 			IntPtr systemInt32Array1SetItem1,
-			IntPtr systemSingleArray1Constructor1,
+			IntPtr systemSystemSingleArray1Constructor1,
 			IntPtr systemSingleArray1GetItem1,
 			IntPtr systemSingleArray1SetItem1,
-			IntPtr systemSingleArray2Constructor2,
-			IntPtr systemSingleArray2GetLength2,
+			IntPtr systemSystemSingleArray2Constructor2,
+			IntPtr systemSystemSingleArray2GetLength2,
 			IntPtr systemSingleArray2GetItem2,
 			IntPtr systemSingleArray2SetItem2,
-			IntPtr systemSingleArray3Constructor3,
-			IntPtr systemSingleArray3GetLength3,
+			IntPtr systemSystemSingleArray3Constructor3,
+			IntPtr systemSystemSingleArray3GetLength3,
 			IntPtr systemSingleArray3GetItem3,
 			IntPtr systemSingleArray3SetItem3,
-			IntPtr systemStringArray1Constructor1,
+			IntPtr systemSystemStringArray1Constructor1,
 			IntPtr systemStringArray1GetItem1,
 			IntPtr systemStringArray1SetItem1,
-			IntPtr unityEngineResolutionArray1Constructor1,
+			IntPtr unityEngineUnityEngineResolutionArray1Constructor1,
 			IntPtr unityEngineResolutionArray1GetItem1,
 			IntPtr unityEngineResolutionArray1SetItem1,
-			IntPtr unityEngineRaycastHitArray1Constructor1,
+			IntPtr unityEngineUnityEngineRaycastHitArray1Constructor1,
 			IntPtr unityEngineRaycastHitArray1GetItem1,
 			IntPtr unityEngineRaycastHitArray1SetItem1,
-			IntPtr unityEngineGradientColorKeyArray1Constructor1,
+			IntPtr unityEngineUnityEngineGradientColorKeyArray1Constructor1,
 			IntPtr unityEngineGradientColorKeyArray1GetItem1,
 			IntPtr unityEngineGradientColorKeyArray1SetItem1,
 			IntPtr releaseSystemAction,
@@ -714,30 +714,30 @@ namespace NativeScript
 			IntPtr unboxSingle,
 			IntPtr boxDouble,
 			IntPtr unboxDouble,
-			IntPtr systemInt32Array1Constructor1,
+			IntPtr systemSystemInt32Array1Constructor1,
 			IntPtr systemInt32Array1GetItem1,
 			IntPtr systemInt32Array1SetItem1,
-			IntPtr systemSingleArray1Constructor1,
+			IntPtr systemSystemSingleArray1Constructor1,
 			IntPtr systemSingleArray1GetItem1,
 			IntPtr systemSingleArray1SetItem1,
-			IntPtr systemSingleArray2Constructor2,
-			IntPtr systemSingleArray2GetLength2,
+			IntPtr systemSystemSingleArray2Constructor2,
+			IntPtr systemSystemSingleArray2GetLength2,
 			IntPtr systemSingleArray2GetItem2,
 			IntPtr systemSingleArray2SetItem2,
-			IntPtr systemSingleArray3Constructor3,
-			IntPtr systemSingleArray3GetLength3,
+			IntPtr systemSystemSingleArray3Constructor3,
+			IntPtr systemSystemSingleArray3GetLength3,
 			IntPtr systemSingleArray3GetItem3,
 			IntPtr systemSingleArray3SetItem3,
-			IntPtr systemStringArray1Constructor1,
+			IntPtr systemSystemStringArray1Constructor1,
 			IntPtr systemStringArray1GetItem1,
 			IntPtr systemStringArray1SetItem1,
-			IntPtr unityEngineResolutionArray1Constructor1,
+			IntPtr unityEngineUnityEngineResolutionArray1Constructor1,
 			IntPtr unityEngineResolutionArray1GetItem1,
 			IntPtr unityEngineResolutionArray1SetItem1,
-			IntPtr unityEngineRaycastHitArray1Constructor1,
+			IntPtr unityEngineUnityEngineRaycastHitArray1Constructor1,
 			IntPtr unityEngineRaycastHitArray1GetItem1,
 			IntPtr unityEngineRaycastHitArray1SetItem1,
-			IntPtr unityEngineGradientColorKeyArray1Constructor1,
+			IntPtr unityEngineUnityEngineGradientColorKeyArray1Constructor1,
 			IntPtr unityEngineGradientColorKeyArray1GetItem1,
 			IntPtr unityEngineGradientColorKeyArray1SetItem1,
 			IntPtr releaseSystemAction,
@@ -949,30 +949,30 @@ namespace NativeScript
 		delegate float UnboxSingleDelegate(int valHandle);
 		delegate int BoxDoubleDelegate(double val);
 		delegate double UnboxDoubleDelegate(int valHandle);
-		delegate int SystemInt32Array1Constructor1Delegate(int length0);
+		delegate int SystemSystemInt32Array1Constructor1Delegate(int length0);
 		delegate int SystemInt32Array1GetItem1Delegate(int thisHandle, int index0);
 		delegate void SystemInt32Array1SetItem1Delegate(int thisHandle, int index0, int item);
-		delegate int SystemSingleArray1Constructor1Delegate(int length0);
+		delegate int SystemSystemSingleArray1Constructor1Delegate(int length0);
 		delegate float SystemSingleArray1GetItem1Delegate(int thisHandle, int index0);
 		delegate void SystemSingleArray1SetItem1Delegate(int thisHandle, int index0, float item);
-		delegate int SystemSingleArray2Constructor2Delegate(int length0, int length1);
-		delegate int SystemSingleArray2GetLength2Delegate(int thisHandle, int dimension);
+		delegate int SystemSystemSingleArray2Constructor2Delegate(int length0, int length1);
+		delegate int SystemSystemSingleArray2GetLength2Delegate(int thisHandle, int dimension);
 		delegate float SystemSingleArray2GetItem2Delegate(int thisHandle, int index0, int index1);
 		delegate void SystemSingleArray2SetItem2Delegate(int thisHandle, int index0, int index1, float item);
-		delegate int SystemSingleArray3Constructor3Delegate(int length0, int length1, int length2);
-		delegate int SystemSingleArray3GetLength3Delegate(int thisHandle, int dimension);
+		delegate int SystemSystemSingleArray3Constructor3Delegate(int length0, int length1, int length2);
+		delegate int SystemSystemSingleArray3GetLength3Delegate(int thisHandle, int dimension);
 		delegate float SystemSingleArray3GetItem3Delegate(int thisHandle, int index0, int index1, int index2);
 		delegate void SystemSingleArray3SetItem3Delegate(int thisHandle, int index0, int index1, int index2, float item);
-		delegate int SystemStringArray1Constructor1Delegate(int length0);
+		delegate int SystemSystemStringArray1Constructor1Delegate(int length0);
 		delegate int SystemStringArray1GetItem1Delegate(int thisHandle, int index0);
 		delegate void SystemStringArray1SetItem1Delegate(int thisHandle, int index0, int itemHandle);
-		delegate int UnityEngineResolutionArray1Constructor1Delegate(int length0);
+		delegate int UnityEngineUnityEngineResolutionArray1Constructor1Delegate(int length0);
 		delegate UnityEngine.Resolution UnityEngineResolutionArray1GetItem1Delegate(int thisHandle, int index0);
 		delegate void UnityEngineResolutionArray1SetItem1Delegate(int thisHandle, int index0, ref UnityEngine.Resolution item);
-		delegate int UnityEngineRaycastHitArray1Constructor1Delegate(int length0);
+		delegate int UnityEngineUnityEngineRaycastHitArray1Constructor1Delegate(int length0);
 		delegate int UnityEngineRaycastHitArray1GetItem1Delegate(int thisHandle, int index0);
 		delegate void UnityEngineRaycastHitArray1SetItem1Delegate(int thisHandle, int index0, int itemHandle);
-		delegate int UnityEngineGradientColorKeyArray1Constructor1Delegate(int length0);
+		delegate int UnityEngineUnityEngineGradientColorKeyArray1Constructor1Delegate(int length0);
 		delegate UnityEngine.GradientColorKey UnityEngineGradientColorKeyArray1GetItem1Delegate(int thisHandle, int index0);
 		delegate void UnityEngineGradientColorKeyArray1SetItem1Delegate(int thisHandle, int index0, ref UnityEngine.GradientColorKey item);
 		delegate void SystemActionConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
@@ -1190,30 +1190,30 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnboxSingleDelegate(UnboxSingle)),
 				Marshal.GetFunctionPointerForDelegate(new BoxDoubleDelegate(BoxDouble)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxDoubleDelegate(UnboxDouble)),
-				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1Constructor1Delegate(SystemInt32Array1Constructor1)),
+				Marshal.GetFunctionPointerForDelegate(new SystemSystemInt32Array1Constructor1Delegate(SystemSystemInt32Array1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1GetItem1Delegate(SystemInt32Array1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemInt32Array1SetItem1Delegate(SystemInt32Array1SetItem1)),
-				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray1Constructor1Delegate(SystemSingleArray1Constructor1)),
+				Marshal.GetFunctionPointerForDelegate(new SystemSystemSingleArray1Constructor1Delegate(SystemSystemSingleArray1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray1GetItem1Delegate(SystemSingleArray1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray1SetItem1Delegate(SystemSingleArray1SetItem1)),
-				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray2Constructor2Delegate(SystemSingleArray2Constructor2)),
-				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray2GetLength2Delegate(SystemSingleArray2GetLength2)),
+				Marshal.GetFunctionPointerForDelegate(new SystemSystemSingleArray2Constructor2Delegate(SystemSystemSingleArray2Constructor2)),
+				Marshal.GetFunctionPointerForDelegate(new SystemSystemSingleArray2GetLength2Delegate(SystemSystemSingleArray2GetLength2)),
 				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray2GetItem2Delegate(SystemSingleArray2GetItem2)),
 				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray2SetItem2Delegate(SystemSingleArray2SetItem2)),
-				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray3Constructor3Delegate(SystemSingleArray3Constructor3)),
-				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray3GetLength3Delegate(SystemSingleArray3GetLength3)),
+				Marshal.GetFunctionPointerForDelegate(new SystemSystemSingleArray3Constructor3Delegate(SystemSystemSingleArray3Constructor3)),
+				Marshal.GetFunctionPointerForDelegate(new SystemSystemSingleArray3GetLength3Delegate(SystemSystemSingleArray3GetLength3)),
 				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray3GetItem3Delegate(SystemSingleArray3GetItem3)),
 				Marshal.GetFunctionPointerForDelegate(new SystemSingleArray3SetItem3Delegate(SystemSingleArray3SetItem3)),
-				Marshal.GetFunctionPointerForDelegate(new SystemStringArray1Constructor1Delegate(SystemStringArray1Constructor1)),
+				Marshal.GetFunctionPointerForDelegate(new SystemSystemStringArray1Constructor1Delegate(SystemSystemStringArray1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemStringArray1GetItem1Delegate(SystemStringArray1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new SystemStringArray1SetItem1Delegate(SystemStringArray1SetItem1)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineResolutionArray1Constructor1Delegate(UnityEngineResolutionArray1Constructor1)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineUnityEngineResolutionArray1Constructor1Delegate(UnityEngineUnityEngineResolutionArray1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineResolutionArray1GetItem1Delegate(UnityEngineResolutionArray1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineResolutionArray1SetItem1Delegate(UnityEngineResolutionArray1SetItem1)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitArray1Constructor1Delegate(UnityEngineRaycastHitArray1Constructor1)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineUnityEngineRaycastHitArray1Constructor1Delegate(UnityEngineUnityEngineRaycastHitArray1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitArray1GetItem1Delegate(UnityEngineRaycastHitArray1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitArray1SetItem1Delegate(UnityEngineRaycastHitArray1SetItem1)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineGradientColorKeyArray1Constructor1Delegate(UnityEngineGradientColorKeyArray1Constructor1)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineUnityEngineGradientColorKeyArray1Constructor1Delegate(UnityEngineUnityEngineGradientColorKeyArray1Constructor1)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGradientColorKeyArray1GetItem1Delegate(UnityEngineGradientColorKeyArray1GetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGradientColorKeyArray1SetItem1Delegate(UnityEngineGradientColorKeyArray1SetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemActionDelegate(ReleaseSystemAction)),
@@ -3847,8 +3847,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemInt32Array1Constructor1Delegate))]
-		static int SystemInt32Array1Constructor1(int length0)
+		[MonoPInvokeCallback(typeof(SystemSystemInt32Array1Constructor1Delegate))]
+		static int SystemSystemInt32Array1Constructor1(int length0)
 		{
 			try
 			{
@@ -3912,8 +3912,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemSingleArray1Constructor1Delegate))]
-		static int SystemSingleArray1Constructor1(int length0)
+		[MonoPInvokeCallback(typeof(SystemSystemSingleArray1Constructor1Delegate))]
+		static int SystemSystemSingleArray1Constructor1(int length0)
 		{
 			try
 			{
@@ -3977,8 +3977,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemSingleArray2Constructor2Delegate))]
-		static int SystemSingleArray2Constructor2(int length0, int length1)
+		[MonoPInvokeCallback(typeof(SystemSystemSingleArray2Constructor2Delegate))]
+		static int SystemSystemSingleArray2Constructor2(int length0, int length1)
 		{
 			try
 			{
@@ -3999,8 +3999,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemSingleArray2GetLength2Delegate))]
-		static int SystemSingleArray2GetLength2(int thisHandle, int dimension)
+		[MonoPInvokeCallback(typeof(SystemSystemSingleArray2GetLength2Delegate))]
+		static int SystemSystemSingleArray2GetLength2(int thisHandle, int dimension)
 		{
 			try
 			{
@@ -4065,8 +4065,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemSingleArray3Constructor3Delegate))]
-		static int SystemSingleArray3Constructor3(int length0, int length1, int length2)
+		[MonoPInvokeCallback(typeof(SystemSystemSingleArray3Constructor3Delegate))]
+		static int SystemSystemSingleArray3Constructor3(int length0, int length1, int length2)
 		{
 			try
 			{
@@ -4087,8 +4087,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemSingleArray3GetLength3Delegate))]
-		static int SystemSingleArray3GetLength3(int thisHandle, int dimension)
+		[MonoPInvokeCallback(typeof(SystemSystemSingleArray3GetLength3Delegate))]
+		static int SystemSystemSingleArray3GetLength3(int thisHandle, int dimension)
 		{
 			try
 			{
@@ -4153,8 +4153,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemStringArray1Constructor1Delegate))]
-		static int SystemStringArray1Constructor1(int length0)
+		[MonoPInvokeCallback(typeof(SystemSystemStringArray1Constructor1Delegate))]
+		static int SystemSystemStringArray1Constructor1(int length0)
 		{
 			try
 			{
@@ -4219,8 +4219,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineResolutionArray1Constructor1Delegate))]
-		static int UnityEngineResolutionArray1Constructor1(int length0)
+		[MonoPInvokeCallback(typeof(UnityEngineUnityEngineResolutionArray1Constructor1Delegate))]
+		static int UnityEngineUnityEngineResolutionArray1Constructor1(int length0)
 		{
 			try
 			{
@@ -4284,8 +4284,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineRaycastHitArray1Constructor1Delegate))]
-		static int UnityEngineRaycastHitArray1Constructor1(int length0)
+		[MonoPInvokeCallback(typeof(UnityEngineUnityEngineRaycastHitArray1Constructor1Delegate))]
+		static int UnityEngineUnityEngineRaycastHitArray1Constructor1(int length0)
 		{
 			try
 			{
@@ -4350,8 +4350,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineGradientColorKeyArray1Constructor1Delegate))]
-		static int UnityEngineGradientColorKeyArray1Constructor1(int length0)
+		[MonoPInvokeCallback(typeof(UnityEngineUnityEngineGradientColorKeyArray1Constructor1Delegate))]
+		static int UnityEngineUnityEngineGradientColorKeyArray1Constructor1(int length0)
 		{
 			try
 			{

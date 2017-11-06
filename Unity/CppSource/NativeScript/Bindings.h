@@ -26,6 +26,26 @@ namespace Plugin
 	{
 		Only
 	};
+	
+	template <typename TElement> struct ArrayElementProxy1_1;
+	
+	template <typename TElement> struct ArrayElementProxy1_2;
+	template <typename TElement> struct ArrayElementProxy2_2;
+	
+	template <typename TElement> struct ArrayElementProxy1_3;
+	template <typename TElement> struct ArrayElementProxy2_3;
+	template <typename TElement> struct ArrayElementProxy3_3;
+	
+	template <typename TElement> struct ArrayElementProxy1_4;
+	template <typename TElement> struct ArrayElementProxy2_4;
+	template <typename TElement> struct ArrayElementProxy3_4;
+	template <typename TElement> struct ArrayElementProxy4_4;
+	
+	template <typename TElement> struct ArrayElementProxy1_5;
+	template <typename TElement> struct ArrayElementProxy2_5;
+	template <typename TElement> struct ArrayElementProxy3_5;
+	template <typename TElement> struct ArrayElementProxy4_5;
+	template <typename TElement> struct ArrayElementProxy5_5;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -486,9 +506,44 @@ namespace MyGame
 	}
 }
 
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<int32_t>;
+}
+
 namespace System
 {
 	template<> struct Array1<int32_t>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<float>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_2<float>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy2_2<float>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_3<float>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy2_3<float>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy3_3<float>;
 }
 
 namespace System
@@ -506,9 +561,19 @@ namespace System
 	template<> struct Array3<float>;
 }
 
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<System::String>;
+}
+
 namespace System
 {
 	template<> struct Array1<System::String>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<UnityEngine::Resolution>;
 }
 
 namespace System
@@ -516,9 +581,19 @@ namespace System
 	template<> struct Array1<UnityEngine::Resolution>;
 }
 
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<UnityEngine::RaycastHit>;
+}
+
 namespace System
 {
 	template<> struct Array1<UnityEngine::RaycastHit>;
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<UnityEngine::GradientColorKey>;
 }
 
 namespace System
@@ -1394,6 +1469,18 @@ namespace MyGame
 	}
 }
 
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<int32_t>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_1<int32_t>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		void operator=(int32_t item);
+		operator int32_t();
+	};
+}
+
 namespace System
 {
 	template<> struct Array1<int32_t> : System::Array
@@ -1411,8 +1498,80 @@ namespace System
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
-		int32_t GetItem(int32_t index0);
-		void SetItem(int32_t index0, int32_t item);
+		Plugin::ArrayElementProxy1_1<int32_t> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<float>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_1<float>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		void operator=(float item);
+		operator float();
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_2<float>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_2<float>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		Plugin::ArrayElementProxy2_2<float> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy2_2<float>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		int32_t Index1;
+		ArrayElementProxy2_2<float>(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1);
+		void operator=(float item);
+		operator float();
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_3<float>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_3<float>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		Plugin::ArrayElementProxy2_3<float> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy2_3<float>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		int32_t Index1;
+		ArrayElementProxy2_3<float>(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1);
+		Plugin::ArrayElementProxy3_3<float> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy3_3<float>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		int32_t Index1;
+		int32_t Index2;
+		ArrayElementProxy3_3<float>(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1, int32_t index2);
+		void operator=(float item);
+		operator float();
 	};
 }
 
@@ -1433,8 +1592,7 @@ namespace System
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
-		float GetItem(int32_t index0);
-		void SetItem(int32_t index0, float item);
+		Plugin::ArrayElementProxy1_1<float> operator[](int32_t index);
 	};
 }
 
@@ -1456,8 +1614,7 @@ namespace System
 		int32_t GetLength();
 		int32_t GetLength(int32_t dimension);
 		int32_t GetRank();
-		float GetItem(int32_t index0, int32_t index1);
-		void SetItem(int32_t index0, int32_t index1, float item);
+		Plugin::ArrayElementProxy1_2<float> operator[](int32_t index);
 	};
 }
 
@@ -1479,8 +1636,19 @@ namespace System
 		int32_t GetLength();
 		int32_t GetLength(int32_t dimension);
 		int32_t GetRank();
-		float GetItem(int32_t index0, int32_t index1, int32_t index2);
-		void SetItem(int32_t index0, int32_t index1, int32_t index2, float item);
+		Plugin::ArrayElementProxy1_3<float> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<System::String>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_1<System::String>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		void operator=(System::String item);
+		operator System::String();
 	};
 }
 
@@ -1501,8 +1669,19 @@ namespace System
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
-		System::String GetItem(int32_t index0);
-		void SetItem(int32_t index0, System::String item);
+		Plugin::ArrayElementProxy1_1<System::String> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<UnityEngine::Resolution>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_1<UnityEngine::Resolution>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		void operator=(UnityEngine::Resolution item);
+		operator UnityEngine::Resolution();
 	};
 }
 
@@ -1523,8 +1702,19 @@ namespace System
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
-		UnityEngine::Resolution GetItem(int32_t index0);
-		void SetItem(int32_t index0, UnityEngine::Resolution& item);
+		Plugin::ArrayElementProxy1_1<UnityEngine::Resolution> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<UnityEngine::RaycastHit>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_1<UnityEngine::RaycastHit>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		void operator=(UnityEngine::RaycastHit item);
+		operator UnityEngine::RaycastHit();
 	};
 }
 
@@ -1545,8 +1735,19 @@ namespace System
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
-		UnityEngine::RaycastHit GetItem(int32_t index0);
-		void SetItem(int32_t index0, UnityEngine::RaycastHit item);
+		Plugin::ArrayElementProxy1_1<UnityEngine::RaycastHit> operator[](int32_t index);
+	};
+}
+
+namespace Plugin
+{
+	template<> struct ArrayElementProxy1_1<UnityEngine::GradientColorKey>
+	{
+		int32_t Handle;
+		int32_t Index0;
+		ArrayElementProxy1_1<UnityEngine::GradientColorKey>(Plugin::InternalUse iu, int32_t handle, int32_t index0);
+		void operator=(UnityEngine::GradientColorKey item);
+		operator UnityEngine::GradientColorKey();
 	};
 }
 
@@ -1567,8 +1768,7 @@ namespace System
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
-		UnityEngine::GradientColorKey GetItem(int32_t index0);
-		void SetItem(int32_t index0, UnityEngine::GradientColorKey& item);
+		Plugin::ArrayElementProxy1_1<UnityEngine::GradientColorKey> operator[](int32_t index);
 	};
 }
 

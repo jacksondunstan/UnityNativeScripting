@@ -4008,20 +4008,79 @@ namespace NativeScript
 				ranks = jsonArray.Ranks;
 			}
 			
+			// C++ element proxy for [1-R] for all ranks R
+			Type[] cppTypeParams = new Type[]{ elementType };
 			foreach (int rank in ranks)
 			{
 				// Build array name
 				builders.TempStrBuilder.Length = 0;
-				builders.TempStrBuilder.Append("Array");
-				builders.TempStrBuilder.Append(rank);
+				AppendCppArrayTypeName(
+					rank,
+					builders.TempStrBuilder);
 				string cppArrayTypeName = builders.TempStrBuilder.ToString();
 				
 				// Build "TypeArray" name
 				builders.TempStrBuilder.Length = 0;
-				AppendTypeNameWithoutGenericSuffix(
+				AppendBindingArrayTypeName(
 					elementType.Name,
+					elementType.Namespace,
+					cppArrayTypeName,
 					builders.TempStrBuilder);
-				builders.TempStrBuilder.Append(cppArrayTypeName);
+				string bindingArrayTypeName = builders.TempStrBuilder.ToString();
+				
+				// GetItem params
+				ParameterInfo[] getItemParams = BuildArrayGetItemsParams(
+					rank,
+					"index");
+				
+				for (int i = 1; i <= rank; ++i)
+				{
+					AppendArrayElementProxy(
+						elementType,
+						elementTypeKind,
+						bindingArrayTypeName,
+						i,
+						rank,
+						cppTypeParams,
+						cppArrayTypeName,
+						getItemParams,
+						builders);
+				}
+			}
+			
+			foreach (int rank in ranks)
+			{
+				// Build array name
+				builders.TempStrBuilder.Length = 0;
+				AppendCppArrayTypeName(
+					rank,
+					builders.TempStrBuilder);
+				string cppArrayTypeName = builders.TempStrBuilder.ToString();
+				
+				// Build array name with element type
+				builders.TempStrBuilder.Append('<');
+				AppendCppTypeName(
+					elementType,
+					builders.TempStrBuilder);
+				builders.TempStrBuilder.Append('>');
+				string cppGenericArrayTypeName = builders.TempStrBuilder.ToString();
+				
+				// Build element proxy name
+				builders.TempStrBuilder.Length = 0;
+				AppendCppArrayElementProxyName(
+					1,
+					rank,
+					elementType,
+					builders.TempStrBuilder);
+				string cppElementProxyTypeName = builders.TempStrBuilder.ToString();
+				
+				// Build "TypeArray" name
+				builders.TempStrBuilder.Length = 0;
+				AppendBindingArrayTypeName(
+					elementType.Name,
+					elementType.Namespace,
+					cppArrayTypeName,
+					builders.TempStrBuilder);
 				string bindingArrayTypeName = builders.TempStrBuilder.ToString();
 				
 				// MakeArrayType() creates a Type for a "vector"
@@ -4041,7 +4100,6 @@ namespace NativeScript
 				}
 				
 				// C++ type declaration
-				Type[] cppTypeParams = new Type[]{ elementType };
 				int indent = AppendCppTypeDeclaration(
 					"System",
 					cppArrayTypeName,
@@ -4131,6 +4189,32 @@ namespace NativeScript
 					indent,
 					builders);
 				
+				// C++ operator[] method declaration
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("Plugin::");
+				AppendCppArrayElementProxyName(
+					1,
+					rank,
+					elementType,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append(' ');
+				AppendTypeNameWithoutGenericSuffix(
+					"operator[]",
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("(int32_t index);\n");
+				
+				// C++ operator[] method definition
+				AppendCppArrayIndexOperatorMethodDefinition(
+					0,
+					cppMethodDefinitionsIndent,
+					cppGenericArrayTypeName,
+					"System",
+					cppElementProxyTypeName,
+					builders.CppMethodDefinitions);
+				
+				// C++ type definition (end)
 				AppendCppTypeDefinitionEnd(
 					false,
 					indent,
@@ -4141,6 +4225,490 @@ namespace NativeScript
 					cppMethodDefinitionsIndent,
 					builders.CppMethodDefinitions);
 			}
+		}
+		
+		static void AppendCppArrayIndexOperatorMethodDefinition(
+			int rank,
+			int indent,
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
+			string nextCppElementProxyTypeName,
+			StringBuilder output)
+		{
+			AppendIndent(
+				indent,
+				output);
+			AppendCppTypeName(
+				"Plugin",
+				nextCppElementProxyTypeName,
+				output);
+			output.Append(' ');
+			output.Append(enclosingTypeNamespace);
+			output.Append("::");
+			AppendTypeNameWithoutGenericSuffix(
+				enclosingTypeName,
+				output);
+			output.Append("::operator[](int32_t index)\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("return Plugin::");
+			output.Append(nextCppElementProxyTypeName);
+			output.Append("(Plugin::InternalUse::Only, Handle, ");
+			for (int i = 0; i < rank; ++i)
+			{
+				output.Append("Index");
+				output.Append(i);
+				output.Append(", ");
+			}
+			output.Append("index);\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append('\n');
+		}
+		
+		static void AppendCppArrayTypeName(
+			int rank,
+			StringBuilder output)
+		{
+			output.Append("Array");
+			output.Append(rank);
+		}
+		
+		static void AppendCppArrayElementProxyName(
+			int rank,
+			int maxRank,
+			Type elementType,
+			StringBuilder output)
+		{
+			output.Append("ArrayElementProxy");
+			output.Append(rank);
+			output.Append('_');
+			output.Append(maxRank);
+			output.Append('<');
+			AppendCppTypeName(
+				elementType,
+				output);
+			output.Append('>');
+		}
+		
+		static void AppendBindingArrayTypeName(
+			string elementTypeName,
+			string elementTypeNamespace,
+			string cppArrayTypeName,
+			StringBuilder output)
+		{
+			AppendNamespace(
+				elementTypeNamespace,
+				string.Empty,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				elementTypeName,
+				output);
+			output.Append(cppArrayTypeName);
+		}
+		
+		static ParameterInfo[] BuildArrayGetItemsParams(
+			int rank,
+			string indexName)
+		{
+			ParameterInfo[] parameters = new ParameterInfo[rank];
+			for (int i = 0; i < rank; ++i)
+			{
+				ParameterInfo param = new ParameterInfo();
+				param.Name = indexName + i;
+				param.ParameterType = typeof(int);
+				param.IsOut = false;
+				param.IsRef = false;
+				param.DereferencedParameterType = param.ParameterType;
+				param.Kind = GetTypeKind(
+					param.DereferencedParameterType);
+				parameters[i] = param;
+			}
+			return parameters;
+		}
+		
+		static ParameterInfo[] BuildArraySetItemsParams(
+			int rank,
+			string indexName,
+			Type elementType)
+		{
+			ParameterInfo[] parameters = new ParameterInfo[rank+1];
+			for (int i = 0; i < rank; ++i)
+			{
+				ParameterInfo param = new ParameterInfo();
+				param.Name = indexName + i;
+				param.ParameterType = typeof(int);
+				param.IsOut = false;
+				param.IsRef = false;
+				param.DereferencedParameterType = param.ParameterType;
+				param.Kind = GetTypeKind(
+					param.DereferencedParameterType);
+				parameters[i] = param;
+			}
+			
+			ParameterInfo lastParamInfo = new ParameterInfo();
+			lastParamInfo.Name = "item";
+			lastParamInfo.ParameterType = elementType;
+			lastParamInfo.IsOut = false;
+			lastParamInfo.IsRef = false;
+			lastParamInfo.DereferencedParameterType = lastParamInfo.ParameterType;
+			lastParamInfo.Kind = GetTypeKind(
+				lastParamInfo.DereferencedParameterType);
+			parameters[rank] = lastParamInfo;
+			
+			return parameters;
+		}
+		
+		static void AppendArrayGetItemFuncName(
+			string elementTypeName,
+			string elementTypeNamespace,
+			string bindingArrayTypeName,
+			int rank,
+			StringBuilder output)
+		{
+			AppendNamespace(
+				elementTypeNamespace,
+				string.Empty,
+				output);
+			output.Append(elementTypeName);
+			AppendTypeNameWithoutGenericSuffix(
+				bindingArrayTypeName,
+				output);
+			output.Append("GetItem");
+			output.Append(rank);
+		}
+		
+		static void AppendArraySetItemFuncName(
+			string elementTypeName,
+			string elementTypeNamespace,
+			string bindingArrayTypeName,
+			int rank,
+			StringBuilder output)
+		{
+			AppendNamespace(
+				elementTypeNamespace,
+				string.Empty,
+				output);
+			output.Append(elementTypeName);
+			AppendTypeNameWithoutGenericSuffix(
+				bindingArrayTypeName,
+				output);
+			output.Append("SetItem");
+			output.Append(rank);
+		}
+		
+		static void AppendArrayElementProxy(
+			Type elementType,
+			TypeKind elementTypeKind,
+			string bindingArrayTypeName,
+			int rank,
+			int maxRank,
+			Type[] cppTypeParams,
+			string cppArrayTypeName,
+			ParameterInfo[] getItemParams,
+			StringBuilders builders)
+		{
+			// Build element proxy name
+			builders.TempStrBuilder.Length = 0;
+			AppendCppArrayElementProxyName(
+				rank,
+				maxRank,
+				elementType,
+				builders.TempStrBuilder);
+			string cppElementProxyTypeName = builders.TempStrBuilder.ToString();
+			
+			// Build next element proxy name
+			builders.TempStrBuilder.Length = 0;
+			AppendCppArrayElementProxyName(
+				rank + 1,
+				maxRank,
+				elementType,
+				builders.TempStrBuilder);
+			string nextCppElementProxyTypeName = builders.TempStrBuilder.ToString();
+			
+			// GetItem name
+			builders.TempStrBuilder.Length = 0;
+			AppendArrayGetItemFuncName(
+				elementType.Name,
+				elementType.Namespace,
+				cppArrayTypeName,
+				rank,
+				builders.TempStrBuilder);
+			string getItemFuncName = builders.TempStrBuilder.ToString();
+			
+			// SetItem name
+			builders.TempStrBuilder.Length = 0;
+			AppendArraySetItemFuncName(
+				elementType.Name,
+				elementType.Namespace,
+				cppArrayTypeName,
+				rank,
+				builders.TempStrBuilder);
+			string setItemFuncName = builders.TempStrBuilder.ToString();
+			
+			// GetItem call params
+			ParameterInfo[] getItemCallParams = BuildArrayGetItemsParams(
+				rank,
+				"Index");
+			
+			// SetItem params
+			ParameterInfo[] setItemCallParams = BuildArraySetItemsParams(
+				rank,
+				"Index",
+				elementType);
+			
+			// C++ element proxy type declaration
+			int indent = AppendNamespaceBeginning(
+				"Plugin",
+				builders.CppTypeDeclarations);
+			AppendIndent(indent, builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append("template<> struct ");
+			AppendTypeNameWithoutGenericSuffix(
+				cppElementProxyTypeName,
+				builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append(";\n");
+			AppendNamespaceEnding(
+				indent,
+				builders.CppTypeDeclarations);
+			builders.CppTypeDeclarations.Append('\n');
+			
+			// C++ element proxy type definition
+			AppendNamespaceBeginning(
+				"Plugin",
+				builders.CppTypeDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("template<> struct ");
+			builders.CppTypeDefinitions.Append(cppElementProxyTypeName);
+			builders.CppTypeDefinitions.Append('\n');
+			AppendIndent(
+				indent,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("int32_t Handle;\n");
+			for (int i = 0; i < rank; ++i)
+			{
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("int32_t Index");
+				builders.CppTypeDefinitions.Append(i);
+				builders.CppTypeDefinitions.Append(";\n");
+			}
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append(cppElementProxyTypeName);
+			builders.CppTypeDefinitions.Append(
+				"(Plugin::InternalUse iu, int32_t handle, ");
+			for (int i = 0; i < rank; ++i)
+			{
+				builders.CppTypeDefinitions.Append("int32_t index");
+				builders.CppTypeDefinitions.Append(i);
+				if (i != rank - 1)
+				{
+					builders.CppTypeDefinitions.Append(", ");
+				}
+			}
+			builders.CppTypeDefinitions.Append(");\n");
+			if (rank == maxRank)
+			{
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("void operator=(");
+				AppendCppTypeName(
+					elementType,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append(" item);\n");
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("operator ");
+				AppendCppTypeName(
+					elementType,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("();\n");
+			}
+			else
+			{
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("Plugin::");
+				AppendCppArrayElementProxyName(
+					rank + 1,
+					maxRank,
+					elementType,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append(" operator[](");
+				builders.CppTypeDefinitions.Append("int32_t index);\n");
+			}
+			AppendIndent(
+				indent,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("};\n");
+			builders.CppTypeDefinitions.Append("}\n");
+			builders.CppTypeDefinitions.Append('\n');
+			
+			// C++ element proxy method definitions (beginning)
+			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
+				"Plugin",
+				builders.CppMethodDefinitions);
+			
+			// C++ element proxy constructor definition
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(cppElementProxyTypeName);
+			builders.CppMethodDefinitions.Append(
+				"::ArrayElementProxy");
+			builders.CppMethodDefinitions.Append(rank);
+			builders.CppMethodDefinitions.Append('_');
+			builders.CppMethodDefinitions.Append(maxRank);
+			builders.CppMethodDefinitions.Append(
+				"(Plugin::InternalUse iu, int32_t handle, ");
+			for (int i = 0; i < rank; ++i)
+			{
+				builders.CppMethodDefinitions.Append("int32_t index");
+				builders.CppMethodDefinitions.Append(i);
+				if (i != rank - 1)
+				{
+					builders.CppMethodDefinitions.Append(", ");
+				}
+			}
+			builders.CppMethodDefinitions.Append(")\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("Handle = handle;\n");
+			for (int i = 0; i < rank; ++i)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("Index");
+				builders.CppMethodDefinitions.Append(i);
+				builders.CppMethodDefinitions.Append(" = index");
+				builders.CppMethodDefinitions.Append(i);
+				builders.CppMethodDefinitions.Append(";\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+			
+			if (rank == maxRank)
+			{
+				// C++ element proxy operator= definition
+				AppendIndent(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("void ");
+				builders.CppMethodDefinitions.Append(cppElementProxyTypeName);
+				builders.CppMethodDefinitions.Append("::");
+				builders.CppMethodDefinitions.Append("operator=(");
+				AppendCppTypeName(
+					elementType,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(" item)\n");
+				AppendIndent(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("{\n");
+				AppendCppPluginFunctionCall(
+					false,
+					cppArrayTypeName,
+					"System",
+					TypeKind.Class,
+					cppTypeParams,
+					typeof(void),
+					setItemFuncName,
+					setItemCallParams,
+					cppMethodDefinitionsIndent + 1,
+					builders.CppMethodDefinitions);
+				AppendIndent(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("}\n");
+				AppendIndent(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append('\n');
+				
+				// C++ element proxy type conversion operator definition
+				AppendIndent(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(cppElementProxyTypeName);
+				builders.CppMethodDefinitions.Append("::");
+				builders.CppMethodDefinitions.Append("operator ");
+				AppendCppTypeName(
+					elementType,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("()\n");
+				AppendIndent(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("{\n");
+				AppendCppPluginFunctionCall(
+					false,
+					cppArrayTypeName,
+					"System",
+					TypeKind.Class,
+					cppTypeParams,
+					elementType,
+					getItemFuncName,
+					getItemCallParams,
+					indent + 1,
+					builders.CppMethodDefinitions);
+				AppendCppMethodReturn(
+					elementType,
+					elementTypeKind,
+					indent + 1,
+					builders.CppMethodDefinitions);
+				AppendIndent(
+					cppMethodDefinitionsIndent,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("}\n");
+			}
+			else
+			{
+				AppendCppArrayIndexOperatorMethodDefinition(
+					rank,
+					cppMethodDefinitionsIndent,
+					cppElementProxyTypeName,
+					"Plugin",
+					nextCppElementProxyTypeName,
+					builders.CppMethodDefinitions);
+			}
+			
+			// C++ method definitions (ending)
+			AppendCppMethodDefinitionsEnd(
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
 		}
 		
 		static void AppendArrayConstructor(
@@ -4565,34 +5133,21 @@ namespace NativeScript
 			StringBuilders builders)
 		{
 			builders.TempStrBuilder.Length = 0;
-			AppendNamespace(
+			AppendArrayGetItemFuncName(
+				elementType.Name,
 				elementType.Namespace,
-				string.Empty,
+				cppArrayTypeName,
+				rank,
 				builders.TempStrBuilder);
-			AppendTypeNameWithoutGenericSuffix(
-				csharpTypeName,
-				builders.TempStrBuilder);
-			builders.TempStrBuilder.Append("GetItem");
-			builders.TempStrBuilder.Append(rank);
 			string funcName = builders.TempStrBuilder.ToString();
 			
 			builders.TempStrBuilder[0] = char.ToLower(
 				builders.TempStrBuilder[0]);
 			string funcNameLower = builders.TempStrBuilder.ToString();
 			
-			ParameterInfo[] parameters = new ParameterInfo[rank];
-			for (int i = 0; i < rank; ++i)
-			{
-				ParameterInfo info = new ParameterInfo();
-				info.Name = "index" + i;
-				info.ParameterType = typeof(int);
-				info.IsOut = false;
-				info.IsRef = false;
-				info.DereferencedParameterType = info.ParameterType;
-				info.Kind = GetTypeKind(
-					info.DereferencedParameterType);
-				parameters[i] = info;
-			}
+			ParameterInfo[] parameters = BuildArrayGetItemsParams(
+				rank,
+				"index");
 			
 			// C# Delegate Type
 			AppendCsharpDelegateType(
@@ -4670,54 +5225,6 @@ namespace NativeScript
 				funcName,
 				funcNameLower,
 				builders.CppInitBody);
-			
-			// C++ method declaration
-			AppendIndent(
-				indent + 1,
-				builders.CppTypeDefinitions);
-			AppendCppMethodDeclaration(
-				"GetItem",
-				false,
-				false,
-				false,
-				elementType,
-				null,
-				parameters,
-				builders.CppTypeDefinitions);
-			
-			// C++ method definition
-			Type[] cppTypeParams = new Type[] { elementType };
-			AppendCppMethodDefinitionBegin(
-				cppArrayTypeName,
-				elementType,
-				"GetItem",
-				cppTypeParams,
-				null,
-				parameters,
-				indent,
-				builders.CppMethodDefinitions);
-			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendCppPluginFunctionCall(
-				false,
-				cppArrayTypeName,
-				"System",
-				TypeKind.Class,
-				cppTypeParams,
-				elementType,
-				funcName,
-				parameters,
-				indent + 1,
-				builders.CppMethodDefinitions);
-			AppendCppMethodReturn(
-				elementType,
-				elementTypeKind,
-				indent + 1,
-				builders.CppMethodDefinitions);
-			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
 		}
 		
 		static void AppendArraySetItem(
@@ -4730,15 +5237,12 @@ namespace NativeScript
 			StringBuilders builders)
 		{
 			builders.TempStrBuilder.Length = 0;
-			AppendNamespace(
+			AppendArraySetItemFuncName(
+				elementType.Name,
 				elementType.Namespace,
-				string.Empty,
+				cppArrayTypeName,
+				rank,
 				builders.TempStrBuilder);
-			AppendTypeNameWithoutGenericSuffix(
-				csharpTypeName,
-				builders.TempStrBuilder);
-			builders.TempStrBuilder.Append("SetItem");
-			builders.TempStrBuilder.Append(rank);
 			string funcName = builders.TempStrBuilder.ToString();
 			
 			builders.TempStrBuilder[0] = char.ToLower(
@@ -4746,28 +5250,10 @@ namespace NativeScript
 			string funcNameLower = builders.TempStrBuilder.ToString();
 			
 			// Build parameters as indexes then element
-			ParameterInfo[] parameters = new ParameterInfo[rank+1];
-			for (int i = 0; i < rank; ++i)
-			{
-				ParameterInfo info = new ParameterInfo();
-				info.Name = "index" + i;
-				info.ParameterType = typeof(int);
-				info.IsOut = false;
-				info.IsRef = false;
-				info.DereferencedParameterType = info.ParameterType;
-				info.Kind = GetTypeKind(
-					info.DereferencedParameterType);
-				parameters[i] = info;
-			}
-			ParameterInfo lastParamInfo = new ParameterInfo();
-			lastParamInfo.Name = "item";
-			lastParamInfo.ParameterType = elementType;
-			lastParamInfo.IsOut = false;
-			lastParamInfo.IsRef = false;
-			lastParamInfo.DereferencedParameterType = lastParamInfo.ParameterType;
-			lastParamInfo.Kind = GetTypeKind(
-				lastParamInfo.DereferencedParameterType);
-			parameters[rank] = lastParamInfo;
+			ParameterInfo[] parameters = BuildArraySetItemsParams(
+				rank,
+				"index",
+				elementType);
 			
 			// C# Delegate Type
 			AppendCsharpDelegateType(
@@ -4845,49 +5331,6 @@ namespace NativeScript
 				funcName,
 				funcNameLower,
 				builders.CppInitBody);
-			
-			// C++ method declaration
-			AppendIndent(
-				indent + 1,
-				builders.CppTypeDefinitions);
-			AppendCppMethodDeclaration(
-				"SetItem",
-				false,
-				false,
-				false,
-				typeof(void),
-				null,
-				parameters,
-				builders.CppTypeDefinitions);
-			
-			// C++ method definition
-			Type[] cppTypeParams = new Type[] { elementType };
-			AppendCppMethodDefinitionBegin(
-				cppArrayTypeName,
-				typeof(void),
-				"SetItem",
-				cppTypeParams,
-				null,
-				parameters,
-				indent,
-				builders.CppMethodDefinitions);
-			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendCppPluginFunctionCall(
-				false,
-				cppArrayTypeName,
-				"System",
-				TypeKind.Class,
-				cppTypeParams,
-				typeof(void),
-				funcName,
-				parameters,
-				indent + 1,
-				builders.CppMethodDefinitions);
-			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
 		}
 		
 		static void AppendDelegate(

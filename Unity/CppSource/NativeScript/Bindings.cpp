@@ -156,30 +156,30 @@ namespace Plugin
 	float (*UnboxSingle)(int32_t valHandle);
 	int32_t (*BoxDouble)(double val);
 	double (*UnboxDouble)(int32_t valHandle);
-	int32_t (*SystemInt32Array1Constructor1)(int32_t length0);
+	int32_t (*SystemSystemInt32Array1Constructor1)(int32_t length0);
 	int32_t (*SystemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*SystemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item);
-	int32_t (*SystemSingleArray1Constructor1)(int32_t length0);
+	int32_t (*SystemSystemSingleArray1Constructor1)(int32_t length0);
 	float (*SystemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*SystemSingleArray1SetItem1)(int32_t thisHandle, int32_t index0, float item);
-	int32_t (*SystemSingleArray2Constructor2)(int32_t length0, int32_t length1);
-	int32_t (*SystemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension);
+	int32_t (*SystemSystemSingleArray2Constructor2)(int32_t length0, int32_t length1);
+	int32_t (*SystemSystemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension);
 	float (*SystemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1);
 	int32_t (*SystemSingleArray2SetItem2)(int32_t thisHandle, int32_t index0, int32_t index1, float item);
-	int32_t (*SystemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2);
-	int32_t (*SystemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension);
+	int32_t (*SystemSystemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2);
+	int32_t (*SystemSystemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension);
 	float (*SystemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2);
 	int32_t (*SystemSingleArray3SetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2, float item);
-	int32_t (*SystemStringArray1Constructor1)(int32_t length0);
+	int32_t (*SystemSystemStringArray1Constructor1)(int32_t length0);
 	int32_t (*SystemStringArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*SystemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
-	int32_t (*UnityEngineResolutionArray1Constructor1)(int32_t length0);
+	int32_t (*UnityEngineUnityEngineResolutionArray1Constructor1)(int32_t length0);
 	UnityEngine::Resolution (*UnityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*UnityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item);
-	int32_t (*UnityEngineRaycastHitArray1Constructor1)(int32_t length0);
+	int32_t (*UnityEngineUnityEngineRaycastHitArray1Constructor1)(int32_t length0);
 	int32_t (*UnityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*UnityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
-	int32_t (*UnityEngineGradientColorKeyArray1Constructor1)(int32_t length0);
+	int32_t (*UnityEngineUnityEngineGradientColorKeyArray1Constructor1)(int32_t length0);
 	UnityEngine::GradientColorKey (*UnityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*UnityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item);
 	void (*ReleaseSystemAction)(int32_t handle, int32_t classHandle);
@@ -4746,6 +4746,40 @@ namespace MyGame
 	}
 }
 
+namespace Plugin
+{
+	ArrayElementProxy1_1<int32_t>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	{
+		Handle = handle;
+		Index0 = index0;
+	}
+	
+	void ArrayElementProxy1_1<int32_t>::operator=(int32_t item)
+	{
+		Plugin::SystemInt32Array1SetItem1(Handle, Index0, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	ArrayElementProxy1_1<int32_t>::operator int32_t()
+	{
+		auto returnValue = Plugin::SystemInt32Array1GetItem1(Handle, Index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+}
+
 namespace System
 {
 	Array1<int32_t>::Array1(std::nullptr_t n)
@@ -4830,7 +4864,7 @@ namespace System
 	Array1<int32_t>::Array1(int32_t length0)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::SystemInt32Array1Constructor1(length0);
+		auto returnValue = Plugin::SystemSystemInt32Array1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4855,9 +4889,35 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	int32_t Array1<int32_t>::GetItem(int32_t index0)
+	Plugin::ArrayElementProxy1_1<int32_t> System::Array1<int32_t>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::SystemInt32Array1GetItem1(Handle, index0);
+		return Plugin::ArrayElementProxy1_1<int32_t>(Plugin::InternalUse::Only, Handle, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy1_1<float>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	{
+		Handle = handle;
+		Index0 = index0;
+	}
+	
+	void ArrayElementProxy1_1<float>::operator=(float item)
+	{
+		Plugin::SystemSingleArray1SetItem1(Handle, Index0, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	ArrayElementProxy1_1<float>::operator float()
+	{
+		auto returnValue = Plugin::SystemSingleArray1GetItem1(Handle, Index0);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4867,10 +4927,34 @@ namespace System
 		}
 		return returnValue;
 	}
-	
-	void Array1<int32_t>::SetItem(int32_t index0, int32_t item)
+}
+
+namespace Plugin
+{
+	ArrayElementProxy1_2<float>::ArrayElementProxy1_2(Plugin::InternalUse iu, int32_t handle, int32_t index0)
 	{
-		Plugin::SystemInt32Array1SetItem1(Handle, index0, item);
+		Handle = handle;
+		Index0 = index0;
+	}
+	
+	Plugin::ArrayElementProxy2_2<float> Plugin::ArrayElementProxy1_2<float>::operator[](int32_t index)
+	{
+		return Plugin::ArrayElementProxy2_2<float>(Plugin::InternalUse::Only, Handle, Index0, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy2_2<float>::ArrayElementProxy2_2(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1)
+	{
+		Handle = handle;
+		Index0 = index0;
+		Index1 = index1;
+	}
+	
+	void ArrayElementProxy2_2<float>::operator=(float item)
+	{
+		Plugin::SystemSingleArray2SetItem2(Handle, Index0, Index1, item);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4878,6 +4962,84 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	ArrayElementProxy2_2<float>::operator float()
+	{
+		auto returnValue = Plugin::SystemSingleArray2GetItem2(Handle, Index0, Index1);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy1_3<float>::ArrayElementProxy1_3(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	{
+		Handle = handle;
+		Index0 = index0;
+	}
+	
+	Plugin::ArrayElementProxy2_3<float> Plugin::ArrayElementProxy1_3<float>::operator[](int32_t index)
+	{
+		return Plugin::ArrayElementProxy2_3<float>(Plugin::InternalUse::Only, Handle, Index0, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy2_3<float>::ArrayElementProxy2_3(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1)
+	{
+		Handle = handle;
+		Index0 = index0;
+		Index1 = index1;
+	}
+	
+	Plugin::ArrayElementProxy3_3<float> Plugin::ArrayElementProxy2_3<float>::operator[](int32_t index)
+	{
+		return Plugin::ArrayElementProxy3_3<float>(Plugin::InternalUse::Only, Handle, Index0, Index1, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy3_3<float>::ArrayElementProxy3_3(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1, int32_t index2)
+	{
+		Handle = handle;
+		Index0 = index0;
+		Index1 = index1;
+		Index2 = index2;
+	}
+	
+	void ArrayElementProxy3_3<float>::operator=(float item)
+	{
+		Plugin::SystemSingleArray3SetItem3(Handle, Index0, Index1, Index2, item);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	ArrayElementProxy3_3<float>::operator float()
+	{
+		auto returnValue = Plugin::SystemSingleArray3GetItem3(Handle, Index0, Index1, Index2);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
 	}
 }
 
@@ -4965,7 +5127,7 @@ namespace System
 	Array1<float>::Array1(int32_t length0)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::SystemSingleArray1Constructor1(length0);
+		auto returnValue = Plugin::SystemSystemSingleArray1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4990,29 +5152,9 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	float Array1<float>::GetItem(int32_t index0)
+	Plugin::ArrayElementProxy1_1<float> System::Array1<float>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::SystemSingleArray1GetItem1(Handle, index0);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return returnValue;
-	}
-	
-	void Array1<float>::SetItem(int32_t index0, float item)
-	{
-		Plugin::SystemSingleArray1SetItem1(Handle, index0, item);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
+		return Plugin::ArrayElementProxy1_1<float>(Plugin::InternalUse::Only, Handle, index);
 	}
 }
 
@@ -5100,7 +5242,7 @@ namespace System
 	Array2<float>::Array2(int32_t length0, int32_t length1)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::SystemSingleArray2Constructor2(length0, length1);
+		auto returnValue = Plugin::SystemSystemSingleArray2Constructor2(length0, length1);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5122,7 +5264,7 @@ namespace System
 	
 	int32_t Array2<float>::GetLength(int32_t dimension)
 	{
-		auto returnValue = Plugin::SystemSingleArray2GetLength2(Handle, dimension);
+		auto returnValue = Plugin::SystemSystemSingleArray2GetLength2(Handle, dimension);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5138,29 +5280,9 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	float Array2<float>::GetItem(int32_t index0, int32_t index1)
+	Plugin::ArrayElementProxy1_2<float> System::Array2<float>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::SystemSingleArray2GetItem2(Handle, index0, index1);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return returnValue;
-	}
-	
-	void Array2<float>::SetItem(int32_t index0, int32_t index1, float item)
-	{
-		Plugin::SystemSingleArray2SetItem2(Handle, index0, index1, item);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
+		return Plugin::ArrayElementProxy1_2<float>(Plugin::InternalUse::Only, Handle, index);
 	}
 }
 
@@ -5248,7 +5370,7 @@ namespace System
 	Array3<float>::Array3(int32_t length0, int32_t length1, int32_t length2)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::SystemSingleArray3Constructor3(length0, length1, length2);
+		auto returnValue = Plugin::SystemSystemSingleArray3Constructor3(length0, length1, length2);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5270,7 +5392,7 @@ namespace System
 	
 	int32_t Array3<float>::GetLength(int32_t dimension)
 	{
-		auto returnValue = Plugin::SystemSingleArray3GetLength3(Handle, dimension);
+		auto returnValue = Plugin::SystemSystemSingleArray3GetLength3(Handle, dimension);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5286,22 +5408,23 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	float Array3<float>::GetItem(int32_t index0, int32_t index1, int32_t index2)
+	Plugin::ArrayElementProxy1_3<float> System::Array3<float>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::SystemSingleArray3GetItem3(Handle, index0, index1, index2);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return returnValue;
+		return Plugin::ArrayElementProxy1_3<float>(Plugin::InternalUse::Only, Handle, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy1_1<System::String>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	{
+		Handle = handle;
+		Index0 = index0;
 	}
 	
-	void Array3<float>::SetItem(int32_t index0, int32_t index1, int32_t index2, float item)
+	void ArrayElementProxy1_1<System::String>::operator=(System::String item)
 	{
-		Plugin::SystemSingleArray3SetItem3(Handle, index0, index1, index2, item);
+		Plugin::SystemStringArray1SetItem1(Handle, Index0, item.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5309,6 +5432,19 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	ArrayElementProxy1_1<System::String>::operator System::String()
+	{
+		auto returnValue = Plugin::SystemStringArray1GetItem1(Handle, Index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return System::String(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -5396,7 +5532,7 @@ namespace System
 	Array1<System::String>::Array1(int32_t length0)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::SystemStringArray1Constructor1(length0);
+		auto returnValue = Plugin::SystemSystemStringArray1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5421,22 +5557,23 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	System::String Array1<System::String>::GetItem(int32_t index0)
+	Plugin::ArrayElementProxy1_1<System::String> System::Array1<System::String>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::SystemStringArray1GetItem1(Handle, index0);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return System::String(Plugin::InternalUse::Only, returnValue);
+		return Plugin::ArrayElementProxy1_1<System::String>(Plugin::InternalUse::Only, Handle, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy1_1<UnityEngine::Resolution>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	{
+		Handle = handle;
+		Index0 = index0;
 	}
 	
-	void Array1<System::String>::SetItem(int32_t index0, System::String item)
+	void ArrayElementProxy1_1<UnityEngine::Resolution>::operator=(UnityEngine::Resolution item)
 	{
-		Plugin::SystemStringArray1SetItem1(Handle, index0, item.Handle);
+		Plugin::UnityEngineResolutionArray1SetItem1(Handle, Index0, item);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5444,6 +5581,19 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	ArrayElementProxy1_1<UnityEngine::Resolution>::operator UnityEngine::Resolution()
+	{
+		auto returnValue = Plugin::UnityEngineResolutionArray1GetItem1(Handle, Index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
 	}
 }
 
@@ -5531,7 +5681,7 @@ namespace System
 	Array1<UnityEngine::Resolution>::Array1(int32_t length0)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::UnityEngineResolutionArray1Constructor1(length0);
+		auto returnValue = Plugin::UnityEngineUnityEngineResolutionArray1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5556,22 +5706,23 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	UnityEngine::Resolution Array1<UnityEngine::Resolution>::GetItem(int32_t index0)
+	Plugin::ArrayElementProxy1_1<UnityEngine::Resolution> System::Array1<UnityEngine::Resolution>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::UnityEngineResolutionArray1GetItem1(Handle, index0);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return returnValue;
+		return Plugin::ArrayElementProxy1_1<UnityEngine::Resolution>(Plugin::InternalUse::Only, Handle, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy1_1<UnityEngine::RaycastHit>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	{
+		Handle = handle;
+		Index0 = index0;
 	}
 	
-	void Array1<UnityEngine::Resolution>::SetItem(int32_t index0, UnityEngine::Resolution& item)
+	void ArrayElementProxy1_1<UnityEngine::RaycastHit>::operator=(UnityEngine::RaycastHit item)
 	{
-		Plugin::UnityEngineResolutionArray1SetItem1(Handle, index0, item);
+		Plugin::UnityEngineRaycastHitArray1SetItem1(Handle, Index0, item.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5579,6 +5730,19 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	ArrayElementProxy1_1<UnityEngine::RaycastHit>::operator UnityEngine::RaycastHit()
+	{
+		auto returnValue = Plugin::UnityEngineRaycastHitArray1GetItem1(Handle, Index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return UnityEngine::RaycastHit(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -5666,7 +5830,7 @@ namespace System
 	Array1<UnityEngine::RaycastHit>::Array1(int32_t length0)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::UnityEngineRaycastHitArray1Constructor1(length0);
+		auto returnValue = Plugin::UnityEngineUnityEngineRaycastHitArray1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5691,22 +5855,23 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	UnityEngine::RaycastHit Array1<UnityEngine::RaycastHit>::GetItem(int32_t index0)
+	Plugin::ArrayElementProxy1_1<UnityEngine::RaycastHit> System::Array1<UnityEngine::RaycastHit>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::UnityEngineRaycastHitArray1GetItem1(Handle, index0);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return UnityEngine::RaycastHit(Plugin::InternalUse::Only, returnValue);
+		return Plugin::ArrayElementProxy1_1<UnityEngine::RaycastHit>(Plugin::InternalUse::Only, Handle, index);
+	}
+}
+
+namespace Plugin
+{
+	ArrayElementProxy1_1<UnityEngine::GradientColorKey>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	{
+		Handle = handle;
+		Index0 = index0;
 	}
 	
-	void Array1<UnityEngine::RaycastHit>::SetItem(int32_t index0, UnityEngine::RaycastHit item)
+	void ArrayElementProxy1_1<UnityEngine::GradientColorKey>::operator=(UnityEngine::GradientColorKey item)
 	{
-		Plugin::UnityEngineRaycastHitArray1SetItem1(Handle, index0, item.Handle);
+		Plugin::UnityEngineGradientColorKeyArray1SetItem1(Handle, Index0, item);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5714,6 +5879,19 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+	}
+	
+	ArrayElementProxy1_1<UnityEngine::GradientColorKey>::operator UnityEngine::GradientColorKey()
+	{
+		auto returnValue = Plugin::UnityEngineGradientColorKeyArray1GetItem1(Handle, Index0);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
 	}
 }
 
@@ -5801,7 +5979,7 @@ namespace System
 	Array1<UnityEngine::GradientColorKey>::Array1(int32_t length0)
 		 : System::Array(nullptr)
 	{
-		auto returnValue = Plugin::UnityEngineGradientColorKeyArray1Constructor1(length0);
+		auto returnValue = Plugin::UnityEngineUnityEngineGradientColorKeyArray1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5826,29 +6004,9 @@ namespace System
 		return Array::GetRank();
 	}
 	
-	UnityEngine::GradientColorKey Array1<UnityEngine::GradientColorKey>::GetItem(int32_t index0)
+	Plugin::ArrayElementProxy1_1<UnityEngine::GradientColorKey> System::Array1<UnityEngine::GradientColorKey>::operator[](int32_t index)
 	{
-		auto returnValue = Plugin::UnityEngineGradientColorKeyArray1GetItem1(Handle, index0);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return returnValue;
-	}
-	
-	void Array1<UnityEngine::GradientColorKey>::SetItem(int32_t index0, UnityEngine::GradientColorKey& item)
-	{
-		Plugin::UnityEngineGradientColorKeyArray1SetItem1(Handle, index0, item);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
+		return Plugin::ArrayElementProxy1_1<UnityEngine::GradientColorKey>(Plugin::InternalUse::Only, Handle, index);
 	}
 }
 
@@ -7840,30 +7998,30 @@ DLLEXPORT void Init(
 	float (*unboxSingle)(int32_t valHandle),
 	int32_t (*boxDouble)(double val),
 	double (*unboxDouble)(int32_t valHandle),
-	int32_t (*systemInt32Array1Constructor1)(int32_t length0),
+	int32_t (*systemSystemInt32Array1Constructor1)(int32_t length0),
 	int32_t (*systemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*systemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item),
-	int32_t (*systemSingleArray1Constructor1)(int32_t length0),
+	int32_t (*systemSystemSingleArray1Constructor1)(int32_t length0),
 	float (*systemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*systemSingleArray1SetItem1)(int32_t thisHandle, int32_t index0, float item),
-	int32_t (*systemSingleArray2Constructor2)(int32_t length0, int32_t length1),
-	int32_t (*systemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension),
+	int32_t (*systemSystemSingleArray2Constructor2)(int32_t length0, int32_t length1),
+	int32_t (*systemSystemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension),
 	float (*systemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1),
 	int32_t (*systemSingleArray2SetItem2)(int32_t thisHandle, int32_t index0, int32_t index1, float item),
-	int32_t (*systemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2),
-	int32_t (*systemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension),
+	int32_t (*systemSystemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2),
+	int32_t (*systemSystemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension),
 	float (*systemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2),
 	int32_t (*systemSingleArray3SetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2, float item),
-	int32_t (*systemStringArray1Constructor1)(int32_t length0),
+	int32_t (*systemSystemStringArray1Constructor1)(int32_t length0),
 	int32_t (*systemStringArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*systemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
-	int32_t (*unityEngineResolutionArray1Constructor1)(int32_t length0),
+	int32_t (*unityEngineUnityEngineResolutionArray1Constructor1)(int32_t length0),
 	UnityEngine::Resolution (*unityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*unityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item),
-	int32_t (*unityEngineRaycastHitArray1Constructor1)(int32_t length0),
+	int32_t (*unityEngineUnityEngineRaycastHitArray1Constructor1)(int32_t length0),
 	int32_t (*unityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*unityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
-	int32_t (*unityEngineGradientColorKeyArray1Constructor1)(int32_t length0),
+	int32_t (*unityEngineUnityEngineGradientColorKeyArray1Constructor1)(int32_t length0),
 	UnityEngine::GradientColorKey (*unityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*unityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item),
 	void (*releaseSystemAction)(int32_t handle, int32_t classHandle),
@@ -8038,30 +8196,30 @@ DLLEXPORT void Init(
 	Plugin::UnboxSingle = unboxSingle;
 	Plugin::BoxDouble = boxDouble;
 	Plugin::UnboxDouble = unboxDouble;
-	Plugin::SystemInt32Array1Constructor1 = systemInt32Array1Constructor1;
+	Plugin::SystemSystemInt32Array1Constructor1 = systemSystemInt32Array1Constructor1;
 	Plugin::SystemInt32Array1GetItem1 = systemInt32Array1GetItem1;
 	Plugin::SystemInt32Array1SetItem1 = systemInt32Array1SetItem1;
-	Plugin::SystemSingleArray1Constructor1 = systemSingleArray1Constructor1;
+	Plugin::SystemSystemSingleArray1Constructor1 = systemSystemSingleArray1Constructor1;
 	Plugin::SystemSingleArray1GetItem1 = systemSingleArray1GetItem1;
 	Plugin::SystemSingleArray1SetItem1 = systemSingleArray1SetItem1;
-	Plugin::SystemSingleArray2Constructor2 = systemSingleArray2Constructor2;
-	Plugin::SystemSingleArray2GetLength2 = systemSingleArray2GetLength2;
+	Plugin::SystemSystemSingleArray2Constructor2 = systemSystemSingleArray2Constructor2;
+	Plugin::SystemSystemSingleArray2GetLength2 = systemSystemSingleArray2GetLength2;
 	Plugin::SystemSingleArray2GetItem2 = systemSingleArray2GetItem2;
 	Plugin::SystemSingleArray2SetItem2 = systemSingleArray2SetItem2;
-	Plugin::SystemSingleArray3Constructor3 = systemSingleArray3Constructor3;
-	Plugin::SystemSingleArray3GetLength3 = systemSingleArray3GetLength3;
+	Plugin::SystemSystemSingleArray3Constructor3 = systemSystemSingleArray3Constructor3;
+	Plugin::SystemSystemSingleArray3GetLength3 = systemSystemSingleArray3GetLength3;
 	Plugin::SystemSingleArray3GetItem3 = systemSingleArray3GetItem3;
 	Plugin::SystemSingleArray3SetItem3 = systemSingleArray3SetItem3;
-	Plugin::SystemStringArray1Constructor1 = systemStringArray1Constructor1;
+	Plugin::SystemSystemStringArray1Constructor1 = systemSystemStringArray1Constructor1;
 	Plugin::SystemStringArray1GetItem1 = systemStringArray1GetItem1;
 	Plugin::SystemStringArray1SetItem1 = systemStringArray1SetItem1;
-	Plugin::UnityEngineResolutionArray1Constructor1 = unityEngineResolutionArray1Constructor1;
+	Plugin::UnityEngineUnityEngineResolutionArray1Constructor1 = unityEngineUnityEngineResolutionArray1Constructor1;
 	Plugin::UnityEngineResolutionArray1GetItem1 = unityEngineResolutionArray1GetItem1;
 	Plugin::UnityEngineResolutionArray1SetItem1 = unityEngineResolutionArray1SetItem1;
-	Plugin::UnityEngineRaycastHitArray1Constructor1 = unityEngineRaycastHitArray1Constructor1;
+	Plugin::UnityEngineUnityEngineRaycastHitArray1Constructor1 = unityEngineUnityEngineRaycastHitArray1Constructor1;
 	Plugin::UnityEngineRaycastHitArray1GetItem1 = unityEngineRaycastHitArray1GetItem1;
 	Plugin::UnityEngineRaycastHitArray1SetItem1 = unityEngineRaycastHitArray1SetItem1;
-	Plugin::UnityEngineGradientColorKeyArray1Constructor1 = unityEngineGradientColorKeyArray1Constructor1;
+	Plugin::UnityEngineUnityEngineGradientColorKeyArray1Constructor1 = unityEngineUnityEngineGradientColorKeyArray1Constructor1;
 	Plugin::UnityEngineGradientColorKeyArray1GetItem1 = unityEngineGradientColorKeyArray1GetItem1;
 	Plugin::UnityEngineGradientColorKeyArray1SetItem1 = unityEngineGradientColorKeyArray1SetItem1;
 	SystemActionFreeListSize = maxManagedObjects;
