@@ -93,6 +93,12 @@ namespace Plugin
 	int32_t (*SystemCollectionsGenericListSystemStringPropertyGetItem)(int32_t thisHandle, int32_t index);
 	void (*SystemCollectionsGenericListSystemStringPropertySetItem)(int32_t thisHandle, int32_t index, int32_t valueHandle);
 	void (*SystemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle);
+	void (*SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle);
+	int32_t (*SystemCollectionsGenericListSystemInt32Constructor)();
+	int32_t (*SystemCollectionsGenericListSystemInt32PropertyGetItem)(int32_t thisHandle, int32_t index);
+	void (*SystemCollectionsGenericListSystemInt32PropertySetItem)(int32_t thisHandle, int32_t index, int32_t value);
+	void (*SystemCollectionsGenericListSystemInt32MethodAddSystemInt32)(int32_t thisHandle, int32_t item);
+	void (*SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle);
 	int32_t (*SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle);
 	int32_t (*SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)(int32_t thisHandle);
 	void (*SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)(int32_t thisHandle, int32_t valueHandle);
@@ -132,6 +138,14 @@ namespace Plugin
 	UnityEngine::SceneManagement::Scene (*UnboxScene)(int32_t valHandle);
 	int32_t (*BoxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val);
 	UnityEngine::SceneManagement::LoadSceneMode (*UnboxLoadSceneMode)(int32_t valHandle);
+	void (*ReleaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle);
+	void (*SystemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemCollectionsGenericIComparerSystemString)(int32_t handle);
+	void (*SystemCollectionsGenericIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemStringComparer)(int32_t handle);
+	void (*SystemStringComparerConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemEventArgs)(int32_t handle);
+	void (*SystemEventArgsConstructor)(int32_t cppHandle, int32_t* handle);
 	int32_t (*BoxBoolean)(System::Boolean val);
 	System::Boolean (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
@@ -184,44 +198,44 @@ namespace Plugin
 	int32_t (*UnityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item);
 	void (*ReleaseSystemAction)(int32_t handle, int32_t classHandle);
 	void (*SystemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	void (*SystemActionInvoke)(int32_t thisHandle);
 	void (*SystemActionAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemActionRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemActionInvoke)(int32_t thisHandle);
 	void (*ReleaseSystemActionSystemSingle)(int32_t handle, int32_t classHandle);
 	void (*SystemActionSystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	void (*SystemActionSystemSingleInvoke)(int32_t thisHandle, float obj);
 	void (*SystemActionSystemSingleAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemActionSystemSingleRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemActionSystemSingleInvoke)(int32_t thisHandle, float obj);
 	void (*ReleaseSystemActionSystemSingle_SystemSingle)(int32_t handle, int32_t classHandle);
 	void (*SystemActionSystemSingle_SystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	void (*SystemActionSystemSingle_SystemSingleInvoke)(int32_t thisHandle, float arg1, float arg2);
 	void (*SystemActionSystemSingle_SystemSingleAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemActionSystemSingle_SystemSingleRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemActionSystemSingle_SystemSingleInvoke)(int32_t thisHandle, float arg1, float arg2);
 	void (*ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble)(int32_t handle, int32_t classHandle);
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	double (*SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2);
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove)(int32_t thisHandle, int32_t delHandle);
+	double (*SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2);
 	void (*ReleaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t classHandle);
 	void (*SystemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	int32_t (*SystemFuncSystemInt16_SystemInt32_SystemStringInvoke)(int32_t thisHandle, int16_t arg1, int32_t arg2);
 	void (*SystemFuncSystemInt16_SystemInt32_SystemStringAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemFuncSystemInt16_SystemInt32_SystemStringRemove)(int32_t thisHandle, int32_t delHandle);
+	int32_t (*SystemFuncSystemInt16_SystemInt32_SystemStringInvoke)(int32_t thisHandle, int16_t arg1, int32_t arg2);
 	void (*ReleaseSystemAppDomainInitializer)(int32_t handle, int32_t classHandle);
 	void (*SystemAppDomainInitializerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	void (*SystemAppDomainInitializerInvoke)(int32_t thisHandle, int32_t argsHandle);
 	void (*SystemAppDomainInitializerAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemAppDomainInitializerRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemAppDomainInitializerInvoke)(int32_t thisHandle, int32_t argsHandle);
 	void (*ReleaseUnityEngineEventsUnityAction)(int32_t handle, int32_t classHandle);
 	void (*UnityEngineEventsUnityActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	void (*UnityEngineEventsUnityActionInvoke)(int32_t thisHandle);
 	void (*UnityEngineEventsUnityActionAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*UnityEngineEventsUnityActionRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*UnityEngineEventsUnityActionInvoke)(int32_t thisHandle);
 	void (*ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode)(int32_t handle, int32_t classHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
-	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -321,6 +335,106 @@ namespace Plugin
 		}
 	}
 	
+	int32_t SystemCollectionsGenericIComparerSystemInt32FreeListSize;
+	System::Collections::Generic::IComparer<int32_t>** SystemCollectionsGenericIComparerSystemInt32FreeList;
+	System::Collections::Generic::IComparer<int32_t>** NextFreeSystemCollectionsGenericIComparerSystemInt32;
+	
+	int32_t StoreSystemCollectionsGenericIComparerSystemInt32(System::Collections::Generic::IComparer<int32_t>* del)
+	{
+		assert(NextFreeSystemCollectionsGenericIComparerSystemInt32 != nullptr);
+		System::Collections::Generic::IComparer<int32_t>** pNext = NextFreeSystemCollectionsGenericIComparerSystemInt32;
+		NextFreeSystemCollectionsGenericIComparerSystemInt32 = (System::Collections::Generic::IComparer<int32_t>**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemCollectionsGenericIComparerSystemInt32FreeList);
+	}
+	
+	System::Collections::Generic::IComparer<int32_t>* GetSystemCollectionsGenericIComparerSystemInt32(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemCollectionsGenericIComparerSystemInt32FreeListSize);
+		return SystemCollectionsGenericIComparerSystemInt32FreeList[handle];
+	}
+	
+	void RemoveSystemCollectionsGenericIComparerSystemInt32(int32_t handle)
+	{
+		System::Collections::Generic::IComparer<int32_t>** pRelease = SystemCollectionsGenericIComparerSystemInt32FreeList + handle;
+		*pRelease = (System::Collections::Generic::IComparer<int32_t>*)NextFreeSystemCollectionsGenericIComparerSystemInt32;
+		NextFreeSystemCollectionsGenericIComparerSystemInt32 = pRelease;
+	}
+	int32_t SystemCollectionsGenericIComparerSystemStringFreeListSize;
+	System::Collections::Generic::IComparer<System::String>** SystemCollectionsGenericIComparerSystemStringFreeList;
+	System::Collections::Generic::IComparer<System::String>** NextFreeSystemCollectionsGenericIComparerSystemString;
+	
+	int32_t StoreSystemCollectionsGenericIComparerSystemString(System::Collections::Generic::IComparer<System::String>* del)
+	{
+		assert(NextFreeSystemCollectionsGenericIComparerSystemString != nullptr);
+		System::Collections::Generic::IComparer<System::String>** pNext = NextFreeSystemCollectionsGenericIComparerSystemString;
+		NextFreeSystemCollectionsGenericIComparerSystemString = (System::Collections::Generic::IComparer<System::String>**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemCollectionsGenericIComparerSystemStringFreeList);
+	}
+	
+	System::Collections::Generic::IComparer<System::String>* GetSystemCollectionsGenericIComparerSystemString(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemCollectionsGenericIComparerSystemStringFreeListSize);
+		return SystemCollectionsGenericIComparerSystemStringFreeList[handle];
+	}
+	
+	void RemoveSystemCollectionsGenericIComparerSystemString(int32_t handle)
+	{
+		System::Collections::Generic::IComparer<System::String>** pRelease = SystemCollectionsGenericIComparerSystemStringFreeList + handle;
+		*pRelease = (System::Collections::Generic::IComparer<System::String>*)NextFreeSystemCollectionsGenericIComparerSystemString;
+		NextFreeSystemCollectionsGenericIComparerSystemString = pRelease;
+	}
+	int32_t SystemStringComparerFreeListSize;
+	System::StringComparer** SystemStringComparerFreeList;
+	System::StringComparer** NextFreeSystemStringComparer;
+	
+	int32_t StoreSystemStringComparer(System::StringComparer* del)
+	{
+		assert(NextFreeSystemStringComparer != nullptr);
+		System::StringComparer** pNext = NextFreeSystemStringComparer;
+		NextFreeSystemStringComparer = (System::StringComparer**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemStringComparerFreeList);
+	}
+	
+	System::StringComparer* GetSystemStringComparer(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemStringComparerFreeListSize);
+		return SystemStringComparerFreeList[handle];
+	}
+	
+	void RemoveSystemStringComparer(int32_t handle)
+	{
+		System::StringComparer** pRelease = SystemStringComparerFreeList + handle;
+		*pRelease = (System::StringComparer*)NextFreeSystemStringComparer;
+		NextFreeSystemStringComparer = pRelease;
+	}
+	int32_t SystemEventArgsFreeListSize;
+	System::EventArgs** SystemEventArgsFreeList;
+	System::EventArgs** NextFreeSystemEventArgs;
+	
+	int32_t StoreSystemEventArgs(System::EventArgs* del)
+	{
+		assert(NextFreeSystemEventArgs != nullptr);
+		System::EventArgs** pNext = NextFreeSystemEventArgs;
+		NextFreeSystemEventArgs = (System::EventArgs**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemEventArgsFreeList);
+	}
+	
+	System::EventArgs* GetSystemEventArgs(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemEventArgsFreeListSize);
+		return SystemEventArgsFreeList[handle];
+	}
+	
+	void RemoveSystemEventArgs(int32_t handle)
+	{
+		System::EventArgs** pRelease = SystemEventArgsFreeList + handle;
+		*pRelease = (System::EventArgs*)NextFreeSystemEventArgs;
+		NextFreeSystemEventArgs = pRelease;
+	}
 	int32_t SystemActionFreeListSize;
 	System::Action** SystemActionFreeList;
 	System::Action** NextFreeSystemAction;
@@ -521,7 +635,6 @@ namespace Plugin
 		*pRelease = (UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>*)NextFreeUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode;
 		NextFreeUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode = pRelease;
 	}
-
 	/*END GLOBAL STATE AND FUNCTIONS*/
 }
 
@@ -2567,6 +2680,173 @@ namespace System
 					delete ex;
 				}
 			}
+	
+			void List<System::String>::Sort(System::Collections::Generic::IComparer<System::String> comparer)
+			{
+				Plugin::SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			List<int32_t>::List(std::nullptr_t n)
+				: List(Plugin::InternalUse::Only, 0)
+			{
+			}
+			
+			List<int32_t>::List(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			List<int32_t>::List(const List<int32_t>& other)
+				: List(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			List<int32_t>::List(List<int32_t>&& other)
+				: List(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			List<int32_t>::~List<int32_t>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			List<int32_t>& List<int32_t>::operator=(const List<int32_t>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			List<int32_t>& List<int32_t>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			List<int32_t>& List<int32_t>::operator=(List<int32_t>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool List<int32_t>::operator==(const List<int32_t>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool List<int32_t>::operator!=(const List<int32_t>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			List<int32_t>::List()
+				 : System::Object(nullptr)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericListSystemInt32Constructor();
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				Handle = returnValue;
+				if (returnValue)
+				{
+					Plugin::ReferenceManagedClass(returnValue);
+				}
+			}
+			
+			int32_t List<int32_t>::GetItem(int32_t index)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericListSystemInt32PropertyGetItem(Handle, index);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+			
+			void List<int32_t>::SetItem(int32_t index, int32_t value)
+			{
+				Plugin::SystemCollectionsGenericListSystemInt32PropertySetItem(Handle, index, value);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void List<int32_t>::Add(int32_t item)
+			{
+				Plugin::SystemCollectionsGenericListSystemInt32MethodAddSystemInt32(Handle, item);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+	
+			void List<int32_t>::Sort(System::Collections::Generic::IComparer<int32_t> comparer)
+			{
+				Plugin::SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
 		}
 	}
 }
@@ -4262,6 +4542,780 @@ namespace System
 			delete ex;
 		}
 		return returnVal;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IComparer<int32_t>::IComparer()
+				 : System::Object(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
+				Plugin::SystemCollectionsGenericIComparerSystemInt32Constructor(CppHandle, &Handle);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemCollectionsGenericIComparerSystemInt32(CppHandle);
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			IComparer<int32_t>::IComparer(std::nullptr_t n)
+				: System::Object(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
+			}
+			
+			IComparer<int32_t>::IComparer(const IComparer<int32_t>& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			IComparer<int32_t>::IComparer(IComparer<int32_t>&& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+			}
+			
+			IComparer<int32_t>::IComparer(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			IComparer<int32_t>::~IComparer()
+			{
+				Plugin::RemoveSystemCollectionsGenericIComparerSystemInt32(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			IComparer<int32_t>& IComparer<int32_t>::operator=(const IComparer<int32_t>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IComparer<int32_t>& IComparer<int32_t>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = 0;
+				return *this;
+			}
+			
+			IComparer<int32_t>& IComparer<int32_t>::operator=(IComparer<int32_t>&& other)
+			{
+				Plugin::RemoveSystemCollectionsGenericIComparerSystemInt32(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IComparer<int32_t>::operator==(const IComparer<int32_t>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IComparer<int32_t>::operator!=(const IComparer<int32_t>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			int32_t IComparer<int32_t>::Compare(int32_t x, int32_t y)
+			{
+				return {};
+			}
+			
+			DLLEXPORT int32_t SystemCollectionsGenericIComparerSystemInt32Compare(int32_t cppHandle, int32_t x, int32_t y)
+			{
+				try
+				{
+					return Plugin::GetSystemCollectionsGenericIComparerSystemInt32(cppHandle)->Compare(x, y);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+					return {};
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::Collections::Generic::IComparer<int32_t>";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+					return {};
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IComparer<System::String>::IComparer()
+				 : System::Object(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+				Plugin::SystemCollectionsGenericIComparerSystemStringConstructor(CppHandle, &Handle);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemCollectionsGenericIComparerSystemString(CppHandle);
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			IComparer<System::String>::IComparer(std::nullptr_t n)
+				: System::Object(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+			}
+			
+			IComparer<System::String>::IComparer(const IComparer<System::String>& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			IComparer<System::String>::IComparer(IComparer<System::String>&& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+			}
+			
+			IComparer<System::String>::IComparer(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			IComparer<System::String>::~IComparer()
+			{
+				Plugin::RemoveSystemCollectionsGenericIComparerSystemString(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericIComparerSystemString(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			IComparer<System::String>& IComparer<System::String>::operator=(const IComparer<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IComparer<System::String>& IComparer<System::String>::operator=(std::nullptr_t other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericIComparerSystemString(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = 0;
+				return *this;
+			}
+			
+			IComparer<System::String>& IComparer<System::String>::operator=(IComparer<System::String>&& other)
+			{
+				Plugin::RemoveSystemCollectionsGenericIComparerSystemString(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericIComparerSystemString(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IComparer<System::String>::operator==(const IComparer<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IComparer<System::String>::operator!=(const IComparer<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			int32_t IComparer<System::String>::Compare(System::String x, System::String y)
+			{
+				return {};
+			}
+			
+			DLLEXPORT int32_t SystemCollectionsGenericIComparerSystemStringCompare(int32_t cppHandle, int32_t xHandle, int32_t yHandle)
+			{
+				try
+				{
+					return Plugin::GetSystemCollectionsGenericIComparerSystemString(cppHandle)->Compare(System::String(Plugin::InternalUse::Only, xHandle), System::String(Plugin::InternalUse::Only, yHandle));
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+					return {};
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::Collections::Generic::IComparer<System::String>";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+					return {};
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	StringComparer::StringComparer()
+		 : System::Object(nullptr)
+	{
+		CppHandle = Plugin::StoreSystemStringComparer(this);
+		Plugin::SystemStringComparerConstructor(CppHandle, &Handle);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemStringComparer(CppHandle);
+			CppHandle = 0;
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	StringComparer::StringComparer(std::nullptr_t n)
+		: System::Object(Plugin::InternalUse::Only, 0)
+	{
+		CppHandle = Plugin::StoreSystemStringComparer(this);
+	}
+	
+	StringComparer::StringComparer(const StringComparer& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		CppHandle = Plugin::StoreSystemStringComparer(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	StringComparer::StringComparer(StringComparer&& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		CppHandle = other.CppHandle;
+		other.Handle = 0;
+		other.CppHandle = 0;
+	}
+	
+	StringComparer::StringComparer(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		CppHandle = Plugin::StoreSystemStringComparer(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	StringComparer::~StringComparer()
+	{
+		Plugin::RemoveSystemStringComparer(CppHandle);
+		CppHandle = 0;
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemStringComparer(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+	
+	StringComparer& StringComparer::operator=(const StringComparer& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	StringComparer& StringComparer::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemStringComparer(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+		Handle = 0;
+		return *this;
+	}
+	
+	StringComparer& StringComparer::operator=(StringComparer&& other)
+	{
+		Plugin::RemoveSystemStringComparer(CppHandle);
+		CppHandle = 0;
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemStringComparer(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool StringComparer::operator==(const StringComparer& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool StringComparer::operator!=(const StringComparer& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	int32_t StringComparer::Compare(System::String x, System::String y)
+	{
+		return {};
+	}
+	
+	DLLEXPORT int32_t SystemStringComparerCompare(int32_t cppHandle, int32_t xHandle, int32_t yHandle)
+	{
+		try
+		{
+			return Plugin::GetSystemStringComparer(cppHandle)->Compare(System::String(Plugin::InternalUse::Only, xHandle), System::String(Plugin::InternalUse::Only, yHandle));
+		}
+		catch (System::Exception ex)
+		{
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
+		catch (...)
+		{
+			System::String msg = "Unhandled exception invoking System::StringComparer";
+			System::Exception ex(msg);
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
+	}
+	
+	System::Boolean StringComparer::Equals(System::String x, System::String y)
+	{
+		return {};
+	}
+	
+	DLLEXPORT System::Boolean SystemStringComparerEquals(int32_t cppHandle, int32_t xHandle, int32_t yHandle)
+	{
+		try
+		{
+			return Plugin::GetSystemStringComparer(cppHandle)->Equals(System::String(Plugin::InternalUse::Only, xHandle), System::String(Plugin::InternalUse::Only, yHandle));
+		}
+		catch (System::Exception ex)
+		{
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
+		catch (...)
+		{
+			System::String msg = "Unhandled exception invoking System::StringComparer";
+			System::Exception ex(msg);
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
+	}
+	
+	int32_t StringComparer::GetHashCode(System::String obj)
+	{
+		return {};
+	}
+	
+	DLLEXPORT int32_t SystemStringComparerGetHashCode(int32_t cppHandle, int32_t objHandle)
+	{
+		try
+		{
+			return Plugin::GetSystemStringComparer(cppHandle)->GetHashCode(System::String(Plugin::InternalUse::Only, objHandle));
+		}
+		catch (System::Exception ex)
+		{
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
+		catch (...)
+		{
+			System::String msg = "Unhandled exception invoking System::StringComparer";
+			System::Exception ex(msg);
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
+	}
+}
+
+namespace System
+{
+	EventArgs::EventArgs()
+		 : System::Object(nullptr)
+	{
+		CppHandle = Plugin::StoreSystemEventArgs(this);
+		Plugin::SystemEventArgsConstructor(CppHandle, &Handle);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemEventArgs(CppHandle);
+			CppHandle = 0;
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	EventArgs::EventArgs(std::nullptr_t n)
+		: System::Object(Plugin::InternalUse::Only, 0)
+	{
+		CppHandle = Plugin::StoreSystemEventArgs(this);
+	}
+	
+	EventArgs::EventArgs(const EventArgs& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		CppHandle = Plugin::StoreSystemEventArgs(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	EventArgs::EventArgs(EventArgs&& other)
+		: System::Object(Plugin::InternalUse::Only, other.Handle)
+	{
+		CppHandle = other.CppHandle;
+		other.Handle = 0;
+		other.CppHandle = 0;
+	}
+	
+	EventArgs::EventArgs(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		CppHandle = Plugin::StoreSystemEventArgs(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	EventArgs::~EventArgs()
+	{
+		Plugin::RemoveSystemEventArgs(CppHandle);
+		CppHandle = 0;
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemEventArgs(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+	
+	EventArgs& EventArgs::operator=(const EventArgs& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	EventArgs& EventArgs::operator=(std::nullptr_t other)
+	{
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemEventArgs(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+		Handle = 0;
+		return *this;
+	}
+	
+	EventArgs& EventArgs::operator=(EventArgs&& other)
+	{
+		Plugin::RemoveSystemEventArgs(CppHandle);
+		CppHandle = 0;
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemEventArgs(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool EventArgs::operator==(const EventArgs& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool EventArgs::operator!=(const EventArgs& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	System::String EventArgs::ToString()
+	{
+		return {};
+	}
+	
+	DLLEXPORT int32_t SystemEventArgsToString(int32_t cppHandle)
+	{
+		try
+		{
+			return Plugin::GetSystemEventArgs(cppHandle)->ToString().Handle;
+		}
+		catch (System::Exception ex)
+		{
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
+		catch (...)
+		{
+			System::String msg = "Unhandled exception invoking System::EventArgs";
+			System::Exception ex(msg);
+			Plugin::SetException(ex.Handle);
+			return {};
+		}
 	}
 }
 
@@ -6178,22 +7232,6 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Action::operator()()
-	{
-	}
-	
-	void Action::Invoke()
-	{
-		Plugin::SystemActionInvoke(Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-	}
-	
 	void Action::operator+=(System::Action& del)
 	{
 		Plugin::SystemActionAdd(Handle, del.Handle);
@@ -6218,11 +7256,15 @@ namespace System
 		}
 	}
 	
-	DLLEXPORT void SystemActionCppInvoke(int32_t cppHandle)
+	void Action::operator()()
+	{
+	}
+	
+	DLLEXPORT void SystemActionNativeInvoke(int32_t cppHandle)
 	{
 		try
 		{
-			(*Plugin::GetSystemAction(cppHandle))();
+			Plugin::GetSystemAction(cppHandle)->operator()();
 		}
 		catch (System::Exception ex)
 		{
@@ -6233,6 +7275,18 @@ namespace System
 			System::String msg = "Unhandled exception invoking System::Action";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
+		}
+	}
+	
+	void Action::Invoke()
+	{
+		Plugin::SystemActionInvoke(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -6405,22 +7459,6 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Action1<float>::operator()(float obj)
-	{
-	}
-	
-	void Action1<float>::Invoke(float obj)
-	{
-		Plugin::SystemActionSystemSingleInvoke(Handle, obj);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-	}
-	
 	void Action1<float>::operator+=(System::Action1<float>& del)
 	{
 		Plugin::SystemActionSystemSingleAdd(Handle, del.Handle);
@@ -6445,11 +7483,15 @@ namespace System
 		}
 	}
 	
-	DLLEXPORT void SystemActionSystemSingleCppInvoke(int32_t cppHandle, float obj)
+	void Action1<float>::operator()(float obj)
+	{
+	}
+	
+	DLLEXPORT void SystemActionSystemSingleNativeInvoke(int32_t cppHandle, float obj)
 	{
 		try
 		{
-			(*Plugin::GetSystemActionSystemSingle(cppHandle))(obj);
+			Plugin::GetSystemActionSystemSingle(cppHandle)->operator()(obj);
 		}
 		catch (System::Exception ex)
 		{
@@ -6460,6 +7502,18 @@ namespace System
 			System::String msg = "Unhandled exception invoking System::Action1<float>";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
+		}
+	}
+	
+	void Action1<float>::Invoke(float obj)
+	{
+		Plugin::SystemActionSystemSingleInvoke(Handle, obj);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -6632,22 +7686,6 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Action2<float, float>::operator()(float arg1, float arg2)
-	{
-	}
-	
-	void Action2<float, float>::Invoke(float arg1, float arg2)
-	{
-		Plugin::SystemActionSystemSingle_SystemSingleInvoke(Handle, arg1, arg2);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-	}
-	
 	void Action2<float, float>::operator+=(System::Action2<float, float>& del)
 	{
 		Plugin::SystemActionSystemSingle_SystemSingleAdd(Handle, del.Handle);
@@ -6672,11 +7710,15 @@ namespace System
 		}
 	}
 	
-	DLLEXPORT void SystemActionSystemSingle_SystemSingleCppInvoke(int32_t cppHandle, float arg1, float arg2)
+	void Action2<float, float>::operator()(float arg1, float arg2)
+	{
+	}
+	
+	DLLEXPORT void SystemActionSystemSingle_SystemSingleNativeInvoke(int32_t cppHandle, float arg1, float arg2)
 	{
 		try
 		{
-			(*Plugin::GetSystemActionSystemSingle_SystemSingle(cppHandle))(arg1, arg2);
+			Plugin::GetSystemActionSystemSingle_SystemSingle(cppHandle)->operator()(arg1, arg2);
 		}
 		catch (System::Exception ex)
 		{
@@ -6687,6 +7729,18 @@ namespace System
 			System::String msg = "Unhandled exception invoking System::Action2<float, float>";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
+		}
+	}
+	
+	void Action2<float, float>::Invoke(float arg1, float arg2)
+	{
+		Plugin::SystemActionSystemSingle_SystemSingleInvoke(Handle, arg1, arg2);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -6859,24 +7913,6 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	double Func3<int32_t, float, double>::operator()(int32_t arg1, float arg2)
-	{
-		return {};
-	}
-	
-	double Func3<int32_t, float, double>::Invoke(int32_t arg1, float arg2)
-	{
-		auto returnValue = Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke(Handle, arg1, arg2);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return returnValue;
-	}
-	
 	void Func3<int32_t, float, double>::operator+=(System::Func3<int32_t, float, double>& del)
 	{
 		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd(Handle, del.Handle);
@@ -6901,11 +7937,16 @@ namespace System
 		}
 	}
 	
-	DLLEXPORT double SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke(int32_t cppHandle, int32_t arg1, float arg2)
+	double Func3<int32_t, float, double>::operator()(int32_t arg1, float arg2)
+	{
+		return {};
+	}
+	
+	DLLEXPORT double SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvoke(int32_t cppHandle, int32_t arg1, float arg2)
 	{
 		try
 		{
-			return (*Plugin::GetSystemFuncSystemInt32_SystemSingle_SystemDouble(cppHandle))(arg1, arg2);
+			return Plugin::GetSystemFuncSystemInt32_SystemSingle_SystemDouble(cppHandle)->operator()(arg1, arg2);
 		}
 		catch (System::Exception ex)
 		{
@@ -6919,6 +7960,19 @@ namespace System
 			Plugin::SetException(ex.Handle);
 			return {};
 		}
+	}
+	
+	double Func3<int32_t, float, double>::Invoke(int32_t arg1, float arg2)
+	{
+		auto returnValue = Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke(Handle, arg1, arg2);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
 	}
 }
 
@@ -7090,24 +8144,6 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	System::String Func3<int16_t, int32_t, System::String>::operator()(int16_t arg1, int32_t arg2)
-	{
-		return {};
-	}
-	
-	System::String Func3<int16_t, int32_t, System::String>::Invoke(int16_t arg1, int32_t arg2)
-	{
-		auto returnValue = Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringInvoke(Handle, arg1, arg2);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		return System::String(Plugin::InternalUse::Only, returnValue);
-	}
-	
 	void Func3<int16_t, int32_t, System::String>::operator+=(System::Func3<int16_t, int32_t, System::String>& del)
 	{
 		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd(Handle, del.Handle);
@@ -7132,11 +8168,16 @@ namespace System
 		}
 	}
 	
-	DLLEXPORT int32_t SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke(int32_t cppHandle, int16_t arg1, int32_t arg2)
+	System::String Func3<int16_t, int32_t, System::String>::operator()(int16_t arg1, int32_t arg2)
+	{
+		return {};
+	}
+	
+	DLLEXPORT int32_t SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvoke(int32_t cppHandle, int16_t arg1, int32_t arg2)
 	{
 		try
 		{
-			return (*Plugin::GetSystemFuncSystemInt16_SystemInt32_SystemString(cppHandle))(arg1, arg2).Handle;
+			return Plugin::GetSystemFuncSystemInt16_SystemInt32_SystemString(cppHandle)->operator()(arg1, arg2).Handle;
 		}
 		catch (System::Exception ex)
 		{
@@ -7150,6 +8191,19 @@ namespace System
 			Plugin::SetException(ex.Handle);
 			return {};
 		}
+	}
+	
+	System::String Func3<int16_t, int32_t, System::String>::Invoke(int16_t arg1, int32_t arg2)
+	{
+		auto returnValue = Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringInvoke(Handle, arg1, arg2);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return System::String(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -7321,22 +8375,6 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void AppDomainInitializer::operator()(System::Array1<System::String> args)
-	{
-	}
-	
-	void AppDomainInitializer::Invoke(System::Array1<System::String> args)
-	{
-		Plugin::SystemAppDomainInitializerInvoke(Handle, args.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-	}
-	
 	void AppDomainInitializer::operator+=(System::AppDomainInitializer& del)
 	{
 		Plugin::SystemAppDomainInitializerAdd(Handle, del.Handle);
@@ -7361,11 +8399,15 @@ namespace System
 		}
 	}
 	
-	DLLEXPORT void SystemAppDomainInitializerCppInvoke(int32_t cppHandle, int32_t argsHandle)
+	void AppDomainInitializer::operator()(System::Array1<System::String> args)
+	{
+	}
+	
+	DLLEXPORT void SystemAppDomainInitializerNativeInvoke(int32_t cppHandle, int32_t argsHandle)
 	{
 		try
 		{
-			(*Plugin::GetSystemAppDomainInitializer(cppHandle))(System::Array1<System::String>(Plugin::InternalUse::Only, argsHandle));
+			Plugin::GetSystemAppDomainInitializer(cppHandle)->operator()(System::Array1<System::String>(Plugin::InternalUse::Only, argsHandle));
 		}
 		catch (System::Exception ex)
 		{
@@ -7376,6 +8418,18 @@ namespace System
 			System::String msg = "Unhandled exception invoking System::AppDomainInitializer";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
+		}
+	}
+	
+	void AppDomainInitializer::Invoke(System::Array1<System::String> args)
+	{
+		Plugin::SystemAppDomainInitializerInvoke(Handle, args.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
 		}
 	}
 }
@@ -7550,22 +8604,6 @@ namespace UnityEngine
 			return Handle != other.Handle;
 		}
 		
-		void UnityAction::operator()()
-		{
-		}
-		
-		void UnityAction::Invoke()
-		{
-			Plugin::UnityEngineEventsUnityActionInvoke(Handle);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-		}
-		
 		void UnityAction::operator+=(UnityEngine::Events::UnityAction& del)
 		{
 			Plugin::UnityEngineEventsUnityActionAdd(Handle, del.Handle);
@@ -7590,11 +8628,15 @@ namespace UnityEngine
 			}
 		}
 		
-		DLLEXPORT void UnityEngineEventsUnityActionCppInvoke(int32_t cppHandle)
+		void UnityAction::operator()()
+		{
+		}
+		
+		DLLEXPORT void UnityEngineEventsUnityActionNativeInvoke(int32_t cppHandle)
 		{
 			try
 			{
-				(*Plugin::GetUnityEngineEventsUnityAction(cppHandle))();
+				Plugin::GetUnityEngineEventsUnityAction(cppHandle)->operator()();
 			}
 			catch (System::Exception ex)
 			{
@@ -7605,6 +8647,18 @@ namespace UnityEngine
 				System::String msg = "Unhandled exception invoking UnityEngine::Events::UnityAction";
 				System::Exception ex(msg);
 				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		void UnityAction::Invoke()
+		{
+			Plugin::UnityEngineEventsUnityActionInvoke(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 	}
@@ -7780,22 +8834,6 @@ namespace UnityEngine
 			return Handle != other.Handle;
 		}
 		
-		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
-		{
-		}
-		
-		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
-		{
-			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(Handle, arg0, arg1);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-		}
-		
 		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator+=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
 		{
 			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd(Handle, del.Handle);
@@ -7820,11 +8858,15 @@ namespace UnityEngine
 			}
 		}
 		
-		DLLEXPORT void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke(int32_t cppHandle, UnityEngine::SceneManagement::Scene arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+		{
+		}
+		
+		DLLEXPORT void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke(int32_t cppHandle, UnityEngine::SceneManagement::Scene arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
 		{
 			try
 			{
-				(*Plugin::GetUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(cppHandle))(arg0, arg1);
+				Plugin::GetUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(cppHandle)->operator()(arg0, arg1);
 			}
 			catch (System::Exception ex)
 			{
@@ -7835,6 +8877,18 @@ namespace UnityEngine
 				System::String msg = "Unhandled exception invoking UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>";
 				System::Exception ex(msg);
 				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+		{
+			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(Handle, arg0, arg1);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
 			}
 		}
 	}
@@ -7935,6 +8989,12 @@ DLLEXPORT void Init(
 	int32_t (*systemCollectionsGenericListSystemStringPropertyGetItem)(int32_t thisHandle, int32_t index),
 	void (*systemCollectionsGenericListSystemStringPropertySetItem)(int32_t thisHandle, int32_t index, int32_t valueHandle),
 	void (*systemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle),
+	void (*systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle),
+	int32_t (*systemCollectionsGenericListSystemInt32Constructor)(),
+	int32_t (*systemCollectionsGenericListSystemInt32PropertyGetItem)(int32_t thisHandle, int32_t index),
+	void (*systemCollectionsGenericListSystemInt32PropertySetItem)(int32_t thisHandle, int32_t index, int32_t value),
+	void (*systemCollectionsGenericListSystemInt32MethodAddSystemInt32)(int32_t thisHandle, int32_t item),
+	void (*systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle),
 	int32_t (*systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle),
 	int32_t (*systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)(int32_t thisHandle),
 	void (*systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)(int32_t thisHandle, int32_t valueHandle),
@@ -7974,6 +9034,14 @@ DLLEXPORT void Init(
 	UnityEngine::SceneManagement::Scene (*unboxScene)(int32_t valHandle),
 	int32_t (*boxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val),
 	UnityEngine::SceneManagement::LoadSceneMode (*unboxLoadSceneMode)(int32_t valHandle),
+	void (*releaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle),
+	void (*systemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemCollectionsGenericIComparerSystemString)(int32_t handle),
+	void (*systemCollectionsGenericIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemStringComparer)(int32_t handle),
+	void (*systemStringComparerConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemEventArgs)(int32_t handle),
+	void (*systemEventArgsConstructor)(int32_t cppHandle, int32_t* handle),
 	int32_t (*boxBoolean)(System::Boolean val),
 	System::Boolean (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
@@ -8026,44 +9094,44 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item),
 	void (*releaseSystemAction)(int32_t handle, int32_t classHandle),
 	void (*systemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	void (*systemActionInvoke)(int32_t thisHandle),
 	void (*systemActionAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemActionRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemActionInvoke)(int32_t thisHandle),
 	void (*releaseSystemActionSystemSingle)(int32_t handle, int32_t classHandle),
 	void (*systemActionSystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	void (*systemActionSystemSingleInvoke)(int32_t thisHandle, float obj),
 	void (*systemActionSystemSingleAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemActionSystemSingleRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemActionSystemSingleInvoke)(int32_t thisHandle, float obj),
 	void (*releaseSystemActionSystemSingle_SystemSingle)(int32_t handle, int32_t classHandle),
 	void (*systemActionSystemSingle_SystemSingleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	void (*systemActionSystemSingle_SystemSingleInvoke)(int32_t thisHandle, float arg1, float arg2),
 	void (*systemActionSystemSingle_SystemSingleAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemActionSystemSingle_SystemSingleRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemActionSystemSingle_SystemSingleInvoke)(int32_t thisHandle, float arg1, float arg2),
 	void (*releaseSystemFuncSystemInt32_SystemSingle_SystemDouble)(int32_t handle, int32_t classHandle),
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	double (*systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2),
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleRemove)(int32_t thisHandle, int32_t delHandle),
+	double (*systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2),
 	void (*releaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t classHandle),
 	void (*systemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	int32_t (*systemFuncSystemInt16_SystemInt32_SystemStringInvoke)(int32_t thisHandle, int16_t arg1, int32_t arg2),
 	void (*systemFuncSystemInt16_SystemInt32_SystemStringAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemFuncSystemInt16_SystemInt32_SystemStringRemove)(int32_t thisHandle, int32_t delHandle),
+	int32_t (*systemFuncSystemInt16_SystemInt32_SystemStringInvoke)(int32_t thisHandle, int16_t arg1, int32_t arg2),
 	void (*releaseSystemAppDomainInitializer)(int32_t handle, int32_t classHandle),
 	void (*systemAppDomainInitializerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	void (*systemAppDomainInitializerInvoke)(int32_t thisHandle, int32_t argsHandle),
 	void (*systemAppDomainInitializerAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemAppDomainInitializerRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemAppDomainInitializerInvoke)(int32_t thisHandle, int32_t argsHandle),
 	void (*releaseUnityEngineEventsUnityAction)(int32_t handle, int32_t classHandle),
 	void (*unityEngineEventsUnityActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	void (*unityEngineEventsUnityActionInvoke)(int32_t thisHandle),
 	void (*unityEngineEventsUnityActionAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*unityEngineEventsUnityActionRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*unityEngineEventsUnityActionInvoke)(int32_t thisHandle),
 	void (*releaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode)(int32_t handle, int32_t classHandle),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
-	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle),
-	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle)
+	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;
@@ -8133,6 +9201,12 @@ DLLEXPORT void Init(
 	Plugin::SystemCollectionsGenericListSystemStringPropertyGetItem = systemCollectionsGenericListSystemStringPropertyGetItem;
 	Plugin::SystemCollectionsGenericListSystemStringPropertySetItem = systemCollectionsGenericListSystemStringPropertySetItem;
 	Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString = systemCollectionsGenericListSystemStringMethodAddSystemString;
+	Plugin::SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer = systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer;
+	Plugin::SystemCollectionsGenericListSystemInt32Constructor = systemCollectionsGenericListSystemInt32Constructor;
+	Plugin::SystemCollectionsGenericListSystemInt32PropertyGetItem = systemCollectionsGenericListSystemInt32PropertyGetItem;
+	Plugin::SystemCollectionsGenericListSystemInt32PropertySetItem = systemCollectionsGenericListSystemInt32PropertySetItem;
+	Plugin::SystemCollectionsGenericListSystemInt32MethodAddSystemInt32 = systemCollectionsGenericListSystemInt32MethodAddSystemInt32;
+	Plugin::SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer = systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer;
 	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString = systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString;
 	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue;
 	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue;
@@ -8172,6 +9246,46 @@ DLLEXPORT void Init(
 	Plugin::UnboxScene = unboxScene;
 	Plugin::BoxLoadSceneMode = boxLoadSceneMode;
 	Plugin::UnboxLoadSceneMode = unboxLoadSceneMode;
+	SystemCollectionsGenericIComparerSystemInt32FreeListSize = maxManagedObjects;
+	SystemCollectionsGenericIComparerSystemInt32FreeList = new System::Collections::Generic::IComparer<int32_t>*[SystemCollectionsGenericIComparerSystemInt32FreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsGenericIComparerSystemInt32FreeListSize - 1; i < end; ++i)
+	{
+		SystemCollectionsGenericIComparerSystemInt32FreeList[i] = (System::Collections::Generic::IComparer<int32_t>*)(SystemCollectionsGenericIComparerSystemInt32FreeList + i + 1);
+	}
+	SystemCollectionsGenericIComparerSystemInt32FreeList[SystemCollectionsGenericIComparerSystemInt32FreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsGenericIComparerSystemInt32 = SystemCollectionsGenericIComparerSystemInt32FreeList + 1;
+	Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32 = releaseSystemCollectionsGenericIComparerSystemInt32;
+	Plugin::SystemCollectionsGenericIComparerSystemInt32Constructor = systemCollectionsGenericIComparerSystemInt32Constructor;
+	SystemCollectionsGenericIComparerSystemStringFreeListSize = maxManagedObjects;
+	SystemCollectionsGenericIComparerSystemStringFreeList = new System::Collections::Generic::IComparer<System::String>*[SystemCollectionsGenericIComparerSystemStringFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsGenericIComparerSystemStringFreeListSize - 1; i < end; ++i)
+	{
+		SystemCollectionsGenericIComparerSystemStringFreeList[i] = (System::Collections::Generic::IComparer<System::String>*)(SystemCollectionsGenericIComparerSystemStringFreeList + i + 1);
+	}
+	SystemCollectionsGenericIComparerSystemStringFreeList[SystemCollectionsGenericIComparerSystemStringFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsGenericIComparerSystemString = SystemCollectionsGenericIComparerSystemStringFreeList + 1;
+	Plugin::ReleaseSystemCollectionsGenericIComparerSystemString = releaseSystemCollectionsGenericIComparerSystemString;
+	Plugin::SystemCollectionsGenericIComparerSystemStringConstructor = systemCollectionsGenericIComparerSystemStringConstructor;
+	SystemStringComparerFreeListSize = maxManagedObjects;
+	SystemStringComparerFreeList = new System::StringComparer*[SystemStringComparerFreeListSize];
+	for (int32_t i = 0, end = SystemStringComparerFreeListSize - 1; i < end; ++i)
+	{
+		SystemStringComparerFreeList[i] = (System::StringComparer*)(SystemStringComparerFreeList + i + 1);
+	}
+	SystemStringComparerFreeList[SystemStringComparerFreeListSize - 1] = nullptr;
+	NextFreeSystemStringComparer = SystemStringComparerFreeList + 1;
+	Plugin::ReleaseSystemStringComparer = releaseSystemStringComparer;
+	Plugin::SystemStringComparerConstructor = systemStringComparerConstructor;
+	SystemEventArgsFreeListSize = maxManagedObjects;
+	SystemEventArgsFreeList = new System::EventArgs*[SystemEventArgsFreeListSize];
+	for (int32_t i = 0, end = SystemEventArgsFreeListSize - 1; i < end; ++i)
+	{
+		SystemEventArgsFreeList[i] = (System::EventArgs*)(SystemEventArgsFreeList + i + 1);
+	}
+	SystemEventArgsFreeList[SystemEventArgsFreeListSize - 1] = nullptr;
+	NextFreeSystemEventArgs = SystemEventArgsFreeList + 1;
+	Plugin::ReleaseSystemEventArgs = releaseSystemEventArgs;
+	Plugin::SystemEventArgsConstructor = systemEventArgsConstructor;
 	Plugin::BoxBoolean = boxBoolean;
 	Plugin::UnboxBoolean = unboxBoolean;
 	Plugin::BoxSByte = boxSByte;
@@ -8232,9 +9346,9 @@ DLLEXPORT void Init(
 	NextFreeSystemAction = SystemActionFreeList + 1;
 	Plugin::ReleaseSystemAction = releaseSystemAction;
 	Plugin::SystemActionConstructor = systemActionConstructor;
-	Plugin::SystemActionInvoke = systemActionInvoke;
 	Plugin::SystemActionAdd = systemActionAdd;
 	Plugin::SystemActionRemove = systemActionRemove;
+	Plugin::SystemActionInvoke = systemActionInvoke;
 	SystemActionSystemSingleFreeListSize = maxManagedObjects;
 	SystemActionSystemSingleFreeList = new System::Action1<float>*[SystemActionSystemSingleFreeListSize];
 	for (int32_t i = 0, end = SystemActionSystemSingleFreeListSize - 1; i < end; ++i)
@@ -8245,9 +9359,9 @@ DLLEXPORT void Init(
 	NextFreeSystemActionSystemSingle = SystemActionSystemSingleFreeList + 1;
 	Plugin::ReleaseSystemActionSystemSingle = releaseSystemActionSystemSingle;
 	Plugin::SystemActionSystemSingleConstructor = systemActionSystemSingleConstructor;
-	Plugin::SystemActionSystemSingleInvoke = systemActionSystemSingleInvoke;
 	Plugin::SystemActionSystemSingleAdd = systemActionSystemSingleAdd;
 	Plugin::SystemActionSystemSingleRemove = systemActionSystemSingleRemove;
+	Plugin::SystemActionSystemSingleInvoke = systemActionSystemSingleInvoke;
 	SystemActionSystemSingle_SystemSingleFreeListSize = 100;
 	SystemActionSystemSingle_SystemSingleFreeList = new System::Action2<float, float>*[SystemActionSystemSingle_SystemSingleFreeListSize];
 	for (int32_t i = 0, end = SystemActionSystemSingle_SystemSingleFreeListSize - 1; i < end; ++i)
@@ -8258,9 +9372,9 @@ DLLEXPORT void Init(
 	NextFreeSystemActionSystemSingle_SystemSingle = SystemActionSystemSingle_SystemSingleFreeList + 1;
 	Plugin::ReleaseSystemActionSystemSingle_SystemSingle = releaseSystemActionSystemSingle_SystemSingle;
 	Plugin::SystemActionSystemSingle_SystemSingleConstructor = systemActionSystemSingle_SystemSingleConstructor;
-	Plugin::SystemActionSystemSingle_SystemSingleInvoke = systemActionSystemSingle_SystemSingleInvoke;
 	Plugin::SystemActionSystemSingle_SystemSingleAdd = systemActionSystemSingle_SystemSingleAdd;
 	Plugin::SystemActionSystemSingle_SystemSingleRemove = systemActionSystemSingle_SystemSingleRemove;
+	Plugin::SystemActionSystemSingle_SystemSingleInvoke = systemActionSystemSingle_SystemSingleInvoke;
 	SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize = 50;
 	SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList = new System::Func3<int32_t, float, double>*[SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize];
 	for (int32_t i = 0, end = SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize - 1; i < end; ++i)
@@ -8271,9 +9385,9 @@ DLLEXPORT void Init(
 	NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble = SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + 1;
 	Plugin::ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble = releaseSystemFuncSystemInt32_SystemSingle_SystemDouble;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor = systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor;
-	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke = systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd = systemFuncSystemInt32_SystemSingle_SystemDoubleAdd;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove = systemFuncSystemInt32_SystemSingle_SystemDoubleRemove;
+	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke = systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke;
 	SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize = 25;
 	SystemFuncSystemInt16_SystemInt32_SystemStringFreeList = new System::Func3<int16_t, int32_t, System::String>*[SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize];
 	for (int32_t i = 0, end = SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize - 1; i < end; ++i)
@@ -8284,9 +9398,9 @@ DLLEXPORT void Init(
 	NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + 1;
 	Plugin::ReleaseSystemFuncSystemInt16_SystemInt32_SystemString = releaseSystemFuncSystemInt16_SystemInt32_SystemString;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor = systemFuncSystemInt16_SystemInt32_SystemStringConstructor;
-	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringInvoke = systemFuncSystemInt16_SystemInt32_SystemStringInvoke;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd = systemFuncSystemInt16_SystemInt32_SystemStringAdd;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringRemove = systemFuncSystemInt16_SystemInt32_SystemStringRemove;
+	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringInvoke = systemFuncSystemInt16_SystemInt32_SystemStringInvoke;
 	SystemAppDomainInitializerFreeListSize = maxManagedObjects;
 	SystemAppDomainInitializerFreeList = new System::AppDomainInitializer*[SystemAppDomainInitializerFreeListSize];
 	for (int32_t i = 0, end = SystemAppDomainInitializerFreeListSize - 1; i < end; ++i)
@@ -8297,9 +9411,9 @@ DLLEXPORT void Init(
 	NextFreeSystemAppDomainInitializer = SystemAppDomainInitializerFreeList + 1;
 	Plugin::ReleaseSystemAppDomainInitializer = releaseSystemAppDomainInitializer;
 	Plugin::SystemAppDomainInitializerConstructor = systemAppDomainInitializerConstructor;
-	Plugin::SystemAppDomainInitializerInvoke = systemAppDomainInitializerInvoke;
 	Plugin::SystemAppDomainInitializerAdd = systemAppDomainInitializerAdd;
 	Plugin::SystemAppDomainInitializerRemove = systemAppDomainInitializerRemove;
+	Plugin::SystemAppDomainInitializerInvoke = systemAppDomainInitializerInvoke;
 	UnityEngineEventsUnityActionFreeListSize = maxManagedObjects;
 	UnityEngineEventsUnityActionFreeList = new UnityEngine::Events::UnityAction*[UnityEngineEventsUnityActionFreeListSize];
 	for (int32_t i = 0, end = UnityEngineEventsUnityActionFreeListSize - 1; i < end; ++i)
@@ -8310,9 +9424,9 @@ DLLEXPORT void Init(
 	NextFreeUnityEngineEventsUnityAction = UnityEngineEventsUnityActionFreeList + 1;
 	Plugin::ReleaseUnityEngineEventsUnityAction = releaseUnityEngineEventsUnityAction;
 	Plugin::UnityEngineEventsUnityActionConstructor = unityEngineEventsUnityActionConstructor;
-	Plugin::UnityEngineEventsUnityActionInvoke = unityEngineEventsUnityActionInvoke;
 	Plugin::UnityEngineEventsUnityActionAdd = unityEngineEventsUnityActionAdd;
 	Plugin::UnityEngineEventsUnityActionRemove = unityEngineEventsUnityActionRemove;
+	Plugin::UnityEngineEventsUnityActionInvoke = unityEngineEventsUnityActionInvoke;
 	UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize = 10;
 	UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList = new UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>*[UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize];
 	for (int32_t i = 0, end = UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize - 1; i < end; ++i)
@@ -8323,9 +9437,9 @@ DLLEXPORT void Init(
 	NextFreeUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode = UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList + 1;
 	Plugin::ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode = releaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor;
-	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove;
+	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke;
 	/*END INIT BODY*/
 	
 	try

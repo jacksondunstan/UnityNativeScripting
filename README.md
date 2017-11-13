@@ -96,6 +96,7 @@ While IL2CPP transforms C# into C++ already, it generates a lot of overhead. The
     * Delegates
     * Events
     * Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
+    * Implementing C# interfaces and deriving from C# classes with C++ classes
 
 # Performance
 
@@ -195,7 +196,8 @@ Note that the code generator does not support (yet):
 * `Array` methods (e.g. `IndexOf`)
 * `string` methods (e.g. `Substring`)
 * Default parameters
-* Interfaces
+* Overriding properties, events, and indexers
+* Deriving from classes without a default constructor
 * `decimal`
 * C# pointers
 

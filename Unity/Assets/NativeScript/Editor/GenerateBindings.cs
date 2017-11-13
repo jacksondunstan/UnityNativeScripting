@@ -95,6 +95,15 @@ namespace NativeScript
 		}
 		
 		[Serializable]
+		class JsonBaseType
+		{
+			public string Name;
+			public JsonGenericParams[] GenericParams;
+			public int MaxSimultaneous;
+			public JsonMethod[] OverrideMethods;
+		}
+		
+		[Serializable]
 		class JsonMonoBehaviour
 		{
 			public string Name;
@@ -121,6 +130,7 @@ namespace NativeScript
 		{
 			public string[] Assemblies;
 			public JsonType[] Types;
+			public JsonBaseType[] BaseTypes;
 			public JsonMonoBehaviour[] MonoBehaviours;
 			public JsonArray[] Arrays;
 			public JsonDelegate[] Delegates;
@@ -130,43 +140,45 @@ namespace NativeScript
 		
 		class StringBuilders
 		{
-			public StringBuilder CsharpInitParams =
+			public readonly StringBuilder CsharpInitParams =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpDelegateTypes =
+			public readonly StringBuilder CsharpDelegateTypes =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpStructStoreInitCalls =
+			public readonly StringBuilder CsharpStructStoreInitCalls =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpInitCall =
+			public readonly StringBuilder CsharpInitCall =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpFunctions =
+			public readonly StringBuilder CsharpBaseTypes =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpMonoBehaviours =
+			public readonly StringBuilder CsharpFunctions =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpDelegates =
+			public readonly StringBuilder CsharpMonoBehaviours =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpImports =
+			public readonly StringBuilder CsharpDelegates =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CsharpGetDelegateCalls =
+			public readonly StringBuilder CsharpImports =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppFunctionPointers =
+			public readonly StringBuilder CsharpGetDelegateCalls =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppTypeDeclarations =
+			public readonly StringBuilder CppFunctionPointers =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppTypeDefinitions =
+			public readonly StringBuilder CppTypeDeclarations =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppMethodDefinitions =
+			public readonly StringBuilder CppTypeDefinitions =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppInitParams =
+			public readonly StringBuilder CppMethodDefinitions =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppInitBody =
+			public readonly StringBuilder CppInitParams =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppMonoBehaviourMessages =
+			public readonly StringBuilder CppInitBody =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppGlobalStateAndFunctions =
+			public readonly StringBuilder CppMonoBehaviourMessages =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder CppBoxingMethodDeclarations =
+			public readonly StringBuilder CppGlobalStateAndFunctions =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public StringBuilder TempStrBuilder =
+			public readonly StringBuilder CppBoxingMethodDeclarations =
+				new StringBuilder(InitialStringBuilderCapacity);
+			public readonly StringBuilder TempStrBuilder =
 				new StringBuilder(InitialStringBuilderCapacity);
 		}
 		
@@ -206,10 +218,7 @@ namespace NativeScript
 			Primitive,
 			
 			// A pointer to any type, either X*, IntPtr, or UIntPtr
-			Pointer,
-			
-			// The decimal type
-			Decimal
+			Pointer
 		}
 		
 		// Compares by field declaration order
@@ -231,8 +240,8 @@ namespace NativeScript
 		
 		class MessageInfo
 		{
-			public string Name;
-			public Type[] ParameterTypes;
+			public readonly string Name;
+			public readonly Type[] ParameterTypes;
 			public bool Selected;
 			
 			public MessageInfo(
@@ -310,7 +319,7 @@ namespace NativeScript
 			new MessageInfo("Update"),
 		};
 		
-		private static readonly Type[] PRIMITIVE_TYPES = new [] {
+		private static readonly Type[] PRIMITIVE_TYPES = {
 			typeof(bool),
 			typeof(sbyte),
 			typeof(byte),
@@ -326,7 +335,6 @@ namespace NativeScript
 		};
 		
 		const string PostCompileWorkPref = "NativeScriptGenerateBindingsPostCompileWork";
-		const string DryRunPref = "NativeScriptGenerateBindingsDryRun";
 		
 		static readonly string DotNetDllsDirPath = new FileInfo(
 				new Uri(typeof(string).Assembly.CodeBase).LocalPath
@@ -366,86 +374,67 @@ namespace NativeScript
 		[MenuItem("NativeScript/Generate Bindings #%g")]
 		public static void Generate()
 		{
-			Generate(false);
-		}
-		
-		[MenuItem("NativeScript/Generate Bindings (dry run) #%&g")]
-		public static void GenerateDryRun()
-		{
-			Generate(true);
-		}
-		
-		static void Generate(bool dryRun)
-		{
 			EditorPrefs.DeleteKey(PostCompileWorkPref);
-			EditorPrefs.SetBool(DryRunPref, dryRun);
-			if (dryRun)
+			JsonDocument doc = LoadJson();
+			Assembly[] assemblies = GetAssemblies(doc.Assemblies);
+			
+			// Determine whether we need to generate stubs
+			// We can skip this step if we've already generated all the
+			// required MonoBehaviour classes and their messages
+			bool needStubs = false;
+			foreach (JsonMonoBehaviour monoBehaviour in doc.MonoBehaviours)
 			{
-				DoPostCompileWork(true);
+				// Check if the MonoBehaviour type is already generated
+				Type type = TryGetType(
+					monoBehaviour.Name,
+					assemblies);
+				if (type == null)
+				{
+					needStubs = true;
+					break;
+				}
+				
+				// Check if all the messages are already generated
+				foreach (string message in monoBehaviour.Messages)
+				{
+					MethodInfo methodInfo = type.GetMethod(message);
+					if (methodInfo == null)
+					{
+						needStubs = true;
+						goto determinedNeedStubs;
+					}
+				}
+			}
+			determinedNeedStubs:;
+			
+			if (needStubs)
+			{
+				// We'll need to be able to get these via reflection later
+				StringBuilder csharpMonoBehaviours = new StringBuilder(
+					InitialStringBuilderCapacity);
+				string timestamp = DateTime.Now.ToLongTimeString();
+				AppendStubMonoBehaviours(
+					doc.MonoBehaviours,
+					timestamp,
+					csharpMonoBehaviours);
+				
+				// Inject
+				string csharpContents = File.ReadAllText(CsharpPath);
+				csharpContents = InjectIntoString(
+					csharpContents,
+					"/*BEGIN MONOBEHAVIOURS*/\n",
+					"\n/*END MONOBEHAVIOURS*/",
+					csharpMonoBehaviours.ToString());
+				File.WriteAllText(CsharpPath, csharpContents);
+				
+				// Compile and continue after scripts are refreshed
+				Debug.Log("Waiting for compile...");
+				AssetDatabase.Refresh();
+				EditorPrefs.SetBool(PostCompileWorkPref, true);
 			}
 			else
 			{
-				JsonDocument doc = LoadJson();
-				Assembly[] assemblies = GetAssemblies(doc.Assemblies);
-				
-				// Determine whether we need to generate stubs
-				// We can skip this step if we've already generated all the
-				// required MonoBehaviour classes and their messages
-				bool needStubs = false;
-				foreach (JsonMonoBehaviour monoBehaviour in doc.MonoBehaviours)
-				{
-					// Check if the MonoBehaviour type is already generated
-					Type type = TryGetType(
-						monoBehaviour.Name,
-						assemblies);
-					if (type == null)
-					{
-						needStubs = true;
-						break;
-					}
-					
-					// Check if all the messages are already generated
-					foreach (string message in monoBehaviour.Messages)
-					{
-						MethodInfo methodInfo = type.GetMethod(message);
-						if (methodInfo == null)
-						{
-							needStubs = true;
-							goto determinedNeedStubs;
-						}
-					}
-				}
-				determinedNeedStubs:;
-				
-				if (needStubs)
-				{
-					// We'll need to be able to get these via reflection later
-					StringBuilder csharpMonoBehaviours = new StringBuilder(
-						InitialStringBuilderCapacity);
-					string timestamp = DateTime.Now.ToLongTimeString();
-					AppendStubMonoBehaviours(
-						doc.MonoBehaviours,
-						timestamp,
-						csharpMonoBehaviours);
-					
-					// Inject
-					string csharpContents = File.ReadAllText(CsharpPath);
-					csharpContents = InjectIntoString(
-						csharpContents,
-						"/*BEGIN MONOBEHAVIOURS*/\n",
-						"\n/*END MONOBEHAVIOURS*/",
-						csharpMonoBehaviours.ToString());
-					File.WriteAllText(CsharpPath, csharpContents);
-					
-					// Compile and continue after scripts are refreshed
-					Debug.Log("Waiting for compile...");
-					AssetDatabase.Refresh();
-					EditorPrefs.SetBool(PostCompileWorkPref, true);
-				}
-				else
-				{
-					DoPostCompileWork(true);
-				}
+				DoPostCompileWork(true);
 			}
 		}
 		
@@ -512,9 +501,6 @@ namespace NativeScript
 		
 		static void DoPostCompileWork(bool canRefreshAssetDb)
 		{
-			bool dryRun = EditorPrefs.GetBool(DryRunPref);
-			EditorPrefs.DeleteKey(DryRunPref);
-			
 			DateTime beforeTime = DateTime.Now;
 			
 			JsonDocument doc = LoadJson();
@@ -522,14 +508,29 @@ namespace NativeScript
 			StringBuilders builders = new StringBuilders();
 			
 			// Generate types
-			foreach (JsonType jsonType in doc.Types)
+			if (doc.Types != null)
 			{
-				AppendType(
-					jsonType,
-					assemblies,
-					builders);
+				foreach (JsonType jsonType in doc.Types)
+				{
+					AppendType(
+						jsonType,
+						assemblies,
+						builders);
+				}
 			}
-			
+
+			// Generate base types
+			if (doc.BaseTypes != null)
+			{
+				foreach (JsonBaseType jsonBaseType in doc.BaseTypes)
+				{
+					AppendBaseType(
+						jsonBaseType,
+						assemblies,
+						builders);
+				}
+			}
+
 			// Generate boxing and unboxing for primitive types
 			foreach (Type type in PRIMITIVE_TYPES)
 			{
@@ -537,7 +538,6 @@ namespace NativeScript
 					type,
 					TypeKind.Primitive,
 					null,
-					assemblies,
 					builders);
 			}
 			
@@ -584,29 +584,22 @@ namespace NativeScript
 			
 			RemoveTrailingChars(builders);
 			
-			if (dryRun)
+			InjectBuilders(builders);
+			if (canRefreshAssetDb)
 			{
-				LogStringBuilders(builders);
+				AssetDatabase.Refresh();
+				DateTime afterTime = DateTime.Now;
+				TimeSpan duration = afterTime - beforeTime;
+				Debug.LogFormat(
+					"Done generating bindings in {0} seconds.",
+					duration.TotalSeconds);
 			}
 			else
 			{
-				InjectBuilders(builders);
-				if (canRefreshAssetDb)
-				{
-					AssetDatabase.Refresh();
-					DateTime afterTime = DateTime.Now;
-					TimeSpan duration = afterTime - beforeTime;
-					Debug.LogFormat(
-						"Done generating bindings in {0} seconds.",
-						duration.TotalSeconds);
-				}
-				else
-				{
-					Debug.LogWarning(
-						"Can't auto-refresh due to a bug in Unity. " +
-						"Please manually refresh assets with " +
-						"Assets -> Refresh to finish generating bindings");
-				}
+				Debug.LogWarning(
+					"Can't auto-refresh due to a bug in Unity. " +
+					"Please manually refresh assets with " +
+					"Assets -> Refresh to finish generating bindings");
 			}
 		}
 		
@@ -999,7 +992,6 @@ namespace NativeScript
 						{
 							break;
 						}
-						break;
 					}
 					output.Append(
 						namespaceName,
@@ -1180,13 +1172,11 @@ namespace NativeScript
 			{
 				AppendEnum(
 					type,
-					assemblies,
 					builders);
 				AppendBoxingUnboxing(
 					type,
 					typeKind,
 					null,
-					assemblies,
 					builders);
 			}
 			else
@@ -1229,7 +1219,6 @@ namespace NativeScript
 								genericType,
 								typeKind,
 								typeParams,
-								assemblies,
 								builders);
 						}
 					}
@@ -1253,7 +1242,6 @@ namespace NativeScript
 							type,
 							typeKind,
 							null,
-							assemblies,
 							builders);
 					}
 				}
@@ -1269,14 +1257,6 @@ namespace NativeScript
 			Assembly[] assemblies,
 			StringBuilders builders)
 		{
-			builders.TempStrBuilder.Length = 0;
-			AppendTypeNameWithoutGenericSuffix(
-				type.Name,
-				builders.TempStrBuilder);
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string typeNameLower = builders.TempStrBuilder.ToString();
-			
 			bool isStatic = IsStatic(type);
 			TypeKind typeKind = GetTypeKind(type);
 			if (!isStatic && typeKind == TypeKind.ManagedStruct)
@@ -1334,7 +1314,7 @@ namespace NativeScript
 				paramInfo.IsRef = false;
 				paramInfo.DereferencedParameterType = typeof(int);
 				paramInfo.Kind = TypeKind.Primitive;
-				ParameterInfo[] parameters = new[] { paramInfo };
+				ParameterInfo[] parameters = { paramInfo };
 				
 				// ReleaseX C# delegate type
 				AppendCsharpDelegateType(
@@ -1353,7 +1333,6 @@ namespace NativeScript
 					true,
 					typeKind,
 					typeof(void),
-					null,
 					parameters,
 					builders.CsharpFunctions);
 				builders.CsharpFunctions.Append(
@@ -1473,14 +1452,15 @@ namespace NativeScript
 				builders.CppTypeDeclarations);
 			
 			// C++ type definition (beginning)
+			Type baseType = type.BaseType ?? typeof(object);
 			AppendCppTypeDefinitionBegin(
 				type.Name,
 				type.Namespace,
 				typeKind,
 				typeParams,
-				type.BaseType.Name,
-				type.BaseType.Namespace,
-				type.BaseType.GetGenericArguments(),
+				baseType.Name,
+				baseType.Namespace,
+				baseType.GetGenericArguments(),
 				isStatic,
 				indent,
 				builders.CppTypeDefinitions);
@@ -1491,9 +1471,9 @@ namespace NativeScript
 				type.Namespace,
 				typeKind,
 				typeParams,
-				type.BaseType.Name,
-				type.BaseType.Namespace,
-				type.BaseType.GetGenericArguments(),
+				baseType.Name,
+				baseType.Namespace,
+				baseType.GetGenericArguments(),
 				isStatic,
 				indent,
 				builders.CppMethodDefinitions);
@@ -1519,7 +1499,6 @@ namespace NativeScript
 						assemblies,
 						typeParams,
 						genericArgTypes,
-						typeNameLower,
 						indent,
 						builders);
 				}
@@ -1581,7 +1560,6 @@ namespace NativeScript
 						isStatic,
 						typeKind,
 						typeParams,
-						genericArgTypes,
 						indent,
 						builders
 					);
@@ -1602,7 +1580,6 @@ namespace NativeScript
 						typeKind,
 						methods,
 						typeParams,
-						typeNameLower,
 						genericArgTypes,
 						indent,
 						builders);
@@ -1619,6 +1596,60 @@ namespace NativeScript
 			AppendCppMethodDefinitionsEnd(
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
+		}
+		
+		static void AppendBaseType(
+			JsonBaseType jsonBaseType,
+			Assembly[] assemblies,
+			StringBuilders builders)
+		{
+			Type type = GetType(jsonBaseType.Name, assemblies);
+			Type[] genericArgTypes = type.GetGenericArguments();
+			if (jsonBaseType.GenericParams != null)
+			{
+				if (!IsStatic(type))
+				{
+					AppendCppTemplateDeclaration(
+						type.Name,
+						type.Namespace,
+						genericArgTypes.Length,
+						builders.CppTypeDeclarations);
+				}
+				
+				foreach (JsonGenericParams jsonGenericParams
+					in jsonBaseType.GenericParams)
+				{
+					Type[] typeParams = GetTypes(
+						jsonGenericParams.Types,
+						assemblies);
+					Type genericType = type.MakeGenericType(typeParams);
+					int? maxSimultaneous = jsonGenericParams.MaxSimultaneous != 0
+						? jsonGenericParams.MaxSimultaneous
+						: jsonBaseType.MaxSimultaneous != 0
+							? jsonBaseType.MaxSimultaneous
+							: default(int?);
+					AppendBaseType(
+						genericType,
+						jsonBaseType,
+						type.Name,
+						typeParams,
+						maxSimultaneous,
+						builders);
+				}
+			}
+			else
+			{
+				int? maxSimultaneous = jsonBaseType.MaxSimultaneous != 0
+					? jsonBaseType.MaxSimultaneous
+					: default(int?);
+				AppendBaseType(
+					type,
+					jsonBaseType,
+					type.Name,
+					null,
+					maxSimultaneous,
+					builders);
+			}
 		}
 		
 		static void AppendReleaseFunctionNameSuffix(
@@ -1656,7 +1687,6 @@ namespace NativeScript
 		
 		static void AppendEnum(
 			Type type,
-			Assembly[] assemblies,
 			StringBuilders builders)
 		{
 			// C++ type declaration (actually definition)
@@ -1710,7 +1740,6 @@ namespace NativeScript
 			Type type,
 			TypeKind typeKind,
 			Type[] typeParams,
-			Assembly[] assemblies,
 			StringBuilders builders)
 		{
 			builders.TempStrBuilder.Length = 0;
@@ -1753,7 +1782,7 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(unboxMethodDefinitionName);
 			string unboxMethodDeclarationName = builders.TempStrBuilder.ToString();
 			
-			ParameterInfo[] boxParams = new [] {
+			ParameterInfo[] boxParams = {
 				new ParameterInfo
 				{
 					Name = "val",
@@ -1765,7 +1794,7 @@ namespace NativeScript
 				}
 			};
 			
-			ParameterInfo[] unboxParams = new [] {
+			ParameterInfo[] unboxParams = {
 				new ParameterInfo
 				{
 					Name = "val",
@@ -1820,7 +1849,6 @@ namespace NativeScript
 				true,
 				TypeKind.Class,
 				typeof(object),
-				typeParams,
 				boxParams,
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append(
@@ -1840,7 +1868,6 @@ namespace NativeScript
 				true,
 				TypeKind.Class,
 				type,
-				null,
 				unboxParams,
 				builders.CsharpFunctions);
 			switch (typeKind)
@@ -2088,7 +2115,6 @@ namespace NativeScript
 			Assembly[] assemblies,
 			Type[] enclosingTypeParams,
 			Type[] genericArgTypes,
-			string typeNameLower,
 			int indent,
 			StringBuilders builders)
 		{
@@ -2184,7 +2210,6 @@ namespace NativeScript
 					true,
 					enclosingTypeKind,
 					enclosingType,
-					null,
 					parameters,
 					builders.CsharpFunctions);
 				builders.CsharpFunctions.Append("new ");
@@ -2192,7 +2217,6 @@ namespace NativeScript
 					enclosingType,
 					builders.CsharpFunctions);
 				AppendCsharpFunctionCallParameters(
-					true,
 					parameters,
 					builders.CsharpFunctions);
 				builders.CsharpFunctions.Append(";");
@@ -2212,7 +2236,6 @@ namespace NativeScript
 					true,
 					enclosingTypeKind,
 					typeof(int),
-					null,
 					parameters,
 					builders.CsharpFunctions);
 				AppendHandleStoreTypeName(
@@ -2224,7 +2247,6 @@ namespace NativeScript
 					enclosingType,
 					builders.CsharpFunctions);
 				AppendCsharpFunctionCallParameters(
-					true,
 					parameters,
 					builders.CsharpFunctions);
 				builders.CsharpFunctions.Append(");");
@@ -2382,7 +2404,7 @@ namespace NativeScript
 			if (jsonPropertyGet != null)
 			{
 				PropertyInfo property = null;
-				MethodInfo getMethod = null;
+				MethodInfo getMethod;
 				if (jsonPropertyGet.ParamTypes != null)
 				{
 					PropertyInfo[] properties = enclosingType.GetProperties();
@@ -2414,9 +2436,19 @@ namespace NativeScript
 				else
 				{
 					property = enclosingType.GetProperty(jsonProperty.Name);
-					getMethod = property.GetGetMethod();
 				}
 				
+				if (property == null)
+				{
+					builders.TempStrBuilder.Length = 0;
+					builders.TempStrBuilder.Append("Property '");
+					builders.TempStrBuilder.Append(jsonProperty.Name);
+					builders.TempStrBuilder.Append("' not found on ");
+					builders.TempStrBuilder.Append(enclosingType);
+					throw new Exception(builders.TempStrBuilder.ToString());
+				}
+				
+				getMethod = property.GetGetMethod();
 				if (getMethod != null)
 				{
 					Type propertyType = property.PropertyType;
@@ -2452,7 +2484,6 @@ namespace NativeScript
 			if (jsonPropertySet != null)
 			{
 				PropertyInfo property = null;
-				MethodInfo setMethod = null;
 				if (jsonPropertySet.ParamTypes != null)
 				{
 					PropertyInfo[] properties = enclosingType.GetProperties();
@@ -2465,7 +2496,7 @@ namespace NativeScript
 						}
 						
 						// Must have a set method
-						setMethod = curProperty.GetSetMethod();
+						MethodInfo setMethod = curProperty.GetSetMethod();
 						if (setMethod == null)
 						{
 							continue;
@@ -2484,7 +2515,16 @@ namespace NativeScript
 				else
 				{
 					property = enclosingType.GetProperty(jsonProperty.Name);
-					setMethod = property.GetSetMethod();
+				}
+				
+				if (property == null)
+				{
+					builders.TempStrBuilder.Length = 0;
+					builders.TempStrBuilder.Append("Property '");
+					builders.TempStrBuilder.Append(jsonProperty.Name);
+					builders.TempStrBuilder.Append("' not found on ");
+					builders.TempStrBuilder.Append(enclosingType);
+					throw new Exception(builders.TempStrBuilder.ToString());
 				}
 				
 				MethodInfo method = property.GetSetMethod();
@@ -2509,7 +2549,6 @@ namespace NativeScript
 						jsonPropertySet.IsReadOnly,
 						enclosingType,
 						typeParams,
-						property.PropertyType,
 						indent,
 						exceptionTypes,
 						builders);
@@ -2619,7 +2658,7 @@ namespace NativeScript
 			setParam.DereferencedParameterType = setParam.ParameterType;
 			setParam.Kind = GetTypeKind(
 				setParam.DereferencedParameterType);
-			ParameterInfo[] parameters = new []{ setParam };
+			ParameterInfo[] parameters = { setParam };
 			AppendSetter(
 				field.Name,
 				"Field",
@@ -2630,7 +2669,6 @@ namespace NativeScript
 				false,
 				enclosingType,
 				typeTypeParams,
-				fieldType,
 				indent,
 				exceptionTypes,
 				builders);
@@ -2642,7 +2680,6 @@ namespace NativeScript
 			bool enclosingTypeIsStatic,
 			TypeKind enclosingTypeKind,
 			Type[] typeTypeParams,
-			Type[] typeGenericArgumentTypes,
 			int indent,
 			StringBuilders builders)
 		{
@@ -2653,7 +2690,7 @@ namespace NativeScript
 			string uppercaseEventName = char.ToUpper(jsonEvent.Name[0])
 				+ jsonEvent.Name.Substring(1);
 			
-			ParameterInfo[] addRemoveParams = new ParameterInfo[] {
+			ParameterInfo[] addRemoveParams = {
 				new ParameterInfo {
 					Name = "del",
 					ParameterType = eventType,
@@ -2756,7 +2793,6 @@ namespace NativeScript
 				methodIsStatic,
 				enclosingTypeKind,
 				typeof(void),
-				typeTypeParams,
 				methodParams,
 				builders.CsharpFunctions);
 			AppendCsharpFunctionCallSubject(
@@ -2783,15 +2819,11 @@ namespace NativeScript
 				builders.CppFunctionPointers);
 			
 			// C++ method declaration
-			string cppMethodName;
-			bool cppMethodIsStatic;
-			ParameterInfo[] cppParameters;
-			ParameterInfo[] cppCallParameters;
 			Type cppReturnType = typeof(void);
-			cppMethodName = methodName;
-			cppMethodIsStatic = methodIsStatic;
-			cppParameters = methodParams;
-			cppCallParameters = methodParams;
+			string cppMethodName = methodName;
+			bool cppMethodIsStatic = methodIsStatic;
+			ParameterInfo[] cppParameters = methodParams;
+			ParameterInfo[] cppCallParameters = methodParams;
 			AppendIndent(
 				indent + 1,
 				builders.CppTypeDefinitions);
@@ -2853,18 +2885,12 @@ namespace NativeScript
 				builders.CppInitBody);
 		}
 		
-		static void AppendMethod(
+		static MethodInfo GetMethod(
 			JsonMethod jsonMethod,
-			Assembly[] assemblies,
 			Type enclosingType,
-			bool enclosingTypeIsStatic,
-			TypeKind enclosingTypeKind,
-			MethodInfo[] methods,
 			Type[] typeTypeParams,
-			string typeNameLower,
 			Type[] genericArgTypes,
-			int indent,
-			StringBuilders builders)
+			MethodInfo[] methods)
 		{
 			// Map convenience method names to actual method names
 			switch (jsonMethod.Name)
@@ -2949,15 +2975,13 @@ namespace NativeScript
 					break;
 			}
 			
-			// Get the method
-			MethodInfo method;
 			if (enclosingType.IsGenericType)
 			{
 				string[] overriddenParamTypeNames = OverrideGenericTypeNames(
 					jsonMethod.ParamTypes,
 					genericArgTypes,
 					typeTypeParams);
-				method = GetMethod(
+				return GetMethod(
 					enclosingType,
 					methods,
 					jsonMethod.Name,
@@ -2965,12 +2989,32 @@ namespace NativeScript
 			}
 			else
 			{
-				method = GetMethod(
+				return GetMethod(
 					enclosingType,
 					methods,
 					jsonMethod.Name,
 					jsonMethod.ParamTypes);
 			}
+		}
+		
+		static void AppendMethod(
+			JsonMethod jsonMethod,
+			Assembly[] assemblies,
+			Type enclosingType,
+			bool enclosingTypeIsStatic,
+			TypeKind enclosingTypeKind,
+			MethodInfo[] methods,
+			Type[] typeTypeParams,
+			Type[] genericArgTypes,
+			int indent,
+			StringBuilders builders)
+		{
+			MethodInfo method = GetMethod(
+				jsonMethod,
+				enclosingType,
+				typeTypeParams,
+				genericArgTypes,
+				methods);
 			
 			Type[] exceptionTypes = GetTypes(
 				jsonMethod.Exceptions,
@@ -2992,8 +3036,6 @@ namespace NativeScript
 					TypeKind returnTypeKind = GetTypeKind(returnType);
 					AppendMethod(
 						enclosingType,
-						assemblies,
-						typeNameLower,
 						method.Name,
 						enclosingTypeIsStatic,
 						enclosingTypeKind,
@@ -3017,8 +3059,6 @@ namespace NativeScript
 				TypeKind returnTypeKind = GetTypeKind(returnType);
 				AppendMethod(
 					enclosingType,
-					assemblies,
-					typeNameLower,
 					method.Name,
 					enclosingTypeIsStatic,
 					enclosingTypeKind,
@@ -3044,7 +3084,7 @@ namespace NativeScript
 			{
 				for (int i = 0, len = genericArgumentTypes.Length; i < len; ++i)
 				{
-					if (genericType.Equals(genericArgumentTypes[i]))
+					if (genericType == genericArgumentTypes[i])
 					{
 						return overrideTypes[i];
 					}
@@ -3058,9 +3098,8 @@ namespace NativeScript
 			Type[] typeGenericArgumentTypes,
 			Type[] typeParams)
 		{
-			for (int i = 0; i < parameters.Length; ++i)
+			foreach (ParameterInfo info in parameters)
 			{
-				ParameterInfo info = parameters[i];
 				info.ParameterType = OverrideGenericType(
 					info.ParameterType,
 					typeGenericArgumentTypes,
@@ -3078,11 +3117,11 @@ namespace NativeScript
 			for (int i = 0; i < numParams; ++i)
 			{
 				string typeName = typeNames[i];
-				for (int j = 0; j < genericArgTypes.Length; ++j)
+				foreach (Type genericArgType in genericArgTypes)
 				{
 					if (CheckTypeNameMatches(
 						typeName,
-						genericArgTypes[j]))
+						genericArgType))
 					{
 						typeName = typeParams[i].FullName;
 						break;
@@ -3095,8 +3134,6 @@ namespace NativeScript
 		
 		static void AppendMethod(
 			Type enclosingType,
-			Assembly[] assemblies,
-			string typeNameLower,
 			string methodName,
 			bool enclosingTypeIsStatic,
 			TypeKind enclosingTypeKind,
@@ -3165,7 +3202,6 @@ namespace NativeScript
 				methodIsStatic,
 				enclosingTypeKind,
 				returnType,
-				methodTypeParams,
 				parameters,
 				builders.CsharpFunctions);
 			if (methodName.StartsWith("op_"))
@@ -3292,7 +3328,6 @@ namespace NativeScript
 					methodTypeParams,
 					builders.CsharpFunctions);
 				AppendCsharpFunctionCallParameters(
-					methodIsStatic,
 					parameters,
 					builders.CsharpFunctions);
 			}
@@ -3662,6 +3697,14 @@ namespace NativeScript
 						break;
 					}
 				}
+				if (messageInfo == null)
+				{
+					builders.TempStrBuilder.Length = 0;
+					builders.TempStrBuilder.Append("Unknown message '");
+					builders.TempStrBuilder.Append(message);
+					builders.TempStrBuilder.Append("'. Aborting.");
+					throw new Exception(builders.TempStrBuilder.ToString());
+				}
 				
 				// Build the C++ function name
 				builders.TempStrBuilder.Length = 0;
@@ -3726,8 +3769,6 @@ namespace NativeScript
 					cppFunctionName,
 					parameters,
 					typeof(void),
-					type.Name,
-					type.Namespace,
 					false,
 					csharpIndent + 2,
 					builders.CsharpMonoBehaviours);
@@ -3883,17 +3924,14 @@ namespace NativeScript
 			string funcName,
 			ParameterInfo[] parameters,
 			Type returnType,
-			string enclosingTypeName,
-			string enclosingTypeNamespace,
 			bool enclosingTypeIsStatic,
 			int indent,
 			StringBuilder output)
 		{
-			for (int i = 0; i < parameters.Length; ++i)
+			foreach (ParameterInfo param in parameters)
 			{
-				ParameterInfo param = parameters[i];
 				if (param.Kind == TypeKind.Class
-					|| param.Kind == TypeKind.ManagedStruct)
+				    || param.Kind == TypeKind.ManagedStruct)
 				{
 					AppendIndent(
 						indent,
@@ -4001,7 +4039,7 @@ namespace NativeScript
 			if (jsonArray.Ranks == null
 				|| jsonArray.Ranks.Length == 0)
 			{
-				ranks = new int[]{ 1 };
+				ranks = new[]{ 1 };
 			}
 			else
 			{
@@ -4009,7 +4047,7 @@ namespace NativeScript
 			}
 			
 			// C++ element proxy for [1-R] for all ranks R
-			Type[] cppTypeParams = new Type[]{ elementType };
+			Type[] cppTypeParams = { elementType };
 			foreach (int rank in ranks)
 			{
 				// Build array name
@@ -4019,31 +4057,15 @@ namespace NativeScript
 					builders.TempStrBuilder);
 				string cppArrayTypeName = builders.TempStrBuilder.ToString();
 				
-				// Build "TypeArray" name
-				builders.TempStrBuilder.Length = 0;
-				AppendBindingArrayTypeName(
-					elementType.Name,
-					elementType.Namespace,
-					cppArrayTypeName,
-					builders.TempStrBuilder);
-				string bindingArrayTypeName = builders.TempStrBuilder.ToString();
-				
-				// GetItem params
-				ParameterInfo[] getItemParams = BuildArrayGetItemsParams(
-					rank,
-					"index");
-				
 				for (int i = 1; i <= rank; ++i)
 				{
 					AppendArrayElementProxy(
 						elementType,
 						elementTypeKind,
-						bindingArrayTypeName,
 						i,
 						rank,
 						cppTypeParams,
 						cppArrayTypeName,
-						getItemParams,
 						builders);
 				}
 			}
@@ -4176,8 +4198,6 @@ namespace NativeScript
 					arrayType,
 					cppArrayTypeName,
 					rank,
-					bindingArrayTypeName,
-					indent,
 					builders);
 				
 				AppendArraySetItem(
@@ -4185,8 +4205,6 @@ namespace NativeScript
 					arrayType,
 					cppArrayTypeName,
 					rank,
-					bindingArrayTypeName,
-					indent,
 					builders);
 				
 				// C++ operator[] method declaration
@@ -4410,12 +4428,10 @@ namespace NativeScript
 		static void AppendArrayElementProxy(
 			Type elementType,
 			TypeKind elementTypeKind,
-			string bindingArrayTypeName,
 			int rank,
 			int maxRank,
 			Type[] cppTypeParams,
 			string cppArrayTypeName,
-			ParameterInfo[] getItemParams,
 			StringBuilders builders)
 		{
 			// Build element proxy name
@@ -4776,7 +4792,6 @@ namespace NativeScript
 				true,
 				TypeKind.Class,
 				arrayType,
-				null,
 				parameters,
 				builders.CsharpFunctions);
 			AppendHandleStoreTypeName(
@@ -4848,7 +4863,7 @@ namespace NativeScript
 				builders.CppTypeDefinitions);
 			
 			// C++ method definition
-			Type[] cppTypeParams = new Type[] { elementType };
+			Type[] cppTypeParams = { elementType };
 			AppendCppMethodDefinitionBegin(
 				cppArrayTypeName,
 				null,
@@ -4994,7 +5009,7 @@ namespace NativeScript
 				builders.TempStrBuilder[0]);
 			string funcNameLower = builders.TempStrBuilder.ToString();
 			
-			ParameterInfo[] parameters = new ParameterInfo[] {
+			ParameterInfo[] parameters = {
 				new ParameterInfo {
 					Name = "dimension",
 					ParameterType = typeof(int),
@@ -5032,7 +5047,6 @@ namespace NativeScript
 				false,
 				TypeKind.Class,
 				typeof(int),
-				null,
 				parameters,
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append(
@@ -5088,7 +5102,7 @@ namespace NativeScript
 				builders.CppTypeDefinitions);
 			
 			// C++ method definition
-			Type[] cppTypeParams = new Type[] { elementType };
+			Type[] cppTypeParams = { elementType };
 			AppendCppMethodDefinitionBegin(
 				cppArrayTypeName,
 				typeof(int),
@@ -5128,8 +5142,6 @@ namespace NativeScript
 			Type arrayType,
 			string cppArrayTypeName,
 			int rank,
-			string csharpTypeName,
-			int indent,
 			StringBuilders builders)
 		{
 			builders.TempStrBuilder.Length = 0;
@@ -5176,7 +5188,6 @@ namespace NativeScript
 				false,
 				TypeKind.Class,
 				elementType,
-				null,
 				parameters,
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append("thiz[");
@@ -5232,8 +5243,6 @@ namespace NativeScript
 			Type arrayType,
 			string cppArrayTypeName,
 			int rank,
-			string csharpTypeName,
-			int indent,
 			StringBuilders builders)
 		{
 			builders.TempStrBuilder.Length = 0;
@@ -5282,7 +5291,6 @@ namespace NativeScript
 				false,
 				TypeKind.Class,
 				typeof(void),
-				null,
 				parameters,
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append("thiz[");
@@ -5391,11 +5399,8 @@ namespace NativeScript
 					AppendDelegate(
 						genericType,
 						numberedTypeName,
-						jsonDelegate,
-						genericArgTypes,
 						typeParams,
 						maxSimultaneous,
-						assemblies,
 						builders);
 				}
 			}
@@ -5407,11 +5412,8 @@ namespace NativeScript
 				AppendDelegate(
 					type,
 					type.Name,
-					jsonDelegate,
-					genericArgTypes,
 					null,
 					maxSimultaneous,
-					assemblies,
 					builders);
 			}
 		}
@@ -5419,11 +5421,8 @@ namespace NativeScript
 		static void AppendDelegate(
 			Type type,
 			string numberedTypeName,
-			JsonDelegate jsonDelegate,
-			Type[] genericArgTypes,
 			Type[] typeParams,
 			int? maxSimultaneous,
-			Assembly[] assemblies,
 			StringBuilders builders)
 		{
 			builders.TempStrBuilder.Length = 0;
@@ -5459,15 +5458,6 @@ namespace NativeScript
 			
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append(typeName);
-			builders.TempStrBuilder.Append("Invoke");
-			string invokeFuncName = builders.TempStrBuilder.ToString();
-			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string invokeFuncNameLower = builders.TempStrBuilder.ToString();
-			
-			builders.TempStrBuilder.Length = 0;
-			builders.TempStrBuilder.Append(typeName);
 			builders.TempStrBuilder.Append("Add");
 			string addFuncName = builders.TempStrBuilder.ToString();
 			
@@ -5484,36 +5474,15 @@ namespace NativeScript
 				builders.TempStrBuilder[0]);
 			string removeFuncNameLower = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder.Length = 0;
-			AppendCsharpDelegateName(
-				type.Name,
+			// C++ type declaration
+			int indent = AppendCppTypeDeclaration(
 				type.Namespace,
+				numberedTypeName,
+				false,
 				typeParams,
-				"CppInvoke",
-				builders.TempStrBuilder);
-			string cppInvokeFuncName = builders.TempStrBuilder.ToString();
+				builders.CppTypeDeclarations);
 			
-			MethodInfo invokeMethod = type.GetMethod("Invoke");
-			TypeKind invokeReturnTypeKind = GetTypeKind(
-				invokeMethod.ReturnType);
-			ParameterInfo[] invokeParams = ConvertParameters(
-				invokeMethod.GetParameters());
-			ParameterInfo[] invokeParamsWithThis = new ParameterInfo[
-				invokeParams.Length + 1];
-			for (int i = 0; i < invokeParams.Length; ++i)
-			{
-				invokeParamsWithThis[i+1] = invokeParams[i];
-			}
-			invokeParamsWithThis[0] = new ParameterInfo {
-				Name = "thisHandle",
-				ParameterType = typeof(int),
-				DereferencedParameterType = typeof(int),
-				IsOut = false,
-				IsRef = false,
-				Kind = TypeKind.Primitive
-			};
-			
-			ParameterInfo[] addRemoveParams = new ParameterInfo[] {
+			ParameterInfo[] addRemoveParams = {
 				new ParameterInfo
 				{
 					Name = "del",
@@ -5525,7 +5494,7 @@ namespace NativeScript
 					IsVirtual = true
 				}};
 			
-			ParameterInfo[] releaseParams = new ParameterInfo[] {
+			ParameterInfo[] releaseParams = {
 				new ParameterInfo
 				{
 					Name = "handle",
@@ -5545,7 +5514,7 @@ namespace NativeScript
 					Kind = TypeKind.Primitive
 				}};
 			
-			ParameterInfo[] constructorParams = new ParameterInfo[] {
+			ParameterInfo[] constructorParams = {
 				new ParameterInfo
 				{
 					Name = "cppHandle",
@@ -5574,150 +5543,17 @@ namespace NativeScript
 					Kind = TypeKind.Primitive
 				}};
 			
-			// Free list state and functions
-			builders.CppGlobalStateAndFunctions.Append("\tint32_t ");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("FreeListSize;\n");
-			builders.CppGlobalStateAndFunctions.Append('\t');
-			AppendCppTypeName(
+			AppendCppFreeListStateAndFunctions(
 				type,
+				typeName,
 				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("** ");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("FreeList;\n");
-			builders.CppGlobalStateAndFunctions.Append('\t');
-			AppendCppTypeName(
+
+			AppendCppFreeListInit(
 				type,
-				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("** NextFree");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append(";\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\n");
-			builders.CppGlobalStateAndFunctions.Append("\tint32_t Store");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append('(');
-			AppendCppTypeName(
-				type,
-				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("* del)\n");
-			builders.CppGlobalStateAndFunctions.Append("\t{\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\tassert(NextFree");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append(" != nullptr);\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\t");
-			AppendCppTypeName(
-				type,
-				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("** pNext = NextFree");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append(";\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\tNextFree");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append(" = (");
-			AppendCppTypeName(
-				type,
-				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("**)*pNext;\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\t*pNext = del;\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\treturn (int32_t)(pNext - ");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("FreeList);\n");
-			builders.CppGlobalStateAndFunctions.Append("\t}\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\n");
-			builders.CppGlobalStateAndFunctions.Append('\t');
-			AppendCppTypeName(
-				type,
-				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("* Get");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("(int32_t handle)\n");
-			builders.CppGlobalStateAndFunctions.Append("\t{\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\tassert(handle >= 0 && handle < ");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("FreeListSize);\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\treturn ");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("FreeList[handle];\n");
-			builders.CppGlobalStateAndFunctions.Append("\t}\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\n");
-			builders.CppGlobalStateAndFunctions.Append("\tvoid Remove");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("(int32_t handle)\n");
-			builders.CppGlobalStateAndFunctions.Append("\t{\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\t");
-			AppendCppTypeName(
-				type,
-				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("** pRelease = ");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append("FreeList + handle;\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\t*pRelease = (");
-			AppendCppTypeName(
-				type,
-				builders.CppGlobalStateAndFunctions);
-			builders.CppGlobalStateAndFunctions.Append("*)NextFree");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append(";\n");
-			builders.CppGlobalStateAndFunctions.Append("\t\tNextFree");
-			builders.CppGlobalStateAndFunctions.Append(typeName);
-			builders.CppGlobalStateAndFunctions.Append(" = pRelease;\n");
-			builders.CppGlobalStateAndFunctions.Append("\t}\n");
-			
-			// Free list init
-			builders.CppInitBody.Append('\t');
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeListSize = ");
-			if (maxSimultaneous.HasValue)
-			{
-				builders.CppInitBody.Append(maxSimultaneous);
-			}
-			else
-			{
-				builders.CppInitBody.Append("maxManagedObjects");
-			}
-			builders.CppInitBody.Append(";\n");
-			builders.CppInitBody.Append("\t");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeList = new ");
-			AppendCppTypeName(
-				type,
+				maxSimultaneous,
+				typeName,
 				builders.CppInitBody);
-			builders.CppInitBody.Append("*[");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeListSize];\n");
-			builders.CppInitBody.Append("\tfor (int32_t i = 0, end = ");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeListSize - 1; i < end; ++i)\n");
-			builders.CppInitBody.Append("\t{\n");
-			builders.CppInitBody.Append("\t	");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeList[i] = (");
-			AppendCppTypeName(
-				type,
-				builders.CppInitBody);
-			builders.CppInitBody.Append("*)(");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeList + i + 1);\n");
-			builders.CppInitBody.Append("\t}\n");
-			builders.CppInitBody.Append('\t');
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeList[");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeListSize - 1] = nullptr;\n");
-			builders.CppInitBody.Append("\tNextFree");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append(" = ");
-			builders.CppInitBody.Append(typeName);
-			builders.CppInitBody.Append("FreeList + 1;\n");
-			
-			// C++ type declaration
-			int indent = AppendCppTypeDeclaration(
-				type.Namespace,
-				numberedTypeName,
-				false,
-				typeParams,
-				builders.CppTypeDeclarations);
-			
+
 			// C++ type definition (begin)
 			AppendCppTypeDefinitionBegin(
 				numberedTypeName,
@@ -5753,30 +5589,6 @@ namespace NativeScript
 				null,
 				null,
 				new ParameterInfo[0],
-				builders.CppTypeDefinitions);
-			AppendIndent(
-				indent + 1,
-				builders.CppTypeDefinitions);
-			AppendCppMethodDeclaration(
-				"Invoke",
-				false,
-				false,
-				false,
-				invokeMethod.ReturnType,
-				null,
-				invokeParams,
-				builders.CppTypeDefinitions);
-			AppendIndent(
-				indent + 1,
-				builders.CppTypeDefinitions);
-			AppendCppMethodDeclaration(
-				"operator()",
-				false,
-				true,
-				false,
-				invokeMethod.ReturnType,
-				null,
-				invokeParams,
 				builders.CppTypeDefinitions);
 			AppendIndent(
 				indent + 1,
@@ -5823,15 +5635,6 @@ namespace NativeScript
 				typeof(void),
 				builders.CppFunctionPointers);
 			AppendCppFunctionPointerDefinition(
-				invokeFuncName,
-				false,
-				null,
-				null,
-				TypeKind.None,
-				invokeParams,
-				invokeMethod.ReturnType,
-				builders.CppFunctionPointers);
-			AppendCppFunctionPointerDefinition(
 				addFuncName,
 				false,
 				null,
@@ -5870,15 +5673,6 @@ namespace NativeScript
 				typeof(void),
 				builders.CppInitParams);
 			AppendCppInitParam(
-				invokeFuncNameLower,
-				false,
-				null,
-				null,
-				TypeKind.None,
-				invokeParams,
-				invokeMethod.ReturnType,
-				builders.CppInitParams);
-			AppendCppInitParam(
 				addFuncNameLower,
 				false,
 				null,
@@ -5897,7 +5691,7 @@ namespace NativeScript
 				typeof(void),
 				builders.CppInitParams);
 			
-			// C++ init body
+			// C++ and C# init params
 			AppendCppInitBody(
 				releaseFuncName,
 				releaseFuncNameLower,
@@ -5907,10 +5701,6 @@ namespace NativeScript
 				constructorFuncNameLower,
 				builders.CppInitBody);
 			AppendCppInitBody(
-				invokeFuncName,
-				invokeFuncNameLower,
-				builders.CppInitBody);
-			AppendCppInitBody(
 				addFuncName,
 				addFuncNameLower,
 				builders.CppInitBody);
@@ -5918,832 +5708,122 @@ namespace NativeScript
 				removeFuncName,
 				removeFuncNameLower,
 				builders.CppInitBody);
+			AppendCsharpInitParam(
+				releaseFuncNameLower,
+				builders.CsharpInitParams);
+			AppendCsharpInitParam(
+				constructorFuncNameLower,
+				builders.CsharpInitParams);
+			AppendCsharpInitParam(
+				addFuncNameLower,
+				builders.CsharpInitParams);
+			AppendCsharpInitParam(
+				removeFuncNameLower,
+				builders.CsharpInitParams);
+			AppendCsharpInitCallArg(
+				releaseFuncName,
+				builders.CsharpInitCall);
+			AppendCsharpInitCallArg(
+				constructorFuncName,
+				builders.CsharpInitCall);
+			AppendCsharpInitCallArg(
+				addFuncName,
+				builders.CsharpInitCall);
+			AppendCsharpInitCallArg(
+				removeFuncName,
+				builders.CsharpInitCall);
 			
 			// C++ method definitions (end)
 			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
 				type.Namespace,
 				builders.CppMethodDefinitions);
 			
-			// C++ default constructor
-			AppendCppMethodDefinitionBegin(
-				numberedTypeName,
-				null,
+			AppendCppBaseTypeDefaultConstructor(
+				typeName,
 				numberedTypeName,
 				typeParams,
-				null,
-				new ParameterInfo[0],
+				true,
+				constructorFuncName,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(" : System::Object(nullptr)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("CppHandle = Plugin::Store");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(this);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Plugin::");
-			builders.CppMethodDefinitions.Append(constructorFuncName);
-			builders.CppMethodDefinitions.Append("(CppHandle, &Handle, &ClassHandle);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"Plugin::ReferenceManagedClass(Handle);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("else\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Plugin::Remove");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(CppHandle);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("CppHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendCppUnhandledExceptionHandling(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
 			
-			// Construct with nullptr_t
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
+			AppendCppBaseTypeNullptrConstructor(
+				typeName,
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("(std::nullptr_t n)\n");
-			AppendIndent(
+				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"\t: System::Object(Plugin::InternalUse::Only, 0)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("CppHandle = Plugin::Store");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(this);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
 			
-			// Copy constructor
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
+			AppendCppBaseTypeCopyConstructor(
+				typeName,
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
+				true,
+				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::");
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeMoveConstructor(
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("(const ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("& other)\n");
-			AppendIndent(
+				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"\t: System::Object(Plugin::InternalUse::Only, other.Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("CppHandle = Plugin::Store");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(this);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"Plugin::ReferenceManagedClass(Handle);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"ClassHandle = other.ClassHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// Move constructor
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeHandleConstructor(
+				typeName,
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
+				true,
+				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::");
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeDestructor(
+				typeName,
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("(");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("&& other)\n");
-			AppendIndent(
+				true,
+				releaseFuncName,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"\t: System::Object(Plugin::InternalUse::Only, other.Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"CppHandle = other.CppHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"ClassHandle = other.ClassHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("other.Handle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("other.CppHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("other.ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// Handle constructor
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeAssignmentOperatorSameType(
+				type,
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
+				true,
+				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::");
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeAssignmentOperatorNullptr(
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"(Plugin::InternalUse iu, int32_t handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"\t: System::Object(iu, handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("CppHandle = Plugin::Store");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(this);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"Plugin::ReferenceManagedClass(Handle);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// Destructor
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
+				true,
+				releaseFuncName,
+				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::~");
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeMoveAssignmentOperator(
+				typeName,
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("()\n");
-			AppendIndent(
+				typeParams,
+				true,
+				releaseFuncName,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Plugin::Remove");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(CppHandle);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("CppHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t handle = Handle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t classHandle = ClassHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Handle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 3,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Plugin::");
-			builders.CppMethodDefinitions.Append(releaseFuncName);
-			builders.CppMethodDefinitions.Append("(handle, classHandle);\n");
-			AppendCppUnhandledExceptionHandling(
-				cppMethodDefinitionsIndent + 3,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// Assignment operator to same type
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeEqualityOperator(
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
+				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("& ");
-			AppendTypeNameWithoutGenericSuffix(
+
+			AppendCppBaseTypeInequalityOperator(
 				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
 				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::operator=(const ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("& other)\n");
-			AppendIndent(
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendSetHandle(
-				numberedTypeName,
-				type.Namespace,
-				TypeKind.Class,
-				typeParams,
-				cppMethodDefinitionsIndent + 1,
-				"this",
-				"other.Handle",
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"ClassHandle = other.ClassHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return *this;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// Assignment operator to nullptr_t
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("& ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"::operator=(std::nullptr_t other)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t handle = Handle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t classHandle = ClassHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Handle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 3,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Plugin::");
-			builders.CppMethodDefinitions.Append(releaseFuncName);
-			builders.CppMethodDefinitions.Append("(handle, classHandle);\n");
-			AppendCppUnhandledExceptionHandling(
-				cppMethodDefinitionsIndent + 3,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Handle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return *this;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// Move assignment operator to same type
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("& ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::operator=(");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("&& other)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Plugin::Remove");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(CppHandle);\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("CppHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (Handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t handle = Handle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t classHandle = ClassHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Handle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 3,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Plugin::");
-			builders.CppMethodDefinitions.Append(releaseFuncName);
-			builders.CppMethodDefinitions.Append("(handle, classHandle);\n");
-			AppendCppUnhandledExceptionHandling(
-				cppMethodDefinitionsIndent + 3,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				cppMethodDefinitionsIndent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"ClassHandle = other.ClassHandle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("other.ClassHandle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Handle = other.Handle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("other.Handle = 0;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return *this;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// Equality operator with same type
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("bool ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::operator==(const ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("& other) const\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"return Handle == other.Handle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
-			
-			// Inequality operator with same type
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("bool ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("::operator!=(const ");
-			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
-				builders.CppMethodDefinitions);
-			AppendCppTypeParameters(
-				typeParams,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("& other) const\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"return Handle != other.Handle;\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
-			
-			// C++ operator()
-			AppendCppMethodDefinitionBegin(
-				numberedTypeName,
-				invokeMethod.ReturnType,
-				"operator()",
-				typeParams,
-				null,
-				invokeParams,
-				indent,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			if (invokeMethod.ReturnType != typeof(void))
-			{
-				AppendIndent(
-					indent + 1,
-					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("return {};\n");
-			}
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
-			
-			// C++ Invoke
-			AppendCppMethodDefinitionBegin(
-				numberedTypeName,
-				invokeMethod.ReturnType,
-				"Invoke",
-				typeParams,
-				null,
-				invokeParams,
-				indent,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendCppPluginFunctionCall(
-				false,
-				type.Name,
-				type.Namespace,
-				TypeKind.Class,
-				typeParams,
-				invokeMethod.ReturnType,
-				invokeFuncName,
-				invokeParams,
-				indent + 1,
-				builders.CppMethodDefinitions);
-			AppendCppMethodReturn(
-				invokeMethod.ReturnType,
-				invokeReturnTypeKind,
-				indent + 1,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
-			
+
 			// C++ add
 			AppendCppMethodDefinitionBegin(
 				numberedTypeName,
@@ -6808,327 +5888,68 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("\n");
 			
-			// C++ CppInvoke function
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("DLLEXPORT ");
-			if (invokeMethod.ReturnType == typeof(void))
-			{
-				builders.CppMethodDefinitions.Append("void");
-			}
-			else
-			{
-				switch (invokeReturnTypeKind)
-				{
-					case TypeKind.Class:
-					case TypeKind.ManagedStruct:
-						builders.CppMethodDefinitions.Append("int32_t");
-						break;
-					default:
-						AppendCppTypeName(
-							invokeMethod.ReturnType,
-							builders.CppMethodDefinitions);
-						break;
-				}
-			}
-			builders.CppMethodDefinitions.Append(' ');
-			AppendCsharpDelegateName(
-				type.Name,
-				type.Namespace,
-				typeParams,
-				"CppInvoke",
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("(int32_t cppHandle");
-			if (invokeParams.Length > 0)
-			{
-				builders.CppMethodDefinitions.Append(", ");
-			}
-			for (int i = 0; i < invokeParams.Length; ++i)
-			{
-				ParameterInfo param = invokeParams[i];
-				switch (param.Kind)
-				{
-					case TypeKind.Class:
-					case TypeKind.ManagedStruct:
-						builders.CppMethodDefinitions.Append("int32_t ");
-						builders.CppMethodDefinitions.Append(param.Name);
-						builders.CppMethodDefinitions.Append("Handle");
-						break;
-					default:
-						AppendCppTypeName(
-							param.ParameterType,
-							builders.CppMethodDefinitions);
-						builders.CppMethodDefinitions.Append(' ');
-						builders.CppMethodDefinitions.Append(param.Name);
-						break;
-				}
-				if (i != invokeParams.Length - 1)
-				{
-					builders.CppMethodDefinitions.Append(", ");
-				}
-			}
-			builders.CppMethodDefinitions.Append(")\n");
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("try\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				indent + 2,
-				builders.CppMethodDefinitions);
-			if (invokeMethod.ReturnType != typeof(void))
-			{
-				builders.CppMethodDefinitions.Append("return ");
-			}
-			builders.CppMethodDefinitions.Append("(*Plugin::Get");
-			builders.CppMethodDefinitions.Append(typeName);
-			builders.CppMethodDefinitions.Append("(cppHandle))(");
-			for (int i = 0; i < invokeParams.Length; ++i)
-			{
-				ParameterInfo parameter = invokeParams[i];
-				if (parameter.Kind == TypeKind.Class
-					|| parameter.Kind == TypeKind.ManagedStruct)
-				{
-					AppendCppTypeName(
-						parameter.ParameterType,
-						builders.CppMethodDefinitions);
-					builders.CppMethodDefinitions.Append("(Plugin::InternalUse::Only, ");
-					builders.CppMethodDefinitions.Append(parameter.Name);
-					builders.CppMethodDefinitions.Append("Handle)");
-				}
-				else
-				{
-					builders.CppMethodDefinitions.Append(parameter.Name);
-				}
-				if (i != invokeParams.Length - 1)
-				{
-					builders.CppMethodDefinitions.Append(", ");
-				}
-			}
-			builders.CppMethodDefinitions.Append(")");
-			if (
-				invokeMethod.ReturnType != typeof(void) &&
-				(invokeReturnTypeKind == TypeKind.Class || 
-					invokeReturnTypeKind == TypeKind.ManagedStruct))
-			{
-				builders.CppMethodDefinitions.Append(".Handle");
-			}
-			builders.CppMethodDefinitions.Append(";\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"catch (System::Exception ex)\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				indent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"Plugin::SetException(ex.Handle);\n");
-			if (invokeMethod.ReturnType != typeof(void))
-			{
-				AppendIndent(
-					indent + 2,
-					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"return {};\n");
-			}
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("catch (...)\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				indent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"System::String msg = \"Unhandled exception invoking ");
-			AppendCppTypeName(
-				type,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\";\n");
-			AppendIndent(
-				indent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"System::Exception ex(msg);\n");
-			AppendIndent(
-				indent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"Plugin::SetException(ex.Handle);\n");
-			if (invokeMethod.ReturnType != typeof(void))
-			{
-				AppendIndent(
-					indent + 2,
-					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"return {};\n");
-			}
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
-			
-			// C++ method definitions (end)
-			AppendCppMethodDefinitionsEnd(
-				indent,
-				builders.CppMethodDefinitions);
-			
-			// C++ type definition (end)
-			AppendCppTypeDefinitionEnd(
-				false,
-				indent,
-				builders.CppTypeDefinitions);
-			
-			// C# delegate
-			AppendCsharpDelegate(
-				false,
-				type.Name,
-				type.Namespace,
-				typeParams,
-				"CppInvoke",
-				invokeParams,
-				invokeMethod.ReturnType,
-				invokeReturnTypeKind,
-				builders.CsharpDelegates);
-			
 			// C# GetDelegate call
 			AppendCsharpGetDelegateCall(
 				type.Name,
 				type.Namespace,
 				typeParams,
-				"CppInvoke",
+				"NativeInvoke",
 				builders.CsharpGetDelegateCalls);
 			
-			// C# import
-			AppendCsharpImport(
-				type.Name,
-				type.Namespace,
-				typeParams,
-				"CppInvoke",
-				invokeParams,
-				builders.CsharpImports);
+			// C# class (beginning)
+			builders.CsharpBaseTypes.Append("\t\tclass ");
+			builders.CsharpBaseTypes.Append(typeName);
+			builders.CsharpBaseTypes.Append("\n");
+			builders.CsharpBaseTypes.Append("\t\t{\n");
 			
-			// C# class
-			builders.CsharpFunctions.Append("\t\tclass ");
-			builders.CsharpFunctions.Append(typeName);
-			builders.CsharpFunctions.Append("\n");
-			builders.CsharpFunctions.Append("\t\t{\n");
-			builders.CsharpFunctions.Append("\t\t\tpublic int CppHandle;\n");
-			builders.CsharpFunctions.Append("\t\t\tpublic ");
+			// C# class fields
+			builders.CsharpBaseTypes.Append("\t\t\tpublic int CppHandle;\n");
+			builders.CsharpBaseTypes.Append("\t\t\tpublic ");
 			AppendCsharpTypeName(
 				type,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(" Delegate;\n");
-			builders.CsharpFunctions.Append("\t\t\t\n");
-			builders.CsharpFunctions.Append("\t\t\tpublic ");
-			builders.CsharpFunctions.Append(typeName);
-			builders.CsharpFunctions.Append("(int cppHandle)\n");
-			builders.CsharpFunctions.Append("\t\t\t{\n");
-			builders.CsharpFunctions.Append("\t\t\t\tCppHandle = cppHandle;\n");
-			builders.CsharpFunctions.Append("\t\t\t\tDelegate = Invoke;\n");
-			builders.CsharpFunctions.Append("\t\t\t}\n");
-			builders.CsharpFunctions.Append("\t\t\t\n");
-			builders.CsharpFunctions.Append("\t\t\tpublic ");
-			AppendCsharpTypeName(
-				invokeMethod.ReturnType,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(" Invoke(");
-			for (int i = 0; i < invokeParams.Length; ++i)
-			{
-				ParameterInfo param = invokeParams[i];
-				AppendCsharpTypeName(
-					param.ParameterType,
-					builders.CsharpFunctions);
-				builders.CsharpFunctions.Append(' ');
-				builders.CsharpFunctions.Append(param.Name);
-				if (i != invokeParams.Length - 1)
-				{
-					builders.CsharpFunctions.Append(", ");
-				}
-			}
-			builders.CsharpFunctions.Append(")\n");
-			builders.CsharpFunctions.Append("\t\t\t{\n");
-			builders.CsharpFunctions.Append("\t\t\t\tif (CppHandle != 0)\n");
-			builders.CsharpFunctions.Append("\t\t\t\t{\n");
-			builders.CsharpFunctions.Append("\t\t\t\t\tint thisHandle = CppHandle;\n");
-			AppendCppFunctionCall(
-				cppInvokeFuncName,
-				invokeParamsWithThis,
-				invokeMethod.ReturnType,
-				type.Name,
-				type.Namespace,
-				true,
-				5,
-				builders.CsharpFunctions);
-			if (invokeMethod.ReturnType != typeof(void))
-			{
-				builders.CsharpFunctions.Append("\t\t\t\t\treturn ");
-				switch (invokeReturnTypeKind)
-				{
-					case TypeKind.Class:
-					case TypeKind.ManagedStruct:
-						if (invokeMethod.ReturnType != typeof(object))
-						{
-							builders.CsharpFunctions.Append('(');
-							AppendCsharpTypeName(
-								invokeMethod.ReturnType,
-								builders.CsharpFunctions);
-							builders.CsharpFunctions.Append(')');
-						}
-						AppendHandleStoreTypeName(
-							invokeMethod.ReturnType,
-							builders.CsharpFunctions);
-						builders.CsharpFunctions.Append(".Get(returnVal);\n");
-						break;
-					default:
-						builders.CsharpFunctions.Append("returnVal;\n");
-						break;
-				}
-			}
-			builders.CsharpFunctions.Append("\t\t\t\t}\n");
-			if (invokeMethod.ReturnType != typeof(void))
-			{
-				builders.CsharpFunctions.Append("\t\t\t\treturn default(");
-				AppendCsharpTypeName(
-					invokeMethod.ReturnType,
-					builders.CsharpFunctions);
-				builders.CsharpFunctions.Append(");\n");
-			}
-			builders.CsharpFunctions.Append("\t\t\t}\n");
-			builders.CsharpFunctions.Append("\t\t}\n");
-			builders.CsharpFunctions.Append("\t\t\n");
+				builders.CsharpBaseTypes);
+			builders.CsharpBaseTypes.Append(" Delegate;\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\n");
+			
+			// C# class constructor
+			builders.CsharpBaseTypes.Append("\t\t\tpublic ");
+			builders.CsharpBaseTypes.Append(typeName);
+			builders.CsharpBaseTypes.Append("(int cppHandle)\n");
+			builders.CsharpBaseTypes.Append("\t\t\t{\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\tCppHandle = cppHandle;\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\tDelegate = NativeInvoke;\n");
+			builders.CsharpBaseTypes.Append("\t\t\t}\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\n");
+			
+			// operator() is how C# forwards the delegate invocation to C++
+			AppendBaseTypeCppMethodCall(
+				type,
+				typeName,
+				numberedTypeName,
+				typeParams,
+				type.GetMethod("Invoke"),
+				"NativeInvoke",
+				"operator()",
+				false,
+				indent,
+				builders);
+			
+			// C# class (ending)
+			builders.CsharpBaseTypes.Append("\t\t}\n");
+			builders.CsharpBaseTypes.Append("\t\t\n");
+			
+			// Invoke() is how C++ invokes the delegate
+			MethodInfo invokeMethod = type.GetMethod("Invoke");
+			AppendBaseTypeMethodCallsCsharpMethod(
+				type,
+				typeName,
+				numberedTypeName,
+				typeParams,
+				invokeMethod,
+				"Invoke",
+				null,
+				indent,
+				builders);
 			
 			// C# constructor delegate type
 			AppendCsharpDelegateType(
@@ -7140,29 +5961,14 @@ namespace NativeScript
 				constructorParams,
 				builders.CsharpDelegateTypes);
 			
-			// C# constructor function
-			AppendCsharpFunctionBeginning(
+			AppendCsharpBaseTypeConstructorFunction(
 				type,
+				typeName,
+				false,
 				constructorFuncName,
-				true,
-				TypeKind.Class,
-				typeof(void),
-				typeParams,
 				constructorParams,
 				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append("var thiz = new ");
-			builders.CsharpFunctions.Append(typeName);
-			builders.CsharpFunctions.Append("(cppHandle);\n");
-			builders.CsharpFunctions.Append("\t\t\t\tclassHandle = NativeScript.Bindings.ObjectStore.Store(thiz);\n");
-			builders.CsharpFunctions.Append("\t\t\t\thandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);");
-			AppendCsharpFunctionReturn(
-				constructorParams,
-				typeof(void),
-				TypeKind.Class,
-				null,
-				true,
-				builders.CsharpFunctions);
-			
+
 			// C# release delegate type
 			AppendCsharpDelegateType(
 				releaseFuncName,
@@ -7173,70 +5979,14 @@ namespace NativeScript
 				releaseParams,
 				builders.CsharpDelegateTypes);
 			
-			// C# release function
-			AppendCsharpFunctionBeginning(
+			AppendCsharpBaseTypeReleaseFunction(
 				type,
+				typeName,
+				true,
 				releaseFuncName,
-				true,
-				TypeKind.Class,
-				typeof(void),
-				typeParams,
 				releaseParams,
 				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append("if (classHandle != 0)\n");
-			builders.CsharpFunctions.Append("\t\t\t\t{\n");
-			builders.CsharpFunctions.Append("\t\t\t\t\tvar thiz = (");
-			builders.CsharpFunctions.Append(typeName);
-			builders.CsharpFunctions.Append(")NativeScript.Bindings.ObjectStore.Remove(classHandle);\n");
-			builders.CsharpFunctions.Append("\t\t\t\t\tthiz.CppHandle = 0;\n");
-			builders.CsharpFunctions.Append("\t\t\t\t}\n");
-			builders.CsharpFunctions.Append("\t\t\t\tNativeScript.Bindings.ObjectStore.Remove(handle);");
-			AppendCsharpFunctionReturn(
-				releaseParams,
-				typeof(void),
-				TypeKind.Class,
-				null,
-				true,
-				builders.CsharpFunctions);
-			
-			// C# invoke delegate type
-			AppendCsharpDelegateType(
-				invokeFuncName,
-				true,
-				type,
-				TypeKind.Class,
-				invokeMethod.ReturnType,
-				invokeParamsWithThis,
-				builders.CsharpDelegateTypes);
-			
-			// C# invoke function
-			AppendCsharpFunctionBeginning(
-				type,
-				invokeFuncName,
-				true,
-				TypeKind.Class,
-				invokeMethod.ReturnType,
-				typeParams,
-				invokeParamsWithThis,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append("((");
-			AppendCsharpTypeName(
-				type,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(")NativeScript.Bindings.ObjectStore.Get(thisHandle))");
-			AppendCsharpFunctionCallParameters(
-				true,
-				invokeParams,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(';');
-			AppendCsharpFunctionReturn(
-				invokeParams,
-				invokeMethod.ReturnType,
-				invokeReturnTypeKind,
-				null,
-				false,
-				builders.CsharpFunctions);
-			
+
 			// C# add delegate type
 			AppendCsharpDelegateType(
 				addFuncName,
@@ -7254,7 +6004,6 @@ namespace NativeScript
 				false,
 				TypeKind.Class,
 				typeof(void),
-				typeParams,
 				addRemoveParams,
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append("thiz += del;");
@@ -7283,7 +6032,6 @@ namespace NativeScript
 				false,
 				TypeKind.Class,
 				typeof(void),
-				typeParams,
 				addRemoveParams,
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append("thiz -= del;");
@@ -7295,41 +6043,2159 @@ namespace NativeScript
 				false,
 				builders.CsharpFunctions);
 			
-			// C# init params
+			// C++ method definitions (end)
+			AppendCppMethodDefinitionsEnd(
+				indent,
+				builders.CppMethodDefinitions);
+			
+			// C++ type definition (end)
+			AppendCppTypeDefinitionEnd(
+				false,
+				indent,
+				builders.CppTypeDefinitions);
+		}
+		
+		static void AppendBaseType(
+			Type type,
+			JsonBaseType jsonBaseType,
+			string numberedTypeName,
+			Type[] typeParams,
+			int? maxSimultaneous,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			AppendNamespace(
+				type.Namespace,
+				string.Empty,
+				builders.TempStrBuilder);
+			AppendTypeNameWithoutSuffixes(
+				type.Name,
+				builders.TempStrBuilder);
+			AppendTypeNames(
+				typeParams,
+				builders.TempStrBuilder);
+			string typeName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append("Release");
+			builders.TempStrBuilder.Append(typeName);
+			string releaseFuncName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string releaseFuncNameLower = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append(typeName);
+			builders.TempStrBuilder.Append("Constructor");
+			string constructorFuncName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string constructorFuncNameLower = builders.TempStrBuilder.ToString();
+			
+			// C++ type declaration
+			int indent = AppendCppTypeDeclaration(
+				type.Namespace,
+				numberedTypeName,
+				false,
+				typeParams,
+				builders.CppTypeDeclarations);
+			
+			ParameterInfo[] releaseParams = {
+				new ParameterInfo
+				{
+					Name = "handle",
+					ParameterType = typeof(int),
+					DereferencedParameterType = typeof(int),
+					IsOut = false,
+					IsRef = false,
+					Kind = TypeKind.Primitive
+				}};
+			
+			ParameterInfo[] constructorParams = {
+				new ParameterInfo
+				{
+					Name = "cppHandle",
+					ParameterType = typeof(int),
+					DereferencedParameterType = typeof(int),
+					IsOut = false,
+					IsRef = false,
+					Kind = TypeKind.Primitive
+				},
+				new ParameterInfo
+				{
+					Name = "handle",
+					ParameterType = typeof(int),
+					DereferencedParameterType = typeof(int),
+					IsOut = true,
+					IsRef = false,
+					Kind = TypeKind.Primitive
+				}};
+			
+			AppendCppFreeListStateAndFunctions(
+				type,
+				typeName,
+				builders.CppGlobalStateAndFunctions);
+
+			AppendCppFreeListInit(
+				type,
+				maxSimultaneous,
+				typeName,
+				builders.CppInitBody);
+
+			// C++ type definition (begin)
+			AppendCppTypeDefinitionBegin(
+				numberedTypeName,
+				type.Namespace,
+				TypeKind.Class,
+				typeParams,
+				"Object",
+				"System",
+				null,
+				false,
+				indent,
+				builders.CppTypeDefinitions);
+			
+			// C++ type fields
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("int32_t CppHandle;\n");
+			
+			// C++ method declarations
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				numberedTypeName,
+				false,
+				false,
+				false,
+				null,
+				null,
+				new ParameterInfo[0],
+				builders.CppTypeDefinitions);
+			
+			// C++ function pointers
+			AppendCppFunctionPointerDefinition(
+				releaseFuncName,
+				true,
+				null,
+				null,
+				TypeKind.None,
+				releaseParams,
+				typeof(void),
+				builders.CppFunctionPointers);
+			AppendCppFunctionPointerDefinition(
+				constructorFuncName,
+				true,
+				null,
+				null,
+				TypeKind.None,
+				constructorParams,
+				typeof(void),
+				builders.CppFunctionPointers);
+			
+			// C++ init params
+			AppendCppInitParam(
+				releaseFuncNameLower,
+				true,
+				null,
+				null,
+				TypeKind.None,
+				releaseParams,
+				typeof(void),
+				builders.CppInitParams);
+			AppendCppInitParam(
+				constructorFuncNameLower,
+				true,
+				null,
+				null,
+				TypeKind.None,
+				constructorParams,
+				typeof(void),
+				builders.CppInitParams);
+			
+			// C++ and C# init params
+			AppendCppInitBody(
+				releaseFuncName,
+				releaseFuncNameLower,
+				builders.CppInitBody);
+			AppendCppInitBody(
+				constructorFuncName,
+				constructorFuncNameLower,
+				builders.CppInitBody);
 			AppendCsharpInitParam(
 				releaseFuncNameLower,
 				builders.CsharpInitParams);
 			AppendCsharpInitParam(
 				constructorFuncNameLower,
 				builders.CsharpInitParams);
-			AppendCsharpInitParam(
-				invokeFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitParam(
-				addFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitParam(
-				removeFuncNameLower,
-				builders.CsharpInitParams);
-			
-			// C# init call args
 			AppendCsharpInitCallArg(
 				releaseFuncName,
 				builders.CsharpInitCall);
 			AppendCsharpInitCallArg(
 				constructorFuncName,
 				builders.CsharpInitCall);
-			AppendCsharpInitCallArg(
-				invokeFuncName,
-				builders.CsharpInitCall);
-			AppendCsharpInitCallArg(
-				addFuncName,
-				builders.CsharpInitCall);
-			AppendCsharpInitCallArg(
-				removeFuncName,
-				builders.CsharpInitCall);
+			
+			// C++ method definitions (end)
+			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
+				type.Namespace,
+				builders.CppMethodDefinitions);
+			
+			AppendCppBaseTypeDefaultConstructor(
+				typeName,
+				numberedTypeName,
+				typeParams,
+				false,
+				constructorFuncName,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+			
+			AppendCppBaseTypeNullptrConstructor(
+				typeName,
+				numberedTypeName,
+				typeParams,
+				false,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+			
+			AppendCppBaseTypeCopyConstructor(
+				typeName,
+				numberedTypeName,
+				typeParams,
+				false,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeMoveConstructor(
+				numberedTypeName,
+				typeParams,
+				false,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeHandleConstructor(
+				typeName,
+				numberedTypeName,
+				typeParams,
+				false,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeDestructor(
+				typeName,
+				numberedTypeName,
+				typeParams,
+				false,
+				releaseFuncName,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeAssignmentOperatorSameType(
+				type,
+				numberedTypeName,
+				typeParams,
+				false,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeAssignmentOperatorNullptr(
+				numberedTypeName,
+				typeParams,
+				false,
+				releaseFuncName,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeMoveAssignmentOperator(
+				typeName,
+				numberedTypeName,
+				typeParams,
+				false,
+				releaseFuncName,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeEqualityOperator(
+				numberedTypeName,
+				typeParams,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+
+			AppendCppBaseTypeInequalityOperator(
+				numberedTypeName,
+				typeParams,
+				cppMethodDefinitionsIndent,
+				builders.CppMethodDefinitions);
+			
+			// C# class (beginning)
+			builders.CsharpBaseTypes.Append("\t\tclass ");
+			builders.CsharpBaseTypes.Append(typeName);
+			if (jsonBaseType != null)
+			{
+				builders.CsharpBaseTypes.Append(" : ");
+				AppendCsharpTypeName(
+					type,
+					builders.CsharpBaseTypes);
+			}
+			builders.CsharpBaseTypes.Append("\n");
+			builders.CsharpBaseTypes.Append("\t\t{\n");
+			
+			// C# class fields
+			builders.CsharpBaseTypes.Append("\t\t\tpublic int CppHandle;\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\n");
+			
+			// C# class constructor
+			builders.CsharpBaseTypes.Append("\t\t\tpublic ");
+			builders.CsharpBaseTypes.Append(typeName);
+			builders.CsharpBaseTypes.Append("(int cppHandle)\n");
+			builders.CsharpBaseTypes.Append("\t\t\t{\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\tCppHandle = cppHandle;\n");
+			builders.CsharpBaseTypes.Append("\t\t\t}\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\n");
+			
+			// C# constructor delegate type
+			AppendCsharpDelegateType(
+				constructorFuncName,
+				true,
+				type,
+				TypeKind.Class,
+				typeof(void),
+				constructorParams,
+				builders.CsharpDelegateTypes);
+			
+			AppendCsharpBaseTypeConstructorFunction(
+				type,
+				typeName,
+				false,
+				constructorFuncName,
+				constructorParams,
+				builders.CsharpFunctions);
+
+			// C# release delegate type
+			AppendCsharpDelegateType(
+				releaseFuncName,
+				true,
+				type,
+				TypeKind.Class,
+				typeof(void),
+				releaseParams,
+				builders.CsharpDelegateTypes);
+			
+			AppendCsharpBaseTypeReleaseFunction(
+				type,
+				typeName,
+				false,
+				releaseFuncName,
+				releaseParams,
+				builders.CsharpFunctions);
+			
+			// All abstract methods
+			foreach (MethodInfo methodInfo in type.GetMethods())
+			{
+				if (methodInfo.IsAbstract)
+				{
+					AppendBaseTypeNativeMethod(
+						type,
+						typeName,
+						typeParams,
+						numberedTypeName,
+						methodInfo,
+						indent,
+						builders);
+				}
+			}
+			
+			// Specified virtual methods
+			if (jsonBaseType.OverrideMethods != null)
+			{
+				MethodInfo[] methods = type.GetMethods();
+				Type[] genericArgTypes = type.GetGenericArguments();
+				foreach (JsonMethod jsonMethod in jsonBaseType.OverrideMethods)
+				{
+					MethodInfo methodInfo = GetMethod(
+						jsonMethod,
+						type,
+						typeParams,
+						genericArgTypes,
+						methods);
+					AppendBaseTypeNativeMethod(
+						type,
+						typeName,
+						typeParams,
+						numberedTypeName,
+						methodInfo,
+						indent,
+						builders);
+				}
+			}
+			
+			// C# class (ending)
+			builders.CsharpBaseTypes.Append("\t\t}\n");
+			builders.CsharpBaseTypes.Append("\t\t\n");
+			
+			// C++ method definitions (end)
+			AppendCppMethodDefinitionsEnd(
+				indent,
+				builders.CppMethodDefinitions);
+			
+			// C++ type definition (end)
+			AppendCppTypeDefinitionEnd(
+				false,
+				indent,
+				builders.CppTypeDefinitions);
 		}
 		
+		static void AppendBaseTypeNativeMethod(
+			Type type,
+			string typeName,
+			Type[] typeParams,
+			string cppTypeName,
+			MethodInfo methodInfo,
+			int indent,
+			StringBuilders builders)
+		{
+			AppendCsharpGetDelegateCall(
+				type.Name,
+				type.Namespace,
+				typeParams,
+				methodInfo.Name,
+				builders.CsharpGetDelegateCalls);
+			
+			AppendBaseTypeCppMethodCall(
+				type,
+				typeName,
+				cppTypeName,
+				typeParams,
+				methodInfo,
+				methodInfo.Name,
+				methodInfo.Name,
+				!type.IsInterface,
+				indent,
+				builders);
+		}
+
+		static void AppendBaseTypeMethodCallsCsharpMethod(
+			Type type,
+			string typeName,
+			string cppTypeName,
+			Type[] typeParams,
+			MethodInfo methodInfo,
+			string methodName,
+			string csharpMethodName,
+			int indent,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append(typeName);
+			builders.TempStrBuilder.Append(methodName);
+			string funcName = builders.TempStrBuilder.ToString();
+			
+			builders.TempStrBuilder[0] = char.ToLower(
+				builders.TempStrBuilder[0]);
+			string funcNameLower = builders.TempStrBuilder.ToString();
+			
+			// C++ method declaration for the method
+			ParameterInfo[] invokeParams = ConvertParameters(
+				methodInfo.GetParameters());
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				methodName,
+				false,
+				false,
+				false,
+				methodInfo.ReturnType,
+				null,
+				invokeParams,
+				builders.CppTypeDefinitions);
+			
+			// C++ function pointer for the C# binding function
+			AppendCppFunctionPointerDefinition(
+				funcName,
+				false,
+				null,
+				null,
+				TypeKind.None,
+				invokeParams,
+				methodInfo.ReturnType,
+				builders.CppFunctionPointers);
+			
+			// C++ and C# Init parameter and body for the C# binding function
+			AppendCppInitParam(
+				funcNameLower,
+				false,
+				null,
+				null,
+				TypeKind.None,
+				invokeParams,
+				methodInfo.ReturnType,
+				builders.CppInitParams);
+			AppendCppInitBody(
+				funcName,
+				funcNameLower,
+				builders.CppInitBody);
+			AppendCsharpInitParam(
+				funcNameLower,
+				builders.CsharpInitParams);
+			AppendCsharpInitCallArg(
+				funcName,
+				builders.CsharpInitCall);
+			
+			// C++ method definition for the method
+			TypeKind returnTypeKind = GetTypeKind(
+				methodInfo.ReturnType);
+			AppendCppMethodDefinitionBegin(
+				cppTypeName,
+				methodInfo.ReturnType,
+				methodName,
+				typeParams,
+				null,
+				invokeParams,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendCppPluginFunctionCall(
+				false,
+				type.Name,
+				type.Namespace,
+				TypeKind.Class,
+				typeParams,
+				methodInfo.ReturnType,
+				funcName,
+				invokeParams,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendCppMethodReturn(
+				methodInfo.ReturnType,
+				returnTypeKind,
+				indent + 1,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+			
+			// C# delegate type for the binding function that C++ calls
+			ParameterInfo[] invokeParamsWithThis = new ParameterInfo[
+				invokeParams.Length + 1];
+			for (int i = 0; i < invokeParams.Length; ++i)
+			{
+				invokeParamsWithThis[i+1] = invokeParams[i];
+			}
+			invokeParamsWithThis[0] = new ParameterInfo {
+				Name = "thisHandle",
+				ParameterType = typeof(int),
+				DereferencedParameterType = typeof(int),
+				IsOut = false,
+				IsRef = false,
+				Kind = TypeKind.Primitive
+			};
+			AppendCsharpDelegateType(
+				funcName,
+				true,
+				type,
+				TypeKind.Class,
+				methodInfo.ReturnType,
+				invokeParamsWithThis,
+				builders.CsharpDelegateTypes);
+			
+			// C# binding function that C++ calls to invoke the method
+			AppendCsharpFunctionBeginning(
+				type,
+				funcName,
+				true,
+				TypeKind.Class,
+				methodInfo.ReturnType,
+				invokeParamsWithThis,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append("((");
+			AppendCsharpTypeName(
+				type,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append(
+				")NativeScript.Bindings.ObjectStore.Get(thisHandle))");
+			if (csharpMethodName != null)
+			{
+				builders.CsharpFunctions.Append('.');
+				builders.CsharpFunctions.Append(csharpMethodName);
+			}
+			AppendCsharpFunctionCallParameters(
+				invokeParams,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append(';');
+			AppendCsharpFunctionReturn(
+				invokeParams,
+				methodInfo.ReturnType,
+				returnTypeKind,
+				null,
+				false,
+				builders.CsharpFunctions);
+		}
+		
+		static void AppendBaseTypeCppMethodCall(
+			Type type,
+			string typeName,
+			string numberedTypeName,
+			Type[] typeParams,
+			MethodInfo invokeMethod,
+			string funcName,
+			string methodName,
+			bool isOverride,
+			int indent,
+			StringBuilders builders)
+		{
+			// Build the name of the C++ binding function that C# calls
+			builders.TempStrBuilder.Length = 0;
+			AppendNamespace(
+				type.Namespace,
+				string.Empty,
+				builders.TempStrBuilder);
+			AppendTypeNameWithoutSuffixes(
+				type.Name,
+				builders.TempStrBuilder);
+			AppendTypeNames(
+				typeParams,
+				builders.TempStrBuilder);
+			builders.TempStrBuilder.Append(funcName);
+			string nativeInvokeFuncName = builders.TempStrBuilder.ToString();
+			
+			// C++ method declaration
+			ParameterInfo[] invokeParams = ConvertParameters(
+				invokeMethod.GetParameters());
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				methodName,
+				false,
+				true,
+				false,
+				invokeMethod.ReturnType,
+				null,
+				invokeParams,
+				builders.CppTypeDefinitions);
+			
+			// C++ method definition. This is a no-op that game code overrides.
+			AppendCppMethodDefinitionBegin(
+				numberedTypeName,
+				invokeMethod.ReturnType,
+				methodName,
+				typeParams,
+				null,
+				invokeParams,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			if (invokeMethod.ReturnType != typeof(void))
+			{
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("return {};\n");
+			}
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+			
+			// C++ binding function that C# calls. Calls the C++ method.
+			TypeKind invokeReturnTypeKind = GetTypeKind(
+				invokeMethod.ReturnType);
+			AppendCppBaseTypeMethodInvokeBindingFunction(
+				funcName,
+				type,
+				typeParams,
+				invokeMethod,
+				methodName,
+				invokeReturnTypeKind,
+				invokeParams,
+				indent,
+				typeName,
+				builders.CppMethodDefinitions);
+			
+			// C# method that calls the C++ binding function
+			ParameterInfo[] invokeParamsWithThis = new ParameterInfo[
+				invokeParams.Length + 1];
+			for (int i = 0; i < invokeParams.Length; ++i)
+			{
+				invokeParamsWithThis[i+1] = invokeParams[i];
+			}
+			invokeParamsWithThis[0] = new ParameterInfo {
+				Name = "thisHandle",
+				ParameterType = typeof(int),
+				DereferencedParameterType = typeof(int),
+				IsOut = false,
+				IsRef = false,
+				Kind = TypeKind.Primitive
+			};
+			AppendCsharpBaseTypeCppMethodCallMethod(
+				isOverride,
+				invokeMethod,
+				funcName,
+				invokeParams,
+				nativeInvokeFuncName,
+				invokeParamsWithThis,
+				invokeReturnTypeKind,
+				builders.CsharpBaseTypes);
+			
+			// C# delegate for the C++ binding function
+			AppendCsharpDelegate(
+				false,
+				type.Name,
+				type.Namespace,
+				typeParams,
+				funcName,
+				invokeParams,
+				invokeMethod.ReturnType,
+				invokeReturnTypeKind,
+				builders.CsharpDelegates);
+			
+			// C# import for the C++ binding function
+			AppendCsharpImport(
+				type.Name,
+				type.Namespace,
+				typeParams,
+				funcName,
+				invokeParams,
+				builders.CsharpImports);
+		}
+
+		static void AppendCsharpBaseTypeReleaseFunction(
+			Type type,
+			string typeName,
+			bool typeIsDelegate,
+			string releaseFuncName,
+			ParameterInfo[] releaseParams,
+			StringBuilder output)
+		{
+			AppendCsharpFunctionBeginning(
+				type,
+				releaseFuncName,
+				true,
+				TypeKind.Class,
+				typeof(void),
+				releaseParams,
+				output);
+			if (typeIsDelegate)
+			{
+				output.Append("if (classHandle != 0)\n");
+				output.Append("\t\t\t\t{\n");
+				output.Append("\t\t\t\t\tvar thiz = (");
+				output.Append(typeName);
+				output.Append(
+					")NativeScript.Bindings.ObjectStore.Remove(classHandle);\n");
+				output.Append("\t\t\t\t\tthiz.CppHandle = 0;\n");
+				output.Append("\t\t\t\t}\n");
+				output.Append("\t\t\t\t");
+			}
+			output.Append(
+				"NativeScript.Bindings.ObjectStore.Remove(handle);");
+			AppendCsharpFunctionReturn(
+				releaseParams,
+				typeof(void),
+				TypeKind.Class,
+				null,
+				true,
+				output);
+		}
+
+		static void AppendCsharpBaseTypeCppMethodCallMethod(
+			bool isOverride,
+			MethodInfo invokeMethod,
+			string funcName,
+			ParameterInfo[] invokeParams,
+			string nativeInvokeFuncName,
+			ParameterInfo[] invokeParamsWithThis,
+			TypeKind invokeReturnTypeKind,
+			StringBuilder output)
+		{
+			output.Append("\t\t\tpublic ");
+			if (isOverride)
+			{
+				output.Append("override ");
+			}
+			AppendCsharpTypeName(
+				invokeMethod.ReturnType,
+				output);
+			output.Append(" ");
+			output.Append(funcName);
+			output.Append("(");
+			for (int i = 0; i < invokeParams.Length; ++i)
+			{
+				ParameterInfo param = invokeParams[i];
+				AppendCsharpTypeName(
+					param.ParameterType,
+					output);
+				output.Append(' ');
+				output.Append(param.Name);
+				if (i != invokeParams.Length - 1)
+				{
+					output.Append(", ");
+				}
+			}
+			output.Append(")\n");
+			output.Append("\t\t\t{\n");
+			output.Append("\t\t\t\tif (CppHandle != 0)\n");
+			output.Append("\t\t\t\t{\n");
+			output.Append("\t\t\t\t\tint thisHandle = CppHandle;\n");
+			AppendCppFunctionCall(
+				nativeInvokeFuncName,
+				invokeParamsWithThis,
+				invokeMethod.ReturnType,
+				true,
+				5,
+				output);
+			if (invokeMethod.ReturnType != typeof(void))
+			{
+				output.Append("\t\t\t\t\treturn ");
+				switch (invokeReturnTypeKind)
+				{
+					case TypeKind.Class:
+					case TypeKind.ManagedStruct:
+						if (invokeMethod.ReturnType != typeof(object))
+						{
+							output.Append('(');
+							AppendCsharpTypeName(
+								invokeMethod.ReturnType,
+								output);
+							output.Append(')');
+						}
+						AppendHandleStoreTypeName(
+							invokeMethod.ReturnType,
+							output);
+						output.Append(".Get(returnVal);\n");
+						break;
+					default:
+						output.Append("returnVal;\n");
+						break;
+				}
+			}
+			output.Append("\t\t\t\t}\n");
+			if (invokeMethod.ReturnType != typeof(void))
+			{
+				output.Append("\t\t\t\treturn default(");
+				AppendCsharpTypeName(
+					invokeMethod.ReturnType,
+					output);
+				output.Append(");\n");
+			}
+			output.Append("\t\t\t}\n");
+		}
+
+		private static void AppendCsharpBaseTypeConstructorFunction(
+			Type type,
+			string typeName,
+			bool typeIsDelegate,
+			string constructorFuncName,
+			ParameterInfo[] constructorParams,
+			StringBuilder output)
+		{
+			AppendCsharpFunctionBeginning(
+				type,
+				constructorFuncName,
+				true,
+				TypeKind.Class,
+				typeof(void),
+				constructorParams,
+				output);
+			output.Append("var thiz = new ");
+			output.Append(typeName);
+			output.Append("(cppHandle);\n");
+			if (typeIsDelegate)
+			{
+				output.Append(
+					"\t\t\t\tclassHandle = NativeScript.Bindings.ObjectStore.Store(thiz);\n");
+				output.Append(
+					"\t\t\t\thandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);");
+			}
+			else
+			{
+				output.Append(
+					"\t\t\t\thandle = NativeScript.Bindings.ObjectStore.Store(thiz);");
+			}
+			AppendCsharpFunctionReturn(
+				constructorParams,
+				typeof(void),
+				TypeKind.Class,
+				null,
+				true,
+				output);
+		}
+
+		static void AppendCppBaseTypeMethodInvokeBindingFunction(
+			string funcName,
+			Type type,
+			Type[] typeParams,
+			MethodInfo method,
+			string methodName,
+			TypeKind methodReturnTypeKind,
+			ParameterInfo[] methodParams,
+			int indent,
+			string typeName,
+			StringBuilder output)
+		{
+			AppendIndent(
+				indent,
+				output);
+			output.Append("DLLEXPORT ");
+			if (method.ReturnType == typeof(void))
+			{
+				output.Append("void");
+			}
+			else
+			{
+				switch (methodReturnTypeKind)
+				{
+					case TypeKind.Class:
+					case TypeKind.ManagedStruct:
+						output.Append("int32_t");
+						break;
+					default:
+						AppendCppTypeName(
+							method.ReturnType,
+							output);
+						break;
+				}
+			}
+			output.Append(' ');
+			AppendCsharpDelegateName(
+				type.Name,
+				type.Namespace,
+				typeParams,
+				funcName,
+				output);
+			output.Append("(int32_t cppHandle");
+			if (methodParams.Length > 0)
+			{
+				output.Append(", ");
+			}
+			for (int i = 0; i < methodParams.Length; ++i)
+			{
+				ParameterInfo param = methodParams[i];
+				switch (param.Kind)
+				{
+					case TypeKind.Class:
+					case TypeKind.ManagedStruct:
+						output.Append("int32_t ");
+						output.Append(param.Name);
+						output.Append("Handle");
+						break;
+					default:
+						AppendCppTypeName(
+							param.ParameterType,
+							output);
+						output.Append(' ');
+						output.Append(param.Name);
+						break;
+				}
+				if (i != methodParams.Length - 1)
+				{
+					output.Append(", ");
+				}
+			}
+			output.Append(")\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("try\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				indent + 2,
+				output);
+			if (method.ReturnType != typeof(void))
+			{
+				output.Append("return ");
+			}
+			output.Append("Plugin::Get");
+			output.Append(typeName);
+			output.Append("(cppHandle)->");
+			output.Append(methodName);
+			output.Append("(");
+			for (int i = 0; i < methodParams.Length; ++i)
+			{
+				ParameterInfo parameter = methodParams[i];
+				if (parameter.Kind == TypeKind.Class ||
+				    parameter.Kind == TypeKind.ManagedStruct)
+				{
+					AppendCppTypeName(
+						parameter.ParameterType,
+						output);
+					output.Append("(Plugin::InternalUse::Only, ");
+					output.Append(parameter.Name);
+					output.Append("Handle)");
+				}
+				else
+				{
+					output.Append(parameter.Name);
+				}
+				if (i != methodParams.Length - 1)
+				{
+					output.Append(", ");
+				}
+			}
+			output.Append(")");
+			if (
+				method.ReturnType != typeof(void) &&
+				(methodReturnTypeKind == TypeKind.Class ||
+				 methodReturnTypeKind == TypeKind.ManagedStruct))
+			{
+				output.Append(".Handle");
+			}
+			output.Append(";\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append(
+				"catch (System::Exception ex)\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				indent + 2,
+				output);
+			output.Append(
+				"Plugin::SetException(ex.Handle);\n");
+			if (method.ReturnType != typeof(void))
+			{
+				AppendIndent(
+					indent + 2,
+					output);
+				output.Append(
+					"return {};\n");
+			}
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("catch (...)\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				indent + 2,
+				output);
+			output.Append(
+				"System::String msg = \"Unhandled exception invoking ");
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("\";\n");
+			AppendIndent(
+				indent + 2,
+				output);
+			output.Append(
+				"System::Exception ex(msg);\n");
+			AppendIndent(
+				indent + 2,
+				output);
+			output.Append(
+				"Plugin::SetException(ex.Handle);\n");
+			if (method.ReturnType != typeof(void))
+			{
+				AppendIndent(
+					indent + 2,
+					output);
+				output.Append(
+					"return {};\n");
+			}
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeInequalityOperator(
+			string numberedTypeName,
+			Type[] typeParams,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("bool ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::operator!=(const ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("& other) const\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append(
+				"return Handle != other.Handle;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append('\n');
+		}
+
+		static void AppendCppBaseTypeEqualityOperator(
+			string numberedTypeName,
+			Type[] typeParams,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("bool ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::operator==(const ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("& other) const\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append(
+				"return Handle == other.Handle;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append('\n');
+		}
+
+		static void AppendCppBaseTypeMoveAssignmentOperator(
+			string typeName,
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			string releaseFuncName,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("& ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::operator=(");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("&& other)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("Plugin::Remove");
+			output.Append(typeName);
+			output.Append("(CppHandle);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("CppHandle = 0;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("if (Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("int32_t handle = Handle;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 2,
+					output);
+				output.Append("int32_t classHandle = ClassHandle;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("Handle = 0;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 2,
+					output);
+				output.Append("ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append(
+				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 3,
+				output);
+			output.Append("Plugin::");
+			output.Append(releaseFuncName);
+			output.Append("(handle");
+			if (typeIsDelegate)
+			{
+				output.Append(", classHandle");
+			}
+			output.Append(");\n");
+			AppendCppUnhandledExceptionHandling(
+				cppMethodDefinitionsIndent + 3,
+				output);
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("}\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(
+					"ClassHandle = other.ClassHandle;\n");
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append("other.ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("Handle = other.Handle;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("other.Handle = 0;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("return *this;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeAssignmentOperatorNullptr(
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			string releaseFuncName,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("& ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append(
+				"::operator=(std::nullptr_t other)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("if (Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("int32_t handle = Handle;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 2,
+					output);
+				output.Append("int32_t classHandle = ClassHandle;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("Handle = 0;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 2,
+					output);
+				output.Append("ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append(
+				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 3,
+				output);
+			output.Append("Plugin::");
+			output.Append(releaseFuncName);
+			output.Append("(handle");
+			if (typeIsDelegate)
+			{
+				output.Append(", classHandle");
+			}
+			output.Append(");\n");
+			AppendCppUnhandledExceptionHandling(
+				cppMethodDefinitionsIndent + 3,
+				output);
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("}\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append("ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("Handle = 0;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("return *this;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeAssignmentOperatorSameType(
+			Type type,
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("& ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::operator=(const ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("& other)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendSetHandle(
+				numberedTypeName,
+				type.Namespace,
+				TypeKind.Class,
+				typeParams,
+				cppMethodDefinitionsIndent + 1,
+				"this",
+				"other.Handle",
+				output);
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(
+					"ClassHandle = other.ClassHandle;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("return *this;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeDestructor(
+			string typeName,
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			string releaseFuncName,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::~");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			output.Append("()\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("Plugin::Remove");
+			output.Append(typeName);
+			output.Append("(CppHandle);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("CppHandle = 0;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("if (Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("int32_t handle = Handle;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 2,
+					output);
+				output.Append("int32_t classHandle = ClassHandle;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("Handle = 0;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 2,
+					output);
+				output.Append("ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append(
+				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 3,
+				output);
+			output.Append("Plugin::");
+			output.Append(releaseFuncName);
+			output.Append("(handle");
+			if (typeIsDelegate)
+			{
+				output.Append(", classHandle");
+			}
+			output.Append(");\n");
+			AppendCppUnhandledExceptionHandling(
+				cppMethodDefinitionsIndent + 3,
+				output);
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeHandleConstructor(
+			string typeName,
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			output.Append(
+				"(Plugin::InternalUse iu, int32_t handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append(
+				"\t: System::Object(iu, handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("CppHandle = Plugin::Store");
+			output.Append(typeName);
+			output.Append("(this);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("if (Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append(
+				"Plugin::ReferenceManagedClass(Handle);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("}\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(
+					"ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeMoveConstructor(
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			output.Append("(");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("&& other)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append(
+				"\t: System::Object(Plugin::InternalUse::Only, other.Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append(
+				"CppHandle = other.CppHandle;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(
+					"ClassHandle = other.ClassHandle;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("other.Handle = 0;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("other.CppHandle = 0;\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append("other.ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeCopyConstructor(
+			string typeName,
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			output.Append("(const ");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("& other)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append(
+				"\t: System::Object(Plugin::InternalUse::Only, other.Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("CppHandle = Plugin::Store");
+			output.Append(typeName);
+			output.Append("(this);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("if (Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append(
+				"Plugin::ReferenceManagedClass(Handle);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("}\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(
+					"ClassHandle = other.ClassHandle;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeNullptrConstructor(
+			string typeName,
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
+				output);
+			output.Append("::");
+			AppendTypeNameWithoutGenericSuffix(
+				numberedTypeName,
+				output);
+			output.Append("(std::nullptr_t n)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append(
+				"\t: System::Object(Plugin::InternalUse::Only, 0)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("CppHandle = Plugin::Store");
+			output.Append(typeName);
+			output.Append("(this);\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append("ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("\n");
+		}
+
+		static void AppendCppBaseTypeDefaultConstructor(
+			string typeName,
+			string numberedTypeName,
+			Type[] typeParams,
+			bool typeIsDelegate,
+			string constructorFuncName,
+			int cppMethodDefinitionsIndent,
+			StringBuilder output)
+		{
+			AppendCppMethodDefinitionBegin(
+				numberedTypeName,
+				null,
+				numberedTypeName,
+				typeParams,
+				null,
+				new ParameterInfo[0],
+				cppMethodDefinitionsIndent,
+				output);
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append(" : System::Object(nullptr)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("CppHandle = Plugin::Store");
+			output.Append(typeName);
+			output.Append("(this);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("Plugin::");
+			output.Append(constructorFuncName);
+			output.Append("(CppHandle, &Handle");
+			if (typeIsDelegate)
+			{
+				output.Append(", &ClassHandle");
+			}
+			output.Append(");\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("if (Handle)\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append(
+				"Plugin::ReferenceManagedClass(Handle);\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("else\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("Plugin::Remove");
+			output.Append(typeName);
+			output.Append("(CppHandle);\n");
+			if (typeIsDelegate)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 2,
+					output);
+				output.Append("ClassHandle = 0;\n");
+			}
+			AppendIndent(
+				cppMethodDefinitionsIndent + 2,
+				output);
+			output.Append("CppHandle = 0;\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("}\n");
+			AppendCppUnhandledExceptionHandling(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent,
+				output);
+			output.Append('\n');
+		}
+
+		static void AppendCppFreeListInit(
+			Type type,
+			int? maxSimultaneous,
+			string typeName,
+			StringBuilder output)
+		{
+			output.Append('\t');
+			output.Append(typeName);
+			output.Append("FreeListSize = ");
+			if (maxSimultaneous.HasValue)
+			{
+				output.Append(maxSimultaneous);
+			}
+			else
+			{
+				output.Append("maxManagedObjects");
+			}
+			output.Append(";\n");
+			output.Append("\t");
+			output.Append(typeName);
+			output.Append("FreeList = new ");
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("*[");
+			output.Append(typeName);
+			output.Append("FreeListSize];\n");
+			output.Append("\tfor (int32_t i = 0, end = ");
+			output.Append(typeName);
+			output.Append("FreeListSize - 1; i < end; ++i)\n");
+			output.Append("\t{\n");
+			output.Append("\t	");
+			output.Append(typeName);
+			output.Append("FreeList[i] = (");
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("*)(");
+			output.Append(typeName);
+			output.Append("FreeList + i + 1);\n");
+			output.Append("\t}\n");
+			output.Append('\t');
+			output.Append(typeName);
+			output.Append("FreeList[");
+			output.Append(typeName);
+			output.Append("FreeListSize - 1] = nullptr;\n");
+			output.Append("\tNextFree");
+			output.Append(typeName);
+			output.Append(" = ");
+			output.Append(typeName);
+			output.Append("FreeList + 1;\n");
+		}
+
+		static void AppendCppFreeListStateAndFunctions(
+			Type type,
+			string typeName,
+			StringBuilder output)
+		{
+			output.Append("\tint32_t ");
+			output.Append(typeName);
+			output.Append("FreeListSize;\n");
+			output.Append('\t');
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("** ");
+			output.Append(typeName);
+			output.Append("FreeList;\n");
+			output.Append('\t');
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("** NextFree");
+			output.Append(typeName);
+			output.Append(";\n");
+			output.Append("\t\n");
+			output.Append("\tint32_t Store");
+			output.Append(typeName);
+			output.Append('(');
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("* del)\n");
+			output.Append("\t{\n");
+			output.Append("\t\tassert(NextFree");
+			output.Append(typeName);
+			output.Append(" != nullptr);\n");
+			output.Append("\t\t");
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("** pNext = NextFree");
+			output.Append(typeName);
+			output.Append(";\n");
+			output.Append("\t\tNextFree");
+			output.Append(typeName);
+			output.Append(" = (");
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("**)*pNext;\n");
+			output.Append("\t\t*pNext = del;\n");
+			output.Append("\t\treturn (int32_t)(pNext - ");
+			output.Append(typeName);
+			output.Append("FreeList);\n");
+			output.Append("\t}\n");
+			output.Append("\t\n");
+			output.Append('\t');
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("* Get");
+			output.Append(typeName);
+			output.Append("(int32_t handle)\n");
+			output.Append("\t{\n");
+			output.Append(
+				"\t\tassert(handle >= 0 && handle < ");
+			output.Append(typeName);
+			output.Append("FreeListSize);\n");
+			output.Append("\t\treturn ");
+			output.Append(typeName);
+			output.Append("FreeList[handle];\n");
+			output.Append("\t}\n");
+			output.Append("\t\n");
+			output.Append("\tvoid Remove");
+			output.Append(typeName);
+			output.Append("(int32_t handle)\n");
+			output.Append("\t{\n");
+			output.Append("\t\t");
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("** pRelease = ");
+			output.Append(typeName);
+			output.Append("FreeList + handle;\n");
+			output.Append("\t\t*pRelease = (");
+			AppendCppTypeName(
+				type,
+				output);
+			output.Append("*)NextFree");
+			output.Append(typeName);
+			output.Append(";\n");
+			output.Append("\t\tNextFree");
+			output.Append(typeName);
+			output.Append(" = pRelease;\n");
+			output.Append("\t}\n");
+		}
+
 		static void AppendCsharpDelegate(
 			bool isStatic,
 			string typeName,
@@ -7672,7 +8538,7 @@ namespace NativeScript
 				
 				// Build parameters
 				ParameterInfo[] parameters = ConvertParameters(
-					new Type[]{ typeof(int) });
+					new[]{ typeof(int) });
 				
 				// C# imports
 				AppendCsharpImport(
@@ -7805,7 +8671,6 @@ namespace NativeScript
 				methodIsStatic,
 				enclosingTypeKind,
 				fieldType,
-				enclosingTypeParams,
 				parameters,
 				builders.CsharpFunctions);
 			AppendCsharpFunctionCallSubject(
@@ -7932,7 +8797,6 @@ namespace NativeScript
 			bool isReadOnly,
 			Type enclosingType,
 			Type[] enclosingTypeParams,
-			Type fieldType,
 			int indent,
 			Type[] exceptionTypes,
 			StringBuilders builders)
@@ -8001,7 +8865,6 @@ namespace NativeScript
 				methodIsStatic,
 				enclosingTypeKind,
 				typeof(void),
-				enclosingTypeParams,
 				parameters,
 				builders.CsharpFunctions);
 			AppendCsharpFunctionCallSubject(
@@ -9048,7 +9911,6 @@ namespace NativeScript
 			bool isStatic,
 			TypeKind enclosingTypeKind,
 			Type returnType,
-			Type[] typeParams,
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
@@ -9130,7 +9992,7 @@ namespace NativeScript
 					output.Append("var ");
 					output.Append(param.Name);
 					output.Append(" = ");
-					if (!paramType.Equals(typeof(object)))
+					if (paramType != typeof(object))
 					{
 						output.Append('(');
 						AppendCsharpTypeName(paramType, output);
@@ -9144,10 +10006,10 @@ namespace NativeScript
 			}
 			
 			// Save return value as local variable
-			if (!returnType.Equals(typeof(void)))
+			if (returnType != typeof(void))
 			{
 				output.Append("var returnValue = ");
-			};
+			}
 		}
 		
 		static void AppendCsharpFunctionCallSubject(
@@ -9168,7 +10030,6 @@ namespace NativeScript
 		}
 		
 		static void AppendCsharpFunctionCallParameters(
-			bool isStatic,
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
@@ -9251,7 +10112,7 @@ namespace NativeScript
 			}
 			
 			// Return
-			if (!returnType.Equals(typeof(void)))
+			if (returnType != typeof(void))
 			{
 				output.Append("\n\t\t\t\treturn ");
 				if (
@@ -9473,29 +10334,7 @@ namespace NativeScript
 				}
 			}
 		}
-		
-		static void AppendParameterCall(
-			ParameterInfo[] parameters,
-			string separator,
-			StringBuilder output)
-		{
-			for (int i = 0; i < parameters.Length; ++i)
-			{
-				ParameterInfo parameter = parameters[i];
-				output.Append(parameter.Name);
-				if (parameter.Kind == TypeKind.Class
-					|| parameter.Kind == TypeKind.ManagedStruct)
-				{
-					output.Append("Handle");
-				}
-				if (i != parameters.Length - 1)
-				{
-					output.Append(',');
-					output.Append(separator);
-				}
-			}
-		}
-		
+
 		static void AppendCppInitBody(
 			string globalVariableName,
 			string paramName,
@@ -9571,7 +10410,7 @@ namespace NativeScript
 			int indent,
 			StringBuilder output)
 		{
-			if (returnType != null && !returnType.Equals(typeof(void)))
+			if (returnType != null && returnType != typeof(void))
 			{
 				AppendIndent(indent, output);
 				output.Append("return ");
@@ -9943,59 +10782,59 @@ namespace NativeScript
 			Type type,
 			StringBuilder output)
 		{
-			if (type.Equals(typeof(void)))
+			if (type == typeof(void))
 			{
 				output.Append("void");
 			}
-			else if (type.Equals(typeof(bool)))
+			else if (type == typeof(bool))
 			{
 				output.Append("bool");
 			}
-			else if (type.Equals(typeof(sbyte)))
+			else if (type == typeof(sbyte))
 			{
 				output.Append("sbyte");
 			}
-			else if (type.Equals(typeof(byte)))
+			else if (type == typeof(byte))
 			{
 				output.Append("byte");
 			}
-			else if (type.Equals(typeof(short)))
+			else if (type == typeof(short))
 			{
 				output.Append("short");
 			}
-			else if (type.Equals(typeof(ushort)))
+			else if (type == typeof(ushort))
 			{
 				output.Append("ushort");
 			}
-			else if (type.Equals(typeof(int)))
+			else if (type == typeof(int))
 			{
 				output.Append("int");
 			}
-			else if (type.Equals(typeof(uint)))
+			else if (type == typeof(uint))
 			{
 				output.Append("uint");
 			}
-			else if (type.Equals(typeof(long)))
+			else if (type == typeof(long))
 			{
 				output.Append("long");
 			}
-			else if (type.Equals(typeof(ulong)))
+			else if (type == typeof(ulong))
 			{
 				output.Append("ulong");
 			}
-			else if (type.Equals(typeof(char)))
+			else if (type == typeof(char))
 			{
 				output.Append("char");
 			}
-			else if (type.Equals(typeof(float)))
+			else if (type == typeof(float))
 			{
 				output.Append("float");
 			}
-			else if (type.Equals(typeof(double)))
+			else if (type == typeof(double))
 			{
 				output.Append("double");
 			}
-			else if (type.Equals(typeof(string)))
+			else if (type == typeof(string))
 			{
 				output.Append("string");
 			}
@@ -10026,59 +10865,59 @@ namespace NativeScript
 			Type type,
 			StringBuilder output)
 		{
-			if (type.Equals(typeof(void)))
+			if (type == typeof(void))
 			{
 				output.Append("void");
 			}
-			else if (type.Equals(typeof(bool)))
+			else if (type == typeof(bool))
 			{
 				output.Append("System::Boolean");
 			}
-			else if (type.Equals(typeof(sbyte)))
+			else if (type == typeof(sbyte))
 			{
 				output.Append("int8_t");
 			}
-			else if (type.Equals(typeof(byte)))
+			else if (type == typeof(byte))
 			{
 				output.Append("uint8_t");
 			}
-			else if (type.Equals(typeof(short)))
+			else if (type == typeof(short))
 			{
 				output.Append("int16_t");
 			}
-			else if (type.Equals(typeof(ushort)))
+			else if (type == typeof(ushort))
 			{
 				output.Append("uint16_t");
 			}
-			else if (type.Equals(typeof(int)))
+			else if (type == typeof(int))
 			{
 				output.Append("int32_t");
 			}
-			else if (type.Equals(typeof(uint)))
+			else if (type == typeof(uint))
 			{
 				output.Append("uint32_t");
 			}
-			else if (type.Equals(typeof(long)))
+			else if (type == typeof(long))
 			{
 				output.Append("int64_t");
 			}
-			else if (type.Equals(typeof(ulong)))
+			else if (type == typeof(ulong))
 			{
 				output.Append("uint64_t");
 			}
-			else if (type.Equals(typeof(char)))
+			else if (type == typeof(char))
 			{
 				output.Append("System::Char");
 			}
-			else if (type.Equals(typeof(float)))
+			else if (type == typeof(float))
 			{
 				output.Append("float");
 			}
-			else if (type.Equals(typeof(double)))
+			else if (type == typeof(double))
 			{
 				output.Append("double");
 			}
-			else if (type.Equals(typeof(string)))
+			else if (type == typeof(string))
 			{
 				output.Append("System::String");
 			}
@@ -10108,7 +10947,7 @@ namespace NativeScript
 					type.Name,
 					output);
 				Type[] genTypes = type.GetGenericArguments();
-				if (genTypes != null && genTypes.Length > 0)
+				if (genTypes.Length > 0)
 				{
 					output.Append(genTypes.Length);
 				}
@@ -10141,69 +10980,6 @@ namespace NativeScript
 				output);
 		}
 		
-		static void LogStringBuilders(
-			StringBuilders builders)
-		{
-			LogStringBuilder(
-				"C# init params",
-				builders.CsharpInitParams);
-			LogStringBuilder(
-				"C# delegates",
-				builders.CsharpDelegateTypes);
-			LogStringBuilder(
-				"C# StructStore Init calls",
-				builders.CsharpStructStoreInitCalls);
-			LogStringBuilder(
-				"C# init call",
-				builders.CsharpInitCall);
-			LogStringBuilder(
-				"C# functions",
-				builders.CsharpFunctions);
-			LogStringBuilder(
-				"C# MonoBehaviours",
-				builders.CsharpMonoBehaviours);
-			LogStringBuilder(
-				"C# MonoBehaviour Delegates",
-				builders.CsharpDelegates);
-			LogStringBuilder(
-				"C# MonoBehaviour Imports",
-				builders.CsharpImports);
-			LogStringBuilder(
-				"C# MonoBehaviour GetDelegate Calls",
-				builders.CsharpGetDelegateCalls);
-			LogStringBuilder(
-				"C++ function pointers",
-				builders.CppFunctionPointers);
-			LogStringBuilder(
-				"C++ type declarations",
-				builders.CppTypeDeclarations);
-			LogStringBuilder(
-				"C++ type definitions",
-				builders.CppTypeDefinitions);
-			LogStringBuilder(
-				"C++ method definitions",
-				builders.CppMethodDefinitions);
-			LogStringBuilder(
-				"C++ init params",
-				builders.CppInitParams);
-			LogStringBuilder(
-				"C++ init body",
-				builders.CppInitBody);
-			LogStringBuilder(
-				"C++ MonoBehaviour messages",
-				builders.CppMonoBehaviourMessages);
-		}
-		
-		static void LogStringBuilder(
-			string title,
-			StringBuilder builder)
-		{
-			Debug.LogFormat(
-				"{0}:\n\n{1}\n\n",
-				title,
-				builder);
-		}
-		
 		static void RemoveTrailingChars(
 			StringBuilders builders)
 		{
@@ -10211,6 +10987,7 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CsharpDelegateTypes);
 			RemoveTrailingChars(builders.CsharpStructStoreInitCalls);
 			RemoveTrailingChars(builders.CsharpInitCall);
+			RemoveTrailingChars(builders.CsharpBaseTypes);
 			RemoveTrailingChars(builders.CsharpFunctions);
 			RemoveTrailingChars(builders.CsharpMonoBehaviours);
 			RemoveTrailingChars(builders.CsharpDelegates);
@@ -10218,11 +10995,13 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CsharpGetDelegateCalls);
 			RemoveTrailingChars(builders.CppFunctionPointers);
 			RemoveTrailingChars(builders.CppTypeDeclarations);
-			RemoveTrailingChars(builders.CppMethodDefinitions);
 			RemoveTrailingChars(builders.CppTypeDefinitions);
+			RemoveTrailingChars(builders.CppMethodDefinitions);
 			RemoveTrailingChars(builders.CppInitParams);
 			RemoveTrailingChars(builders.CppInitBody);
 			RemoveTrailingChars(builders.CppMonoBehaviourMessages);
+			RemoveTrailingChars(builders.CppGlobalStateAndFunctions);
+			RemoveTrailingChars(builders.CppBoxingMethodDeclarations);
 		}
 		
 		// Remove trailing chars (e.g. commas) for last elements
@@ -10278,6 +11057,11 @@ namespace NativeScript
 				"/*BEGIN INIT CALL*/\n",
 				"\n\t\t\t\t/*END INIT CALL*/",
 				builders.CsharpInitCall.ToString());
+			csharpContents = InjectIntoString(
+				csharpContents,
+				"/*BEGIN BASE TYPES*/\n",
+				"\n\t\t/*END BASE TYPES*/",
+				builders.CsharpBaseTypes.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
 				"/*BEGIN FUNCTIONS*/\n",
@@ -10360,7 +11144,7 @@ namespace NativeScript
 			string endMarker,
 			string text)
 		{
-			for (int startIndex = 0; true; )
+			for (int startIndex = 0; ; )
 			{
 				int beginIndex = contents.IndexOf(beginMarker, startIndex);
 				if (beginIndex < 0)

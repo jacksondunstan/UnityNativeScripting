@@ -308,6 +308,11 @@
 					"Types": [
 						"System.String"
 					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
 				}
 			],
 			"Constructors": [
@@ -327,6 +332,12 @@
 					"Name": "Add",
 					"ParamTypes": [
 						"T"
+					]
+				},
+				{
+					"Name": "Sort",
+					"ParamTypes": [
+						"System.Collections.Generic.IComparer`1"
 					]
 				}
 			]
@@ -527,6 +538,35 @@
 		},
 		{
 			"Name": "UnityEngine.SceneManagement.LoadSceneMode"
+		}
+	],
+	"BaseTypes": [
+		{
+			"Name": "System.Collections.Generic.IComparer`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.String"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.StringComparer"
+		},
+		{
+			"Name": "System.EventArgs",
+			"OverrideMethods": [
+				{
+					"Name": "ToString",
+					"ParamTypes": []
+				}
+			]
 		}
 	],
 	"MonoBehaviours": [

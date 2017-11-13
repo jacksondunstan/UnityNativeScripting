@@ -327,6 +327,12 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericListSystemStringPropertyGetItem,
 			IntPtr systemCollectionsGenericListSystemStringPropertySetItem,
 			IntPtr systemCollectionsGenericListSystemStringMethodAddSystemString,
+			IntPtr systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer,
+			IntPtr systemCollectionsGenericListSystemInt32Constructor,
+			IntPtr systemCollectionsGenericListSystemInt32PropertyGetItem,
+			IntPtr systemCollectionsGenericListSystemInt32PropertySetItem,
+			IntPtr systemCollectionsGenericListSystemInt32MethodAddSystemInt32,
+			IntPtr systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue,
@@ -366,6 +372,14 @@ namespace NativeScript
 			IntPtr unboxScene,
 			IntPtr boxLoadSceneMode,
 			IntPtr unboxLoadSceneMode,
+			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
+			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
+			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
+			IntPtr systemCollectionsGenericIComparerSystemStringConstructor,
+			IntPtr releaseSystemStringComparer,
+			IntPtr systemStringComparerConstructor,
+			IntPtr releaseSystemEventArgs,
+			IntPtr systemEventArgsConstructor,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -418,49 +432,67 @@ namespace NativeScript
 			IntPtr unityEngineGradientColorKeyArray1SetItem1,
 			IntPtr releaseSystemAction,
 			IntPtr systemActionConstructor,
-			IntPtr systemActionInvoke,
 			IntPtr systemActionAdd,
 			IntPtr systemActionRemove,
+			IntPtr systemActionInvoke,
 			IntPtr releaseSystemActionSystemSingle,
 			IntPtr systemActionSystemSingleConstructor,
-			IntPtr systemActionSystemSingleInvoke,
 			IntPtr systemActionSystemSingleAdd,
 			IntPtr systemActionSystemSingleRemove,
+			IntPtr systemActionSystemSingleInvoke,
 			IntPtr releaseSystemActionSystemSingle_SystemSingle,
 			IntPtr systemActionSystemSingle_SystemSingleConstructor,
-			IntPtr systemActionSystemSingle_SystemSingleInvoke,
 			IntPtr systemActionSystemSingle_SystemSingleAdd,
 			IntPtr systemActionSystemSingle_SystemSingleRemove,
+			IntPtr systemActionSystemSingle_SystemSingleInvoke,
 			IntPtr releaseSystemFuncSystemInt32_SystemSingle_SystemDouble,
 			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor,
-			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
 			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleAdd,
 			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleRemove,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
 			IntPtr releaseSystemFuncSystemInt16_SystemInt32_SystemString,
 			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringConstructor,
-			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringInvoke,
 			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringAdd,
 			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringRemove,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringInvoke,
 			IntPtr releaseSystemAppDomainInitializer,
 			IntPtr systemAppDomainInitializerConstructor,
-			IntPtr systemAppDomainInitializerInvoke,
 			IntPtr systemAppDomainInitializerAdd,
 			IntPtr systemAppDomainInitializerRemove,
+			IntPtr systemAppDomainInitializerInvoke,
 			IntPtr releaseUnityEngineEventsUnityAction,
 			IntPtr unityEngineEventsUnityActionConstructor,
-			IntPtr unityEngineEventsUnityActionInvoke,
 			IntPtr unityEngineEventsUnityActionAdd,
 			IntPtr unityEngineEventsUnityActionRemove,
+			IntPtr unityEngineEventsUnityActionInvoke,
 			IntPtr releaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor,
-			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd,
-			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke
 			/*END INIT PARAMS*/);
 		
 		public delegate void SetCsharpExceptionDelegate(int handle);
 		
 		/*BEGIN MONOBEHAVIOUR DELEGATES*/
+		public delegate int SystemCollectionsGenericIComparerSystemInt32CompareDelegate(int thisHandle, int param0, int param1);
+		public static SystemCollectionsGenericIComparerSystemInt32CompareDelegate SystemCollectionsGenericIComparerSystemInt32Compare;
+		
+		public delegate int SystemCollectionsGenericIComparerSystemStringCompareDelegate(int thisHandle, int param0, int param1);
+		public static SystemCollectionsGenericIComparerSystemStringCompareDelegate SystemCollectionsGenericIComparerSystemStringCompare;
+		
+		public delegate int SystemStringComparerCompareDelegate(int thisHandle, int param0, int param1);
+		public static SystemStringComparerCompareDelegate SystemStringComparerCompare;
+		
+		public delegate bool SystemStringComparerEqualsDelegate(int thisHandle, int param0, int param1);
+		public static SystemStringComparerEqualsDelegate SystemStringComparerEquals;
+		
+		public delegate int SystemStringComparerGetHashCodeDelegate(int thisHandle, int param0);
+		public static SystemStringComparerGetHashCodeDelegate SystemStringComparerGetHashCode;
+		
+		public delegate int SystemEventArgsToStringDelegate(int thisHandle);
+		public static SystemEventArgsToStringDelegate SystemEventArgsToString;
+		
 		public delegate void MyGameMonoBehavioursTestScriptAwakeDelegate(int thisHandle);
 		public static MyGameMonoBehavioursTestScriptAwakeDelegate MyGameMonoBehavioursTestScriptAwake;
 		
@@ -473,29 +505,29 @@ namespace NativeScript
 		public delegate void MyGameMonoBehavioursTestScriptUpdateDelegate(int thisHandle);
 		public static MyGameMonoBehavioursTestScriptUpdateDelegate MyGameMonoBehavioursTestScriptUpdate;
 		
-		public delegate void SystemActionCppInvokeDelegate(int thisHandle);
-		public static SystemActionCppInvokeDelegate SystemActionCppInvoke;
+		public delegate void SystemActionNativeInvokeDelegate(int thisHandle);
+		public static SystemActionNativeInvokeDelegate SystemActionNativeInvoke;
 		
-		public delegate void SystemActionSystemSingleCppInvokeDelegate(int thisHandle, float param0);
-		public static SystemActionSystemSingleCppInvokeDelegate SystemActionSystemSingleCppInvoke;
+		public delegate void SystemActionSystemSingleNativeInvokeDelegate(int thisHandle, float param0);
+		public static SystemActionSystemSingleNativeInvokeDelegate SystemActionSystemSingleNativeInvoke;
 		
-		public delegate void SystemActionSystemSingle_SystemSingleCppInvokeDelegate(int thisHandle, float param0, float param1);
-		public static SystemActionSystemSingle_SystemSingleCppInvokeDelegate SystemActionSystemSingle_SystemSingleCppInvoke;
+		public delegate void SystemActionSystemSingle_SystemSingleNativeInvokeDelegate(int thisHandle, float param0, float param1);
+		public static SystemActionSystemSingle_SystemSingleNativeInvokeDelegate SystemActionSystemSingle_SystemSingleNativeInvoke;
 		
-		public delegate double SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvokeDelegate(int thisHandle, int param0, float param1);
-		public static SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvokeDelegate SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke;
+		public delegate double SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvokeDelegate(int thisHandle, int param0, float param1);
+		public static SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvokeDelegate SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvoke;
 		
-		public delegate int SystemFuncSystemInt16_SystemInt32_SystemStringCppInvokeDelegate(int thisHandle, short param0, int param1);
-		public static SystemFuncSystemInt16_SystemInt32_SystemStringCppInvokeDelegate SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke;
+		public delegate int SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvokeDelegate(int thisHandle, short param0, int param1);
+		public static SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvokeDelegate SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvoke;
 		
-		public delegate void SystemAppDomainInitializerCppInvokeDelegate(int thisHandle, int param0);
-		public static SystemAppDomainInitializerCppInvokeDelegate SystemAppDomainInitializerCppInvoke;
+		public delegate void SystemAppDomainInitializerNativeInvokeDelegate(int thisHandle, int param0);
+		public static SystemAppDomainInitializerNativeInvokeDelegate SystemAppDomainInitializerNativeInvoke;
 		
-		public delegate void UnityEngineEventsUnityActionCppInvokeDelegate(int thisHandle);
-		public static UnityEngineEventsUnityActionCppInvokeDelegate UnityEngineEventsUnityActionCppInvoke;
+		public delegate void UnityEngineEventsUnityActionNativeInvokeDelegate(int thisHandle);
+		public static UnityEngineEventsUnityActionNativeInvokeDelegate UnityEngineEventsUnityActionNativeInvoke;
 		
-		public delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvokeDelegate(int thisHandle, UnityEngine.SceneManagement.Scene param0, UnityEngine.SceneManagement.LoadSceneMode param1);
-		public static UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvokeDelegate UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke;
+		public delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvokeDelegate(int thisHandle, UnityEngine.SceneManagement.Scene param0, UnityEngine.SceneManagement.LoadSceneMode param1);
+		public static UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvokeDelegate UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke;
 		
 		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegate(int param0);
 		public static SetCsharpExceptionSystemNullReferenceExceptionDelegate SetCsharpExceptionSystemNullReferenceException;
@@ -651,6 +683,12 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericListSystemStringPropertyGetItem,
 			IntPtr systemCollectionsGenericListSystemStringPropertySetItem,
 			IntPtr systemCollectionsGenericListSystemStringMethodAddSystemString,
+			IntPtr systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer,
+			IntPtr systemCollectionsGenericListSystemInt32Constructor,
+			IntPtr systemCollectionsGenericListSystemInt32PropertyGetItem,
+			IntPtr systemCollectionsGenericListSystemInt32PropertySetItem,
+			IntPtr systemCollectionsGenericListSystemInt32MethodAddSystemInt32,
+			IntPtr systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue,
 			IntPtr systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue,
@@ -690,6 +728,14 @@ namespace NativeScript
 			IntPtr unboxScene,
 			IntPtr boxLoadSceneMode,
 			IntPtr unboxLoadSceneMode,
+			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
+			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
+			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
+			IntPtr systemCollectionsGenericIComparerSystemStringConstructor,
+			IntPtr releaseSystemStringComparer,
+			IntPtr systemStringComparerConstructor,
+			IntPtr releaseSystemEventArgs,
+			IntPtr systemEventArgsConstructor,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -742,50 +788,68 @@ namespace NativeScript
 			IntPtr unityEngineGradientColorKeyArray1SetItem1,
 			IntPtr releaseSystemAction,
 			IntPtr systemActionConstructor,
-			IntPtr systemActionInvoke,
 			IntPtr systemActionAdd,
 			IntPtr systemActionRemove,
+			IntPtr systemActionInvoke,
 			IntPtr releaseSystemActionSystemSingle,
 			IntPtr systemActionSystemSingleConstructor,
-			IntPtr systemActionSystemSingleInvoke,
 			IntPtr systemActionSystemSingleAdd,
 			IntPtr systemActionSystemSingleRemove,
+			IntPtr systemActionSystemSingleInvoke,
 			IntPtr releaseSystemActionSystemSingle_SystemSingle,
 			IntPtr systemActionSystemSingle_SystemSingleConstructor,
-			IntPtr systemActionSystemSingle_SystemSingleInvoke,
 			IntPtr systemActionSystemSingle_SystemSingleAdd,
 			IntPtr systemActionSystemSingle_SystemSingleRemove,
+			IntPtr systemActionSystemSingle_SystemSingleInvoke,
 			IntPtr releaseSystemFuncSystemInt32_SystemSingle_SystemDouble,
 			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor,
-			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
 			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleAdd,
 			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleRemove,
+			IntPtr systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke,
 			IntPtr releaseSystemFuncSystemInt16_SystemInt32_SystemString,
 			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringConstructor,
-			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringInvoke,
 			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringAdd,
 			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringRemove,
+			IntPtr systemFuncSystemInt16_SystemInt32_SystemStringInvoke,
 			IntPtr releaseSystemAppDomainInitializer,
 			IntPtr systemAppDomainInitializerConstructor,
-			IntPtr systemAppDomainInitializerInvoke,
 			IntPtr systemAppDomainInitializerAdd,
 			IntPtr systemAppDomainInitializerRemove,
+			IntPtr systemAppDomainInitializerInvoke,
 			IntPtr releaseUnityEngineEventsUnityAction,
 			IntPtr unityEngineEventsUnityActionConstructor,
-			IntPtr unityEngineEventsUnityActionInvoke,
 			IntPtr unityEngineEventsUnityActionAdd,
 			IntPtr unityEngineEventsUnityActionRemove,
+			IntPtr unityEngineEventsUnityActionInvoke,
 			IntPtr releaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor,
-			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd,
-			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove,
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke
 			/*END INIT PARAMS*/);
 		
 		[DllImport(PluginName)]
 		static extern void SetCsharpException(int handle);
 		
 		/*BEGIN MONOBEHAVIOUR IMPORTS*/
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsGenericIComparerSystemInt32Compare(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsGenericIComparerSystemStringCompare(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemStringComparerCompare(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemStringComparerEquals(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemStringComparerGetHashCode(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemEventArgsToString(int thisHandle);
+		
 		[DllImport(Constants.PluginName)]
 		public static extern void MyGameMonoBehavioursTestScriptAwake(int thisHandle);
 		
@@ -799,28 +863,28 @@ namespace NativeScript
 		public static extern void MyGameMonoBehavioursTestScriptUpdate(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void SystemActionCppInvoke(int thisHandle);
+		public static extern void SystemActionNativeInvoke(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void SystemActionSystemSingleCppInvoke(int thisHandle, int param0);
+		public static extern void SystemActionSystemSingleNativeInvoke(int thisHandle, int param0);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void SystemActionSystemSingle_SystemSingleCppInvoke(int thisHandle, int param0, int param1);
+		public static extern void SystemActionSystemSingle_SystemSingleNativeInvoke(int thisHandle, int param0, int param1);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke(int thisHandle, int param0, int param1);
+		public static extern void SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvoke(int thisHandle, int param0, int param1);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke(int thisHandle, int param0, int param1);
+		public static extern void SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvoke(int thisHandle, int param0, int param1);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void SystemAppDomainInitializerCppInvoke(int thisHandle, int param0);
+		public static extern void SystemAppDomainInitializerNativeInvoke(int thisHandle, int param0);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void UnityEngineEventsUnityActionCppInvoke(int thisHandle);
+		public static extern void UnityEngineEventsUnityActionNativeInvoke(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
-		public static extern void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke(int thisHandle, UnityEngine.SceneManagement.Scene param0, int param1);
+		public static extern void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke(int thisHandle, UnityEngine.SceneManagement.Scene param0, int param1);
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle, int param0);
@@ -886,6 +950,12 @@ namespace NativeScript
 		delegate int SystemCollectionsGenericListSystemStringPropertyGetItemDelegate(int thisHandle, int index);
 		delegate void SystemCollectionsGenericListSystemStringPropertySetItemDelegate(int thisHandle, int index, int valueHandle);
 		delegate void SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate(int thisHandle, int itemHandle);
+		delegate void SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparerDelegate(int thisHandle, int comparerHandle);
+		delegate int SystemCollectionsGenericListSystemInt32ConstructorDelegate();
+		delegate int SystemCollectionsGenericListSystemInt32PropertyGetItemDelegate(int thisHandle, int index);
+		delegate void SystemCollectionsGenericListSystemInt32PropertySetItemDelegate(int thisHandle, int index, int value);
+		delegate void SystemCollectionsGenericListSystemInt32MethodAddSystemInt32Delegate(int thisHandle, int item);
+		delegate void SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparerDelegate(int thisHandle, int comparerHandle);
 		delegate int SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate(int valueHandle);
 		delegate int SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate(int thisHandle);
 		delegate void SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValueDelegate(int thisHandle, int valueHandle);
@@ -925,6 +995,14 @@ namespace NativeScript
 		delegate UnityEngine.SceneManagement.Scene UnboxSceneDelegate(int valHandle);
 		delegate int BoxLoadSceneModeDelegate(UnityEngine.SceneManagement.LoadSceneMode val);
 		delegate UnityEngine.SceneManagement.LoadSceneMode UnboxLoadSceneModeDelegate(int valHandle);
+		delegate void SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(int handle);
+		delegate void SystemCollectionsGenericIComparerSystemStringConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(int handle);
+		delegate void SystemStringComparerConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemStringComparerDelegate(int handle);
+		delegate void SystemEventArgsConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemEventArgsDelegate(int handle);
 		delegate int BoxBooleanDelegate(bool val);
 		delegate bool UnboxBooleanDelegate(int valHandle);
 		delegate int BoxSByteDelegate(sbyte val);
@@ -975,44 +1053,44 @@ namespace NativeScript
 		delegate int UnityEngineUnityEngineGradientColorKeyArray1Constructor1Delegate(int length0);
 		delegate UnityEngine.GradientColorKey UnityEngineGradientColorKeyArray1GetItem1Delegate(int thisHandle, int index0);
 		delegate void UnityEngineGradientColorKeyArray1SetItem1Delegate(int thisHandle, int index0, ref UnityEngine.GradientColorKey item);
+		delegate void SystemActionInvokeDelegate(int thisHandle);
 		delegate void SystemActionConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseSystemActionDelegate(int handle, int classHandle);
-		delegate void SystemActionInvokeDelegate(int thisHandle);
 		delegate void SystemActionAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemActionRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemActionSystemSingleInvokeDelegate(int thisHandle, float obj);
 		delegate void SystemActionSystemSingleConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseSystemActionSystemSingleDelegate(int handle, int classHandle);
-		delegate void SystemActionSystemSingleInvokeDelegate(int thisHandle, float obj);
 		delegate void SystemActionSystemSingleAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemActionSystemSingleRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemActionSystemSingle_SystemSingleInvokeDelegate(int thisHandle, float arg1, float arg2);
 		delegate void SystemActionSystemSingle_SystemSingleConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseSystemActionSystemSingle_SystemSingleDelegate(int handle, int classHandle);
-		delegate void SystemActionSystemSingle_SystemSingleInvokeDelegate(int thisHandle, float arg1, float arg2);
 		delegate void SystemActionSystemSingle_SystemSingleAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemActionSystemSingle_SystemSingleRemoveDelegate(int thisHandle, int delHandle);
+		delegate double SystemFuncSystemInt32_SystemSingle_SystemDoubleInvokeDelegate(int thisHandle, int arg1, float arg2);
 		delegate void SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseSystemFuncSystemInt32_SystemSingle_SystemDoubleDelegate(int handle, int classHandle);
-		delegate double SystemFuncSystemInt32_SystemSingle_SystemDoubleInvokeDelegate(int thisHandle, int arg1, float arg2);
 		delegate void SystemFuncSystemInt32_SystemSingle_SystemDoubleAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemFuncSystemInt32_SystemSingle_SystemDoubleRemoveDelegate(int thisHandle, int delHandle);
+		delegate int SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate(int thisHandle, short arg1, int arg2);
 		delegate void SystemFuncSystemInt16_SystemInt32_SystemStringConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseSystemFuncSystemInt16_SystemInt32_SystemStringDelegate(int handle, int classHandle);
-		delegate int SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate(int thisHandle, short arg1, int arg2);
 		delegate void SystemFuncSystemInt16_SystemInt32_SystemStringAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemFuncSystemInt16_SystemInt32_SystemStringRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemAppDomainInitializerInvokeDelegate(int thisHandle, int argsHandle);
 		delegate void SystemAppDomainInitializerConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseSystemAppDomainInitializerDelegate(int handle, int classHandle);
-		delegate void SystemAppDomainInitializerInvokeDelegate(int thisHandle, int argsHandle);
 		delegate void SystemAppDomainInitializerAddDelegate(int thisHandle, int delHandle);
 		delegate void SystemAppDomainInitializerRemoveDelegate(int thisHandle, int delHandle);
+		delegate void UnityEngineEventsUnityActionInvokeDelegate(int thisHandle);
 		delegate void UnityEngineEventsUnityActionConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseUnityEngineEventsUnityActionDelegate(int handle, int classHandle);
-		delegate void UnityEngineEventsUnityActionInvokeDelegate(int thisHandle);
 		delegate void UnityEngineEventsUnityActionAddDelegate(int thisHandle, int delHandle);
 		delegate void UnityEngineEventsUnityActionRemoveDelegate(int thisHandle, int delHandle);
+		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(int thisHandle, ref UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1);
 		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
 		delegate void ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeDelegate(int handle, int classHandle);
-		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(int thisHandle, ref UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1);
 		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAddDelegate(int thisHandle, int delHandle);
 		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate(int thisHandle, int delHandle);
 		/*END DELEGATE TYPES*/
@@ -1049,18 +1127,24 @@ namespace NativeScript
 				libraryHandle,
 				"SetCsharpException");
 			/*BEGIN MONOBEHAVIOUR GETDELEGATE CALLS*/
+			SystemCollectionsGenericIComparerSystemInt32Compare = GetDelegate<SystemCollectionsGenericIComparerSystemInt32CompareDelegate>(libraryHandle, "SystemCollectionsGenericIComparerSystemInt32Compare");
+			SystemCollectionsGenericIComparerSystemStringCompare = GetDelegate<SystemCollectionsGenericIComparerSystemStringCompareDelegate>(libraryHandle, "SystemCollectionsGenericIComparerSystemStringCompare");
+			SystemStringComparerCompare = GetDelegate<SystemStringComparerCompareDelegate>(libraryHandle, "SystemStringComparerCompare");
+			SystemStringComparerEquals = GetDelegate<SystemStringComparerEqualsDelegate>(libraryHandle, "SystemStringComparerEquals");
+			SystemStringComparerGetHashCode = GetDelegate<SystemStringComparerGetHashCodeDelegate>(libraryHandle, "SystemStringComparerGetHashCode");
+			SystemEventArgsToString = GetDelegate<SystemEventArgsToStringDelegate>(libraryHandle, "SystemEventArgsToString");
 			MyGameMonoBehavioursTestScriptAwake = GetDelegate<MyGameMonoBehavioursTestScriptAwakeDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptAwake");
 			MyGameMonoBehavioursTestScriptOnAnimatorIK = GetDelegate<MyGameMonoBehavioursTestScriptOnAnimatorIKDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnAnimatorIK");
 			MyGameMonoBehavioursTestScriptOnCollisionEnter = GetDelegate<MyGameMonoBehavioursTestScriptOnCollisionEnterDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnCollisionEnter");
 			MyGameMonoBehavioursTestScriptUpdate = GetDelegate<MyGameMonoBehavioursTestScriptUpdateDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptUpdate");
-			SystemActionCppInvoke = GetDelegate<SystemActionCppInvokeDelegate>(libraryHandle, "SystemActionCppInvoke");
-			SystemActionSystemSingleCppInvoke = GetDelegate<SystemActionSystemSingleCppInvokeDelegate>(libraryHandle, "SystemActionSystemSingleCppInvoke");
-			SystemActionSystemSingle_SystemSingleCppInvoke = GetDelegate<SystemActionSystemSingle_SystemSingleCppInvokeDelegate>(libraryHandle, "SystemActionSystemSingle_SystemSingleCppInvoke");
-			SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke = GetDelegate<SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvokeDelegate>(libraryHandle, "SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke");
-			SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke = GetDelegate<SystemFuncSystemInt16_SystemInt32_SystemStringCppInvokeDelegate>(libraryHandle, "SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke");
-			SystemAppDomainInitializerCppInvoke = GetDelegate<SystemAppDomainInitializerCppInvokeDelegate>(libraryHandle, "SystemAppDomainInitializerCppInvoke");
-			UnityEngineEventsUnityActionCppInvoke = GetDelegate<UnityEngineEventsUnityActionCppInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionCppInvoke");
-			UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke = GetDelegate<UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke");
+			SystemActionNativeInvoke = GetDelegate<SystemActionNativeInvokeDelegate>(libraryHandle, "SystemActionNativeInvoke");
+			SystemActionSystemSingleNativeInvoke = GetDelegate<SystemActionSystemSingleNativeInvokeDelegate>(libraryHandle, "SystemActionSystemSingleNativeInvoke");
+			SystemActionSystemSingle_SystemSingleNativeInvoke = GetDelegate<SystemActionSystemSingle_SystemSingleNativeInvokeDelegate>(libraryHandle, "SystemActionSystemSingle_SystemSingleNativeInvoke");
+			SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvoke = GetDelegate<SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvokeDelegate>(libraryHandle, "SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvoke");
+			SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvoke = GetDelegate<SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvokeDelegate>(libraryHandle, "SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvoke");
+			SystemAppDomainInitializerNativeInvoke = GetDelegate<SystemAppDomainInitializerNativeInvokeDelegate>(libraryHandle, "SystemAppDomainInitializerNativeInvoke");
+			UnityEngineEventsUnityActionNativeInvoke = GetDelegate<UnityEngineEventsUnityActionNativeInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionNativeInvoke");
+			UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke = GetDelegate<UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke");
 			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegate>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
@@ -1127,6 +1211,12 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringPropertyGetItemDelegate(SystemCollectionsGenericListSystemStringPropertyGetItem)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringPropertySetItemDelegate(SystemCollectionsGenericListSystemStringPropertySetItem)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringMethodAddSystemStringDelegate(SystemCollectionsGenericListSystemStringMethodAddSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparerDelegate(SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemInt32ConstructorDelegate(SystemCollectionsGenericListSystemInt32Constructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemInt32PropertyGetItemDelegate(SystemCollectionsGenericListSystemInt32PropertyGetItem)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemInt32PropertySetItemDelegate(SystemCollectionsGenericListSystemInt32PropertySetItem)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemInt32MethodAddSystemInt32Delegate(SystemCollectionsGenericListSystemInt32MethodAddSystemInt32)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparerDelegate(SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate(SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValueDelegate(SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValueDelegate(SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)),
@@ -1166,6 +1256,14 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnboxSceneDelegate(UnboxScene)),
 				Marshal.GetFunctionPointerForDelegate(new BoxLoadSceneModeDelegate(BoxLoadSceneMode)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxLoadSceneModeDelegate(UnboxLoadSceneMode)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(ReleaseSystemCollectionsGenericIComparerSystemInt32)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(SystemCollectionsGenericIComparerSystemInt32Constructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(ReleaseSystemCollectionsGenericIComparerSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemStringConstructorDelegate(SystemCollectionsGenericIComparerSystemStringConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemStringComparerDelegate(ReleaseSystemStringComparer)),
+				Marshal.GetFunctionPointerForDelegate(new SystemStringComparerConstructorDelegate(SystemStringComparerConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemEventArgsDelegate(ReleaseSystemEventArgs)),
+				Marshal.GetFunctionPointerForDelegate(new SystemEventArgsConstructorDelegate(SystemEventArgsConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new BoxBooleanDelegate(BoxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxBooleanDelegate(UnboxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new BoxSByteDelegate(BoxSByte)),
@@ -1218,44 +1316,44 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGradientColorKeyArray1SetItem1Delegate(UnityEngineGradientColorKeyArray1SetItem1)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemActionDelegate(ReleaseSystemAction)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionConstructorDelegate(SystemActionConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new SystemActionInvokeDelegate(SystemActionInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionAddDelegate(SystemActionAdd)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionRemoveDelegate(SystemActionRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemActionInvokeDelegate(SystemActionInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemActionSystemSingleDelegate(ReleaseSystemActionSystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingleConstructorDelegate(SystemActionSystemSingleConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingleInvokeDelegate(SystemActionSystemSingleInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingleAddDelegate(SystemActionSystemSingleAdd)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingleRemoveDelegate(SystemActionSystemSingleRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingleInvokeDelegate(SystemActionSystemSingleInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemActionSystemSingle_SystemSingleDelegate(ReleaseSystemActionSystemSingle_SystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingle_SystemSingleConstructorDelegate(SystemActionSystemSingle_SystemSingleConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingle_SystemSingleInvokeDelegate(SystemActionSystemSingle_SystemSingleInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingle_SystemSingleAddDelegate(SystemActionSystemSingle_SystemSingleAdd)),
 				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingle_SystemSingleRemoveDelegate(SystemActionSystemSingle_SystemSingleRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemActionSystemSingle_SystemSingleInvokeDelegate(SystemActionSystemSingle_SystemSingleInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemFuncSystemInt32_SystemSingle_SystemDoubleDelegate(ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructorDelegate(SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt32_SystemSingle_SystemDoubleInvokeDelegate(SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt32_SystemSingle_SystemDoubleAddDelegate(SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt32_SystemSingle_SystemDoubleRemoveDelegate(SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt32_SystemSingle_SystemDoubleInvokeDelegate(SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemFuncSystemInt16_SystemInt32_SystemStringDelegate(ReleaseSystemFuncSystemInt16_SystemInt32_SystemString)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringConstructorDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringAddDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringAdd)),
 				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringRemoveDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate(SystemFuncSystemInt16_SystemInt32_SystemStringInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemAppDomainInitializerDelegate(ReleaseSystemAppDomainInitializer)),
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerConstructorDelegate(SystemAppDomainInitializerConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerInvokeDelegate(SystemAppDomainInitializerInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerAddDelegate(SystemAppDomainInitializerAdd)),
 				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerRemoveDelegate(SystemAppDomainInitializerRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemAppDomainInitializerInvokeDelegate(SystemAppDomainInitializerInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEngineEventsUnityActionDelegate(ReleaseUnityEngineEventsUnityAction)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionConstructorDelegate(UnityEngineEventsUnityActionConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionInvokeDelegate(UnityEngineEventsUnityActionInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionAddDelegate(UnityEngineEventsUnityActionAdd)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionRemoveDelegate(UnityEngineEventsUnityActionRemove)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionInvokeDelegate(UnityEngineEventsUnityActionInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeDelegate(ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructorDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAddDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove))
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke))
 				/*END INIT CALL*/
 				);
 			if (UnhandledCppException != null)
@@ -1316,6 +1414,376 @@ namespace NativeScript
 		{
 			return ((Array)ObjectStore.Get(handle)).Rank;
 		}
+		
+		/*BEGIN BASE TYPES*/
+		class SystemCollectionsGenericIComparerSystemInt32 : System.Collections.Generic.IComparer<int>
+		{
+			public int CppHandle;
+			
+			public SystemCollectionsGenericIComparerSystemInt32(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public int Compare(int x, int y)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemCollectionsGenericIComparerSystemInt32Compare(thisHandle, x, y);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(int);
+			}
+		}
+		
+		class SystemCollectionsGenericIComparerSystemString : System.Collections.Generic.IComparer<string>
+		{
+			public int CppHandle;
+			
+			public SystemCollectionsGenericIComparerSystemString(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public int Compare(string x, string y)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int xHandle = NativeScript.Bindings.ObjectStore.GetHandle(x);
+					int yHandle = NativeScript.Bindings.ObjectStore.GetHandle(y);
+					var returnVal = NativeScript.Bindings.SystemCollectionsGenericIComparerSystemStringCompare(thisHandle, xHandle, yHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(int);
+			}
+		}
+		
+		class SystemStringComparer : System.StringComparer
+		{
+			public int CppHandle;
+			
+			public SystemStringComparer(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public override int Compare(string x, string y)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int xHandle = NativeScript.Bindings.ObjectStore.GetHandle(x);
+					int yHandle = NativeScript.Bindings.ObjectStore.GetHandle(y);
+					var returnVal = NativeScript.Bindings.SystemStringComparerCompare(thisHandle, xHandle, yHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(int);
+			}
+			public override bool Equals(string x, string y)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int xHandle = NativeScript.Bindings.ObjectStore.GetHandle(x);
+					int yHandle = NativeScript.Bindings.ObjectStore.GetHandle(y);
+					var returnVal = NativeScript.Bindings.SystemStringComparerEquals(thisHandle, xHandle, yHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(bool);
+			}
+			public override int GetHashCode(string obj)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int objHandle = NativeScript.Bindings.ObjectStore.GetHandle(obj);
+					var returnVal = NativeScript.Bindings.SystemStringComparerGetHashCode(thisHandle, objHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(int);
+			}
+		}
+		
+		class SystemEventArgs : System.EventArgs
+		{
+			public int CppHandle;
+			
+			public SystemEventArgs(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public override string ToString()
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemEventArgsToString(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return (string)NativeScript.Bindings.ObjectStore.Get(returnVal);
+				}
+				return default(string);
+			}
+		}
+		
+		class SystemAction
+		{
+			public int CppHandle;
+			public System.Action Delegate;
+			
+			public SystemAction(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke()
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemActionNativeInvoke(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		class SystemActionSystemSingle
+		{
+			public int CppHandle;
+			public System.Action<float> Delegate;
+			
+			public SystemActionSystemSingle(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(float obj)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemActionSystemSingleNativeInvoke(thisHandle, obj);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		class SystemActionSystemSingle_SystemSingle
+		{
+			public int CppHandle;
+			public System.Action<float, float> Delegate;
+			
+			public SystemActionSystemSingle_SystemSingle(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(float arg1, float arg2)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemActionSystemSingle_SystemSingleNativeInvoke(thisHandle, arg1, arg2);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		class SystemFuncSystemInt32_SystemSingle_SystemDouble
+		{
+			public int CppHandle;
+			public System.Func<int, float, double> Delegate;
+			
+			public SystemFuncSystemInt32_SystemSingle_SystemDouble(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public double NativeInvoke(int arg1, float arg2)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemFuncSystemInt32_SystemSingle_SystemDoubleNativeInvoke(thisHandle, arg1, arg2);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(double);
+			}
+		}
+		
+		class SystemFuncSystemInt16_SystemInt32_SystemString
+		{
+			public int CppHandle;
+			public System.Func<short, int, string> Delegate;
+			
+			public SystemFuncSystemInt16_SystemInt32_SystemString(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public string NativeInvoke(short arg1, int arg2)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvoke(thisHandle, arg1, arg2);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return (string)NativeScript.Bindings.ObjectStore.Get(returnVal);
+				}
+				return default(string);
+			}
+		}
+		
+		class SystemAppDomainInitializer
+		{
+			public int CppHandle;
+			public System.AppDomainInitializer Delegate;
+			
+			public SystemAppDomainInitializer(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(string[] args)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int argsHandle = NativeScript.Bindings.ObjectStore.GetHandle(args);
+					NativeScript.Bindings.SystemAppDomainInitializerNativeInvoke(thisHandle, argsHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		class UnityEngineEventsUnityAction
+		{
+			public int CppHandle;
+			public UnityEngine.Events.UnityAction Delegate;
+			
+			public UnityEngineEventsUnityAction(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke()
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.UnityEngineEventsUnityActionNativeInvoke(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		
+		class UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode
+		{
+			public int CppHandle;
+			public UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode> Delegate;
+			
+			public UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke(thisHandle, arg0, arg1);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+		}
+		/*END BASE TYPES*/
 		
 		/*BEGIN FUNCTIONS*/
 		[MonoPInvokeCallback(typeof(SystemDiagnosticsStopwatchConstructorDelegate))]
@@ -2456,6 +2924,133 @@ namespace NativeScript
 			}
 		}
 		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparerDelegate))]
+		static void SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer(int thisHandle, int comparerHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.List<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var comparer = (System.Collections.Generic.IComparer<string>)NativeScript.Bindings.ObjectStore.Get(comparerHandle);
+				thiz.Sort(comparer);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemInt32ConstructorDelegate))]
+		static int SystemCollectionsGenericListSystemInt32Constructor()
+		{
+			try
+			{
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.Collections.Generic.List<int>());
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemInt32PropertyGetItemDelegate))]
+		static int SystemCollectionsGenericListSystemInt32PropertyGetItem(int thisHandle, int index)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.List<int>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz[index];
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemInt32PropertySetItemDelegate))]
+		static void SystemCollectionsGenericListSystemInt32PropertySetItem(int thisHandle, int index, int value)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.List<int>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				thiz[index] = value;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemInt32MethodAddSystemInt32Delegate))]
+		static void SystemCollectionsGenericListSystemInt32MethodAddSystemInt32(int thisHandle, int item)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.List<int>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				thiz.Add(item);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparerDelegate))]
+		static void SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer(int thisHandle, int comparerHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.List<int>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var comparer = (System.Collections.Generic.IComparer<int>)NativeScript.Bindings.ObjectStore.Get(comparerHandle);
+				thiz.Sort(comparer);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemStringDelegate))]
 		static int SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(int valueHandle)
 		{
@@ -3304,6 +3899,162 @@ namespace NativeScript
 				UnityEngine.Debug.LogException(ex);
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(UnityEngine.SceneManagement.LoadSceneMode);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate))]
+		static void SystemCollectionsGenericIComparerSystemInt32Constructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemCollectionsGenericIComparerSystemInt32(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate))]
+		static void ReleaseSystemCollectionsGenericIComparerSystemInt32(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIComparerSystemStringConstructorDelegate))]
+		static void SystemCollectionsGenericIComparerSystemStringConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemCollectionsGenericIComparerSystemString(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericIComparerSystemStringDelegate))]
+		static void ReleaseSystemCollectionsGenericIComparerSystemString(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemStringComparerConstructorDelegate))]
+		static void SystemStringComparerConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemStringComparer(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemStringComparerDelegate))]
+		static void ReleaseSystemStringComparer(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemEventArgsConstructorDelegate))]
+		static void SystemEventArgsConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemEventArgs(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemEventArgsDelegate))]
+		static void ReleaseSystemEventArgs(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
@@ -4415,30 +5166,22 @@ namespace NativeScript
 			}
 		}
 		
-		class SystemAction
+		[MonoPInvokeCallback(typeof(SystemActionInvokeDelegate))]
+		static void SystemActionInvoke(int thisHandle)
 		{
-			public int CppHandle;
-			public System.Action Delegate;
-			
-			public SystemAction(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				((System.Action)NativeScript.Bindings.ObjectStore.Get(thisHandle))();
 			}
-			
-			public void Invoke()
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					NativeScript.Bindings.SystemActionCppInvoke(thisHandle);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-				}
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
@@ -4448,8 +5191,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new SystemAction(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -4474,25 +5216,6 @@ namespace NativeScript
 					thiz.CppHandle = 0;
 				}
 				NativeScript.Bindings.ObjectStore.Remove(handle);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemActionInvokeDelegate))]
-		static void SystemActionInvoke(int thisHandle)
-		{
-			try
-			{
-				((System.Action)NativeScript.Bindings.ObjectStore.Get(thisHandle))();
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -4548,30 +5271,22 @@ namespace NativeScript
 			}
 		}
 		
-		class SystemActionSystemSingle
+		[MonoPInvokeCallback(typeof(SystemActionSystemSingleInvokeDelegate))]
+		static void SystemActionSystemSingleInvoke(int thisHandle, float obj)
 		{
-			public int CppHandle;
-			public System.Action<float> Delegate;
-			
-			public SystemActionSystemSingle(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				((System.Action<float>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(obj);
 			}
-			
-			public void Invoke(float obj)
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					NativeScript.Bindings.SystemActionSystemSingleCppInvoke(thisHandle, obj);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-				}
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
@@ -4581,8 +5296,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new SystemActionSystemSingle(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -4607,25 +5321,6 @@ namespace NativeScript
 					thiz.CppHandle = 0;
 				}
 				NativeScript.Bindings.ObjectStore.Remove(handle);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemActionSystemSingleInvokeDelegate))]
-		static void SystemActionSystemSingleInvoke(int thisHandle, float obj)
-		{
-			try
-			{
-				((System.Action<float>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(obj);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -4681,30 +5376,22 @@ namespace NativeScript
 			}
 		}
 		
-		class SystemActionSystemSingle_SystemSingle
+		[MonoPInvokeCallback(typeof(SystemActionSystemSingle_SystemSingleInvokeDelegate))]
+		static void SystemActionSystemSingle_SystemSingleInvoke(int thisHandle, float arg1, float arg2)
 		{
-			public int CppHandle;
-			public System.Action<float, float> Delegate;
-			
-			public SystemActionSystemSingle_SystemSingle(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				((System.Action<float, float>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
 			}
-			
-			public void Invoke(float arg1, float arg2)
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					NativeScript.Bindings.SystemActionSystemSingle_SystemSingleCppInvoke(thisHandle, arg1, arg2);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-				}
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
@@ -4714,8 +5401,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new SystemActionSystemSingle_SystemSingle(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -4740,25 +5426,6 @@ namespace NativeScript
 					thiz.CppHandle = 0;
 				}
 				NativeScript.Bindings.ObjectStore.Remove(handle);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemActionSystemSingle_SystemSingleInvokeDelegate))]
-		static void SystemActionSystemSingle_SystemSingleInvoke(int thisHandle, float arg1, float arg2)
-		{
-			try
-			{
-				((System.Action<float, float>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -4814,31 +5481,24 @@ namespace NativeScript
 			}
 		}
 		
-		class SystemFuncSystemInt32_SystemSingle_SystemDouble
+		[MonoPInvokeCallback(typeof(SystemFuncSystemInt32_SystemSingle_SystemDoubleInvokeDelegate))]
+		static double SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke(int thisHandle, int arg1, float arg2)
 		{
-			public int CppHandle;
-			public System.Func<int, float, double> Delegate;
-			
-			public SystemFuncSystemInt32_SystemSingle_SystemDouble(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				var returnValue = ((System.Func<int, float, double>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
+				return returnValue;
 			}
-			
-			public double Invoke(int arg1, float arg2)
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					var returnVal = NativeScript.Bindings.SystemFuncSystemInt32_SystemSingle_SystemDoubleCppInvoke(thisHandle, arg1, arg2);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-					return returnVal;
-				}
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(double);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(double);
 			}
 		}
@@ -4849,8 +5509,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new SystemFuncSystemInt32_SystemSingle_SystemDouble(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -4885,28 +5544,6 @@ namespace NativeScript
 			{
 				UnityEngine.Debug.LogException(ex);
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemFuncSystemInt32_SystemSingle_SystemDoubleInvokeDelegate))]
-		static double SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke(int thisHandle, int arg1, float arg2)
-		{
-			try
-			{
-				var returnValue = ((System.Func<int, float, double>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
-				return returnValue;
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(double);
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(double);
 			}
 		}
 		
@@ -4952,32 +5589,25 @@ namespace NativeScript
 			}
 		}
 		
-		class SystemFuncSystemInt16_SystemInt32_SystemString
+		[MonoPInvokeCallback(typeof(SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate))]
+		static int SystemFuncSystemInt16_SystemInt32_SystemStringInvoke(int thisHandle, short arg1, int arg2)
 		{
-			public int CppHandle;
-			public System.Func<short, int, string> Delegate;
-			
-			public SystemFuncSystemInt16_SystemInt32_SystemString(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				var returnValue = ((System.Func<short, int, string>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
-			
-			public string Invoke(short arg1, int arg2)
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					var returnVal = NativeScript.Bindings.SystemFuncSystemInt16_SystemInt32_SystemStringCppInvoke(thisHandle, arg1, arg2);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-					return (string)NativeScript.Bindings.ObjectStore.Get(returnVal);
-				}
-				return default(string);
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
 			}
 		}
 		
@@ -4987,8 +5617,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new SystemFuncSystemInt16_SystemInt32_SystemString(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -5023,28 +5652,6 @@ namespace NativeScript
 			{
 				UnityEngine.Debug.LogException(ex);
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemFuncSystemInt16_SystemInt32_SystemStringInvokeDelegate))]
-		static int SystemFuncSystemInt16_SystemInt32_SystemStringInvoke(int thisHandle, short arg1, int arg2)
-		{
-			try
-			{
-				var returnValue = ((System.Func<short, int, string>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg1, arg2);
-				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(int);
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(int);
 			}
 		}
 		
@@ -5090,31 +5697,23 @@ namespace NativeScript
 			}
 		}
 		
-		class SystemAppDomainInitializer
+		[MonoPInvokeCallback(typeof(SystemAppDomainInitializerInvokeDelegate))]
+		static void SystemAppDomainInitializerInvoke(int thisHandle, int argsHandle)
 		{
-			public int CppHandle;
-			public System.AppDomainInitializer Delegate;
-			
-			public SystemAppDomainInitializer(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				var args = (string[])NativeScript.Bindings.ObjectStore.Get(argsHandle);
+				((System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(thisHandle))(args);
 			}
-			
-			public void Invoke(string[] args)
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					int argsHandle = NativeScript.Bindings.ObjectStore.GetHandle(args);
-					NativeScript.Bindings.SystemAppDomainInitializerCppInvoke(thisHandle, argsHandle);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-				}
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
@@ -5124,8 +5723,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new SystemAppDomainInitializer(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -5150,26 +5748,6 @@ namespace NativeScript
 					thiz.CppHandle = 0;
 				}
 				NativeScript.Bindings.ObjectStore.Remove(handle);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemAppDomainInitializerInvokeDelegate))]
-		static void SystemAppDomainInitializerInvoke(int thisHandle, int argsHandle)
-		{
-			try
-			{
-				var args = (string[])NativeScript.Bindings.ObjectStore.Get(argsHandle);
-				((System.AppDomainInitializer)NativeScript.Bindings.ObjectStore.Get(thisHandle))(args);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -5225,30 +5803,22 @@ namespace NativeScript
 			}
 		}
 		
-		class UnityEngineEventsUnityAction
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionInvokeDelegate))]
+		static void UnityEngineEventsUnityActionInvoke(int thisHandle)
 		{
-			public int CppHandle;
-			public UnityEngine.Events.UnityAction Delegate;
-			
-			public UnityEngineEventsUnityAction(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				((UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(thisHandle))();
 			}
-			
-			public void Invoke()
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					NativeScript.Bindings.UnityEngineEventsUnityActionCppInvoke(thisHandle);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-				}
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
@@ -5258,8 +5828,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new UnityEngineEventsUnityAction(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -5284,25 +5853,6 @@ namespace NativeScript
 					thiz.CppHandle = 0;
 				}
 				NativeScript.Bindings.ObjectStore.Remove(handle);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionInvokeDelegate))]
-		static void UnityEngineEventsUnityActionInvoke(int thisHandle)
-		{
-			try
-			{
-				((UnityEngine.Events.UnityAction)NativeScript.Bindings.ObjectStore.Get(thisHandle))();
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -5358,30 +5908,22 @@ namespace NativeScript
 			}
 		}
 		
-		class UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode
+		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate))]
+		static void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(int thisHandle, ref UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
 		{
-			public int CppHandle;
-			public UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode> Delegate;
-			
-			public UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(int cppHandle)
+			try
 			{
-				CppHandle = cppHandle;
-				Delegate = Invoke;
+				((UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg0, arg1);
 			}
-			
-			public void Invoke(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
+			catch (System.NullReferenceException ex)
 			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					NativeScript.Bindings.UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeCppInvoke(thisHandle, arg0, arg1);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-				}
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 			}
 		}
 		
@@ -5391,8 +5933,7 @@ namespace NativeScript
 			try
 			{
 				var thiz = new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(cppHandle);
-				classHandle = NativeScript.Bindings.ObjectStore.Store(thiz);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -5417,25 +5958,6 @@ namespace NativeScript
 					thiz.CppHandle = 0;
 				}
 				NativeScript.Bindings.ObjectStore.Remove(handle);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate))]
-		static void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(int thisHandle, ref UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
-		{
-			try
-			{
-				((UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(thisHandle))(arg0, arg1);
 			}
 			catch (System.NullReferenceException ex)
 			{

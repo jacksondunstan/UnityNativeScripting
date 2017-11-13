@@ -181,6 +181,25 @@ namespace System
 	template <typename TElement> struct Array5;
 }
 
+////////////////////////////////////////////////////////////////
+// C# type aliases
+////////////////////////////////////////////////////////////////
+
+namespace System
+{
+	using SByte = int8_t;
+	using Byte = uint8_t;
+	using Int16 = int16_t;
+	using UInt16 = uint16_t;
+	using Int32 = int32_t;
+	using UInt32 = uint32_t;
+	using Int64 = int64_t;
+	using UInt64 = uint64_t;
+	using Boolean = Boolean;
+	using Single = float;
+	using Double = double;
+}
+
 /*BEGIN TYPE DECLARATIONS*/
 namespace System
 {
@@ -318,6 +337,17 @@ namespace System
 		namespace Generic
 		{
 			template<> struct List<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct List<int32_t>;
 		}
 	}
 }
@@ -496,6 +526,49 @@ namespace UnityEngine
 			Additive = 1
 		};
 	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename T0> struct IComparer;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IComparer<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IComparer<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	struct StringComparer;
+}
+
+namespace System
+{
+	struct EventArgs;
 }
 
 namespace MyGame
@@ -739,7 +812,6 @@ namespace System
 		explicit operator float();
 		Object(double val);
 		explicit operator double();
-
 		/*END BOXING METHOD DECLARATIONS*/
 	};
 	
@@ -1110,6 +1182,35 @@ namespace System
 				System::String GetItem(int32_t index);
 				void SetItem(int32_t index, System::String value);
 				void Add(System::String item);
+				void Sort(System::Collections::Generic::IComparer<System::String> comparer);
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct List<int32_t> : System::Object
+			{
+				List<int32_t>(std::nullptr_t n);
+				List<int32_t>(Plugin::InternalUse iu, int32_t handle);
+				List<int32_t>(const List<int32_t>& other);
+				List<int32_t>(List<int32_t>&& other);
+				virtual ~List<int32_t>();
+				List<int32_t>& operator=(const List<int32_t>& other);
+				List<int32_t>& operator=(std::nullptr_t other);
+				List<int32_t>& operator=(List<int32_t>&& other);
+				bool operator==(const List<int32_t>& other) const;
+				bool operator!=(const List<int32_t>& other) const;
+				List();
+				int32_t GetItem(int32_t index);
+				void SetItem(int32_t index, int32_t value);
+				void Add(int32_t item);
+				void Sort(System::Collections::Generic::IComparer<int32_t> comparer);
 			};
 		}
 	}
@@ -1443,6 +1544,100 @@ namespace UnityEngine
 			int32_t m_Handle;
 		};
 	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IComparer<int32_t> : System::Object
+			{
+				IComparer<int32_t>(std::nullptr_t n);
+				IComparer<int32_t>(Plugin::InternalUse iu, int32_t handle);
+				IComparer<int32_t>(const IComparer<int32_t>& other);
+				IComparer<int32_t>(IComparer<int32_t>&& other);
+				virtual ~IComparer<int32_t>();
+				IComparer<int32_t>& operator=(const IComparer<int32_t>& other);
+				IComparer<int32_t>& operator=(std::nullptr_t other);
+				IComparer<int32_t>& operator=(IComparer<int32_t>&& other);
+				bool operator==(const IComparer<int32_t>& other) const;
+				bool operator!=(const IComparer<int32_t>& other) const;
+				int32_t CppHandle;
+				IComparer();
+				virtual int32_t Compare(int32_t x, int32_t y);
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IComparer<System::String> : System::Object
+			{
+				IComparer<System::String>(std::nullptr_t n);
+				IComparer<System::String>(Plugin::InternalUse iu, int32_t handle);
+				IComparer<System::String>(const IComparer<System::String>& other);
+				IComparer<System::String>(IComparer<System::String>&& other);
+				virtual ~IComparer<System::String>();
+				IComparer<System::String>& operator=(const IComparer<System::String>& other);
+				IComparer<System::String>& operator=(std::nullptr_t other);
+				IComparer<System::String>& operator=(IComparer<System::String>&& other);
+				bool operator==(const IComparer<System::String>& other) const;
+				bool operator!=(const IComparer<System::String>& other) const;
+				int32_t CppHandle;
+				IComparer();
+				virtual int32_t Compare(System::String x, System::String y);
+			};
+		}
+	}
+}
+
+namespace System
+{
+	struct StringComparer : System::Object
+	{
+		StringComparer(std::nullptr_t n);
+		StringComparer(Plugin::InternalUse iu, int32_t handle);
+		StringComparer(const StringComparer& other);
+		StringComparer(StringComparer&& other);
+		virtual ~StringComparer();
+		StringComparer& operator=(const StringComparer& other);
+		StringComparer& operator=(std::nullptr_t other);
+		StringComparer& operator=(StringComparer&& other);
+		bool operator==(const StringComparer& other) const;
+		bool operator!=(const StringComparer& other) const;
+		int32_t CppHandle;
+		StringComparer();
+		virtual int32_t Compare(System::String x, System::String y);
+		virtual System::Boolean Equals(System::String x, System::String y);
+		virtual int32_t GetHashCode(System::String obj);
+	};
+}
+
+namespace System
+{
+	struct EventArgs : System::Object
+	{
+		EventArgs(std::nullptr_t n);
+		EventArgs(Plugin::InternalUse iu, int32_t handle);
+		EventArgs(const EventArgs& other);
+		EventArgs(EventArgs&& other);
+		virtual ~EventArgs();
+		EventArgs& operator=(const EventArgs& other);
+		EventArgs& operator=(std::nullptr_t other);
+		EventArgs& operator=(EventArgs&& other);
+		bool operator==(const EventArgs& other) const;
+		bool operator!=(const EventArgs& other) const;
+		int32_t CppHandle;
+		EventArgs();
+		virtual System::String ToString();
+	};
 }
 
 namespace MyGame
@@ -1789,10 +1984,10 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Action();
-		void Invoke();
-		virtual void operator()();
 		void operator+=(System::Action& del);
 		void operator-=(System::Action& del);
+		virtual void operator()();
+		void Invoke();
 	};
 }
 
@@ -1813,10 +2008,10 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Action1();
-		void Invoke(float obj);
-		virtual void operator()(float obj);
 		void operator+=(System::Action1<float>& del);
 		void operator-=(System::Action1<float>& del);
+		virtual void operator()(float obj);
+		void Invoke(float obj);
 	};
 }
 
@@ -1837,10 +2032,10 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Action2();
-		void Invoke(float arg1, float arg2);
-		virtual void operator()(float arg1, float arg2);
 		void operator+=(System::Action2<float, float>& del);
 		void operator-=(System::Action2<float, float>& del);
+		virtual void operator()(float arg1, float arg2);
+		void Invoke(float arg1, float arg2);
 	};
 }
 
@@ -1861,10 +2056,10 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Func3();
-		double Invoke(int32_t arg1, float arg2);
-		virtual double operator()(int32_t arg1, float arg2);
 		void operator+=(System::Func3<int32_t, float, double>& del);
 		void operator-=(System::Func3<int32_t, float, double>& del);
+		virtual double operator()(int32_t arg1, float arg2);
+		double Invoke(int32_t arg1, float arg2);
 	};
 }
 
@@ -1885,10 +2080,10 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Func3();
-		System::String Invoke(int16_t arg1, int32_t arg2);
-		virtual System::String operator()(int16_t arg1, int32_t arg2);
 		void operator+=(System::Func3<int16_t, int32_t, System::String>& del);
 		void operator-=(System::Func3<int16_t, int32_t, System::String>& del);
+		virtual System::String operator()(int16_t arg1, int32_t arg2);
+		System::String Invoke(int16_t arg1, int32_t arg2);
 	};
 }
 
@@ -1909,10 +2104,10 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		AppDomainInitializer();
-		void Invoke(System::Array1<System::String> args);
-		virtual void operator()(System::Array1<System::String> args);
 		void operator+=(System::AppDomainInitializer& del);
 		void operator-=(System::AppDomainInitializer& del);
+		virtual void operator()(System::Array1<System::String> args);
+		void Invoke(System::Array1<System::String> args);
 	};
 }
 
@@ -1935,10 +2130,10 @@ namespace UnityEngine
 			int32_t CppHandle;
 			int32_t ClassHandle;
 			UnityAction();
-			void Invoke();
-			virtual void operator()();
 			void operator+=(UnityEngine::Events::UnityAction& del);
 			void operator-=(UnityEngine::Events::UnityAction& del);
+			virtual void operator()();
+			void Invoke();
 		};
 	}
 }
@@ -1962,10 +2157,10 @@ namespace UnityEngine
 			int32_t CppHandle;
 			int32_t ClassHandle;
 			UnityAction2();
-			void Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
-			virtual void operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 			void operator+=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
 			void operator-=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
+			virtual void operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+			void Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 		};
 	}
 }
