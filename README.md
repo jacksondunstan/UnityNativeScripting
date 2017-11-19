@@ -16,15 +16,15 @@ This project aims to give you a viable alternative to C#. Scripting in C++ isn't
 
 # Reasons to Prefer C++ Over C# #
 
-## Fast Compile Times
-
-C++ [compiles much more quickly](https://github.com/jacksondunstan/cscppcompiletimes) than C#. Incremental builds when just one file changes-- the most common builds-- can be 15x faster than with C#. Faster compilation adds up over time to productivity gains. Quicker iteration times make it easier to stay in the "flow" of programming.
-
 ## Fast Device Build Times
 
 Changing one line of C# code requires you to make a new build of the game. Typical iOS build times tend to be at least 10 minutes because IL2CPP has to run and then Xcode has to compile a huge amount of C++.
 
 By using C++, we can compile the game as a C++ plugin in about 1 second, swap the plugin into the Xcode project, and then immediately run the game. That's a huge productivity boost!
+
+## Fast Compile Times
+
+C++ [compiles much more quickly](https://github.com/jacksondunstan/cscppcompiletimes) than C#. Incremental builds when just one file changes-- the most common builds-- can be 15x faster than with C#. Faster compilation adds up over time to productivity gains. Quicker iteration times make it easier to stay in the "flow" of programming.
 
 ## No Garbage Collector
 
@@ -79,7 +79,8 @@ C++ is the standard language for video games as well as many other fields. By pr
 >
 	void MyScript::Start()
 	{
-		Debug::Log(String("MyScript has started"));
+		String message("MyScript has started");
+		Debug::Log(message);
 	}
 
 * Platform-dependent compilation via the [usual flags](https://docs.unity3d.com/Manual/PlatformDependentCompilation.html) (e.g. `#if UNITY_EDITOR`)

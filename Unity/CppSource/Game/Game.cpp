@@ -19,26 +19,30 @@ void PrintPlatformDefines();
 // This is mostly full of test code. Feel free to remove it all.
 void PluginMain()
 {
-	PrintPlatformDefines();
-	Debug::Log(String("Game booted up"));
+	String message("Game booted up");
+	Debug::Log(message);
 	
-	GameObject go(String("GameObject with a TestScript"));
+	String name("GameObject with a TestScript");
+	GameObject go(name);
 	go.AddComponent<MyGame::MonoBehaviours::TestScript>();
 }
 
 void MyGame::MonoBehaviours::TestScript::Awake()
 {
-	Debug::Log(String("C++ TestScript Awake"));
+	String message("C++ TestScript Awake");
+	Debug::Log(message);
 }
 
 void MyGame::MonoBehaviours::TestScript::OnAnimatorIK(int32_t param0)
 {
-	Debug::Log(String("C++ TestScript OnAnimatorIK"));
+	String message("C++ TestScript OnAnimatorIK");
+	Debug::Log(message);
 }
 
-void MyGame::MonoBehaviours::TestScript::OnCollisionEnter(UnityEngine::Collision param0)
+void MyGame::MonoBehaviours::TestScript::OnCollisionEnter(const UnityEngine::Collision& param0)
 {
-	Debug::Log(String("C++ TestScript OnCollisionEnter"));
+	String message("C++ TestScript OnCollisionEnter");
+	Debug::Log(message);
 }
 
 void MyGame::MonoBehaviours::TestScript::Update()
@@ -54,41 +58,8 @@ void MyGame::MonoBehaviours::TestScript::Update()
 		numCreated++;
 		if (numCreated == 10)
 		{
-			Debug::Log(String("Done spawning game objects"));
+			String message("Done spawning game objects");
+			Debug::Log(message);
 		}
 	}
-}
-
-void PrintPlatformDefines()
-{
-#if defined(UNITY_EDITOR)
-	Debug::Log(String("UNITY_EDITOR"));
-#endif
-#if defined(UNITY_STANDALONE)
-	Debug::Log(String("UNITY_STANDALONE"));
-#endif
-#if defined(UNITY_IOS)
-	Debug::Log(String("UNITY_IOS"));
-#endif
-#if defined(UNITY_ANDROID)
-	Debug::Log(String("UNITY_ANDROID"));
-#endif
-#if defined(UNITY_EDITOR_WIN)
-	Debug::Log(String("UNITY_EDITOR_WIN"));
-#endif
-#if defined(UNITY_EDITOR_OSX)
-	Debug::Log(String("UNITY_EDITOR_OSX"));
-#endif
-#if defined(UNITY_EDITOR_LINUX)
-	Debug::Log(String("UNITY_EDITOR_LINUX"));
-#endif
-#if defined(UNITY_STANDALONE_OSX)
-	Debug::Log(String("UNITY_STANDALONE_OSX"));
-#endif
-#if defined(UNITY_STANDALONE_WIN)
-	Debug::Log(String("UNITY_STANDALONE_WIN"));
-#endif
-#if defined(UNITY_STANDALONE_LINUX)
-	Debug::Log(String("UNITY_STANDALONE_LINUX"));
-#endif
 }

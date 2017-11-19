@@ -82,6 +82,11 @@ namespace System
 			return (bool)Value;
 		}
 		
+		operator int32_t() const
+		{
+			return Value;
+		}
+		
 		bool operator==(const Boolean other) const
 		{
 			return Value == other.Value;
@@ -137,6 +142,11 @@ namespace System
 		operator bool() const
 		{
 			return (bool)Value;
+		}
+		
+		operator int16_t() const
+		{
+			return Value;
 		}
 		
 		bool operator==(const Char other) const
@@ -763,25 +773,25 @@ namespace System
 		virtual void ThrowReferenceToThis();
 		
 		/*BEGIN BOXING METHOD DECLARATIONS*/
-		Object(UnityEngine::Vector3& val);
+		Object(const UnityEngine::Vector3& val);
 		explicit operator UnityEngine::Vector3();
-		Object(UnityEngine::Matrix4x4& val);
+		Object(const UnityEngine::Matrix4x4& val);
 		explicit operator UnityEngine::Matrix4x4();
-		Object(UnityEngine::RaycastHit val);
+		Object(const UnityEngine::RaycastHit& val);
 		explicit operator UnityEngine::RaycastHit();
 		Object(UnityEngine::QueryTriggerInteraction val);
 		explicit operator UnityEngine::QueryTriggerInteraction();
-		Object(System::Collections::Generic::KeyValuePair<System::String, double> val);
+		Object(const System::Collections::Generic::KeyValuePair<System::String, double>& val);
 		explicit operator System::Collections::Generic::KeyValuePair<System::String, double>();
-		Object(UnityEngine::Resolution& val);
+		Object(const UnityEngine::Resolution& val);
 		explicit operator UnityEngine::Resolution();
-		Object(UnityEngine::Ray& val);
+		Object(const UnityEngine::Ray& val);
 		explicit operator UnityEngine::Ray();
-		Object(UnityEngine::Color& val);
+		Object(const UnityEngine::Color& val);
 		explicit operator UnityEngine::Color();
-		Object(UnityEngine::GradientColorKey& val);
+		Object(const UnityEngine::GradientColorKey& val);
 		explicit operator UnityEngine::GradientColorKey();
-		Object(UnityEngine::SceneManagement::Scene& val);
+		Object(const UnityEngine::SceneManagement::Scene& val);
 		explicit operator UnityEngine::SceneManagement::Scene();
 		Object(UnityEngine::SceneManagement::LoadSceneMode val);
 		explicit operator UnityEngine::SceneManagement::LoadSceneMode();
@@ -882,8 +892,8 @@ namespace UnityEngine
 		bool operator==(const Object& other) const;
 		bool operator!=(const Object& other) const;
 		System::String GetName();
-		void SetName(System::String value);
-		System::Boolean operator==(UnityEngine::Object x);
+		void SetName(const System::String& value);
+		System::Boolean operator==(const UnityEngine::Object& x);
 		operator System::Boolean();
 	};
 }
@@ -903,7 +913,7 @@ namespace UnityEngine
 		bool operator==(const GameObject& other) const;
 		bool operator!=(const GameObject& other) const;
 		GameObject();
-		GameObject(System::String name);
+		GameObject(const System::String& name);
 		UnityEngine::Transform GetTransform();
 		template<typename T0> MyGame::MonoBehaviours::TestScript AddComponent();
 	};
@@ -942,7 +952,7 @@ namespace UnityEngine
 		bool operator==(const Transform& other) const;
 		bool operator!=(const Transform& other) const;
 		UnityEngine::Vector3 GetPosition();
-		void SetPosition(UnityEngine::Vector3& value);
+		void SetPosition(const UnityEngine::Vector3& value);
 	};
 }
 
@@ -960,7 +970,7 @@ namespace UnityEngine
 		Debug& operator=(Debug&& other);
 		bool operator==(const Debug& other) const;
 		bool operator!=(const Debug& other) const;
-		static void Log(System::Object message);
+		static void Log(const System::Object& message);
 	};
 }
 
@@ -972,8 +982,8 @@ namespace UnityEngine
 		{
 			System::Boolean GetRaiseExceptions();
 			void SetRaiseExceptions(System::Boolean value);
-			template<typename T0> void AreEqual(System::String expected, System::String actual);
-			template<typename T0> void AreEqual(UnityEngine::GameObject expected, UnityEngine::GameObject actual);
+			template<typename T0> void AreEqual(const System::String& expected, const System::String& actual);
+			template<typename T0> void AreEqual(const UnityEngine::GameObject& expected, const UnityEngine::GameObject& actual);
 		}
 	}
 }
@@ -1080,7 +1090,7 @@ namespace UnityEngine
 		float y;
 		float z;
 		void Set(float newX, float newY, float newZ);
-		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
+		UnityEngine::Vector3 operator+(const UnityEngine::Vector3& a);
 		UnityEngine::Vector3 operator-();
 	};
 }
@@ -1126,7 +1136,7 @@ namespace UnityEngine
 		bool operator==(const RaycastHit& other) const;
 		bool operator!=(const RaycastHit& other) const;
 		UnityEngine::Vector3 GetPoint();
-		void SetPoint(UnityEngine::Vector3& value);
+		void SetPoint(const UnityEngine::Vector3& value);
 		UnityEngine::Transform GetTransform();
 	};
 }
@@ -1149,7 +1159,7 @@ namespace System
 				KeyValuePair<System::String, double>& operator=(KeyValuePair<System::String, double>&& other);
 				bool operator==(const KeyValuePair<System::String, double>& other) const;
 				bool operator!=(const KeyValuePair<System::String, double>& other) const;
-				KeyValuePair(System::String key, double value);
+				KeyValuePair(const System::String& key, double value);
 				System::String GetKey();
 				double GetValue();
 			};
@@ -1177,9 +1187,9 @@ namespace System
 				bool operator!=(const List<System::String>& other) const;
 				List();
 				System::String GetItem(int32_t index);
-				void SetItem(int32_t index, System::String value);
-				void Add(System::String item);
-				void Sort(System::Collections::Generic::IComparer<System::String> comparer);
+				void SetItem(int32_t index, const System::String& value);
+				void Add(const System::String& item);
+				void Sort(const System::Collections::Generic::IComparer<System::String>& comparer);
 			};
 		}
 	}
@@ -1207,7 +1217,7 @@ namespace System
 				int32_t GetItem(int32_t index);
 				void SetItem(int32_t index, int32_t value);
 				void Add(int32_t item);
-				void Sort(System::Collections::Generic::IComparer<int32_t> comparer);
+				void Sort(const System::Collections::Generic::IComparer<int32_t>& comparer);
 			};
 		}
 	}
@@ -1231,9 +1241,9 @@ namespace System
 				LinkedListNode<System::String>& operator=(LinkedListNode<System::String>&& other);
 				bool operator==(const LinkedListNode<System::String>& other) const;
 				bool operator!=(const LinkedListNode<System::String>& other) const;
-				LinkedListNode(System::String value);
+				LinkedListNode(const System::String& value);
 				System::String GetValue();
-				void SetValue(System::String value);
+				void SetValue(const System::String& value);
 			};
 		}
 	}
@@ -1257,9 +1267,9 @@ namespace System
 				StrongBox<System::String>& operator=(StrongBox<System::String>&& other);
 				bool operator==(const StrongBox<System::String>& other) const;
 				bool operator!=(const StrongBox<System::String>& other) const;
-				StrongBox(System::String value);
+				StrongBox(const System::String& value);
 				System::String GetValue();
-				void SetValue(System::String value);
+				void SetValue(const System::String& value);
 			};
 		}
 	}
@@ -1325,7 +1335,7 @@ namespace System
 		Exception& operator=(Exception&& other);
 		bool operator==(const Exception& other) const;
 		bool operator!=(const Exception& other) const;
-		Exception(System::String message);
+		Exception(const System::String& message);
 	};
 }
 
@@ -1403,7 +1413,7 @@ namespace UnityEngine
 	struct Ray
 	{
 		Ray();
-		Ray(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
+		Ray(const UnityEngine::Vector3& origin, const UnityEngine::Vector3& direction);
 		UnityEngine::Vector3 m_Origin;
 		UnityEngine::Vector3 m_Direction;
 	};
@@ -1423,8 +1433,8 @@ namespace UnityEngine
 		Physics& operator=(Physics&& other);
 		bool operator==(const Physics& other) const;
 		bool operator!=(const Physics& other) const;
-		static int32_t RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<UnityEngine::RaycastHit> results);
-		static System::Array1<UnityEngine::RaycastHit> RaycastAll(UnityEngine::Ray& ray);
+		static int32_t RaycastNonAlloc(const UnityEngine::Ray& ray, const System::Array1<UnityEngine::RaycastHit>& results);
+		static System::Array1<UnityEngine::RaycastHit> RaycastAll(const UnityEngine::Ray& ray);
 	};
 }
 
@@ -1466,7 +1476,7 @@ namespace UnityEngine
 		bool operator!=(const Gradient& other) const;
 		Gradient();
 		System::Array1<UnityEngine::GradientColorKey> GetColorKeys();
-		void SetColorKeys(System::Array1<UnityEngine::GradientColorKey> value);
+		void SetColorKeys(const System::Array1<UnityEngine::GradientColorKey>& value);
 	};
 }
 
@@ -1486,7 +1496,7 @@ namespace System
 		bool operator!=(const AppDomainSetup& other) const;
 		AppDomainSetup();
 		System::AppDomainInitializer GetAppDomainInitializer();
-		void SetAppDomainInitializer(System::AppDomainInitializer value);
+		void SetAppDomainInitializer(const System::AppDomainInitializer& value);
 	};
 }
 
@@ -1504,8 +1514,8 @@ namespace UnityEngine
 		Application& operator=(Application&& other);
 		bool operator==(const Application& other) const;
 		bool operator!=(const Application& other) const;
-		static void AddOnBeforeRender(UnityEngine::Events::UnityAction del);
-		static void RemoveOnBeforeRender(UnityEngine::Events::UnityAction del);
+		static void AddOnBeforeRender(const UnityEngine::Events::UnityAction& del);
+		static void RemoveOnBeforeRender(const UnityEngine::Events::UnityAction& del);
 	};
 }
 
@@ -1525,8 +1535,8 @@ namespace UnityEngine
 			SceneManager& operator=(SceneManager&& other);
 			bool operator==(const SceneManager& other) const;
 			bool operator!=(const SceneManager& other) const;
-			static void AddSceneLoaded(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode> del);
-			static void RemoveSceneLoaded(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode> del);
+			static void AddSceneLoaded(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
+			static void RemoveSceneLoaded(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
 		};
 	}
 }
@@ -1589,7 +1599,7 @@ namespace System
 				bool operator!=(const IComparer<System::String>& other) const;
 				int32_t CppHandle;
 				IComparer();
-				virtual int32_t Compare(System::String x, System::String y);
+				virtual int32_t Compare(const System::String& x, const System::String& y);
 			};
 		}
 	}
@@ -1611,9 +1621,9 @@ namespace System
 		bool operator!=(const StringComparer& other) const;
 		int32_t CppHandle;
 		StringComparer();
-		virtual int32_t Compare(System::String x, System::String y);
-		virtual System::Boolean Equals(System::String x, System::String y);
-		virtual int32_t GetHashCode(System::String obj);
+		virtual int32_t Compare(const System::String& x, const System::String& y);
+		virtual System::Boolean Equals(const System::String& x, const System::String& y);
+		virtual int32_t GetHashCode(const System::String& obj);
 	};
 }
 
@@ -1655,7 +1665,7 @@ namespace MyGame
 			bool operator!=(const TestScript& other) const;
 			void Awake();
 			void OnAnimatorIK(int32_t param0);
-			void OnCollisionEnter(UnityEngine::Collision param0);
+			void OnCollisionEnter(const UnityEngine::Collision& param0);
 			void Update();
 		};
 	}
@@ -1999,8 +2009,8 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Action();
-		void operator+=(System::Action& del);
-		void operator-=(System::Action& del);
+		void operator+=(const System::Action& del);
+		void operator-=(const System::Action& del);
 		virtual void operator()();
 		void Invoke();
 	};
@@ -2023,8 +2033,8 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Action1();
-		void operator+=(System::Action1<float>& del);
-		void operator-=(System::Action1<float>& del);
+		void operator+=(const System::Action1<float>& del);
+		void operator-=(const System::Action1<float>& del);
 		virtual void operator()(float obj);
 		void Invoke(float obj);
 	};
@@ -2047,8 +2057,8 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Action2();
-		void operator+=(System::Action2<float, float>& del);
-		void operator-=(System::Action2<float, float>& del);
+		void operator+=(const System::Action2<float, float>& del);
+		void operator-=(const System::Action2<float, float>& del);
 		virtual void operator()(float arg1, float arg2);
 		void Invoke(float arg1, float arg2);
 	};
@@ -2071,8 +2081,8 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Func3();
-		void operator+=(System::Func3<int32_t, float, double>& del);
-		void operator-=(System::Func3<int32_t, float, double>& del);
+		void operator+=(const System::Func3<int32_t, float, double>& del);
+		void operator-=(const System::Func3<int32_t, float, double>& del);
 		virtual double operator()(int32_t arg1, float arg2);
 		double Invoke(int32_t arg1, float arg2);
 	};
@@ -2095,8 +2105,8 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		Func3();
-		void operator+=(System::Func3<int16_t, int32_t, System::String>& del);
-		void operator-=(System::Func3<int16_t, int32_t, System::String>& del);
+		void operator+=(const System::Func3<int16_t, int32_t, System::String>& del);
+		void operator-=(const System::Func3<int16_t, int32_t, System::String>& del);
 		virtual System::String operator()(int16_t arg1, int32_t arg2);
 		System::String Invoke(int16_t arg1, int32_t arg2);
 	};
@@ -2119,10 +2129,10 @@ namespace System
 		int32_t CppHandle;
 		int32_t ClassHandle;
 		AppDomainInitializer();
-		void operator+=(System::AppDomainInitializer& del);
-		void operator-=(System::AppDomainInitializer& del);
-		virtual void operator()(System::Array1<System::String> args);
-		void Invoke(System::Array1<System::String> args);
+		void operator+=(const System::AppDomainInitializer& del);
+		void operator-=(const System::AppDomainInitializer& del);
+		virtual void operator()(const System::Array1<System::String>& args);
+		void Invoke(const System::Array1<System::String>& args);
 	};
 }
 
@@ -2145,8 +2155,8 @@ namespace UnityEngine
 			int32_t CppHandle;
 			int32_t ClassHandle;
 			UnityAction();
-			void operator+=(UnityEngine::Events::UnityAction& del);
-			void operator-=(UnityEngine::Events::UnityAction& del);
+			void operator+=(const UnityEngine::Events::UnityAction& del);
+			void operator-=(const UnityEngine::Events::UnityAction& del);
 			virtual void operator()();
 			void Invoke();
 		};
@@ -2172,10 +2182,10 @@ namespace UnityEngine
 			int32_t CppHandle;
 			int32_t ClassHandle;
 			UnityAction2();
-			void operator+=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
-			void operator-=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
-			virtual void operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
-			void Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+			void operator+=(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
+			void operator-=(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del);
+			virtual void operator()(const UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+			void Invoke(const UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 		};
 	}
 }

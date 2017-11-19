@@ -7157,6 +7157,16 @@ namespace NativeScript
 			{
 				output.Append("void");
 			}
+			else if (method.ReturnType == typeof(bool))
+			{
+				// C linkage requires us to use primitive types
+				output.Append("int32_t");
+			}
+			else if (method.ReturnType == typeof(char))
+			{
+				// C linkage requires us to use primitive types
+				output.Append("int16_t");
+			}
 			else
 			{
 				switch (methodReturnTypeKind)
@@ -7221,6 +7231,26 @@ namespace NativeScript
 				indent + 1,
 				output);
 			output.Append("{\n");
+			for (int i = 0; i < methodParams.Length; ++i)
+			{
+				ParameterInfo parameter = methodParams[i];
+				if (parameter.Kind == TypeKind.Class ||
+				    parameter.Kind == TypeKind.ManagedStruct)
+				{
+					AppendIndent(
+						indent + 2,
+						output);
+					output.Append("auto param");
+					output.Append(i);
+					output.Append(" = ");
+					AppendCppTypeName(
+						parameter.ParameterType,
+						output);
+					output.Append("(Plugin::InternalUse::Only, ");
+					output.Append(parameter.Name);
+					output.Append("Handle);\n");
+				}
+			}
 			AppendIndent(
 				indent + 2,
 				output);
@@ -7239,12 +7269,8 @@ namespace NativeScript
 				if (parameter.Kind == TypeKind.Class ||
 				    parameter.Kind == TypeKind.ManagedStruct)
 				{
-					AppendCppTypeName(
-						parameter.ParameterType,
-						output);
-					output.Append("(Plugin::InternalUse::Only, ");
-					output.Append(parameter.Name);
-					output.Append("Handle)");
+					output.Append("param");
+					output.Append(i);
 				}
 				else
 				{
@@ -10515,6 +10541,17 @@ namespace NativeScript
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
+				
+				// Const qualifier if necessary
+				if ((!param.IsOut && !param.IsRef) &&
+					(param.Kind == TypeKind.FullStruct ||
+					param.Kind == TypeKind.ManagedStruct ||
+					param.Kind == TypeKind.Class ||
+					param.IsVirtual))
+				{
+					output.Append("const ");
+				}
+				
 				AppendCppTypeName(
 					param.DereferencedParameterType,
 					output);
@@ -10526,6 +10563,8 @@ namespace NativeScript
 				}
 				else if (
 					param.Kind == TypeKind.FullStruct ||
+					param.Kind == TypeKind.ManagedStruct ||
+					param.Kind == TypeKind.Class ||
 					param.IsVirtual)
 				{
 					output.Append('&');
@@ -10879,6 +10918,7 @@ namespace NativeScript
 						}
 						break;
 					case TypeKind.FullStruct:
+						output.Append("const ");
 						AppendCppTypeName(
 							param.DereferencedParameterType,
 							output);
