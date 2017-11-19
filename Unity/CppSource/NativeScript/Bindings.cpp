@@ -5839,6 +5839,8 @@ namespace System
 	Array1<int32_t>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<int32_t>::Array1(Plugin::InternalUse iu, int32_t handle)
@@ -5848,17 +5850,25 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<int32_t>::Array1(const Array1<int32_t>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 	}
 	
 	Array1<int32_t>::Array1(Array1<int32_t>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 	}
 	
 	Array1<int32_t>::~Array1<int32_t>()
@@ -5881,6 +5891,8 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		return *this;
 	}
 	
@@ -5901,7 +5913,11 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 		return *this;
 	}
 	
@@ -5930,17 +5946,30 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0;
 		}
 	}
 	
 	int32_t Array1<int32_t>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array1<int32_t>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_1<int32_t> System::Array1<int32_t>::operator[](int32_t index)
@@ -6102,6 +6131,8 @@ namespace System
 	Array1<float>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<float>::Array1(Plugin::InternalUse iu, int32_t handle)
@@ -6111,17 +6142,25 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<float>::Array1(const Array1<float>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 	}
 	
 	Array1<float>::Array1(Array1<float>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 	}
 	
 	Array1<float>::~Array1<float>()
@@ -6144,6 +6183,8 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		return *this;
 	}
 	
@@ -6164,7 +6205,11 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 		return *this;
 	}
 	
@@ -6193,17 +6238,30 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0;
 		}
 	}
 	
 	int32_t Array1<float>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array1<float>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_1<float> System::Array1<float>::operator[](int32_t index)
@@ -6217,6 +6275,10 @@ namespace System
 	Array2<float>::Array2(decltype(nullptr) n)
 		: Array2(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
+		this->InternalLengths[0] = 0;
+		this->InternalLengths[1] = 0;
 	}
 	
 	Array2<float>::Array2(Plugin::InternalUse iu, int32_t handle)
@@ -6226,17 +6288,33 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
+		this->InternalLengths[0] = 0;
+		this->InternalLengths[1] = 0;
 	}
 	
 	Array2<float>::Array2(const Array2<float>& other)
 		: Array2(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
 	}
 	
 	Array2<float>::Array2(Array2<float>&& other)
 		: Array2(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
+		other.InternalLength = 0;
+		other.InternalRank = 0;
+		other.InternalLengths[0] = 0;
+		other.InternalLengths[1] = 0;
 	}
 	
 	Array2<float>::~Array2<float>()
@@ -6259,6 +6337,10 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
 		return *this;
 	}
 	
@@ -6279,7 +6361,15 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
+		other.InternalLengths[0] = 0;
+		other.InternalLengths[1] = 0;
 		return *this;
 	}
 	
@@ -6308,16 +6398,30 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0 * length1;
+			InternalLengths[0] = length0;
+			InternalLengths[1] = length1;
 		}
 	}
 	
 	int32_t Array2<float>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array2<float>::GetLength(int32_t dimension)
 	{
+		int32_t length = InternalLengths[dimension];
+		if (length)
+		{
+			return length;
+		}
 		auto returnValue = Plugin::SystemSystemSingleArray2GetLength2(Handle, dimension);
 		if (Plugin::unhandledCsharpException)
 		{
@@ -6326,12 +6430,19 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+		InternalLengths[dimension] = returnValue;
 		return returnValue;
 	}
 	
 	int32_t Array2<float>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_2<float> System::Array2<float>::operator[](int32_t index)
@@ -6345,6 +6456,11 @@ namespace System
 	Array3<float>::Array3(decltype(nullptr) n)
 		: Array3(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
+		this->InternalLengths[0] = 0;
+		this->InternalLengths[1] = 0;
+		this->InternalLengths[2] = 0;
 	}
 	
 	Array3<float>::Array3(Plugin::InternalUse iu, int32_t handle)
@@ -6354,17 +6470,37 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
+		this->InternalLengths[0] = 0;
+		this->InternalLengths[1] = 0;
+		this->InternalLengths[2] = 0;
 	}
 	
 	Array3<float>::Array3(const Array3<float>& other)
 		: Array3(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
+		InternalLengths[2] = other.InternalLengths[2];
 	}
 	
 	Array3<float>::Array3(Array3<float>&& other)
 		: Array3(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
+		InternalLengths[2] = other.InternalLengths[2];
+		other.InternalLength = 0;
+		other.InternalRank = 0;
+		other.InternalLengths[0] = 0;
+		other.InternalLengths[1] = 0;
+		other.InternalLengths[2] = 0;
 	}
 	
 	Array3<float>::~Array3<float>()
@@ -6387,6 +6523,11 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
+		InternalLengths[2] = other.InternalLengths[2];
 		return *this;
 	}
 	
@@ -6407,7 +6548,17 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		InternalLengths[0] = other.InternalLengths[0];
+		InternalLengths[1] = other.InternalLengths[1];
+		InternalLengths[2] = other.InternalLengths[2];
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
+		other.InternalLengths[0] = 0;
+		other.InternalLengths[1] = 0;
+		other.InternalLengths[2] = 0;
 		return *this;
 	}
 	
@@ -6436,16 +6587,31 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0 * length1 * length2;
+			InternalLengths[0] = length0;
+			InternalLengths[1] = length1;
+			InternalLengths[2] = length2;
 		}
 	}
 	
 	int32_t Array3<float>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array3<float>::GetLength(int32_t dimension)
 	{
+		int32_t length = InternalLengths[dimension];
+		if (length)
+		{
+			return length;
+		}
 		auto returnValue = Plugin::SystemSystemSingleArray3GetLength3(Handle, dimension);
 		if (Plugin::unhandledCsharpException)
 		{
@@ -6454,12 +6620,19 @@ namespace System
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
+		InternalLengths[dimension] = returnValue;
 		return returnValue;
 	}
 	
 	int32_t Array3<float>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_3<float> System::Array3<float>::operator[](int32_t index)
@@ -6507,6 +6680,8 @@ namespace System
 	Array1<System::String>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<System::String>::Array1(Plugin::InternalUse iu, int32_t handle)
@@ -6516,17 +6691,25 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<System::String>::Array1(const Array1<System::String>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 	}
 	
 	Array1<System::String>::Array1(Array1<System::String>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 	}
 	
 	Array1<System::String>::~Array1<System::String>()
@@ -6549,6 +6732,8 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		return *this;
 	}
 	
@@ -6569,7 +6754,11 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 		return *this;
 	}
 	
@@ -6598,17 +6787,30 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0;
 		}
 	}
 	
 	int32_t Array1<System::String>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array1<System::String>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_1<System::String> System::Array1<System::String>::operator[](int32_t index)
@@ -6656,6 +6858,8 @@ namespace System
 	Array1<UnityEngine::Resolution>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::Resolution>::Array1(Plugin::InternalUse iu, int32_t handle)
@@ -6665,17 +6869,25 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::Resolution>::Array1(const Array1<UnityEngine::Resolution>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 	}
 	
 	Array1<UnityEngine::Resolution>::Array1(Array1<UnityEngine::Resolution>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::Resolution>::~Array1<UnityEngine::Resolution>()
@@ -6698,6 +6910,8 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		return *this;
 	}
 	
@@ -6718,7 +6932,11 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 		return *this;
 	}
 	
@@ -6747,17 +6965,30 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0;
 		}
 	}
 	
 	int32_t Array1<UnityEngine::Resolution>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array1<UnityEngine::Resolution>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_1<UnityEngine::Resolution> System::Array1<UnityEngine::Resolution>::operator[](int32_t index)
@@ -6805,6 +7036,8 @@ namespace System
 	Array1<UnityEngine::RaycastHit>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::RaycastHit>::Array1(Plugin::InternalUse iu, int32_t handle)
@@ -6814,17 +7047,25 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::RaycastHit>::Array1(const Array1<UnityEngine::RaycastHit>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 	}
 	
 	Array1<UnityEngine::RaycastHit>::Array1(Array1<UnityEngine::RaycastHit>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::RaycastHit>::~Array1<UnityEngine::RaycastHit>()
@@ -6847,6 +7088,8 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		return *this;
 	}
 	
@@ -6867,7 +7110,11 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 		return *this;
 	}
 	
@@ -6896,17 +7143,30 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0;
 		}
 	}
 	
 	int32_t Array1<UnityEngine::RaycastHit>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array1<UnityEngine::RaycastHit>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_1<UnityEngine::RaycastHit> System::Array1<UnityEngine::RaycastHit>::operator[](int32_t index)
@@ -6954,6 +7214,8 @@ namespace System
 	Array1<UnityEngine::GradientColorKey>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::GradientColorKey>::Array1(Plugin::InternalUse iu, int32_t handle)
@@ -6963,17 +7225,25 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(handle);
 		}
+		this->InternalLength = 0;
+		this->InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::GradientColorKey>::Array1(const Array1<UnityEngine::GradientColorKey>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 	}
 	
 	Array1<UnityEngine::GradientColorKey>::Array1(Array1<UnityEngine::GradientColorKey>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 	}
 	
 	Array1<UnityEngine::GradientColorKey>::~Array1<UnityEngine::GradientColorKey>()
@@ -6996,6 +7266,8 @@ namespace System
 		{
 			Plugin::ReferenceManagedClass(this->Handle);
 		}
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		return *this;
 	}
 	
@@ -7016,7 +7288,11 @@ namespace System
 			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
+		InternalLength = other.InternalLength;
+		InternalRank = other.InternalRank;
 		other.Handle = 0;
+		other.InternalLength = 0;
+		other.InternalRank = 0;
 		return *this;
 	}
 	
@@ -7045,17 +7321,30 @@ namespace System
 		if (returnValue)
 		{
 			Plugin::ReferenceManagedClass(returnValue);
+			InternalLength = length0;
 		}
 	}
 	
 	int32_t Array1<UnityEngine::GradientColorKey>::GetLength()
 	{
-		return Array::GetLength();
+		int32_t returnVal = InternalLength;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetLength();
+			InternalLength = returnVal;
+		};
+		return returnVal;
 	}
 	
 	int32_t Array1<UnityEngine::GradientColorKey>::GetRank()
 	{
-		return Array::GetRank();
+		int32_t returnVal = InternalRank;
+		if (returnVal == 0)
+		{
+			returnVal = Array::GetRank();
+			InternalRank = returnVal;
+		};
+		return returnVal;
 	}
 	
 	Plugin::ArrayElementProxy1_1<UnityEngine::GradientColorKey> System::Array1<UnityEngine::GradientColorKey>::operator[](int32_t index)

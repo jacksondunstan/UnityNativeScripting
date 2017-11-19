@@ -1475,6 +1475,8 @@ namespace NativeScript
 				baseType.Namespace,
 				baseType.GetGenericArguments(),
 				isStatic,
+				(extraIndent, subject) => {},
+				(extraIndent, subject) => {},
 				indent,
 				builders.CppMethodDefinitions);
 			
@@ -3665,6 +3667,8 @@ namespace NativeScript
 				"UnityEngine",
 				null,
 				false,
+				(extraIndent, subject) => {},
+				(extraIndent, subject) => {},
 				cppIndent,
 				builders.CppMethodDefinitions);
 			AppendCppMethodDefinitionsEnd(
@@ -4152,8 +4156,97 @@ namespace NativeScript
 					"System",
 					null,
 					false,
+					(extraIndent, subject) => {
+						AppendIndent(
+							extraIndent,
+							builders.CppMethodDefinitions);
+						builders.CppMethodDefinitions.Append(subject);
+						builders.CppMethodDefinitions.Append(
+							"InternalLength = 0;\n");
+						AppendIndent(
+							extraIndent,
+							builders.CppMethodDefinitions);
+						builders.CppMethodDefinitions.Append(subject);
+						builders.CppMethodDefinitions.Append(
+							"InternalRank = 0;\n");
+						if (rank > 1)
+						{
+							for (int i = 0; i < rank; ++i)
+							{
+								AppendIndent(
+									extraIndent,
+									builders.CppMethodDefinitions);
+								builders.CppMethodDefinitions.Append(subject);
+								builders.CppMethodDefinitions.Append(
+									"InternalLengths[");
+								builders.CppMethodDefinitions.Append(i);
+								builders.CppMethodDefinitions.Append(
+									"] = 0;\n");
+							}
+						}
+					},
+					(extraIndent, subject) => {
+						AppendIndent(
+							extraIndent,
+							builders.CppMethodDefinitions);
+						builders.CppMethodDefinitions.Append(
+							"InternalLength = ");
+						builders.CppMethodDefinitions.Append(subject);
+						builders.CppMethodDefinitions.Append(
+							"InternalLength;\n");
+						AppendIndent(
+							extraIndent,
+							builders.CppMethodDefinitions);
+						builders.CppMethodDefinitions.Append(
+							"InternalRank = ");
+						builders.CppMethodDefinitions.Append(subject);
+						builders.CppMethodDefinitions.Append(
+							"InternalRank;\n");
+						if (rank > 1)
+						{
+							for (int i = 0; i < rank; ++i)
+							{
+								AppendIndent(
+									extraIndent,
+									builders.CppMethodDefinitions);
+								builders.CppMethodDefinitions.Append(
+									"InternalLengths[");
+								builders.CppMethodDefinitions.Append(i);
+								builders.CppMethodDefinitions.Append(
+									"] = ");
+								builders.CppMethodDefinitions.Append(subject);
+								builders.CppMethodDefinitions.Append(
+									"InternalLengths[");
+								builders.CppMethodDefinitions.Append(i);
+								builders.CppMethodDefinitions.Append(
+									"];\n");
+							}
+						}
+					},
 					indent,
 					builders.CppMethodDefinitions);
+				
+				// C++ fields
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append(
+					"int32_t InternalLength;\n");
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append(
+					"int32_t InternalRank;\n");
+				if (rank > 1)
+				{
+					AppendIndent(
+						indent + 1,
+						builders.CppTypeDefinitions);
+					builders.CppTypeDefinitions.Append(
+						"int32_t InternalLengths[");
+					builders.CppTypeDefinitions.Append(rank);
+					builders.CppTypeDefinitions.Append("];\n");
+				}
 				
 				AppendArrayConstructor(
 					elementType,
@@ -4169,13 +4262,14 @@ namespace NativeScript
 					indent,
 					cppArrayTypeName,
 					"GetLength",
+					"InternalLength",
 					cppTypeParams,
 					builders);
 				
 				// GetLength for multi-dimensional arrays
 				if (rank > 1)
 				{
-					AppendArrayGetLength(
+					AppendArrayMultidimensionalGetLength(
 						elementType,
 						arrayType,
 						cppArrayTypeName,
@@ -4189,6 +4283,7 @@ namespace NativeScript
 					indent,
 					cppArrayTypeName,
 					"GetRank",
+					"InternalRank",
 					cppTypeParams,
 					builders);
 				
@@ -4923,6 +5018,42 @@ namespace NativeScript
 				"returnValue",
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append(";\n");
+			if (rank > 1)
+			{
+				AppendIndent(
+					indent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("InternalLength = ");
+				for (int i = 0; i < rank; ++i)
+				{
+					builders.CppMethodDefinitions.Append("length");
+					builders.CppMethodDefinitions.Append(i);
+					if (i != rank - 1)
+					{
+						builders.CppMethodDefinitions.Append(" * ");
+					}
+				}
+				builders.CppMethodDefinitions.Append(";\n");
+				for (int i = 0; i < rank; ++i)
+				{
+					AppendIndent(
+						indent + 2,
+						builders.CppMethodDefinitions);
+					builders.CppMethodDefinitions.Append("InternalLengths[");
+					builders.CppMethodDefinitions.Append(i);
+					builders.CppMethodDefinitions.Append("] = length");
+					builders.CppMethodDefinitions.Append(i);
+					builders.CppMethodDefinitions.Append(";\n");
+				}
+			}
+			else
+			{
+				AppendIndent(
+					indent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(
+					"InternalLength = length0;\n");
+			}
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
@@ -4942,9 +5073,9 @@ namespace NativeScript
 			int indent,
 			string cppArrayTypeName,
 			string baseFunctionName,
+			string memberVariableName,
 			Type[] cppTypeParams,
-			StringBuilders builders
-		)
+			StringBuilders builders)
 		{
 			ParameterInfo[] parameters = new ParameterInfo[0];
 			
@@ -4972,19 +5103,54 @@ namespace NativeScript
 				parameters,
 				indent,
 				builders.CppMethodDefinitions);
-			AppendIndent(indent, builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(indent + 1, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return Array::");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("int32_t returnVal = ");
+			builders.CppMethodDefinitions.Append(memberVariableName);
+			builders.CppMethodDefinitions.Append(";\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("if (returnVal == 0)\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 2,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("returnVal = Array::");
 			builders.CppMethodDefinitions.Append(baseFunctionName);
 			builders.CppMethodDefinitions.Append("();\n");
-			AppendIndent(indent, builders.CppMethodDefinitions);
+			AppendIndent(
+				indent + 2,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(memberVariableName);
+			builders.CppMethodDefinitions.Append(" = returnVal;\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("};\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return returnVal;\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(indent, builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append('\n');
 		}
 		
-		static void AppendArrayGetLength(
+		static void AppendArrayMultidimensionalGetLength(
 			Type elementType,
 			Type arrayType,
 			string cppArrayTypeName,
@@ -5112,8 +5278,30 @@ namespace NativeScript
 				parameters,
 				indent,
 				builders.CppMethodDefinitions);
-			AppendIndent(indent, builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("int32_t length = InternalLengths[dimension];\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("if (length)\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 2,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return length;\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
 			AppendCppPluginFunctionCall(
 				false,
 				cppArrayTypeName,
@@ -5125,14 +5313,23 @@ namespace NativeScript
 				parameters,
 				indent + 1,
 				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"InternalLengths[dimension] = returnValue;\n");
 			AppendCppMethodReturn(
 				typeof(int),
 				TypeKind.Primitive,
 				indent + 1,
 				builders.CppMethodDefinitions);
-			AppendIndent(indent, builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("}\n");
-			AppendIndent(indent, builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append('\n');
 		}
 		
@@ -9117,7 +9314,7 @@ namespace NativeScript
 				{
 					case TypeKind.Class:
 					case TypeKind.ManagedStruct:
-						// Constructor from nullptr_t
+						// Constructor from nullptr
 						AppendIndent(indent + 1, output);
 						AppendTypeNameWithoutGenericSuffix(
 							typeName,
@@ -9200,7 +9397,7 @@ namespace NativeScript
 							output);
 						output.Append("& other);\n");
 						
-						// Assignment operator to nullptr_t
+						// Assignment operator to nullptr
 						AppendIndent(indent + 1, output);
 						AppendTypeNameWithoutGenericSuffix(
 							typeName,
@@ -9282,6 +9479,8 @@ namespace NativeScript
 			string baseTypeNamespace,
 			Type[] baseTypeTypeParams,
 			bool isStatic,
+			Action<int, string> extraDefault,
+			Action<int, string> extraCopy,
 			int indent,
 			StringBuilder output)
 		{
@@ -9298,7 +9497,7 @@ namespace NativeScript
 					baseTypeNamespace = "System";
 				}
 				
-				// Construct with nullptr_t
+				// Construct with nullptr
 				AppendIndent(indent, output);
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
@@ -9319,11 +9518,13 @@ namespace NativeScript
 				output.Append("(Plugin::InternalUse::Only, 0)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
+				extraDefault(indent + 1, "this->");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
 				output.Append("\n");
 				
+				// Handle constructor
 				AppendIndent(indent, output);
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
@@ -9363,6 +9564,7 @@ namespace NativeScript
 				output.Append(";\n");
 				AppendIndent(indent + 1, output);
 				output.Append("}\n");
+				extraDefault(indent + 1, "this->");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
@@ -9396,6 +9598,7 @@ namespace NativeScript
 				output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
+				extraCopy(indent + 1, "other.");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
@@ -9431,11 +9634,14 @@ namespace NativeScript
 				output.Append("{\n");
 				AppendIndent(indent + 1, output);
 				output.Append("other.Handle = 0;\n");
+				extraCopy(indent + 1, "other.");
+				extraDefault(indent + 1, "other.");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
 				output.Append("\n");
 				
+				// Destructor
 				AppendIndent(indent, output);
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
@@ -9509,14 +9715,15 @@ namespace NativeScript
 					"this",
 					"other.Handle",
 					output);
-				AppendIndent(indent, output);
-				output.Append("\treturn *this;\n");
+				extraCopy(indent + 1, "other.");
+				AppendIndent(indent + 1, output);
+				output.Append("return *this;\n");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
 				output.Append("\n");
 				
-				// Assignment operator to nullptr_t
+				// Assignment operator to nullptr
 				AppendIndent(indent, output);
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
@@ -9534,12 +9741,11 @@ namespace NativeScript
 				output.Append("::operator=(decltype(nullptr) other)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
-				AppendIndent(indent, output);
-				output.Append("\tif (Handle)\n");
-				AppendIndent(indent, output);
-				output.Append("\t{\n");
-				AppendIndent(indent, output);
-				output.Append("\t\t");
+				AppendIndent(indent + 1, output);
+				output.Append("if (Handle)\n");
+				AppendIndent(indent + 1, output);
+				output.Append("{\n");
+				AppendIndent(indent + 2, output);
 				AppendDereferenceManagedHandleFunctionCall(
 					enclosingTypeName,
 					enclosingTypeNamespace,
@@ -9548,12 +9754,12 @@ namespace NativeScript
 					"Handle",
 					output);
 				output.Append(";\n");
-				AppendIndent(indent, output);
-				output.Append("\t\tHandle = 0;\n");
-				AppendIndent(indent, output);
-				output.Append("\t}\n");
-				AppendIndent(indent, output);
-				output.Append("\treturn *this;\n");
+				AppendIndent(indent + 2, output);
+				output.Append("Handle = 0;\n");
+				AppendIndent(indent + 1, output);
+				output.Append("}\n");
+				AppendIndent(indent + 1, output);
+				output.Append("return *this;\n");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
@@ -9584,12 +9790,11 @@ namespace NativeScript
 				output.Append("&& other)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
-				AppendIndent(indent, output);
-				output.Append("\tif (Handle)\n");
-				AppendIndent(indent, output);
-				output.Append("\t{\n");
-				AppendIndent(indent, output);
-				output.Append("\t\t");
+				AppendIndent(indent + 1, output);
+				output.Append("if (Handle)\n");
+				AppendIndent(indent + 1, output);
+				output.Append("{\n");
+				AppendIndent(indent + 2, output);
 				AppendDereferenceManagedHandleFunctionCall(
 					enclosingTypeName,
 					enclosingTypeNamespace,
@@ -9598,14 +9803,16 @@ namespace NativeScript
 					"Handle",
 					output);
 				output.Append(";\n");
-				AppendIndent(indent, output);
-				output.Append("\t}\n");
-				AppendIndent(indent, output);
-				output.Append("\tHandle = other.Handle;\n");
-				AppendIndent(indent, output);
-				output.Append("\tother.Handle = 0;\n");
-				AppendIndent(indent, output);
-				output.Append("\treturn *this;\n");
+				AppendIndent(indent + 1, output);
+				output.Append("}\n");
+				AppendIndent(indent + 1, output);
+				output.Append("Handle = other.Handle;\n");
+				extraCopy(indent + 1, "other.");
+				AppendIndent(indent + 1, output);
+				output.Append("other.Handle = 0;\n");
+				extraDefault(indent + 1, "other.");
+				AppendIndent(indent + 1, output);
+				output.Append("return *this;\n");
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
