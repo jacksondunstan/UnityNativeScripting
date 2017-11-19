@@ -656,17 +656,17 @@ namespace System
 	{
 	}
 	
-	Object::Object(std::nullptr_t n)
+	Object::Object(decltype(nullptr) n)
 		: Handle(0)
 	{
 	}
 	
-	bool Object::operator==(std::nullptr_t other) const
+	bool Object::operator==(decltype(nullptr) other) const
 	{
 		return Handle == 0;
 	}
 	
-	bool Object::operator!=(std::nullptr_t other) const
+	bool Object::operator!=(decltype(nullptr) other) const
 	{
 		return Handle != 0;
 	}
@@ -681,12 +681,12 @@ namespace System
 		Handle = handle;
 	}
 	
-	ValueType::ValueType(std::nullptr_t n)
+	ValueType::ValueType(decltype(nullptr) n)
 	{
 		Handle = 0;
 	}
 	
-	String::String(std::nullptr_t n)
+	String::String(decltype(nullptr) n)
 		: Object(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -741,7 +741,7 @@ namespace System
 		return *this;
 	}
 	
-	String& String::operator=(std::nullptr_t other)
+	String& String::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -777,7 +777,7 @@ namespace System
 	{
 	}
 	
-	Array::Array(std::nullptr_t n)
+	Array::Array(decltype(nullptr) n)
 		: Object(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -798,7 +798,7 @@ namespace System
 {
 	namespace Diagnostics
 	{
-		Stopwatch::Stopwatch(std::nullptr_t n)
+		Stopwatch::Stopwatch(decltype(nullptr) n)
 			: Stopwatch(Plugin::InternalUse::Only, 0)
 		{
 		}
@@ -846,7 +846,7 @@ namespace System
 			return *this;
 		}
 		
-		Stopwatch& Stopwatch::operator=(std::nullptr_t other)
+		Stopwatch& Stopwatch::operator=(decltype(nullptr) other)
 		{
 			if (Handle)
 			{
@@ -936,7 +936,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Object::Object(std::nullptr_t n)
+	Object::Object(decltype(nullptr) n)
 		: Object(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -984,7 +984,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Object& Object::operator=(std::nullptr_t other)
+	Object& Object::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1069,7 +1069,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	GameObject::GameObject(std::nullptr_t n)
+	GameObject::GameObject(decltype(nullptr) n)
 		: GameObject(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1117,7 +1117,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	GameObject& GameObject::operator=(std::nullptr_t other)
+	GameObject& GameObject::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1213,7 +1213,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Component::Component(std::nullptr_t n)
+	Component::Component(decltype(nullptr) n)
 		: Component(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1261,7 +1261,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Component& Component::operator=(std::nullptr_t other)
+	Component& Component::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1308,7 +1308,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Transform::Transform(std::nullptr_t n)
+	Transform::Transform(decltype(nullptr) n)
 		: Transform(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1356,7 +1356,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Transform& Transform::operator=(std::nullptr_t other)
+	Transform& Transform::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1415,7 +1415,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Debug::Debug(std::nullptr_t n)
+	Debug::Debug(decltype(nullptr) n)
 		: Debug(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1463,7 +1463,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Debug& Debug::operator=(std::nullptr_t other)
+	Debug& Debug::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1564,7 +1564,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Collision::Collision(std::nullptr_t n)
+	Collision::Collision(decltype(nullptr) n)
 		: Collision(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1612,7 +1612,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Collision& Collision::operator=(std::nullptr_t other)
+	Collision& Collision::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1646,7 +1646,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Behaviour::Behaviour(std::nullptr_t n)
+	Behaviour::Behaviour(decltype(nullptr) n)
 		: Behaviour(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1694,7 +1694,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Behaviour& Behaviour::operator=(std::nullptr_t other)
+	Behaviour& Behaviour::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1728,7 +1728,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	MonoBehaviour::MonoBehaviour(std::nullptr_t n)
+	MonoBehaviour::MonoBehaviour(decltype(nullptr) n)
 		: MonoBehaviour(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1776,7 +1776,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	MonoBehaviour& MonoBehaviour::operator=(std::nullptr_t other)
+	MonoBehaviour& MonoBehaviour::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1810,7 +1810,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	AudioSettings::AudioSettings(std::nullptr_t n)
+	AudioSettings::AudioSettings(decltype(nullptr) n)
 		: AudioSettings(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1858,7 +1858,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	AudioSettings& AudioSettings::operator=(std::nullptr_t other)
+	AudioSettings& AudioSettings::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -1906,7 +1906,7 @@ namespace UnityEngine
 {
 	namespace Networking
 	{
-		NetworkTransport::NetworkTransport(std::nullptr_t n)
+		NetworkTransport::NetworkTransport(decltype(nullptr) n)
 			: NetworkTransport(Plugin::InternalUse::Only, 0)
 		{
 		}
@@ -1954,7 +1954,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		NetworkTransport& NetworkTransport::operator=(std::nullptr_t other)
+		NetworkTransport& NetworkTransport::operator=(decltype(nullptr) other)
 		{
 			if (Handle)
 			{
@@ -2192,7 +2192,7 @@ namespace System
 
 namespace UnityEngine
 {
-	RaycastHit::RaycastHit(std::nullptr_t n)
+	RaycastHit::RaycastHit(decltype(nullptr) n)
 		: RaycastHit(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -2240,7 +2240,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	RaycastHit& RaycastHit::operator=(std::nullptr_t other)
+	RaycastHit& RaycastHit::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -2382,7 +2382,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			KeyValuePair<System::String, double>::KeyValuePair(std::nullptr_t n)
+			KeyValuePair<System::String, double>::KeyValuePair(decltype(nullptr) n)
 				: KeyValuePair(Plugin::InternalUse::Only, 0)
 			{
 			}
@@ -2430,7 +2430,7 @@ namespace System
 				return *this;
 			}
 			
-			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(std::nullptr_t other)
+			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -2547,7 +2547,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			List<System::String>::List(std::nullptr_t n)
+			List<System::String>::List(decltype(nullptr) n)
 				: List(Plugin::InternalUse::Only, 0)
 			{
 			}
@@ -2595,7 +2595,7 @@ namespace System
 				return *this;
 			}
 			
-			List<System::String>& List<System::String>::operator=(std::nullptr_t other)
+			List<System::String>& List<System::String>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -2702,7 +2702,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			List<int32_t>::List(std::nullptr_t n)
+			List<int32_t>::List(decltype(nullptr) n)
 				: List(Plugin::InternalUse::Only, 0)
 			{
 			}
@@ -2750,7 +2750,7 @@ namespace System
 				return *this;
 			}
 			
-			List<int32_t>& List<int32_t>::operator=(std::nullptr_t other)
+			List<int32_t>& List<int32_t>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -2857,7 +2857,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			LinkedListNode<System::String>::LinkedListNode(std::nullptr_t n)
+			LinkedListNode<System::String>::LinkedListNode(decltype(nullptr) n)
 				: LinkedListNode(Plugin::InternalUse::Only, 0)
 			{
 			}
@@ -2905,7 +2905,7 @@ namespace System
 				return *this;
 			}
 			
-			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(std::nullptr_t other)
+			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -2988,7 +2988,7 @@ namespace System
 	{
 		namespace CompilerServices
 		{
-			StrongBox<System::String>::StrongBox(std::nullptr_t n)
+			StrongBox<System::String>::StrongBox(decltype(nullptr) n)
 				: StrongBox(Plugin::InternalUse::Only, 0)
 			{
 			}
@@ -3036,7 +3036,7 @@ namespace System
 				return *this;
 			}
 			
-			StrongBox<System::String>& StrongBox<System::String>::operator=(std::nullptr_t other)
+			StrongBox<System::String>& StrongBox<System::String>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -3119,7 +3119,7 @@ namespace System
 	{
 		namespace ObjectModel
 		{
-			Collection<int32_t>::Collection(std::nullptr_t n)
+			Collection<int32_t>::Collection(decltype(nullptr) n)
 				: Collection(Plugin::InternalUse::Only, 0)
 			{
 			}
@@ -3167,7 +3167,7 @@ namespace System
 				return *this;
 			}
 			
-			Collection<int32_t>& Collection<int32_t>::operator=(std::nullptr_t other)
+			Collection<int32_t>& Collection<int32_t>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -3207,7 +3207,7 @@ namespace System
 	{
 		namespace ObjectModel
 		{
-			KeyedCollection<System::String, int32_t>::KeyedCollection(std::nullptr_t n)
+			KeyedCollection<System::String, int32_t>::KeyedCollection(decltype(nullptr) n)
 				: KeyedCollection(Plugin::InternalUse::Only, 0)
 			{
 			}
@@ -3255,7 +3255,7 @@ namespace System
 				return *this;
 			}
 			
-			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(std::nullptr_t other)
+			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -3291,7 +3291,7 @@ namespace System
 
 namespace System
 {
-	Exception::Exception(std::nullptr_t n)
+	Exception::Exception(decltype(nullptr) n)
 		: Exception(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -3339,7 +3339,7 @@ namespace System
 		return *this;
 	}
 	
-	Exception& Exception::operator=(std::nullptr_t other)
+	Exception& Exception::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -3391,7 +3391,7 @@ namespace System
 
 namespace System
 {
-	SystemException::SystemException(std::nullptr_t n)
+	SystemException::SystemException(decltype(nullptr) n)
 		: SystemException(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -3439,7 +3439,7 @@ namespace System
 		return *this;
 	}
 	
-	SystemException& SystemException::operator=(std::nullptr_t other)
+	SystemException& SystemException::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -3473,7 +3473,7 @@ namespace System
 
 namespace System
 {
-	NullReferenceException::NullReferenceException(std::nullptr_t n)
+	NullReferenceException::NullReferenceException(decltype(nullptr) n)
 		: NullReferenceException(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -3521,7 +3521,7 @@ namespace System
 		return *this;
 	}
 	
-	NullReferenceException& NullReferenceException::operator=(std::nullptr_t other)
+	NullReferenceException& NullReferenceException::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -3670,7 +3670,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Screen::Screen(std::nullptr_t n)
+	Screen::Screen(decltype(nullptr) n)
 		: Screen(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -3718,7 +3718,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Screen& Screen::operator=(std::nullptr_t other)
+	Screen& Screen::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -3818,7 +3818,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Physics::Physics(std::nullptr_t n)
+	Physics::Physics(decltype(nullptr) n)
 		: Physics(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -3866,7 +3866,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Physics& Physics::operator=(std::nullptr_t other)
+	Physics& Physics::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -4006,7 +4006,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Gradient::Gradient(std::nullptr_t n)
+	Gradient::Gradient(decltype(nullptr) n)
 		: Gradient(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -4054,7 +4054,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Gradient& Gradient::operator=(std::nullptr_t other)
+	Gradient& Gradient::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -4131,7 +4131,7 @@ namespace UnityEngine
 
 namespace System
 {
-	AppDomainSetup::AppDomainSetup(std::nullptr_t n)
+	AppDomainSetup::AppDomainSetup(decltype(nullptr) n)
 		: AppDomainSetup(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -4179,7 +4179,7 @@ namespace System
 		return *this;
 	}
 	
-	AppDomainSetup& AppDomainSetup::operator=(std::nullptr_t other)
+	AppDomainSetup& AppDomainSetup::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -4256,7 +4256,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Application::Application(std::nullptr_t n)
+	Application::Application(decltype(nullptr) n)
 		: Application(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -4304,7 +4304,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Application& Application::operator=(std::nullptr_t other)
+	Application& Application::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -4364,7 +4364,7 @@ namespace UnityEngine
 {
 	namespace SceneManagement
 	{
-		SceneManager::SceneManager(std::nullptr_t n)
+		SceneManager::SceneManager(decltype(nullptr) n)
 			: SceneManager(Plugin::InternalUse::Only, 0)
 		{
 		}
@@ -4412,7 +4412,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		SceneManager& SceneManager::operator=(std::nullptr_t other)
+		SceneManager& SceneManager::operator=(decltype(nullptr) other)
 		{
 			if (Handle)
 			{
@@ -4574,7 +4574,7 @@ namespace System
 				}
 			}
 			
-			IComparer<int32_t>::IComparer(std::nullptr_t n)
+			IComparer<int32_t>::IComparer(decltype(nullptr) n)
 				: System::Object(Plugin::InternalUse::Only, 0)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
@@ -4644,7 +4644,7 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<int32_t>& IComparer<int32_t>::operator=(std::nullptr_t other)
+			IComparer<int32_t>& IComparer<int32_t>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -4758,7 +4758,7 @@ namespace System
 				}
 			}
 			
-			IComparer<System::String>::IComparer(std::nullptr_t n)
+			IComparer<System::String>::IComparer(decltype(nullptr) n)
 				: System::Object(Plugin::InternalUse::Only, 0)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
@@ -4828,7 +4828,7 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<System::String>& IComparer<System::String>::operator=(std::nullptr_t other)
+			IComparer<System::String>& IComparer<System::String>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -4938,7 +4938,7 @@ namespace System
 		}
 	}
 	
-	StringComparer::StringComparer(std::nullptr_t n)
+	StringComparer::StringComparer(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemStringComparer(this);
@@ -5008,7 +5008,7 @@ namespace System
 		return *this;
 	}
 	
-	StringComparer& StringComparer::operator=(std::nullptr_t other)
+	StringComparer& StringComparer::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -5166,7 +5166,7 @@ namespace System
 		}
 	}
 	
-	EventArgs::EventArgs(std::nullptr_t n)
+	EventArgs::EventArgs(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemEventArgs(this);
@@ -5236,7 +5236,7 @@ namespace System
 		return *this;
 	}
 	
-	EventArgs& EventArgs::operator=(std::nullptr_t other)
+	EventArgs& EventArgs::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -5719,7 +5719,7 @@ namespace MyGame
 {
 	namespace MonoBehaviours
 	{
-		TestScript::TestScript(std::nullptr_t n)
+		TestScript::TestScript(decltype(nullptr) n)
 			: TestScript(Plugin::InternalUse::Only, 0)
 		{
 		}
@@ -5767,7 +5767,7 @@ namespace MyGame
 			return *this;
 		}
 		
-		TestScript& TestScript::operator=(std::nullptr_t other)
+		TestScript& TestScript::operator=(decltype(nullptr) other)
 		{
 			if (Handle)
 			{
@@ -5836,7 +5836,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<int32_t>::Array1(std::nullptr_t n)
+	Array1<int32_t>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -5884,7 +5884,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<int32_t>& Array1<int32_t>::operator=(std::nullptr_t other)
+	Array1<int32_t>& Array1<int32_t>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -6099,7 +6099,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<float>::Array1(std::nullptr_t n)
+	Array1<float>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -6147,7 +6147,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<float>& Array1<float>::operator=(std::nullptr_t other)
+	Array1<float>& Array1<float>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -6214,7 +6214,7 @@ namespace System
 
 namespace System
 {
-	Array2<float>::Array2(std::nullptr_t n)
+	Array2<float>::Array2(decltype(nullptr) n)
 		: Array2(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -6262,7 +6262,7 @@ namespace System
 		return *this;
 	}
 	
-	Array2<float>& Array2<float>::operator=(std::nullptr_t other)
+	Array2<float>& Array2<float>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -6342,7 +6342,7 @@ namespace System
 
 namespace System
 {
-	Array3<float>::Array3(std::nullptr_t n)
+	Array3<float>::Array3(decltype(nullptr) n)
 		: Array3(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -6390,7 +6390,7 @@ namespace System
 		return *this;
 	}
 	
-	Array3<float>& Array3<float>::operator=(std::nullptr_t other)
+	Array3<float>& Array3<float>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -6504,7 +6504,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<System::String>::Array1(std::nullptr_t n)
+	Array1<System::String>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -6552,7 +6552,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<System::String>& Array1<System::String>::operator=(std::nullptr_t other)
+	Array1<System::String>& Array1<System::String>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -6653,7 +6653,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<UnityEngine::Resolution>::Array1(std::nullptr_t n)
+	Array1<UnityEngine::Resolution>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -6701,7 +6701,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<UnityEngine::Resolution>& Array1<UnityEngine::Resolution>::operator=(std::nullptr_t other)
+	Array1<UnityEngine::Resolution>& Array1<UnityEngine::Resolution>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -6802,7 +6802,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<UnityEngine::RaycastHit>::Array1(std::nullptr_t n)
+	Array1<UnityEngine::RaycastHit>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -6850,7 +6850,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<UnityEngine::RaycastHit>& Array1<UnityEngine::RaycastHit>::operator=(std::nullptr_t other)
+	Array1<UnityEngine::RaycastHit>& Array1<UnityEngine::RaycastHit>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -6951,7 +6951,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<UnityEngine::GradientColorKey>::Array1(std::nullptr_t n)
+	Array1<UnityEngine::GradientColorKey>::Array1(decltype(nullptr) n)
 		: Array1(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -6999,7 +6999,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<UnityEngine::GradientColorKey>& Array1<UnityEngine::GradientColorKey>::operator=(std::nullptr_t other)
+	Array1<UnityEngine::GradientColorKey>& Array1<UnityEngine::GradientColorKey>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -7090,7 +7090,7 @@ namespace System
 		}
 	}
 	
-	Action::Action(std::nullptr_t n)
+	Action::Action(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemAction(this);
@@ -7168,7 +7168,7 @@ namespace System
 		return *this;
 	}
 	
-	Action& Action::operator=(std::nullptr_t other)
+	Action& Action::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -7317,7 +7317,7 @@ namespace System
 		}
 	}
 	
-	Action1<float>::Action1(std::nullptr_t n)
+	Action1<float>::Action1(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
@@ -7395,7 +7395,7 @@ namespace System
 		return *this;
 	}
 	
-	Action1<float>& Action1<float>::operator=(std::nullptr_t other)
+	Action1<float>& Action1<float>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -7544,7 +7544,7 @@ namespace System
 		}
 	}
 	
-	Action2<float, float>::Action2(std::nullptr_t n)
+	Action2<float, float>::Action2(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
@@ -7622,7 +7622,7 @@ namespace System
 		return *this;
 	}
 	
-	Action2<float, float>& Action2<float, float>::operator=(std::nullptr_t other)
+	Action2<float, float>& Action2<float, float>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -7771,7 +7771,7 @@ namespace System
 		}
 	}
 	
-	Func3<int32_t, float, double>::Func3(std::nullptr_t n)
+	Func3<int32_t, float, double>::Func3(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
@@ -7849,7 +7849,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int32_t, float, double>& Func3<int32_t, float, double>::operator=(std::nullptr_t other)
+	Func3<int32_t, float, double>& Func3<int32_t, float, double>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -8002,7 +8002,7 @@ namespace System
 		}
 	}
 	
-	Func3<int16_t, int32_t, System::String>::Func3(std::nullptr_t n)
+	Func3<int16_t, int32_t, System::String>::Func3(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
@@ -8080,7 +8080,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int16_t, int32_t, System::String>& Func3<int16_t, int32_t, System::String>::operator=(std::nullptr_t other)
+	Func3<int16_t, int32_t, System::String>& Func3<int16_t, int32_t, System::String>::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -8233,7 +8233,7 @@ namespace System
 		}
 	}
 	
-	AppDomainInitializer::AppDomainInitializer(std::nullptr_t n)
+	AppDomainInitializer::AppDomainInitializer(decltype(nullptr) n)
 		: System::Object(Plugin::InternalUse::Only, 0)
 	{
 		CppHandle = Plugin::StoreSystemAppDomainInitializer(this);
@@ -8311,7 +8311,7 @@ namespace System
 		return *this;
 	}
 	
-	AppDomainInitializer& AppDomainInitializer::operator=(std::nullptr_t other)
+	AppDomainInitializer& AppDomainInitializer::operator=(decltype(nullptr) other)
 	{
 		if (Handle)
 		{
@@ -8462,7 +8462,7 @@ namespace UnityEngine
 			}
 		}
 		
-		UnityAction::UnityAction(std::nullptr_t n)
+		UnityAction::UnityAction(decltype(nullptr) n)
 			: System::Object(Plugin::InternalUse::Only, 0)
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityAction(this);
@@ -8540,7 +8540,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		UnityAction& UnityAction::operator=(std::nullptr_t other)
+		UnityAction& UnityAction::operator=(decltype(nullptr) other)
 		{
 			if (Handle)
 			{
@@ -8692,7 +8692,7 @@ namespace UnityEngine
 			}
 		}
 		
-		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::UnityAction2(std::nullptr_t n)
+		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::UnityAction2(decltype(nullptr) n)
 			: System::Object(Plugin::InternalUse::Only, 0)
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(this);
@@ -8770,7 +8770,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator=(std::nullptr_t other)
+		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator=(decltype(nullptr) other)
 		{
 			if (Handle)
 			{

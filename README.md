@@ -56,9 +56,14 @@ C++ is a much larger language than C# and some developers will prefer having mor
 
 While IL2CPP transforms C# into C++ already, it generates a lot of overhead. There are many [surprises](http://jacksondunstan.com/articles/3916) if you read through the generated C++. For example, there's overhead for any function using a static variable and an extra two pointers are stored at the beginning of every class. The same goes for all sorts of features such as `sizeof()`, mandatory null checks, and so forth. Instead, you could write C++ directly and not need to work around IL2CPP.
 
+## Industry Standard Language
+
+C++ is the standard language for video games as well as many other fields. By programming in C++ you can more easily transfer your skills and code to and from non-Unity projects. For example, you can avoid lock-in by using the same language (C++) that you'd use in the Unreal or Lumberyard engines.
+
 # UnityNativeScripting Features
 
-* Supports Windows, macOS, iOS, and Android (editor and standalone)
+* Supports Windows, macOS, Linux, iOS, and Android (editor and standalone)
+* Works with Unity 2017.x and 5.x
 * Plays nice with other C# scripts- no need to use 100% C++
 * Object-oriented API just like in C#
 

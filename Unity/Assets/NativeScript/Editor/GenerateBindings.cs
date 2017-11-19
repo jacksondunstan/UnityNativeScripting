@@ -7399,7 +7399,7 @@ namespace NativeScript
 				typeParams,
 				output);
 			output.Append(
-				"::operator=(std::nullptr_t other)\n");
+				"::operator=(decltype(nullptr) other)\n");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
@@ -7913,7 +7913,7 @@ namespace NativeScript
 			AppendTypeNameWithoutGenericSuffix(
 				numberedTypeName,
 				output);
-			output.Append("(std::nullptr_t n)\n");
+			output.Append("(decltype(nullptr) n)\n");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
@@ -9125,7 +9125,7 @@ namespace NativeScript
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("(std::nullptr_t n);\n");
+						output.Append("(decltype(nullptr) n);\n");
 						
 						// Constructor from handle
 						AppendIndent(indent + 1, output);
@@ -9208,7 +9208,7 @@ namespace NativeScript
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("& operator=(std::nullptr_t other);\n");
+						output.Append("& operator=(decltype(nullptr) other);\n");
 						
 						// Move assignment operator to same type
 						AppendIndent(indent + 1, output);
@@ -9310,7 +9310,7 @@ namespace NativeScript
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
 					output);
-				output.Append("(std::nullptr_t n)\n");
+				output.Append("(decltype(nullptr) n)\n");
 				AppendIndent(indent, output);
 				output.Append("\t: ");
 				AppendTypeNameWithoutGenericSuffix(
@@ -9531,7 +9531,7 @@ namespace NativeScript
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("::operator=(std::nullptr_t other)\n");
+				output.Append("::operator=(decltype(nullptr) other)\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				AppendIndent(indent, output);
