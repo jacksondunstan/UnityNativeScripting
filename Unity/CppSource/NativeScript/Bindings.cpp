@@ -55,7 +55,7 @@ namespace Plugin
 	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle);
 	int32_t (*UnityEngineComponentPropertyGetTransform)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineTransformPropertyGetPosition)(int32_t thisHandle);
-	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, const UnityEngine::Vector3& value);
+	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value);
 	void (*UnityEngineDebugMethodLogSystemObject)(int32_t messageHandle);
 	System::Boolean (*UnityEngineAssertionsAssertFieldGetRaiseExceptions)();
 	void (*UnityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value);
@@ -67,17 +67,17 @@ namespace Plugin
 	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
 	float (*UnityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz);
 	void (*UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ);
-	UnityEngine::Vector3 (*UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(const UnityEngine::Vector3& a, const UnityEngine::Vector3& b);
-	UnityEngine::Vector3 (*UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(const UnityEngine::Vector3& a);
-	int32_t (*BoxVector3)(const UnityEngine::Vector3& val);
+	UnityEngine::Vector3 (*UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b);
+	UnityEngine::Vector3 (*UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a);
+	int32_t (*BoxVector3)(UnityEngine::Vector3& val);
 	UnityEngine::Vector3 (*UnboxVector3)(int32_t valHandle);
 	float (*UnityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column);
 	void (*UnityEngineMatrix4x4PropertySetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column, float value);
-	int32_t (*BoxMatrix4x4)(const UnityEngine::Matrix4x4& val);
+	int32_t (*BoxMatrix4x4)(UnityEngine::Matrix4x4& val);
 	UnityEngine::Matrix4x4 (*UnboxMatrix4x4)(int32_t valHandle);
 	void (*ReleaseUnityEngineRaycastHit)(int32_t handle);
 	UnityEngine::Vector3 (*UnityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle);
-	void (*UnityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, const UnityEngine::Vector3& value);
+	void (*UnityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, UnityEngine::Vector3& value);
 	int32_t (*UnityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle);
 	int32_t (*BoxRaycastHit)(int32_t valHandle);
 	int32_t (*UnboxRaycastHit)(int32_t valHandle);
@@ -112,17 +112,17 @@ namespace Plugin
 	void (*UnityEngineResolutionPropertySetHeight)(UnityEngine::Resolution* thiz, int32_t value);
 	int32_t (*UnityEngineResolutionPropertyGetRefreshRate)(UnityEngine::Resolution* thiz);
 	void (*UnityEngineResolutionPropertySetRefreshRate)(UnityEngine::Resolution* thiz, int32_t value);
-	int32_t (*BoxResolution)(const UnityEngine::Resolution& val);
+	int32_t (*BoxResolution)(UnityEngine::Resolution& val);
 	UnityEngine::Resolution (*UnboxResolution)(int32_t valHandle);
 	int32_t (*UnityEngineScreenPropertyGetResolutions)();
-	UnityEngine::Ray (*UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(const UnityEngine::Vector3& origin, const UnityEngine::Vector3& direction);
-	int32_t (*BoxRay)(const UnityEngine::Ray& val);
+	UnityEngine::Ray (*UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
+	int32_t (*BoxRay)(UnityEngine::Ray& val);
 	UnityEngine::Ray (*UnboxRay)(int32_t valHandle);
-	int32_t (*UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(const UnityEngine::Ray& ray, int32_t resultsHandle);
-	int32_t (*UnityEnginePhysicsMethodRaycastAllUnityEngineRay)(const UnityEngine::Ray& ray);
-	int32_t (*BoxColor)(const UnityEngine::Color& val);
+	int32_t (*UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(UnityEngine::Ray& ray, int32_t resultsHandle);
+	int32_t (*UnityEnginePhysicsMethodRaycastAllUnityEngineRay)(UnityEngine::Ray& ray);
+	int32_t (*BoxColor)(UnityEngine::Color& val);
 	UnityEngine::Color (*UnboxColor)(int32_t valHandle);
-	int32_t (*BoxGradientColorKey)(const UnityEngine::GradientColorKey& val);
+	int32_t (*BoxGradientColorKey)(UnityEngine::GradientColorKey& val);
 	UnityEngine::GradientColorKey (*UnboxGradientColorKey)(int32_t valHandle);
 	int32_t (*UnityEngineGradientConstructor)();
 	int32_t (*UnityEngineGradientPropertyGetColorKeys)(int32_t thisHandle);
@@ -134,7 +134,7 @@ namespace Plugin
 	void (*UnityEngineApplicationRemoveEventOnBeforeRender)(int32_t delHandle);
 	void (*UnityEngineSceneManagementSceneManagerAddEventSceneLoaded)(int32_t delHandle);
 	void (*UnityEngineSceneManagementSceneManagerRemoveEventSceneLoaded)(int32_t delHandle);
-	int32_t (*BoxScene)(const UnityEngine::SceneManagement::Scene& val);
+	int32_t (*BoxScene)(UnityEngine::SceneManagement::Scene& val);
 	UnityEngine::SceneManagement::Scene (*UnboxScene)(int32_t valHandle);
 	int32_t (*BoxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val);
 	UnityEngine::SceneManagement::LoadSceneMode (*UnboxLoadSceneMode)(int32_t valHandle);
@@ -189,13 +189,13 @@ namespace Plugin
 	int32_t (*SystemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
 	int32_t (*UnityEngineUnityEngineResolutionArray1Constructor1)(int32_t length0);
 	UnityEngine::Resolution (*UnityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0);
-	int32_t (*UnityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, const UnityEngine::Resolution& item);
+	int32_t (*UnityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item);
 	int32_t (*UnityEngineUnityEngineRaycastHitArray1Constructor1)(int32_t length0);
 	int32_t (*UnityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*UnityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
 	int32_t (*UnityEngineUnityEngineGradientColorKeyArray1Constructor1)(int32_t length0);
 	UnityEngine::GradientColorKey (*UnityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0);
-	int32_t (*UnityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, const UnityEngine::GradientColorKey& item);
+	int32_t (*UnityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item);
 	void (*ReleaseSystemAction)(int32_t handle, int32_t classHandle);
 	void (*SystemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*SystemActionAdd)(int32_t thisHandle, int32_t delHandle);
@@ -235,7 +235,7 @@ namespace Plugin
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle);
-	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, const UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -1028,7 +1028,7 @@ namespace UnityEngine
 		return System::String(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	void Object::SetName(const System::String& value)
+	void Object::SetName(System::String& value)
 	{
 		Plugin::UnityEngineObjectPropertySetName(Handle, value.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -1040,7 +1040,7 @@ namespace UnityEngine
 		}
 	}
 	
-	System::Boolean Object::operator==(const UnityEngine::Object& x)
+	System::Boolean Object::operator==(UnityEngine::Object& x)
 	{
 		auto returnValue = Plugin::UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject(Handle, x.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -1166,7 +1166,7 @@ namespace UnityEngine
 		}
 	}
 	
-	GameObject::GameObject(const System::String& name)
+	GameObject::GameObject(System::String& name)
 		 : UnityEngine::Object(nullptr)
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectConstructorSystemString(name.Handle);
@@ -1400,7 +1400,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Transform::SetPosition(const UnityEngine::Vector3& value)
+	void Transform::SetPosition(UnityEngine::Vector3& value)
 	{
 		Plugin::UnityEngineTransformPropertySetPosition(Handle, value);
 		if (Plugin::unhandledCsharpException)
@@ -1494,7 +1494,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	void Debug::Log(const System::Object& message)
+	void Debug::Log(System::Object& message)
 	{
 		Plugin::UnityEngineDebugMethodLogSystemObject(message.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -1536,7 +1536,7 @@ namespace UnityEngine
 			}
 		}
 		
-		template<> void Assert::AreEqual<System::String>(const System::String& expected, const System::String& actual)
+		template<> void Assert::AreEqual<System::String>(System::String& expected, System::String& actual)
 		{
 			Plugin::UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString(expected.Handle, actual.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -1548,7 +1548,7 @@ namespace UnityEngine
 			}
 		}
 	
-		template<> void Assert::AreEqual<UnityEngine::GameObject>(const UnityEngine::GameObject& expected, const UnityEngine::GameObject& actual)
+		template<> void Assert::AreEqual<UnityEngine::GameObject>(UnityEngine::GameObject& expected, UnityEngine::GameObject& actual)
 		{
 			Plugin::UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject(expected.Handle, actual.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -2065,7 +2065,7 @@ namespace UnityEngine
 		}
 	}
 	
-	UnityEngine::Vector3 Vector3::operator+(const UnityEngine::Vector3& a)
+	UnityEngine::Vector3 Vector3::operator+(UnityEngine::Vector3& a)
 	{
 		auto returnValue = Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3(*this, a);
 		if (Plugin::unhandledCsharpException)
@@ -2094,7 +2094,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::Vector3& val)
+	Object::Object(UnityEngine::Vector3& val)
 	{
 		int32_t handle = Plugin::BoxVector3(val);
 		if (Plugin::unhandledCsharpException)
@@ -2159,7 +2159,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::Matrix4x4& val)
+	Object::Object(UnityEngine::Matrix4x4& val)
 	{
 		int32_t handle = Plugin::BoxMatrix4x4(val);
 		if (Plugin::unhandledCsharpException)
@@ -2284,7 +2284,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void RaycastHit::SetPoint(const UnityEngine::Vector3& value)
+	void RaycastHit::SetPoint(UnityEngine::Vector3& value)
 	{
 		Plugin::UnityEngineRaycastHitPropertySetPoint(Handle, value);
 		if (Plugin::unhandledCsharpException)
@@ -2312,7 +2312,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::RaycastHit& val)
+	Object::Object(UnityEngine::RaycastHit& val)
 	{
 		int32_t handle = Plugin::BoxRaycastHit(val.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2461,7 +2461,7 @@ namespace System
 				return Handle != other.Handle;
 			}
 			
-			KeyValuePair<System::String, double>::KeyValuePair(const System::String& key, double value)
+			KeyValuePair<System::String, double>::KeyValuePair(System::String& key, double value)
 				 : System::ValueType(nullptr)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble(key.Handle, value);
@@ -2510,7 +2510,7 @@ namespace System
 
 namespace System
 {
-	Object::Object(const System::Collections::Generic::KeyValuePair<System::String, double>& val)
+	Object::Object(System::Collections::Generic::KeyValuePair<System::String, double>& val)
 	{
 		int32_t handle = Plugin::BoxKeyValuePairSystemString_SystemDouble(val.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2657,7 +2657,7 @@ namespace System
 				return System::String(Plugin::InternalUse::Only, returnValue);
 			}
 			
-			void List<System::String>::SetItem(int32_t index, const System::String& value)
+			void List<System::String>::SetItem(int32_t index, System::String& value)
 			{
 				Plugin::SystemCollectionsGenericListSystemStringPropertySetItem(Handle, index, value.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -2669,7 +2669,7 @@ namespace System
 				}
 			}
 			
-			void List<System::String>::Add(const System::String& item)
+			void List<System::String>::Add(System::String& item)
 			{
 				Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString(Handle, item.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -2681,7 +2681,7 @@ namespace System
 				}
 			}
 	
-			void List<System::String>::Sort(const System::Collections::Generic::IComparer<System::String>& comparer)
+			void List<System::String>::Sort(System::Collections::Generic::IComparer<System::String>& comparer)
 			{
 				Plugin::SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -2836,7 +2836,7 @@ namespace System
 				}
 			}
 	
-			void List<int32_t>::Sort(const System::Collections::Generic::IComparer<int32_t>& comparer)
+			void List<int32_t>::Sort(System::Collections::Generic::IComparer<int32_t>& comparer)
 			{
 				Plugin::SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -2936,7 +2936,7 @@ namespace System
 				return Handle != other.Handle;
 			}
 			
-			LinkedListNode<System::String>::LinkedListNode(const System::String& value)
+			LinkedListNode<System::String>::LinkedListNode(System::String& value)
 				 : System::Object(nullptr)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString(value.Handle);
@@ -2967,7 +2967,7 @@ namespace System
 				return System::String(Plugin::InternalUse::Only, returnValue);
 			}
 			
-			void LinkedListNode<System::String>::SetValue(const System::String& value)
+			void LinkedListNode<System::String>::SetValue(System::String& value)
 			{
 				Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue(Handle, value.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -3067,7 +3067,7 @@ namespace System
 				return Handle != other.Handle;
 			}
 			
-			StrongBox<System::String>::StrongBox(const System::String& value)
+			StrongBox<System::String>::StrongBox(System::String& value)
 				 : System::Object(nullptr)
 			{
 				auto returnValue = Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringConstructorSystemString(value.Handle);
@@ -3098,7 +3098,7 @@ namespace System
 				return System::String(Plugin::InternalUse::Only, returnValue);
 			}
 			
-			void StrongBox<System::String>::SetValue(const System::String& value)
+			void StrongBox<System::String>::SetValue(System::String& value)
 			{
 				Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue(Handle, value.Handle);
 				if (Plugin::unhandledCsharpException)
@@ -3370,7 +3370,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	Exception::Exception(const System::String& message)
+	Exception::Exception(System::String& message)
 		 : System::Object(nullptr)
 	{
 		auto returnValue = Plugin::SystemExceptionConstructorSystemString(message.Handle);
@@ -3637,7 +3637,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::Resolution& val)
+	Object::Object(UnityEngine::Resolution& val)
 	{
 		int32_t handle = Plugin::BoxResolution(val);
 		if (Plugin::unhandledCsharpException)
@@ -3769,7 +3769,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Ray::Ray(const UnityEngine::Vector3& origin, const UnityEngine::Vector3& direction)
+	Ray::Ray(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction)
 	{
 		auto returnValue = Plugin::UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3(origin, direction);
 		if (Plugin::unhandledCsharpException)
@@ -3785,7 +3785,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::Ray& val)
+	Object::Object(UnityEngine::Ray& val)
 	{
 		int32_t handle = Plugin::BoxRay(val);
 		if (Plugin::unhandledCsharpException)
@@ -3897,7 +3897,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	int32_t Physics::RaycastNonAlloc(const UnityEngine::Ray& ray, const System::Array1<UnityEngine::RaycastHit>& results)
+	int32_t Physics::RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<UnityEngine::RaycastHit>& results)
 	{
 		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit(ray, results.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -3910,7 +3910,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	System::Array1<UnityEngine::RaycastHit> Physics::RaycastAll(const UnityEngine::Ray& ray)
+	System::Array1<UnityEngine::RaycastHit> Physics::RaycastAll(UnityEngine::Ray& ray)
 	{
 		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastAllUnityEngineRay(ray);
 		if (Plugin::unhandledCsharpException)
@@ -3933,7 +3933,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::Color& val)
+	Object::Object(UnityEngine::Color& val)
 	{
 		int32_t handle = Plugin::BoxColor(val);
 		if (Plugin::unhandledCsharpException)
@@ -3973,7 +3973,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::GradientColorKey& val)
+	Object::Object(UnityEngine::GradientColorKey& val)
 	{
 		int32_t handle = Plugin::BoxGradientColorKey(val);
 		if (Plugin::unhandledCsharpException)
@@ -4116,7 +4116,7 @@ namespace UnityEngine
 		return System::Array1<UnityEngine::GradientColorKey>(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	void Gradient::SetColorKeys(const System::Array1<UnityEngine::GradientColorKey>& value)
+	void Gradient::SetColorKeys(System::Array1<UnityEngine::GradientColorKey>& value)
 	{
 		Plugin::UnityEngineGradientPropertySetColorKeys(Handle, value.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4241,7 +4241,7 @@ namespace System
 		return System::AppDomainInitializer(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	void AppDomainSetup::SetAppDomainInitializer(const System::AppDomainInitializer& value)
+	void AppDomainSetup::SetAppDomainInitializer(System::AppDomainInitializer& value)
 	{
 		Plugin::SystemAppDomainSetupPropertySetAppDomainInitializer(Handle, value.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4335,7 +4335,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	void Application::AddOnBeforeRender(const UnityEngine::Events::UnityAction& del)
+	void Application::AddOnBeforeRender(UnityEngine::Events::UnityAction& del)
 	{
 		Plugin::UnityEngineApplicationAddEventOnBeforeRender(del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4347,7 +4347,7 @@ namespace UnityEngine
 		}
 	}
 	
-	void Application::RemoveOnBeforeRender(const UnityEngine::Events::UnityAction& del)
+	void Application::RemoveOnBeforeRender(UnityEngine::Events::UnityAction& del)
 	{
 		Plugin::UnityEngineApplicationRemoveEventOnBeforeRender(del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4443,7 +4443,7 @@ namespace UnityEngine
 			return Handle != other.Handle;
 		}
 		
-		void SceneManager::AddSceneLoaded(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
+		void SceneManager::AddSceneLoaded(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
 		{
 			Plugin::UnityEngineSceneManagementSceneManagerAddEventSceneLoaded(del.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -4455,7 +4455,7 @@ namespace UnityEngine
 			}
 		}
 	
-		void SceneManager::RemoveSceneLoaded(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
+		void SceneManager::RemoveSceneLoaded(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
 		{
 			Plugin::UnityEngineSceneManagementSceneManagerRemoveEventSceneLoaded(del.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -4481,7 +4481,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(const UnityEngine::SceneManagement::Scene& val)
+	Object::Object(UnityEngine::SceneManagement::Scene& val)
 	{
 		int32_t handle = Plugin::BoxScene(val);
 		if (Plugin::unhandledCsharpException)
@@ -4885,7 +4885,7 @@ namespace System
 				return Handle != other.Handle;
 			}
 			
-			int32_t IComparer<System::String>::Compare(const System::String& x, const System::String& y)
+			int32_t IComparer<System::String>::Compare(System::String& x, System::String& y)
 			{
 				return {};
 			}
@@ -5067,7 +5067,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	int32_t StringComparer::Compare(const System::String& x, const System::String& y)
+	int32_t StringComparer::Compare(System::String& x, System::String& y)
 	{
 		return {};
 	}
@@ -5094,7 +5094,7 @@ namespace System
 		}
 	}
 	
-	System::Boolean StringComparer::Equals(const System::String& x, const System::String& y)
+	System::Boolean StringComparer::Equals(System::String& x, System::String& y)
 	{
 		return {};
 	}
@@ -5121,7 +5121,7 @@ namespace System
 		}
 	}
 	
-	int32_t StringComparer::GetHashCode(const System::String& obj)
+	int32_t StringComparer::GetHashCode(System::String& obj)
 	{
 		return {};
 	}
@@ -7528,7 +7528,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Action::operator+=(const System::Action& del)
+	void Action::operator+=(System::Action& del)
 	{
 		Plugin::SystemActionAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -7540,7 +7540,7 @@ namespace System
 		}
 	}
 	
-	void Action::operator-=(const System::Action& del)
+	void Action::operator-=(System::Action& del)
 	{
 		Plugin::SystemActionRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -7755,7 +7755,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Action1<float>::operator+=(const System::Action1<float>& del)
+	void Action1<float>::operator+=(System::Action1<float>& del)
 	{
 		Plugin::SystemActionSystemSingleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -7767,7 +7767,7 @@ namespace System
 		}
 	}
 	
-	void Action1<float>::operator-=(const System::Action1<float>& del)
+	void Action1<float>::operator-=(System::Action1<float>& del)
 	{
 		Plugin::SystemActionSystemSingleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -7982,7 +7982,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Action2<float, float>::operator+=(const System::Action2<float, float>& del)
+	void Action2<float, float>::operator+=(System::Action2<float, float>& del)
 	{
 		Plugin::SystemActionSystemSingle_SystemSingleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -7994,7 +7994,7 @@ namespace System
 		}
 	}
 	
-	void Action2<float, float>::operator-=(const System::Action2<float, float>& del)
+	void Action2<float, float>::operator-=(System::Action2<float, float>& del)
 	{
 		Plugin::SystemActionSystemSingle_SystemSingleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8209,7 +8209,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Func3<int32_t, float, double>::operator+=(const System::Func3<int32_t, float, double>& del)
+	void Func3<int32_t, float, double>::operator+=(System::Func3<int32_t, float, double>& del)
 	{
 		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8221,7 +8221,7 @@ namespace System
 		}
 	}
 	
-	void Func3<int32_t, float, double>::operator-=(const System::Func3<int32_t, float, double>& del)
+	void Func3<int32_t, float, double>::operator-=(System::Func3<int32_t, float, double>& del)
 	{
 		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8440,7 +8440,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void Func3<int16_t, int32_t, System::String>::operator+=(const System::Func3<int16_t, int32_t, System::String>& del)
+	void Func3<int16_t, int32_t, System::String>::operator+=(System::Func3<int16_t, int32_t, System::String>& del)
 	{
 		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8452,7 +8452,7 @@ namespace System
 		}
 	}
 	
-	void Func3<int16_t, int32_t, System::String>::operator-=(const System::Func3<int16_t, int32_t, System::String>& del)
+	void Func3<int16_t, int32_t, System::String>::operator-=(System::Func3<int16_t, int32_t, System::String>& del)
 	{
 		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8671,7 +8671,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	void AppDomainInitializer::operator+=(const System::AppDomainInitializer& del)
+	void AppDomainInitializer::operator+=(System::AppDomainInitializer& del)
 	{
 		Plugin::SystemAppDomainInitializerAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8683,7 +8683,7 @@ namespace System
 		}
 	}
 	
-	void AppDomainInitializer::operator-=(const System::AppDomainInitializer& del)
+	void AppDomainInitializer::operator-=(System::AppDomainInitializer& del)
 	{
 		Plugin::SystemAppDomainInitializerRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8695,7 +8695,7 @@ namespace System
 		}
 	}
 	
-	void AppDomainInitializer::operator()(const System::Array1<System::String>& args)
+	void AppDomainInitializer::operator()(System::Array1<System::String>& args)
 	{
 	}
 	
@@ -8718,7 +8718,7 @@ namespace System
 		}
 	}
 	
-	void AppDomainInitializer::Invoke(const System::Array1<System::String>& args)
+	void AppDomainInitializer::Invoke(System::Array1<System::String>& args)
 	{
 		Plugin::SystemAppDomainInitializerInvoke(Handle, args.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -8901,7 +8901,7 @@ namespace UnityEngine
 			return Handle != other.Handle;
 		}
 		
-		void UnityAction::operator+=(const UnityEngine::Events::UnityAction& del)
+		void UnityAction::operator+=(UnityEngine::Events::UnityAction& del)
 		{
 			Plugin::UnityEngineEventsUnityActionAdd(Handle, del.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -8913,7 +8913,7 @@ namespace UnityEngine
 			}
 		}
 		
-		void UnityAction::operator-=(const UnityEngine::Events::UnityAction& del)
+		void UnityAction::operator-=(UnityEngine::Events::UnityAction& del)
 		{
 			Plugin::UnityEngineEventsUnityActionRemove(Handle, del.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -9131,7 +9131,7 @@ namespace UnityEngine
 			return Handle != other.Handle;
 		}
 		
-		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator+=(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
+		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator+=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
 		{
 			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd(Handle, del.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -9143,7 +9143,7 @@ namespace UnityEngine
 			}
 		}
 		
-		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator-=(const UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
+		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator-=(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& del)
 		{
 			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove(Handle, del.Handle);
 			if (Plugin::unhandledCsharpException)
@@ -9155,7 +9155,7 @@ namespace UnityEngine
 			}
 		}
 		
-		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator()(const UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
 		{
 		}
 		
@@ -9177,7 +9177,7 @@ namespace UnityEngine
 			}
 		}
 		
-		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::Invoke(const UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
 		{
 			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(Handle, arg0, arg1);
 			if (Plugin::unhandledCsharpException)
@@ -9248,7 +9248,7 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle),
 	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
-	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, const UnityEngine::Vector3& value),
+	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value),
 	void (*unityEngineDebugMethodLogSystemObject)(int32_t messageHandle),
 	System::Boolean (*unityEngineAssertionsAssertFieldGetRaiseExceptions)(),
 	void (*unityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value),
@@ -9260,17 +9260,17 @@ DLLEXPORT void Init(
 	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
 	float (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
 	void (*unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ),
-	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(const UnityEngine::Vector3& a, const UnityEngine::Vector3& b),
-	UnityEngine::Vector3 (*unityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(const UnityEngine::Vector3& a),
-	int32_t (*boxVector3)(const UnityEngine::Vector3& val),
+	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b),
+	UnityEngine::Vector3 (*unityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a),
+	int32_t (*boxVector3)(UnityEngine::Vector3& val),
 	UnityEngine::Vector3 (*unboxVector3)(int32_t valHandle),
 	float (*unityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column),
 	void (*unityEngineMatrix4x4PropertySetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column, float value),
-	int32_t (*boxMatrix4x4)(const UnityEngine::Matrix4x4& val),
+	int32_t (*boxMatrix4x4)(UnityEngine::Matrix4x4& val),
 	UnityEngine::Matrix4x4 (*unboxMatrix4x4)(int32_t valHandle),
 	void (*releaseUnityEngineRaycastHit)(int32_t handle),
 	UnityEngine::Vector3 (*unityEngineRaycastHitPropertyGetPoint)(int32_t thisHandle),
-	void (*unityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, const UnityEngine::Vector3& value),
+	void (*unityEngineRaycastHitPropertySetPoint)(int32_t thisHandle, UnityEngine::Vector3& value),
 	int32_t (*unityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle),
 	int32_t (*boxRaycastHit)(int32_t valHandle),
 	int32_t (*unboxRaycastHit)(int32_t valHandle),
@@ -9305,17 +9305,17 @@ DLLEXPORT void Init(
 	void (*unityEngineResolutionPropertySetHeight)(UnityEngine::Resolution* thiz, int32_t value),
 	int32_t (*unityEngineResolutionPropertyGetRefreshRate)(UnityEngine::Resolution* thiz),
 	void (*unityEngineResolutionPropertySetRefreshRate)(UnityEngine::Resolution* thiz, int32_t value),
-	int32_t (*boxResolution)(const UnityEngine::Resolution& val),
+	int32_t (*boxResolution)(UnityEngine::Resolution& val),
 	UnityEngine::Resolution (*unboxResolution)(int32_t valHandle),
 	int32_t (*unityEngineScreenPropertyGetResolutions)(),
-	UnityEngine::Ray (*unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(const UnityEngine::Vector3& origin, const UnityEngine::Vector3& direction),
-	int32_t (*boxRay)(const UnityEngine::Ray& val),
+	UnityEngine::Ray (*unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction),
+	int32_t (*boxRay)(UnityEngine::Ray& val),
 	UnityEngine::Ray (*unboxRay)(int32_t valHandle),
-	int32_t (*unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(const UnityEngine::Ray& ray, int32_t resultsHandle),
-	int32_t (*unityEnginePhysicsMethodRaycastAllUnityEngineRay)(const UnityEngine::Ray& ray),
-	int32_t (*boxColor)(const UnityEngine::Color& val),
+	int32_t (*unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(UnityEngine::Ray& ray, int32_t resultsHandle),
+	int32_t (*unityEnginePhysicsMethodRaycastAllUnityEngineRay)(UnityEngine::Ray& ray),
+	int32_t (*boxColor)(UnityEngine::Color& val),
 	UnityEngine::Color (*unboxColor)(int32_t valHandle),
-	int32_t (*boxGradientColorKey)(const UnityEngine::GradientColorKey& val),
+	int32_t (*boxGradientColorKey)(UnityEngine::GradientColorKey& val),
 	UnityEngine::GradientColorKey (*unboxGradientColorKey)(int32_t valHandle),
 	int32_t (*unityEngineGradientConstructor)(),
 	int32_t (*unityEngineGradientPropertyGetColorKeys)(int32_t thisHandle),
@@ -9327,7 +9327,7 @@ DLLEXPORT void Init(
 	void (*unityEngineApplicationRemoveEventOnBeforeRender)(int32_t delHandle),
 	void (*unityEngineSceneManagementSceneManagerAddEventSceneLoaded)(int32_t delHandle),
 	void (*unityEngineSceneManagementSceneManagerRemoveEventSceneLoaded)(int32_t delHandle),
-	int32_t (*boxScene)(const UnityEngine::SceneManagement::Scene& val),
+	int32_t (*boxScene)(UnityEngine::SceneManagement::Scene& val),
 	UnityEngine::SceneManagement::Scene (*unboxScene)(int32_t valHandle),
 	int32_t (*boxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val),
 	UnityEngine::SceneManagement::LoadSceneMode (*unboxLoadSceneMode)(int32_t valHandle),
@@ -9382,13 +9382,13 @@ DLLEXPORT void Init(
 	int32_t (*systemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
 	int32_t (*unityEngineUnityEngineResolutionArray1Constructor1)(int32_t length0),
 	UnityEngine::Resolution (*unityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0),
-	int32_t (*unityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, const UnityEngine::Resolution& item),
+	int32_t (*unityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item),
 	int32_t (*unityEngineUnityEngineRaycastHitArray1Constructor1)(int32_t length0),
 	int32_t (*unityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*unityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
 	int32_t (*unityEngineUnityEngineGradientColorKeyArray1Constructor1)(int32_t length0),
 	UnityEngine::GradientColorKey (*unityEngineGradientColorKeyArray1GetItem1)(int32_t thisHandle, int32_t index0),
-	int32_t (*unityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, const UnityEngine::GradientColorKey& item),
+	int32_t (*unityEngineGradientColorKeyArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::GradientColorKey& item),
 	void (*releaseSystemAction)(int32_t handle, int32_t classHandle),
 	void (*systemActionConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*systemActionAdd)(int32_t thisHandle, int32_t delHandle),
@@ -9428,7 +9428,7 @@ DLLEXPORT void Init(
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle),
-	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, const UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;

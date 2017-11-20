@@ -39,7 +39,7 @@ void MyGame::MonoBehaviours::TestScript::OnAnimatorIK(int32_t param0)
 	Debug::Log(message);
 }
 
-void MyGame::MonoBehaviours::TestScript::OnCollisionEnter(const UnityEngine::Collision& param0)
+void MyGame::MonoBehaviours::TestScript::OnCollisionEnter(UnityEngine::Collision& param0)
 {
 	String message("C++ TestScript OnCollisionEnter");
 	Debug::Log(message);

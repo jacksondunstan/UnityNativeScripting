@@ -10542,16 +10542,6 @@ namespace NativeScript
 			{
 				ParameterInfo param = parameters[i];
 				
-				// Const qualifier if necessary
-				if ((!param.IsOut && !param.IsRef) &&
-					(param.Kind == TypeKind.FullStruct ||
-					param.Kind == TypeKind.ManagedStruct ||
-					param.Kind == TypeKind.Class ||
-					param.IsVirtual))
-				{
-					output.Append("const ");
-				}
-				
 				AppendCppTypeName(
 					param.DereferencedParameterType,
 					output);
@@ -10918,7 +10908,6 @@ namespace NativeScript
 						}
 						break;
 					case TypeKind.FullStruct:
-						output.Append("const ");
 						AppendCppTypeName(
 							param.DereferencedParameterType,
 							output);
