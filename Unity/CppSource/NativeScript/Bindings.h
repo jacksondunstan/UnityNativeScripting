@@ -1698,7 +1698,6 @@ namespace System
 		bool operator==(const Array1<int32_t>& other) const;
 		bool operator!=(const Array1<int32_t>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
@@ -1794,7 +1793,6 @@ namespace System
 		bool operator==(const Array1<float>& other) const;
 		bool operator!=(const Array1<float>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
@@ -1817,7 +1815,6 @@ namespace System
 		bool operator==(const Array2<float>& other) const;
 		bool operator!=(const Array2<float>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		int32_t InternalLengths[2];
 		Array2(int32_t length0, int32_t length1);
 		int32_t GetLength();
@@ -1842,7 +1839,6 @@ namespace System
 		bool operator==(const Array3<float>& other) const;
 		bool operator!=(const Array3<float>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		int32_t InternalLengths[3];
 		Array3(int32_t length0, int32_t length1, int32_t length2);
 		int32_t GetLength();
@@ -1879,7 +1875,6 @@ namespace System
 		bool operator==(const Array1<System::String>& other) const;
 		bool operator!=(const Array1<System::String>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
@@ -1914,7 +1909,6 @@ namespace System
 		bool operator==(const Array1<UnityEngine::Resolution>& other) const;
 		bool operator!=(const Array1<UnityEngine::Resolution>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
@@ -1949,7 +1943,6 @@ namespace System
 		bool operator==(const Array1<UnityEngine::RaycastHit>& other) const;
 		bool operator!=(const Array1<UnityEngine::RaycastHit>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();
@@ -1984,7 +1977,6 @@ namespace System
 		bool operator==(const Array1<UnityEngine::GradientColorKey>& other) const;
 		bool operator!=(const Array1<UnityEngine::GradientColorKey>& other) const;
 		int32_t InternalLength;
-		int32_t InternalRank;
 		Array1(int32_t length0);
 		int32_t GetLength();
 		int32_t GetRank();

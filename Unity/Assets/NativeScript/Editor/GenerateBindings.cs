@@ -4163,12 +4163,6 @@ namespace NativeScript
 						builders.CppMethodDefinitions.Append(subject);
 						builders.CppMethodDefinitions.Append(
 							"InternalLength = 0;\n");
-						AppendIndent(
-							extraIndent,
-							builders.CppMethodDefinitions);
-						builders.CppMethodDefinitions.Append(subject);
-						builders.CppMethodDefinitions.Append(
-							"InternalRank = 0;\n");
 						if (rank > 1)
 						{
 							for (int i = 0; i < rank; ++i)
@@ -4194,14 +4188,6 @@ namespace NativeScript
 						builders.CppMethodDefinitions.Append(subject);
 						builders.CppMethodDefinitions.Append(
 							"InternalLength;\n");
-						AppendIndent(
-							extraIndent,
-							builders.CppMethodDefinitions);
-						builders.CppMethodDefinitions.Append(
-							"InternalRank = ");
-						builders.CppMethodDefinitions.Append(subject);
-						builders.CppMethodDefinitions.Append(
-							"InternalRank;\n");
 						if (rank > 1)
 						{
 							for (int i = 0; i < rank; ++i)
@@ -4232,11 +4218,6 @@ namespace NativeScript
 					builders.CppTypeDefinitions);
 				builders.CppTypeDefinitions.Append(
 					"int32_t InternalLength;\n");
-				AppendIndent(
-					indent + 1,
-					builders.CppTypeDefinitions);
-				builders.CppTypeDefinitions.Append(
-					"int32_t InternalRank;\n");
 				if (rank > 1)
 				{
 					AppendIndent(
@@ -4258,11 +4239,9 @@ namespace NativeScript
 					builders);
 				
 				// Base GetLength
-				AppendArrayCppCallBaseGetIntFunction(
+				AppendArrayCppGetLengthFunction(
 					indent,
 					cppArrayTypeName,
-					"GetLength",
-					"InternalLength",
 					cppTypeParams,
 					builders);
 				
@@ -4279,12 +4258,11 @@ namespace NativeScript
 						builders);
 				}
 				
-				AppendArrayCppCallBaseGetIntFunction(
+				AppendArrayCppGetRankFunction(
 					indent,
 					cppArrayTypeName,
-					"GetRank",
-					"InternalRank",
 					cppTypeParams,
+					rank,
 					builders);
 				
 				AppendArrayGetItem(
@@ -5069,11 +5047,9 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("\n");
 		}
 		
-		static void AppendArrayCppCallBaseGetIntFunction(
+		static void AppendArrayCppGetLengthFunction(
 			int indent,
 			string cppArrayTypeName,
-			string baseFunctionName,
-			string memberVariableName,
 			Type[] cppTypeParams,
 			StringBuilders builders)
 		{
@@ -5084,7 +5060,7 @@ namespace NativeScript
 				indent + 1,
 				builders.CppTypeDefinitions);
 			AppendCppMethodDeclaration(
-				baseFunctionName,
+				"GetLength",
 				false,
 				false,
 				false,
@@ -5097,7 +5073,7 @@ namespace NativeScript
 			AppendCppMethodDefinitionBegin(
 				cppArrayTypeName,
 				typeof(int),
-				baseFunctionName,
+				"GetLength",
 				cppTypeParams,
 				null,
 				parameters,
@@ -5110,9 +5086,8 @@ namespace NativeScript
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t returnVal = ");
-			builders.CppMethodDefinitions.Append(memberVariableName);
-			builders.CppMethodDefinitions.Append(";\n");
+			builders.CppMethodDefinitions.Append(
+				"int32_t returnVal = InternalLength;\n");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
@@ -5124,14 +5099,13 @@ namespace NativeScript
 			AppendIndent(
 				indent + 2,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("returnVal = Array::");
-			builders.CppMethodDefinitions.Append(baseFunctionName);
-			builders.CppMethodDefinitions.Append("();\n");
+			builders.CppMethodDefinitions.Append(
+				"returnVal = Array::GetLength();\n");
 			AppendIndent(
 				indent + 2,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(memberVariableName);
-			builders.CppMethodDefinitions.Append(" = returnVal;\n");
+			builders.CppMethodDefinitions.Append(
+				"InternalLength = returnVal;\n");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
@@ -5140,6 +5114,59 @@ namespace NativeScript
 				indent + 1,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("return returnVal;\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+		}
+		
+		static void AppendArrayCppGetRankFunction(
+			int indent,
+			string cppArrayTypeName,
+			Type[] cppTypeParams,
+			int rank,
+			StringBuilders builders)
+		{
+			ParameterInfo[] parameters = new ParameterInfo[0];
+			
+			// C++ method declaration
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			AppendCppMethodDeclaration(
+				"GetRank",
+				false,
+				false,
+				false,
+				typeof(int),
+				null,
+				parameters,
+				builders.CppTypeDefinitions);
+			
+			// C++ method definition
+			AppendCppMethodDefinitionBegin(
+				cppArrayTypeName,
+				typeof(int),
+				"GetRank",
+				cppTypeParams,
+				null,
+				parameters,
+				indent,
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return ");
+			builders.CppMethodDefinitions.Append(rank);
+			builders.CppMethodDefinitions.Append(";\n");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
