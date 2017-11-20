@@ -273,7 +273,6 @@ namespace NativeScript
 			IntPtr stringNew,
 			IntPtr setException,
 			IntPtr arrayGetLength,
-			IntPtr arrayGetRank,
 			/*BEGIN INIT PARAMS*/
 			IntPtr systemDiagnosticsStopwatchConstructor,
 			IntPtr systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds,
@@ -629,7 +628,6 @@ namespace NativeScript
 			IntPtr stringNew,
 			IntPtr setException,
 			IntPtr arrayGetLength,
-			IntPtr arrayGetRank,
 			/*BEGIN INIT PARAMS*/
 			IntPtr systemDiagnosticsStopwatchConstructor,
 			IntPtr systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds,
@@ -895,7 +893,6 @@ namespace NativeScript
 		delegate int StringNewDelegate(string chars);
 		delegate void SetExceptionDelegate(int handle);
 		delegate int ArrayGetLengthDelegate(int handle);
-		delegate int ArrayGetRankDelegate(int handle);
 		
 		/*BEGIN DELEGATE TYPES*/
 		delegate int SystemDiagnosticsStopwatchConstructorDelegate();
@@ -1157,7 +1154,6 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
 				Marshal.GetFunctionPointerForDelegate(new SetExceptionDelegate(SetException)),
 				Marshal.GetFunctionPointerForDelegate(new ArrayGetLengthDelegate(ArrayGetLength)),
-				Marshal.GetFunctionPointerForDelegate(new ArrayGetRankDelegate(ArrayGetRank)),
 				/*BEGIN INIT CALL*/
 				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchConstructorDelegate(SystemDiagnosticsStopwatchConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new SystemDiagnosticsStopwatchPropertyGetElapsedMillisecondsDelegate(SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)),
@@ -1407,12 +1403,6 @@ namespace NativeScript
 		static int ArrayGetLength(int handle)
 		{
 			return ((Array)ObjectStore.Get(handle)).Length;
-		}
-		
-		[MonoPInvokeCallback(typeof(ArrayGetRankDelegate))]
-		static int ArrayGetRank(int handle)
-		{
-			return ((Array)ObjectStore.Get(handle)).Rank;
 		}
 		
 		/*BEGIN BASE TYPES*/

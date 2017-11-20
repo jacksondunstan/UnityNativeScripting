@@ -38,7 +38,6 @@ namespace Plugin
 	int32_t (*StringNew)(const char* chars);
 	void (*SetException)(int32_t handle);
 	int32_t (*ArrayGetLength)(int32_t handle);
-	int32_t (*ArrayGetRank)(int32_t handle);
 	
 	/*BEGIN FUNCTION POINTERS*/
 	int32_t (*SystemDiagnosticsStopwatchConstructor)();
@@ -789,7 +788,7 @@ namespace System
 	
 	int32_t Array::GetRank()
 	{
-		return Plugin::ArrayGetRank(Handle);
+		return 0;
 	}
 }
 
@@ -6388,6 +6387,7 @@ namespace System
 	
 	int32_t Array2<float>::GetLength(int32_t dimension)
 	{
+		assert(dimension >= 0 && dimension < 2);
 		int32_t length = InternalLengths[dimension];
 		if (length)
 		{
@@ -6564,6 +6564,7 @@ namespace System
 	
 	int32_t Array3<float>::GetLength(int32_t dimension)
 	{
+		assert(dimension >= 0 && dimension < 3);
 		int32_t length = InternalLengths[dimension];
 		if (length)
 		{
@@ -9120,7 +9121,6 @@ DLLEXPORT void Init(
 	int32_t (*stringNew)(const char* chars),
 	void (*setException)(int32_t handle),
 	int32_t (*arrayGetLength)(int32_t handle),
-	int32_t (*arrayGetRank)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
 	int32_t (*systemDiagnosticsStopwatchConstructor)(),
 	int64_t (*systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
@@ -9330,7 +9330,6 @@ DLLEXPORT void Init(
 	Plugin::ReleaseObject = releaseObject;
 	Plugin::SetException = setException;
 	Plugin::ArrayGetLength = arrayGetLength;
-	Plugin::ArrayGetRank = arrayGetRank;
 	/*BEGIN INIT BODY*/
 	Plugin::SystemDiagnosticsStopwatchConstructor = systemDiagnosticsStopwatchConstructor;
 	Plugin::SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds = systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds;

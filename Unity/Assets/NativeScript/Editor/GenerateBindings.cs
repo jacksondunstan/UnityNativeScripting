@@ -5312,7 +5312,15 @@ namespace NativeScript
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t length = InternalLengths[dimension];\n");
+			builders.CppMethodDefinitions.Append(
+				"assert(dimension >= 0 && dimension < ");
+			builders.CppMethodDefinitions.Append(rank);
+			builders.CppMethodDefinitions.Append(");\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(
+				"int32_t length = InternalLengths[dimension];\n");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
