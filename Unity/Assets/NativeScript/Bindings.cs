@@ -371,6 +371,8 @@ namespace NativeScript
 			IntPtr unboxScene,
 			IntPtr boxLoadSceneMode,
 			IntPtr unboxLoadSceneMode,
+			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
+			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
 			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
@@ -379,6 +381,12 @@ namespace NativeScript
 			IntPtr systemStringComparerConstructor,
 			IntPtr releaseSystemEventArgs,
 			IntPtr systemEventArgsConstructor,
+			IntPtr releaseSystemCollectionsICollection,
+			IntPtr systemCollectionsICollectionConstructor,
+			IntPtr releaseSystemCollectionsIList,
+			IntPtr systemCollectionsIListConstructor,
+			IntPtr releaseSystemCollectionsQueue,
+			IntPtr systemCollectionsQueueConstructor,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -491,6 +499,72 @@ namespace NativeScript
 		
 		public delegate int SystemEventArgsToStringDelegate(int thisHandle);
 		public static SystemEventArgsToStringDelegate SystemEventArgsToString;
+		
+		public delegate void SystemCollectionsICollectionCopyToDelegate(int thisHandle, int param0, int param1);
+		public static SystemCollectionsICollectionCopyToDelegate SystemCollectionsICollectionCopyTo;
+		
+		public delegate int SystemCollectionsICollectionGetEnumeratorDelegate(int thisHandle);
+		public static SystemCollectionsICollectionGetEnumeratorDelegate SystemCollectionsICollectionGetEnumerator;
+		
+		public delegate int SystemCollectionsICollectionGetCountDelegate(int thisHandle);
+		public static SystemCollectionsICollectionGetCountDelegate SystemCollectionsICollectionGetCount;
+		
+		public delegate bool SystemCollectionsICollectionGetIsSynchronizedDelegate(int thisHandle);
+		public static SystemCollectionsICollectionGetIsSynchronizedDelegate SystemCollectionsICollectionGetIsSynchronized;
+		
+		public delegate int SystemCollectionsICollectionGetSyncRootDelegate(int thisHandle);
+		public static SystemCollectionsICollectionGetSyncRootDelegate SystemCollectionsICollectionGetSyncRoot;
+		
+		public delegate int SystemCollectionsIListAddDelegate(int thisHandle, int param0);
+		public static SystemCollectionsIListAddDelegate SystemCollectionsIListAdd;
+		
+		public delegate void SystemCollectionsIListClearDelegate(int thisHandle);
+		public static SystemCollectionsIListClearDelegate SystemCollectionsIListClear;
+		
+		public delegate bool SystemCollectionsIListContainsDelegate(int thisHandle, int param0);
+		public static SystemCollectionsIListContainsDelegate SystemCollectionsIListContains;
+		
+		public delegate int SystemCollectionsIListIndexOfDelegate(int thisHandle, int param0);
+		public static SystemCollectionsIListIndexOfDelegate SystemCollectionsIListIndexOf;
+		
+		public delegate void SystemCollectionsIListInsertDelegate(int thisHandle, int param0, int param1);
+		public static SystemCollectionsIListInsertDelegate SystemCollectionsIListInsert;
+		
+		public delegate void SystemCollectionsIListRemoveDelegate(int thisHandle, int param0);
+		public static SystemCollectionsIListRemoveDelegate SystemCollectionsIListRemove;
+		
+		public delegate void SystemCollectionsIListRemoveAtDelegate(int thisHandle, int param0);
+		public static SystemCollectionsIListRemoveAtDelegate SystemCollectionsIListRemoveAt;
+		
+		public delegate int SystemCollectionsIListGetEnumeratorDelegate(int thisHandle);
+		public static SystemCollectionsIListGetEnumeratorDelegate SystemCollectionsIListGetEnumerator;
+		
+		public delegate void SystemCollectionsIListCopyToDelegate(int thisHandle, int param0, int param1);
+		public static SystemCollectionsIListCopyToDelegate SystemCollectionsIListCopyTo;
+		
+		public delegate bool SystemCollectionsIListGetIsFixedSizeDelegate(int thisHandle);
+		public static SystemCollectionsIListGetIsFixedSizeDelegate SystemCollectionsIListGetIsFixedSize;
+		
+		public delegate bool SystemCollectionsIListGetIsReadOnlyDelegate(int thisHandle);
+		public static SystemCollectionsIListGetIsReadOnlyDelegate SystemCollectionsIListGetIsReadOnly;
+		
+		public delegate int SystemCollectionsIListGetItemDelegate(int thisHandle, int param0);
+		public static SystemCollectionsIListGetItemDelegate SystemCollectionsIListGetItem;
+		
+		public delegate void SystemCollectionsIListSetItemDelegate(int thisHandle, int param0, int param1);
+		public static SystemCollectionsIListSetItemDelegate SystemCollectionsIListSetItem;
+		
+		public delegate int SystemCollectionsIListGetCountDelegate(int thisHandle);
+		public static SystemCollectionsIListGetCountDelegate SystemCollectionsIListGetCount;
+		
+		public delegate bool SystemCollectionsIListGetIsSynchronizedDelegate(int thisHandle);
+		public static SystemCollectionsIListGetIsSynchronizedDelegate SystemCollectionsIListGetIsSynchronized;
+		
+		public delegate int SystemCollectionsIListGetSyncRootDelegate(int thisHandle);
+		public static SystemCollectionsIListGetSyncRootDelegate SystemCollectionsIListGetSyncRoot;
+		
+		public delegate int SystemCollectionsQueueGetCountDelegate(int thisHandle);
+		public static SystemCollectionsQueueGetCountDelegate SystemCollectionsQueueGetCount;
 		
 		public delegate void MyGameMonoBehavioursTestScriptAwakeDelegate(int thisHandle);
 		public static MyGameMonoBehavioursTestScriptAwakeDelegate MyGameMonoBehavioursTestScriptAwake;
@@ -726,6 +800,8 @@ namespace NativeScript
 			IntPtr unboxScene,
 			IntPtr boxLoadSceneMode,
 			IntPtr unboxLoadSceneMode,
+			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
+			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
 			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
@@ -734,6 +810,12 @@ namespace NativeScript
 			IntPtr systemStringComparerConstructor,
 			IntPtr releaseSystemEventArgs,
 			IntPtr systemEventArgsConstructor,
+			IntPtr releaseSystemCollectionsICollection,
+			IntPtr systemCollectionsICollectionConstructor,
+			IntPtr releaseSystemCollectionsIList,
+			IntPtr systemCollectionsIListConstructor,
+			IntPtr releaseSystemCollectionsQueue,
+			IntPtr systemCollectionsQueueConstructor,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -847,6 +929,72 @@ namespace NativeScript
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SystemEventArgsToString(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsICollectionCopyTo(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsICollectionGetEnumerator(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsICollectionGetCount(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsICollectionGetIsSynchronized(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsICollectionGetSyncRoot(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListAdd(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListClear(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListContains(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListIndexOf(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListInsert(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListRemove(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListRemoveAt(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListGetEnumerator(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListCopyTo(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListGetIsFixedSize(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListGetIsReadOnly(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListGetItem(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListSetItem(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListGetCount(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListGetIsSynchronized(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsIListGetSyncRoot(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemCollectionsQueueGetCount(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void MyGameMonoBehavioursTestScriptAwake(int thisHandle);
@@ -992,6 +1140,8 @@ namespace NativeScript
 		delegate UnityEngine.SceneManagement.Scene UnboxSceneDelegate(int valHandle);
 		delegate int BoxLoadSceneModeDelegate(UnityEngine.SceneManagement.LoadSceneMode val);
 		delegate UnityEngine.SceneManagement.LoadSceneMode UnboxLoadSceneModeDelegate(int valHandle);
+		delegate int SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(int thisHandle);
+		delegate bool SystemCollectionsIEnumeratorMethodMoveNextDelegate(int thisHandle);
 		delegate void SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(int handle);
 		delegate void SystemCollectionsGenericIComparerSystemStringConstructorDelegate(int cppHandle, ref int handle);
@@ -1000,6 +1150,12 @@ namespace NativeScript
 		delegate void ReleaseSystemStringComparerDelegate(int handle);
 		delegate void SystemEventArgsConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemEventArgsDelegate(int handle);
+		delegate void SystemCollectionsICollectionConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsICollectionDelegate(int handle);
+		delegate void SystemCollectionsIListConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsIListDelegate(int handle);
+		delegate void SystemCollectionsQueueConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsQueueDelegate(int handle);
 		delegate int BoxBooleanDelegate(bool val);
 		delegate bool UnboxBooleanDelegate(int valHandle);
 		delegate int BoxSByteDelegate(sbyte val);
@@ -1130,6 +1286,28 @@ namespace NativeScript
 			SystemStringComparerEquals = GetDelegate<SystemStringComparerEqualsDelegate>(libraryHandle, "SystemStringComparerEquals");
 			SystemStringComparerGetHashCode = GetDelegate<SystemStringComparerGetHashCodeDelegate>(libraryHandle, "SystemStringComparerGetHashCode");
 			SystemEventArgsToString = GetDelegate<SystemEventArgsToStringDelegate>(libraryHandle, "SystemEventArgsToString");
+			SystemCollectionsICollectionCopyTo = GetDelegate<SystemCollectionsICollectionCopyToDelegate>(libraryHandle, "SystemCollectionsICollectionCopyTo");
+			SystemCollectionsICollectionGetEnumerator = GetDelegate<SystemCollectionsICollectionGetEnumeratorDelegate>(libraryHandle, "SystemCollectionsICollectionGetEnumerator");
+			SystemCollectionsICollectionGetCount = GetDelegate<SystemCollectionsICollectionGetCountDelegate>(libraryHandle, "SystemCollectionsICollectionGetCount");
+			SystemCollectionsICollectionGetIsSynchronized = GetDelegate<SystemCollectionsICollectionGetIsSynchronizedDelegate>(libraryHandle, "SystemCollectionsICollectionGetIsSynchronized");
+			SystemCollectionsICollectionGetSyncRoot = GetDelegate<SystemCollectionsICollectionGetSyncRootDelegate>(libraryHandle, "SystemCollectionsICollectionGetSyncRoot");
+			SystemCollectionsIListAdd = GetDelegate<SystemCollectionsIListAddDelegate>(libraryHandle, "SystemCollectionsIListAdd");
+			SystemCollectionsIListClear = GetDelegate<SystemCollectionsIListClearDelegate>(libraryHandle, "SystemCollectionsIListClear");
+			SystemCollectionsIListContains = GetDelegate<SystemCollectionsIListContainsDelegate>(libraryHandle, "SystemCollectionsIListContains");
+			SystemCollectionsIListIndexOf = GetDelegate<SystemCollectionsIListIndexOfDelegate>(libraryHandle, "SystemCollectionsIListIndexOf");
+			SystemCollectionsIListInsert = GetDelegate<SystemCollectionsIListInsertDelegate>(libraryHandle, "SystemCollectionsIListInsert");
+			SystemCollectionsIListRemove = GetDelegate<SystemCollectionsIListRemoveDelegate>(libraryHandle, "SystemCollectionsIListRemove");
+			SystemCollectionsIListRemoveAt = GetDelegate<SystemCollectionsIListRemoveAtDelegate>(libraryHandle, "SystemCollectionsIListRemoveAt");
+			SystemCollectionsIListGetEnumerator = GetDelegate<SystemCollectionsIListGetEnumeratorDelegate>(libraryHandle, "SystemCollectionsIListGetEnumerator");
+			SystemCollectionsIListCopyTo = GetDelegate<SystemCollectionsIListCopyToDelegate>(libraryHandle, "SystemCollectionsIListCopyTo");
+			SystemCollectionsIListGetIsFixedSize = GetDelegate<SystemCollectionsIListGetIsFixedSizeDelegate>(libraryHandle, "SystemCollectionsIListGetIsFixedSize");
+			SystemCollectionsIListGetIsReadOnly = GetDelegate<SystemCollectionsIListGetIsReadOnlyDelegate>(libraryHandle, "SystemCollectionsIListGetIsReadOnly");
+			SystemCollectionsIListGetItem = GetDelegate<SystemCollectionsIListGetItemDelegate>(libraryHandle, "SystemCollectionsIListGetItem");
+			SystemCollectionsIListSetItem = GetDelegate<SystemCollectionsIListSetItemDelegate>(libraryHandle, "SystemCollectionsIListSetItem");
+			SystemCollectionsIListGetCount = GetDelegate<SystemCollectionsIListGetCountDelegate>(libraryHandle, "SystemCollectionsIListGetCount");
+			SystemCollectionsIListGetIsSynchronized = GetDelegate<SystemCollectionsIListGetIsSynchronizedDelegate>(libraryHandle, "SystemCollectionsIListGetIsSynchronized");
+			SystemCollectionsIListGetSyncRoot = GetDelegate<SystemCollectionsIListGetSyncRootDelegate>(libraryHandle, "SystemCollectionsIListGetSyncRoot");
+			SystemCollectionsQueueGetCount = GetDelegate<SystemCollectionsQueueGetCountDelegate>(libraryHandle, "SystemCollectionsQueueGetCount");
 			MyGameMonoBehavioursTestScriptAwake = GetDelegate<MyGameMonoBehavioursTestScriptAwakeDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptAwake");
 			MyGameMonoBehavioursTestScriptOnAnimatorIK = GetDelegate<MyGameMonoBehavioursTestScriptOnAnimatorIKDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnAnimatorIK");
 			MyGameMonoBehavioursTestScriptOnCollisionEnter = GetDelegate<MyGameMonoBehavioursTestScriptOnCollisionEnterDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnCollisionEnter");
@@ -1252,6 +1430,8 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnboxSceneDelegate(UnboxScene)),
 				Marshal.GetFunctionPointerForDelegate(new BoxLoadSceneModeDelegate(BoxLoadSceneMode)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxLoadSceneModeDelegate(UnboxLoadSceneMode)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(SystemCollectionsIEnumeratorPropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorMethodMoveNextDelegate(SystemCollectionsIEnumeratorMethodMoveNext)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(ReleaseSystemCollectionsGenericIComparerSystemInt32)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(SystemCollectionsGenericIComparerSystemInt32Constructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(ReleaseSystemCollectionsGenericIComparerSystemString)),
@@ -1260,6 +1440,12 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemStringComparerConstructorDelegate(SystemStringComparerConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemEventArgsDelegate(ReleaseSystemEventArgs)),
 				Marshal.GetFunctionPointerForDelegate(new SystemEventArgsConstructorDelegate(SystemEventArgsConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsICollectionDelegate(ReleaseSystemCollectionsICollection)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsICollectionConstructorDelegate(SystemCollectionsICollectionConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsIListDelegate(ReleaseSystemCollectionsIList)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIListConstructorDelegate(SystemCollectionsIListConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsQueueDelegate(ReleaseSystemCollectionsQueue)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsQueueConstructorDelegate(SystemCollectionsQueueConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new BoxBooleanDelegate(BoxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxBooleanDelegate(UnboxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new BoxSByteDelegate(BoxSByte)),
@@ -1431,6 +1617,7 @@ namespace NativeScript
 				}
 				return default(int);
 			}
+			
 		}
 		
 		class SystemCollectionsGenericIComparerSystemString : System.Collections.Generic.IComparer<string>
@@ -1460,6 +1647,7 @@ namespace NativeScript
 				}
 				return default(int);
 			}
+			
 		}
 		
 		class SystemStringComparer : System.StringComparer
@@ -1489,6 +1677,7 @@ namespace NativeScript
 				}
 				return default(int);
 			}
+			
 			public override bool Equals(string x, string y)
 			{
 				if (CppHandle != 0)
@@ -1507,6 +1696,7 @@ namespace NativeScript
 				}
 				return default(bool);
 			}
+			
 			public override int GetHashCode(string obj)
 			{
 				if (CppHandle != 0)
@@ -1524,6 +1714,7 @@ namespace NativeScript
 				}
 				return default(int);
 			}
+			
 		}
 		
 		class SystemEventArgs : System.EventArgs
@@ -1551,6 +1742,437 @@ namespace NativeScript
 				}
 				return default(string);
 			}
+			
+		}
+		
+		class SystemCollectionsICollection : System.Collections.ICollection
+		{
+			public int CppHandle;
+			
+			public SystemCollectionsICollection(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public void CopyTo(System.Array array, int index)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int arrayHandle = NativeScript.Bindings.ObjectStore.GetHandle(array);
+					NativeScript.Bindings.SystemCollectionsICollectionCopyTo(thisHandle, arrayHandle, index);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public System.Collections.IEnumerator GetEnumerator()
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemCollectionsICollectionGetEnumerator(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(returnVal);
+				}
+				return default(System.Collections.IEnumerator);
+			}
+			
+			public int Count
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsICollectionGetCount(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return returnVal;
+					}
+					return default(int);
+				}
+			}
+			
+			public bool IsSynchronized
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsICollectionGetIsSynchronized(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return returnVal;
+					}
+					return default(bool);
+				}
+			}
+			
+			public object SyncRoot
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsICollectionGetSyncRoot(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return NativeScript.Bindings.ObjectStore.Get(returnVal);
+					}
+					return default(object);
+				}
+			}
+			
+		}
+		
+		class SystemCollectionsIList : System.Collections.IList
+		{
+			public int CppHandle;
+			
+			public SystemCollectionsIList(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public int Add(object value)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+					var returnVal = NativeScript.Bindings.SystemCollectionsIListAdd(thisHandle, valueHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(int);
+			}
+			
+			public void Clear()
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemCollectionsIListClear(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public bool Contains(object value)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+					var returnVal = NativeScript.Bindings.SystemCollectionsIListContains(thisHandle, valueHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(bool);
+			}
+			
+			public int IndexOf(object value)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+					var returnVal = NativeScript.Bindings.SystemCollectionsIListIndexOf(thisHandle, valueHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return returnVal;
+				}
+				return default(int);
+			}
+			
+			public void Insert(int index, object value)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+					NativeScript.Bindings.SystemCollectionsIListInsert(thisHandle, index, valueHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public void Remove(object value)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+					NativeScript.Bindings.SystemCollectionsIListRemove(thisHandle, valueHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public void RemoveAt(int index)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemCollectionsIListRemoveAt(thisHandle, index);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public System.Collections.IEnumerator GetEnumerator()
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					var returnVal = NativeScript.Bindings.SystemCollectionsIListGetEnumerator(thisHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+					return (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(returnVal);
+				}
+				return default(System.Collections.IEnumerator);
+			}
+			
+			public void CopyTo(System.Array array, int index)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int arrayHandle = NativeScript.Bindings.ObjectStore.GetHandle(array);
+					NativeScript.Bindings.SystemCollectionsIListCopyTo(thisHandle, arrayHandle, index);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public bool IsFixedSize
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsIListGetIsFixedSize(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return returnVal;
+					}
+					return default(bool);
+				}
+			}
+			
+			public bool IsReadOnly
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsIListGetIsReadOnly(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return returnVal;
+					}
+					return default(bool);
+				}
+			}
+			
+			public object this[int index]
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsIListGetItem(thisHandle, index);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return NativeScript.Bindings.ObjectStore.Get(returnVal);
+					}
+					return default(object);
+				}
+				set
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemCollectionsIListSetItem(thisHandle, index, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+			public int Count
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsIListGetCount(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return returnVal;
+					}
+					return default(int);
+				}
+			}
+			
+			public bool IsSynchronized
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsIListGetIsSynchronized(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return returnVal;
+					}
+					return default(bool);
+				}
+			}
+			
+			public object SyncRoot
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsIListGetSyncRoot(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return NativeScript.Bindings.ObjectStore.Get(returnVal);
+					}
+					return default(object);
+				}
+			}
+			
+		}
+		
+		class SystemCollectionsQueue : System.Collections.Queue
+		{
+			public int CppHandle;
+			
+			public SystemCollectionsQueue(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public override int Count
+			{
+				get
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						var returnVal = NativeScript.Bindings.SystemCollectionsQueueGetCount(thisHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+						return returnVal;
+					}
+					return default(int);
+				}
+			}
+			
 		}
 		
 		class SystemAction
@@ -1578,6 +2200,7 @@ namespace NativeScript
 					}
 				}
 			}
+			
 		}
 		
 		class SystemActionSystemSingle
@@ -1605,6 +2228,7 @@ namespace NativeScript
 					}
 				}
 			}
+			
 		}
 		
 		class SystemActionSystemSingle_SystemSingle
@@ -1632,6 +2256,7 @@ namespace NativeScript
 					}
 				}
 			}
+			
 		}
 		
 		class SystemFuncSystemInt32_SystemSingle_SystemDouble
@@ -1661,6 +2286,7 @@ namespace NativeScript
 				}
 				return default(double);
 			}
+			
 		}
 		
 		class SystemFuncSystemInt16_SystemInt32_SystemString
@@ -1690,6 +2316,7 @@ namespace NativeScript
 				}
 				return default(string);
 			}
+			
 		}
 		
 		class SystemAppDomainInitializer
@@ -1718,6 +2345,7 @@ namespace NativeScript
 					}
 				}
 			}
+			
 		}
 		
 		class UnityEngineEventsUnityAction
@@ -1745,6 +2373,7 @@ namespace NativeScript
 					}
 				}
 			}
+			
 		}
 		
 		class UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode
@@ -1772,6 +2401,7 @@ namespace NativeScript
 					}
 				}
 			}
+			
 		}
 		/*END BASE TYPES*/
 		
@@ -3892,6 +4522,52 @@ namespace NativeScript
 			}
 		}
 		
+		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorPropertyGetCurrentDelegate))]
+		static int SystemCollectionsIEnumeratorPropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorMethodMoveNextDelegate))]
+		static bool SystemCollectionsIEnumeratorMethodMoveNext(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.MoveNext();
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate))]
 		static void SystemCollectionsGenericIComparerSystemInt32Constructor(int cppHandle, ref int handle)
 		{
@@ -4031,6 +4707,123 @@ namespace NativeScript
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemEventArgsDelegate))]
 		static void ReleaseSystemEventArgs(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsICollectionConstructorDelegate))]
+		static void SystemCollectionsICollectionConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemCollectionsICollection(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsICollectionDelegate))]
+		static void ReleaseSystemCollectionsICollection(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsIListConstructorDelegate))]
+		static void SystemCollectionsIListConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemCollectionsIList(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsIListDelegate))]
+		static void ReleaseSystemCollectionsIList(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsQueueConstructorDelegate))]
+		static void SystemCollectionsQueueConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemCollectionsQueue(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsQueueDelegate))]
+		static void ReleaseSystemCollectionsQueue(int handle)
 		{
 			try
 			{

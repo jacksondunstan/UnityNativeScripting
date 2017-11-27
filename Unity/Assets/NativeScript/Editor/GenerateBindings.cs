@@ -101,6 +101,7 @@ namespace NativeScript
 			public JsonGenericParams[] GenericParams;
 			public int MaxSimultaneous;
 			public JsonMethod[] OverrideMethods;
+			public JsonProperty[] OverrideProperties;
 		}
 		
 		[Serializable]
@@ -1009,11 +1010,13 @@ namespace NativeScript
 		}
 		
 		static ParameterInfo[] ConvertParameters(
-			System.Reflection.ParameterInfo[] reflectionParameters)
+			System.Reflection.ParameterInfo[] reflectionParameters,
+			int start = 0,
+			int count = -1)
 		{
-			int num = reflectionParameters.Length;
+			int num = reflectionParameters.Length - start;
 			ParameterInfo[] parameters = new ParameterInfo[num];
-			for (int i = 0; i < num; ++i)
+			for (int i = start; i < num; ++i)
 			{
 				var reflectionInfo = reflectionParameters[i];
 				ParameterInfo info = new ParameterInfo();
@@ -1025,7 +1028,7 @@ namespace NativeScript
 					reflectionInfo);
 				info.Kind = GetTypeKind(
 					info.DereferencedParameterType);
-				parameters[i] = info;
+				parameters[i - start] = info;
 			}
 			return parameters;
 		}
@@ -1065,6 +1068,16 @@ namespace NativeScript
 		static bool IsStatic(Type type)
 		{
 			return type.IsAbstract && type.IsSealed;
+		}
+		
+		static bool IsDelegate(Type type)
+		{
+			return typeof(Delegate).IsAssignableFrom(type);
+		}
+		
+		static bool IsNonDelegateClass(Type type)
+		{
+			return type.IsClass && !IsDelegate(type);
 		}
 		
 		static bool IsManagedValueType(Type type)
@@ -5594,11 +5607,11 @@ namespace NativeScript
 						builders.TempStrBuilder);
 					builders.TempStrBuilder.Append(
 						jsonGenericParams.Types.Length);
-					string numberedTypeName = builders.TempStrBuilder.ToString();
+					string cppTypeName = builders.TempStrBuilder.ToString();
 					
 					// C++ template declaration
 					AppendCppTemplateDeclaration(
-						numberedTypeName,
+						cppTypeName,
 						type.Namespace,
 						genericArgTypes.Length,
 						builders.CppTypeDeclarations);
@@ -5619,7 +5632,7 @@ namespace NativeScript
 						builders.TempStrBuilder);
 					builders.TempStrBuilder.Append(
 						jsonGenericParams.Types.Length);
-					string numberedTypeName = builders.TempStrBuilder.ToString();
+					string cppTypeName = builders.TempStrBuilder.ToString();
 					
 					// Max simultaneous handles of this type
 					int? maxSimultaneous = jsonGenericParams.MaxSimultaneous != 0
@@ -5630,7 +5643,7 @@ namespace NativeScript
 					
 					AppendDelegate(
 						genericType,
-						numberedTypeName,
+						cppTypeName,
 						typeParams,
 						maxSimultaneous,
 						builders);
@@ -5652,7 +5665,7 @@ namespace NativeScript
 		
 		static void AppendDelegate(
 			Type type,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			int? maxSimultaneous,
 			StringBuilders builders)
@@ -5709,7 +5722,7 @@ namespace NativeScript
 			// C++ type declaration
 			int indent = AppendCppTypeDeclaration(
 				type.Namespace,
-				numberedTypeName,
+				cppTypeName,
 				false,
 				typeParams,
 				builders.CppTypeDeclarations);
@@ -5788,7 +5801,7 @@ namespace NativeScript
 
 			// C++ type definition (begin)
 			AppendCppTypeDefinitionBegin(
-				numberedTypeName,
+				cppTypeName,
 				type.Namespace,
 				TypeKind.Class,
 				typeParams,
@@ -5814,7 +5827,7 @@ namespace NativeScript
 				indent + 1,
 				builders.CppTypeDefinitions);
 			AppendCppMethodDeclaration(
-				numberedTypeName,
+				cppTypeName,
 				false,
 				false,
 				false,
@@ -5972,7 +5985,7 @@ namespace NativeScript
 			
 			AppendCppBaseTypeDefaultConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				constructorFuncName,
@@ -5981,7 +5994,7 @@ namespace NativeScript
 			
 			AppendCppBaseTypeNullptrConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				cppMethodDefinitionsIndent,
@@ -5989,14 +6002,14 @@ namespace NativeScript
 			
 			AppendCppBaseTypeCopyConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeMoveConstructor(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				cppMethodDefinitionsIndent,
@@ -6004,7 +6017,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeHandleConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				cppMethodDefinitionsIndent,
@@ -6012,7 +6025,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeDestructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				releaseFuncName,
@@ -6021,14 +6034,14 @@ namespace NativeScript
 
 			AppendCppBaseTypeAssignmentOperatorSameType(
 				type,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeAssignmentOperatorNullptr(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				releaseFuncName,
@@ -6037,7 +6050,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeMoveAssignmentOperator(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				true,
 				releaseFuncName,
@@ -6045,20 +6058,20 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeEqualityOperator(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeInequalityOperator(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			// C++ add
 			AppendCppMethodDefinitionBegin(
-				numberedTypeName,
+				cppTypeName,
 				typeof(void),
 				"operator+=",
 				typeParams,
@@ -6090,7 +6103,7 @@ namespace NativeScript
 			
 			// C++ remove
 			AppendCppMethodDefinitionBegin(
-				numberedTypeName,
+				cppTypeName,
 				typeof(void),
 				"operator-=",
 				typeParams,
@@ -6153,14 +6166,25 @@ namespace NativeScript
 			builders.CsharpBaseTypes.Append("\t\t\t}\n");
 			builders.CsharpBaseTypes.Append("\t\t\t\n");
 			
+			// Build the name of the C++ binding function that C# calls
+			builders.TempStrBuilder.Length = 0;
+			AppendNativeInvokeFuncName(
+				type,
+				typeParams,
+				"NativeInvoke",
+				builders.TempStrBuilder);
+			string nativeInvokeFuncName = builders.TempStrBuilder.ToString();
+			
 			// operator() is how C# forwards the delegate invocation to C++
+			MethodInfo invokeMethod = type.GetMethod("Invoke");
 			AppendBaseTypeCppMethodCall(
 				type,
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
-				type.GetMethod("Invoke"),
+				invokeMethod,
 				"NativeInvoke",
+				nativeInvokeFuncName,
 				"operator()",
 				false,
 				indent,
@@ -6171,11 +6195,10 @@ namespace NativeScript
 			builders.CsharpBaseTypes.Append("\t\t\n");
 			
 			// Invoke() is how C++ invokes the delegate
-			MethodInfo invokeMethod = type.GetMethod("Invoke");
 			AppendBaseTypeMethodCallsCsharpMethod(
 				type,
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				invokeMethod,
 				"Invoke",
@@ -6290,7 +6313,7 @@ namespace NativeScript
 		static void AppendBaseType(
 			Type type,
 			JsonBaseType jsonBaseType,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			int? maxSimultaneous,
 			StringBuilders builders)
@@ -6329,7 +6352,7 @@ namespace NativeScript
 			// C++ type declaration
 			int indent = AppendCppTypeDeclaration(
 				type.Namespace,
-				numberedTypeName,
+				cppTypeName,
 				false,
 				typeParams,
 				builders.CppTypeDeclarations);
@@ -6378,7 +6401,7 @@ namespace NativeScript
 
 			// C++ type definition (begin)
 			AppendCppTypeDefinitionBegin(
-				numberedTypeName,
+				cppTypeName,
 				type.Namespace,
 				TypeKind.Class,
 				typeParams,
@@ -6400,7 +6423,7 @@ namespace NativeScript
 				indent + 1,
 				builders.CppTypeDefinitions);
 			AppendCppMethodDeclaration(
-				numberedTypeName,
+				cppTypeName,
 				false,
 				false,
 				false,
@@ -6478,7 +6501,7 @@ namespace NativeScript
 			
 			AppendCppBaseTypeDefaultConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				constructorFuncName,
@@ -6487,7 +6510,7 @@ namespace NativeScript
 			
 			AppendCppBaseTypeNullptrConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
@@ -6495,14 +6518,14 @@ namespace NativeScript
 			
 			AppendCppBaseTypeCopyConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeMoveConstructor(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
@@ -6510,7 +6533,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeHandleConstructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
@@ -6518,7 +6541,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeDestructor(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				releaseFuncName,
@@ -6527,14 +6550,14 @@ namespace NativeScript
 
 			AppendCppBaseTypeAssignmentOperatorSameType(
 				type,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeAssignmentOperatorNullptr(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				releaseFuncName,
@@ -6543,7 +6566,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeMoveAssignmentOperator(
 				typeName,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				false,
 				releaseFuncName,
@@ -6551,13 +6574,13 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeEqualityOperator(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeInequalityOperator(
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6627,16 +6650,40 @@ namespace NativeScript
 			// All abstract methods
 			foreach (MethodInfo methodInfo in type.GetMethods())
 			{
-				if (methodInfo.IsAbstract)
+				// Property methods like "get_X" have a "special name"
+				if (methodInfo.IsAbstract && !methodInfo.IsSpecialName)
 				{
 					AppendBaseTypeNativeMethod(
 						type,
 						typeName,
 						typeParams,
-						numberedTypeName,
+						cppTypeName,
 						methodInfo,
 						indent,
 						builders);
+				}
+			}
+			
+			// All interface methods
+			if (type.IsInterface)
+			{
+				foreach (Type interfaceType in type.GetInterfaces())
+				{
+					foreach (MethodInfo methodInfo in interfaceType.GetMethods())
+					{
+						// Property methods like "get_X" have a "special name"
+						if (methodInfo.IsAbstract && !methodInfo.IsSpecialName)
+						{
+							AppendBaseTypeNativeMethod(
+								type,
+								typeName,
+								typeParams,
+								cppTypeName,
+								methodInfo,
+								indent,
+								builders);
+						}
+					}
 				}
 			}
 			
@@ -6657,8 +6704,118 @@ namespace NativeScript
 						type,
 						typeName,
 						typeParams,
-						numberedTypeName,
+						cppTypeName,
 						methodInfo,
+						indent,
+						builders);
+				}
+			}
+			
+			// All abstract properties
+			foreach (PropertyInfo propertyInfo in type.GetProperties())
+			{
+				MethodInfo getMethodInfo = propertyInfo.GetGetMethod();
+				MethodInfo setMethodInfo = propertyInfo.GetSetMethod();
+				if ((getMethodInfo == null || !getMethodInfo.IsAbstract) &&
+					(setMethodInfo == null || !setMethodInfo.IsAbstract))
+				{
+					continue;
+				}
+				AppendBaseTypeProperty(
+					type,
+					typeName,
+					cppTypeName,
+					typeParams,
+					propertyInfo,
+					getMethodInfo,
+					setMethodInfo,
+					indent,
+					builders);
+			}
+			
+			// All interface properties
+			if (type.IsInterface)
+			{
+				foreach (Type interfaceType in type.GetInterfaces())
+				{
+					foreach (PropertyInfo propertyInfo in
+						interfaceType.GetProperties())
+					{
+						MethodInfo getMethodInfo = propertyInfo.GetGetMethod();
+						MethodInfo setMethodInfo = propertyInfo.GetSetMethod();
+						if ((getMethodInfo == null || !getMethodInfo.IsAbstract) &&
+							(setMethodInfo == null || !setMethodInfo.IsAbstract))
+						{
+							continue;
+						}
+						AppendBaseTypeProperty(
+							type,
+							typeName,
+							cppTypeName,
+							typeParams,
+							propertyInfo,
+							getMethodInfo,
+							setMethodInfo,
+							indent,
+							builders);
+					}
+				}
+			}
+			
+			// Specified virtual properties
+			if (jsonBaseType.OverrideProperties != null)
+			{
+				PropertyInfo[] properties = type.GetProperties();
+				foreach (JsonProperty jsonProperty in jsonBaseType.OverrideProperties)
+				{
+					PropertyInfo propertyInfo = null;
+					foreach (PropertyInfo curPropertyInfo in properties)
+					{
+						if (curPropertyInfo.Name == jsonProperty.Name)
+						{
+							propertyInfo = curPropertyInfo;
+							break;
+						}
+					}
+					if (propertyInfo == null)
+					{
+						// Throw an exception so the user knows what to fix in the JSON
+						StringBuilder errorBuilder = new StringBuilder(1024);
+						errorBuilder.Append("Property \"");
+						AppendCsharpTypeName(
+							type,
+							errorBuilder);
+						errorBuilder.Append('.');
+						errorBuilder.Append(jsonProperty.Name);
+						errorBuilder.Append(")\" not found");
+						throw new Exception(errorBuilder.ToString());
+					}
+					
+					MethodInfo getMethodInfo = propertyInfo.GetGetMethod();
+					MethodInfo setMethodInfo = propertyInfo.GetSetMethod();
+					if ((getMethodInfo == null || !getMethodInfo.IsVirtual) &&
+						(setMethodInfo == null || !setMethodInfo.IsVirtual))
+					{
+						// Throw an exception so the user knows what to fix in the JSON
+						StringBuilder errorBuilder = new StringBuilder(1024);
+						errorBuilder.Append("Property \"");
+						AppendCsharpTypeName(
+							type,
+							errorBuilder);
+						errorBuilder.Append('.');
+						errorBuilder.Append(jsonProperty.Name);
+						errorBuilder.Append(
+							")\" doesn't have either a virtual 'get' or 'set' to override");
+						throw new Exception(errorBuilder.ToString());
+					}
+					AppendBaseTypeProperty(
+						type,
+						typeName,
+						cppTypeName,
+						typeParams,
+						propertyInfo,
+						getMethodInfo,
+						setMethodInfo,
 						indent,
 						builders);
 				}
@@ -6696,6 +6853,15 @@ namespace NativeScript
 				methodInfo.Name,
 				builders.CsharpGetDelegateCalls);
 			
+			// Build the name of the C++ binding function that C# calls
+			builders.TempStrBuilder.Length = 0;
+			AppendNativeInvokeFuncName(
+				type,
+				typeParams,
+				methodInfo.Name,
+				builders.TempStrBuilder);
+			string nativeInvokeFuncName = builders.TempStrBuilder.ToString();
+			
 			AppendBaseTypeCppMethodCall(
 				type,
 				typeName,
@@ -6703,10 +6869,186 @@ namespace NativeScript
 				typeParams,
 				methodInfo,
 				methodInfo.Name,
+				nativeInvokeFuncName,
 				methodInfo.Name,
-				!type.IsInterface,
+				IsNonDelegateClass(type),
 				indent,
 				builders);
+		}
+		
+		static void AppendBaseTypeProperty(
+			Type type,
+			string typeName,
+			string cppTypeName,
+			Type[] typeParams,
+			PropertyInfo propertyInfo,
+			MethodInfo getMethodInfo,
+			MethodInfo setMethodInfo,
+			int indent,
+			StringBuilders builders)
+		{
+			bool isOverride = IsNonDelegateClass(type);
+			
+			ParameterInfo[] parameters;
+			if (getMethodInfo != null && getMethodInfo.IsVirtual)
+			{
+				parameters = ConvertParameters(
+					getMethodInfo.GetParameters());
+			}
+			else
+			{
+				System.Reflection.ParameterInfo[] setParams =
+					setMethodInfo.GetParameters();
+				parameters = ConvertParameters(
+					setParams,
+					1,
+					setParams.Length - 1);
+			}
+			
+			builders.CsharpBaseTypes.Append("\t\t\tpublic ");
+			if (isOverride)
+			{
+				builders.CsharpBaseTypes.Append("override ");
+			}
+			AppendCsharpTypeName(
+				propertyInfo.PropertyType,
+				builders.CsharpBaseTypes);
+			builders.CsharpBaseTypes.Append(' ');
+			if (parameters.Length == 0)
+			{
+				builders.CsharpBaseTypes.Append(propertyInfo.Name);
+			}
+			else
+			{
+				builders.CsharpBaseTypes.Append("this[");
+				AppendCsharpParams(
+					parameters,
+					builders.CsharpBaseTypes);
+				builders.CsharpBaseTypes.Append(']');
+			}
+			builders.CsharpBaseTypes.Append('\n');
+			builders.CsharpBaseTypes.Append("\t\t\t{\n");
+			
+			if (getMethodInfo != null && getMethodInfo.IsVirtual)
+			{
+				AppendBaseTypeNativeProperty(
+					type,
+					typeName,
+					typeParams,
+					cppTypeName,
+					propertyInfo,
+					getMethodInfo,
+					"Get",
+					isOverride,
+					indent,
+					builders);
+			}
+			
+			if (setMethodInfo != null && setMethodInfo.IsVirtual)
+			{
+				AppendBaseTypeNativeProperty(
+					type,
+					typeName,
+					typeParams,
+					cppTypeName,
+					propertyInfo,
+					setMethodInfo,
+					"Set",
+					isOverride,
+					indent,
+					builders);
+			}
+			
+			builders.CsharpBaseTypes.Append("\t\t\t}\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\n");
+		}
+		
+		static void AppendBaseTypeNativeProperty(
+			Type type,
+			string typeName,
+			Type[] typeParams,
+			string cppTypeName,
+			PropertyInfo propertyInfo,
+			MethodInfo methodInfo,
+			string operationType,
+			bool isOverride,
+			int indent,
+			StringBuilders builders)
+		{
+			builders.TempStrBuilder.Length = 0;
+			builders.TempStrBuilder.Append(operationType);
+			builders.TempStrBuilder.Append(propertyInfo.Name);
+			string funcName = builders.TempStrBuilder.ToString();
+			
+			AppendCsharpGetDelegateCall(
+				type.Name,
+				type.Namespace,
+				typeParams,
+				funcName,
+				builders.CsharpGetDelegateCalls);
+			
+			// Build the name of the C++ binding function that C# calls
+			builders.TempStrBuilder.Length = 0;
+			AppendNativeInvokeFuncName(
+				type,
+				typeParams,
+				funcName,
+				builders.TempStrBuilder);
+			string nativeInvokeFuncName = builders.TempStrBuilder.ToString();
+			
+			ParameterInfo[] invokeParams = AppendBaseTypeCppNativeInvokeCall(
+				type,
+				typeName,
+				cppTypeName,
+				typeParams,
+				methodInfo,
+				funcName,
+				nativeInvokeFuncName,
+				funcName,
+				isOverride,
+				indent,
+				builders);
+			
+			// C# method that calls the C++ binding function
+			ParameterInfo[] invokeParamsWithThis = PrependThisParameter(
+				invokeParams);
+			TypeKind invokeReturnTypeKind = GetTypeKind(
+				propertyInfo.PropertyType);
+			builders.CsharpBaseTypes.Append("\t\t\t\t");
+			builders.CsharpBaseTypes.Append(char.ToLower(operationType[0]));
+			builders.CsharpBaseTypes.Append(
+				operationType,
+				1,
+				operationType.Length - 1);
+			builders.CsharpBaseTypes.Append('\n');
+			builders.CsharpBaseTypes.Append("\t\t\t\t{\n");
+			AppendCsharpBaseTypeCppMethodCallMethodBody(
+				methodInfo,
+				nativeInvokeFuncName,
+				invokeParamsWithThis,
+				invokeReturnTypeKind,
+				5,
+				builders.CsharpBaseTypes);
+			builders.CsharpBaseTypes.Append("\t\t\t\t}\n");
+		}
+		
+		static void AppendCsharpParams(
+			ParameterInfo[] parameters,
+			StringBuilder output)
+		{
+			for (int i = 0; i < parameters.Length; ++i)
+			{
+				ParameterInfo param = parameters[i];
+				AppendCsharpTypeName(
+					param.ParameterType,
+					output);
+				output.Append(' ');
+				output.Append(param.Name);
+				if (i != parameters.Length - 1)
+				{
+					output.Append(", ");
+				}
+			}
 		}
 
 		static void AppendBaseTypeMethodCallsCsharpMethod(
@@ -6875,33 +7217,80 @@ namespace NativeScript
 				builders.CsharpFunctions);
 		}
 		
+		static void AppendNativeInvokeFuncName(
+			Type type,
+			Type[] typeParams,
+			string funcName,
+			StringBuilder output)
+		{
+			AppendNamespace(
+				type.Namespace,
+				string.Empty,
+				output);
+			AppendTypeNameWithoutSuffixes(
+				type.Name,
+				output);
+			AppendTypeNames(
+				typeParams,
+				output);
+			output.Append(funcName);
+		}
+		
 		static void AppendBaseTypeCppMethodCall(
 			Type type,
 			string typeName,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			MethodInfo invokeMethod,
 			string funcName,
+			string nativeInvokeFuncName,
 			string methodName,
 			bool isOverride,
 			int indent,
 			StringBuilders builders)
 		{
-			// Build the name of the C++ binding function that C# calls
-			builders.TempStrBuilder.Length = 0;
-			AppendNamespace(
-				type.Namespace,
-				string.Empty,
-				builders.TempStrBuilder);
-			AppendTypeNameWithoutSuffixes(
-				type.Name,
-				builders.TempStrBuilder);
-			AppendTypeNames(
+			ParameterInfo[] invokeParams = AppendBaseTypeCppNativeInvokeCall(
+				type,
+				typeName,
+				cppTypeName,
 				typeParams,
-				builders.TempStrBuilder);
-			builders.TempStrBuilder.Append(funcName);
-			string nativeInvokeFuncName = builders.TempStrBuilder.ToString();
+				invokeMethod,
+				funcName,
+				nativeInvokeFuncName,
+				methodName,
+				isOverride,
+				indent,
+				builders);
 			
+			// C# method that calls the C++ binding function
+			ParameterInfo[] invokeParamsWithThis = PrependThisParameter(
+				invokeParams);
+			TypeKind invokeReturnTypeKind = GetTypeKind(
+				invokeMethod.ReturnType);
+			AppendCsharpBaseTypeCppMethodCallMethod(
+				isOverride,
+				invokeMethod,
+				funcName,
+				invokeParams,
+				nativeInvokeFuncName,
+				invokeParamsWithThis,
+				invokeReturnTypeKind,
+				builders.CsharpBaseTypes);
+		}
+		
+		static ParameterInfo[] AppendBaseTypeCppNativeInvokeCall(
+			Type type,
+			string typeName,
+			string cppTypeName,
+			Type[] typeParams,
+			MethodInfo invokeMethod,
+			string funcName,
+			string nativeInvokeFuncName,
+			string methodName,
+			bool isOverride,
+			int indent,
+			StringBuilders builders)
+		{
 			// C++ method declaration
 			ParameterInfo[] invokeParams = ConvertParameters(
 				invokeMethod.GetParameters());
@@ -6920,7 +7309,7 @@ namespace NativeScript
 			
 			// C++ method definition. This is a no-op that game code overrides.
 			AppendCppMethodDefinitionBegin(
-				numberedTypeName,
+				cppTypeName,
 				invokeMethod.ReturnType,
 				methodName,
 				typeParams,
@@ -6934,10 +7323,19 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("{\n");
 			if (invokeMethod.ReturnType != typeof(void))
 			{
+				TypeKind returnTypeKind = GetTypeKind(invokeMethod.ReturnType);
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("return {};\n");
+				if (returnTypeKind == TypeKind.Class ||
+					returnTypeKind == TypeKind.ManagedStruct)
+				{
+					builders.CppMethodDefinitions.Append("return nullptr;\n");
+				}
+				else
+				{
+					builders.CppMethodDefinitions.Append("return {};\n");
+				}
 			}
 			AppendIndent(
 				indent,
@@ -6963,31 +7361,6 @@ namespace NativeScript
 				typeName,
 				builders.CppMethodDefinitions);
 			
-			// C# method that calls the C++ binding function
-			ParameterInfo[] invokeParamsWithThis = new ParameterInfo[
-				invokeParams.Length + 1];
-			for (int i = 0; i < invokeParams.Length; ++i)
-			{
-				invokeParamsWithThis[i+1] = invokeParams[i];
-			}
-			invokeParamsWithThis[0] = new ParameterInfo {
-				Name = "thisHandle",
-				ParameterType = typeof(int),
-				DereferencedParameterType = typeof(int),
-				IsOut = false,
-				IsRef = false,
-				Kind = TypeKind.Primitive
-			};
-			AppendCsharpBaseTypeCppMethodCallMethod(
-				isOverride,
-				invokeMethod,
-				funcName,
-				invokeParams,
-				nativeInvokeFuncName,
-				invokeParamsWithThis,
-				invokeReturnTypeKind,
-				builders.CsharpBaseTypes);
-			
 			// C# delegate for the C++ binding function
 			AppendCsharpDelegate(
 				false,
@@ -7008,6 +7381,28 @@ namespace NativeScript
 				funcName,
 				invokeParams,
 				builders.CsharpImports);
+			
+			return invokeParams;
+		}
+		
+		static ParameterInfo[] PrependThisParameter(
+			ParameterInfo[] invokeParams)
+		{
+			ParameterInfo[] invokeParamsWithThis = new ParameterInfo[
+				invokeParams.Length + 1];
+			for (int i = 0; i < invokeParams.Length; ++i)
+			{
+				invokeParamsWithThis[i+1] = invokeParams[i];
+			}
+			invokeParamsWithThis[0] = new ParameterInfo {
+				Name = "thisHandle",
+				ParameterType = typeof(int),
+				DereferencedParameterType = typeof(int),
+				IsOut = false,
+				IsRef = false,
+				Kind = TypeKind.Primitive
+			};
+			return invokeParamsWithThis;
 		}
 
 		static void AppendCsharpBaseTypeReleaseFunction(
@@ -7070,34 +7465,55 @@ namespace NativeScript
 			output.Append(" ");
 			output.Append(funcName);
 			output.Append("(");
-			for (int i = 0; i < invokeParams.Length; ++i)
-			{
-				ParameterInfo param = invokeParams[i];
-				AppendCsharpTypeName(
-					param.ParameterType,
-					output);
-				output.Append(' ');
-				output.Append(param.Name);
-				if (i != invokeParams.Length - 1)
-				{
-					output.Append(", ");
-				}
-			}
+			AppendCsharpParams(
+				invokeParams,
+				output);
 			output.Append(")\n");
 			output.Append("\t\t\t{\n");
-			output.Append("\t\t\t\tif (CppHandle != 0)\n");
-			output.Append("\t\t\t\t{\n");
-			output.Append("\t\t\t\t\tint thisHandle = CppHandle;\n");
+			AppendCsharpBaseTypeCppMethodCallMethodBody(
+				invokeMethod,
+				nativeInvokeFuncName,
+				invokeParamsWithThis,
+				invokeReturnTypeKind,
+				4,
+				output);
+			output.Append("\t\t\t}\n");
+			output.Append("\t\t\t\n");
+		}
+		
+		private static void AppendCsharpBaseTypeCppMethodCallMethodBody(
+			MethodInfo invokeMethod,
+			string nativeInvokeFuncName,
+			ParameterInfo[] invokeParamsWithThis,
+			TypeKind invokeReturnTypeKind,
+			int indent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				indent,
+				output);
+			output.Append("if (CppHandle != 0)\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("int thisHandle = CppHandle;\n");
 			AppendCppFunctionCall(
 				nativeInvokeFuncName,
 				invokeParamsWithThis,
 				invokeMethod.ReturnType,
 				true,
-				5,
+				indent + 1,
 				output);
 			if (invokeMethod.ReturnType != typeof(void))
 			{
-				output.Append("\t\t\t\t\treturn ");
+				AppendIndent(
+					indent + 1,
+					output);
+				output.Append("return ");
 				switch (invokeReturnTypeKind)
 				{
 					case TypeKind.Class:
@@ -7120,16 +7536,21 @@ namespace NativeScript
 						break;
 				}
 			}
-			output.Append("\t\t\t\t}\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("}\n");
 			if (invokeMethod.ReturnType != typeof(void))
 			{
-				output.Append("\t\t\t\treturn default(");
+				AppendIndent(
+					indent,
+					output);
+				output.Append("return default(");
 				AppendCsharpTypeName(
 					invokeMethod.ReturnType,
 					output);
 				output.Append(");\n");
 			}
-			output.Append("\t\t\t}\n");
 		}
 
 		private static void AppendCsharpBaseTypeConstructorFunction(
@@ -7405,7 +7826,7 @@ namespace NativeScript
 		}
 
 		static void AppendCppBaseTypeInequalityOperator(
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -7415,14 +7836,14 @@ namespace NativeScript
 				output);
 			output.Append("bool ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::operator!=(const ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
@@ -7448,7 +7869,7 @@ namespace NativeScript
 		}
 
 		static void AppendCppBaseTypeEqualityOperator(
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -7458,14 +7879,14 @@ namespace NativeScript
 				output);
 			output.Append("bool ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::operator==(const ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
@@ -7492,7 +7913,7 @@ namespace NativeScript
 
 		static void AppendCppBaseTypeMoveAssignmentOperator(
 			string typeName,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			string releaseFuncName,
@@ -7503,21 +7924,21 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("& ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::operator=(");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
@@ -7633,7 +8054,7 @@ namespace NativeScript
 		}
 
 		static void AppendCppBaseTypeAssignmentOperatorNullptr(
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			string releaseFuncName,
@@ -7644,14 +8065,14 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("& ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
@@ -7750,7 +8171,7 @@ namespace NativeScript
 
 		static void AppendCppBaseTypeAssignmentOperatorSameType(
 			Type type,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
@@ -7760,21 +8181,21 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("& ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::operator=(const ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
@@ -7785,7 +8206,7 @@ namespace NativeScript
 				output);
 			output.Append("{\n");
 			AppendSetHandle(
-				numberedTypeName,
+				cppTypeName,
 				type.Namespace,
 				TypeKind.Class,
 				typeParams,
@@ -7817,7 +8238,7 @@ namespace NativeScript
 
 		static void AppendCppBaseTypeDestructor(
 			string typeName,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			string releaseFuncName,
@@ -7828,14 +8249,14 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::~");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			output.Append("()\n");
 			AppendIndent(
@@ -7925,7 +8346,7 @@ namespace NativeScript
 
 		static void AppendCppBaseTypeHandleConstructor(
 			string typeName,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
@@ -7935,14 +8356,14 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			output.Append(
 				"(Plugin::InternalUse iu, int32_t handle)\n");
@@ -7997,7 +8418,7 @@ namespace NativeScript
 		}
 
 		static void AppendCppBaseTypeMoveConstructor(
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
@@ -8007,18 +8428,18 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			output.Append("(");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
@@ -8073,7 +8494,7 @@ namespace NativeScript
 
 		static void AppendCppBaseTypeCopyConstructor(
 			string typeName,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
@@ -8083,18 +8504,18 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			output.Append("(const ");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
@@ -8152,7 +8573,7 @@ namespace NativeScript
 
 		static void AppendCppBaseTypeNullptrConstructor(
 			string typeName,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
@@ -8162,14 +8583,14 @@ namespace NativeScript
 				cppMethodDefinitionsIndent,
 				output);
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			AppendCppTypeParameters(
 				typeParams,
 				output);
 			output.Append("::");
 			AppendTypeNameWithoutGenericSuffix(
-				numberedTypeName,
+				cppTypeName,
 				output);
 			output.Append("(decltype(nullptr) n)\n");
 			AppendIndent(
@@ -8206,7 +8627,7 @@ namespace NativeScript
 
 		static void AppendCppBaseTypeDefaultConstructor(
 			string typeName,
-			string numberedTypeName,
+			string cppTypeName,
 			Type[] typeParams,
 			bool typeIsDelegate,
 			string constructorFuncName,
@@ -8214,9 +8635,9 @@ namespace NativeScript
 			StringBuilder output)
 		{
 			AppendCppMethodDefinitionBegin(
-				numberedTypeName,
+				cppTypeName,
 				null,
-				numberedTypeName,
+				cppTypeName,
 				typeParams,
 				null,
 				new ParameterInfo[0],
@@ -8876,19 +9297,14 @@ namespace NativeScript
 			
 			// Build uppercase function name
 			builders.TempStrBuilder.Length = 0;
-			AppendNamespace(
-				enclosingType.Namespace,
-				string.Empty,
-				builders.TempStrBuilder);
-			AppendTypeNameWithoutGenericSuffix(
+			AppendFieldPropertyFuncName(
 				enclosingType.Name,
-				builders.TempStrBuilder);
-			AppendTypeNames(
+				enclosingType.Namespace,
 				enclosingTypeParams,
+				syntaxType,
+				"Get",
+				fieldName,
 				builders.TempStrBuilder);
-			builders.TempStrBuilder.Append(syntaxType);
-			builders.TempStrBuilder.Append("Get");
-			builders.TempStrBuilder.Append(fieldNameUpper);
 			string funcName = builders.TempStrBuilder.ToString();
 			
 			// Build lowercase function name
@@ -9070,19 +9486,14 @@ namespace NativeScript
 			
 			// Build uppercase function name
 			builders.TempStrBuilder.Length = 0;
-			AppendNamespace(
-				enclosingType.Namespace,
-				string.Empty,
-				builders.TempStrBuilder);
-			AppendTypeNameWithoutGenericSuffix(
+			AppendFieldPropertyFuncName(
 				enclosingType.Name,
-				builders.TempStrBuilder);
-			AppendTypeNames(
+				enclosingType.Namespace,
 				enclosingTypeParams,
+				syntaxType,
+				"Set",
+				fieldName,
 				builders.TempStrBuilder);
-			builders.TempStrBuilder.Append(syntaxType);
-			builders.TempStrBuilder.Append("Set");
-			builders.TempStrBuilder.Append(fieldNameUpper);
 			string funcName = builders.TempStrBuilder.ToString();
 			
 			// Build lowercase function name
@@ -9235,6 +9646,31 @@ namespace NativeScript
 				funcName,
 				funcNameLower,
 				builders.CppInitBody);
+		}
+		
+		static void AppendFieldPropertyFuncName(
+			string enclosingTypeName,
+			string enclosingTypeNamespace,
+			Type[] enclosingTypeParams,
+			string syntaxType,
+			string operationType,
+			string fieldName,
+			StringBuilder output)
+		{
+			AppendNamespace(
+				enclosingTypeNamespace,
+				string.Empty,
+				output);
+			AppendTypeNameWithoutGenericSuffix(
+				enclosingTypeName,
+				output);
+			AppendTypeNames(
+				enclosingTypeParams,
+				output);
+			output.Append(syntaxType);
+			output.Append(operationType);
+			output.Append(char.ToUpper(fieldName[0]));
+			output.Append(fieldName, 1, fieldName.Length-1);
 		}
 		
 		static void AppendCppTemplateDeclaration(
@@ -10167,7 +10603,7 @@ namespace NativeScript
 					output.Append(", ");
 				}
 			}
-			AppendCsharpParameterDeclaration(
+			AppendCsharpBindingParameterDeclaration(
 				parameters,
 				output);
 			output.Append(");\n");
@@ -10226,7 +10662,7 @@ namespace NativeScript
 					output.Append(", ");
 				}
 			}
-			AppendCsharpParameterDeclaration(
+			AppendCsharpBindingParameterDeclaration(
 				parameters,
 				output);
 			output.Append(")\n\t\t{\n\t\t\t");
@@ -10505,7 +10941,7 @@ namespace NativeScript
 			}
 		}
 		
-		static void AppendCsharpParameterDeclaration(
+		static void AppendCsharpBindingParameterDeclaration(
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
@@ -11109,6 +11545,10 @@ namespace NativeScript
 			{
 				output.Append("string");
 			}
+			else if (type == typeof(object))
+			{
+				output.Append("object");
+			}
 			else if (type.IsArray)
 			{
 				AppendCsharpTypeName(
@@ -11211,7 +11651,7 @@ namespace NativeScript
 				}
 				output.Append('>');
 			}
-			else if (typeof(Delegate).IsAssignableFrom(type))
+			else if (IsDelegate(type))
 			{
 				AppendCppTypeName(
 					type.Namespace,

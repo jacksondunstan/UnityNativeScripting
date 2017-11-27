@@ -539,6 +539,14 @@ namespace System
 {
 	namespace Collections
 	{
+		struct IEnumerator;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
 		namespace Generic
 		{
 			template<typename T0> struct IComparer;
@@ -576,6 +584,30 @@ namespace System
 namespace System
 {
 	struct EventArgs;
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct ICollection;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct IList;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct Queue;
+	}
 }
 
 namespace MyGame
@@ -1557,6 +1589,28 @@ namespace System
 {
 	namespace Collections
 	{
+		struct IEnumerator : System::Object
+		{
+			IEnumerator(decltype(nullptr) n);
+			IEnumerator(Plugin::InternalUse iu, int32_t handle);
+			IEnumerator(const IEnumerator& other);
+			IEnumerator(IEnumerator&& other);
+			virtual ~IEnumerator();
+			IEnumerator& operator=(const IEnumerator& other);
+			IEnumerator& operator=(decltype(nullptr) other);
+			IEnumerator& operator=(IEnumerator&& other);
+			bool operator==(const IEnumerator& other) const;
+			bool operator!=(const IEnumerator& other) const;
+			System::Object GetCurrent();
+			System::Boolean MoveNext();
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
 		namespace Generic
 		{
 			template<> struct IComparer<int32_t> : System::Object
@@ -1645,6 +1699,94 @@ namespace System
 		EventArgs();
 		virtual System::String ToString();
 	};
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct ICollection : System::Object
+		{
+			ICollection(decltype(nullptr) n);
+			ICollection(Plugin::InternalUse iu, int32_t handle);
+			ICollection(const ICollection& other);
+			ICollection(ICollection&& other);
+			virtual ~ICollection();
+			ICollection& operator=(const ICollection& other);
+			ICollection& operator=(decltype(nullptr) other);
+			ICollection& operator=(ICollection&& other);
+			bool operator==(const ICollection& other) const;
+			bool operator!=(const ICollection& other) const;
+			int32_t CppHandle;
+			ICollection();
+			virtual void CopyTo(System::Array& array, int32_t index);
+			virtual System::Collections::IEnumerator GetEnumerator();
+			virtual int32_t GetCount();
+			virtual System::Boolean GetIsSynchronized();
+			virtual System::Object GetSyncRoot();
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct IList : System::Object
+		{
+			IList(decltype(nullptr) n);
+			IList(Plugin::InternalUse iu, int32_t handle);
+			IList(const IList& other);
+			IList(IList&& other);
+			virtual ~IList();
+			IList& operator=(const IList& other);
+			IList& operator=(decltype(nullptr) other);
+			IList& operator=(IList&& other);
+			bool operator==(const IList& other) const;
+			bool operator!=(const IList& other) const;
+			int32_t CppHandle;
+			IList();
+			virtual int32_t Add(System::Object& value);
+			virtual void Clear();
+			virtual System::Boolean Contains(System::Object& value);
+			virtual int32_t IndexOf(System::Object& value);
+			virtual void Insert(int32_t index, System::Object& value);
+			virtual void Remove(System::Object& value);
+			virtual void RemoveAt(int32_t index);
+			virtual System::Collections::IEnumerator GetEnumerator();
+			virtual void CopyTo(System::Array& array, int32_t index);
+			virtual System::Boolean GetIsFixedSize();
+			virtual System::Boolean GetIsReadOnly();
+			virtual System::Object GetItem(int32_t index);
+			virtual void SetItem(int32_t index, System::Object& value);
+			virtual int32_t GetCount();
+			virtual System::Boolean GetIsSynchronized();
+			virtual System::Object GetSyncRoot();
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct Queue : System::Object
+		{
+			Queue(decltype(nullptr) n);
+			Queue(Plugin::InternalUse iu, int32_t handle);
+			Queue(const Queue& other);
+			Queue(Queue&& other);
+			virtual ~Queue();
+			Queue& operator=(const Queue& other);
+			Queue& operator=(decltype(nullptr) other);
+			Queue& operator=(Queue&& other);
+			bool operator==(const Queue& other) const;
+			bool operator!=(const Queue& other) const;
+			int32_t CppHandle;
+			Queue();
+			virtual int32_t GetCount();
+		};
+	}
 }
 
 namespace MyGame

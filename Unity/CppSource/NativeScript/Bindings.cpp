@@ -137,6 +137,8 @@ namespace Plugin
 	UnityEngine::SceneManagement::Scene (*UnboxScene)(int32_t valHandle);
 	int32_t (*BoxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val);
 	UnityEngine::SceneManagement::LoadSceneMode (*UnboxLoadSceneMode)(int32_t valHandle);
+	int32_t (*SystemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle);
+	System::Boolean (*SystemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle);
 	void (*ReleaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle);
 	void (*SystemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemCollectionsGenericIComparerSystemString)(int32_t handle);
@@ -145,6 +147,12 @@ namespace Plugin
 	void (*SystemStringComparerConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemEventArgs)(int32_t handle);
 	void (*SystemEventArgsConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemCollectionsICollection)(int32_t handle);
+	void (*SystemCollectionsICollectionConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemCollectionsIList)(int32_t handle);
+	void (*SystemCollectionsIListConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemCollectionsQueue)(int32_t handle);
+	void (*SystemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle);
 	int32_t (*BoxBoolean)(System::Boolean val);
 	System::Boolean (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
@@ -433,6 +441,81 @@ namespace Plugin
 		System::EventArgs** pRelease = SystemEventArgsFreeList + handle;
 		*pRelease = (System::EventArgs*)NextFreeSystemEventArgs;
 		NextFreeSystemEventArgs = pRelease;
+	}
+	int32_t SystemCollectionsICollectionFreeListSize;
+	System::Collections::ICollection** SystemCollectionsICollectionFreeList;
+	System::Collections::ICollection** NextFreeSystemCollectionsICollection;
+	
+	int32_t StoreSystemCollectionsICollection(System::Collections::ICollection* del)
+	{
+		assert(NextFreeSystemCollectionsICollection != nullptr);
+		System::Collections::ICollection** pNext = NextFreeSystemCollectionsICollection;
+		NextFreeSystemCollectionsICollection = (System::Collections::ICollection**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemCollectionsICollectionFreeList);
+	}
+	
+	System::Collections::ICollection* GetSystemCollectionsICollection(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemCollectionsICollectionFreeListSize);
+		return SystemCollectionsICollectionFreeList[handle];
+	}
+	
+	void RemoveSystemCollectionsICollection(int32_t handle)
+	{
+		System::Collections::ICollection** pRelease = SystemCollectionsICollectionFreeList + handle;
+		*pRelease = (System::Collections::ICollection*)NextFreeSystemCollectionsICollection;
+		NextFreeSystemCollectionsICollection = pRelease;
+	}
+	int32_t SystemCollectionsIListFreeListSize;
+	System::Collections::IList** SystemCollectionsIListFreeList;
+	System::Collections::IList** NextFreeSystemCollectionsIList;
+	
+	int32_t StoreSystemCollectionsIList(System::Collections::IList* del)
+	{
+		assert(NextFreeSystemCollectionsIList != nullptr);
+		System::Collections::IList** pNext = NextFreeSystemCollectionsIList;
+		NextFreeSystemCollectionsIList = (System::Collections::IList**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemCollectionsIListFreeList);
+	}
+	
+	System::Collections::IList* GetSystemCollectionsIList(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemCollectionsIListFreeListSize);
+		return SystemCollectionsIListFreeList[handle];
+	}
+	
+	void RemoveSystemCollectionsIList(int32_t handle)
+	{
+		System::Collections::IList** pRelease = SystemCollectionsIListFreeList + handle;
+		*pRelease = (System::Collections::IList*)NextFreeSystemCollectionsIList;
+		NextFreeSystemCollectionsIList = pRelease;
+	}
+	int32_t SystemCollectionsQueueFreeListSize;
+	System::Collections::Queue** SystemCollectionsQueueFreeList;
+	System::Collections::Queue** NextFreeSystemCollectionsQueue;
+	
+	int32_t StoreSystemCollectionsQueue(System::Collections::Queue* del)
+	{
+		assert(NextFreeSystemCollectionsQueue != nullptr);
+		System::Collections::Queue** pNext = NextFreeSystemCollectionsQueue;
+		NextFreeSystemCollectionsQueue = (System::Collections::Queue**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemCollectionsQueueFreeList);
+	}
+	
+	System::Collections::Queue* GetSystemCollectionsQueue(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemCollectionsQueueFreeListSize);
+		return SystemCollectionsQueueFreeList[handle];
+	}
+	
+	void RemoveSystemCollectionsQueue(int32_t handle)
+	{
+		System::Collections::Queue** pRelease = SystemCollectionsQueueFreeList + handle;
+		*pRelease = (System::Collections::Queue*)NextFreeSystemCollectionsQueue;
+		NextFreeSystemCollectionsQueue = pRelease;
 	}
 	int32_t SystemActionFreeListSize;
 	System::Action** SystemActionFreeList;
@@ -4548,6 +4631,117 @@ namespace System
 {
 	namespace Collections
 	{
+		IEnumerator::IEnumerator(decltype(nullptr) n)
+			: IEnumerator(Plugin::InternalUse::Only, 0)
+		{
+		}
+		
+		IEnumerator::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+			: System::Object(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
+		}
+		
+		IEnumerator::IEnumerator(const IEnumerator& other)
+			: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		IEnumerator::IEnumerator(IEnumerator&& other)
+			: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		IEnumerator::~IEnumerator()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+		}
+		
+		IEnumerator& IEnumerator::operator=(const IEnumerator& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		IEnumerator& IEnumerator::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		IEnumerator& IEnumerator::operator=(IEnumerator&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool IEnumerator::operator==(const IEnumerator& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool IEnumerator::operator!=(const IEnumerator& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		System::Object IEnumerator::GetCurrent()
+		{
+			auto returnValue = Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			return System::Object(Plugin::InternalUse::Only, returnValue);
+		}
+		
+		System::Boolean IEnumerator::MoveNext()
+		{
+			auto returnValue = Plugin::SystemCollectionsIEnumeratorMethodMoveNext(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			return returnValue;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
 		namespace Generic
 		{
 			IComparer<int32_t>::IComparer()
@@ -5301,7 +5495,7 @@ namespace System
 	
 	System::String EventArgs::ToString()
 	{
-		return {};
+		return nullptr;
 	}
 	
 	DLLEXPORT int32_t SystemEventArgsToString(int32_t cppHandle)
@@ -5321,6 +5515,1011 @@ namespace System
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
 			return {};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		ICollection::ICollection()
+			 : System::Object(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
+			Plugin::SystemCollectionsICollectionConstructor(CppHandle, &Handle);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemCollectionsICollection(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
+		
+		ICollection::ICollection(decltype(nullptr) n)
+			: System::Object(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
+		}
+		
+		ICollection::ICollection(const ICollection& other)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		ICollection::ICollection(ICollection&& other)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		ICollection::ICollection(Plugin::InternalUse iu, int32_t handle)
+			: System::Object(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		ICollection::~ICollection()
+		{
+			Plugin::RemoveSystemCollectionsICollection(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsICollection(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		ICollection& ICollection::operator=(const ICollection& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		ICollection& ICollection::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsICollection(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		ICollection& ICollection::operator=(ICollection&& other)
+		{
+			Plugin::RemoveSystemCollectionsICollection(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsICollection(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool ICollection::operator==(const ICollection& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool ICollection::operator!=(const ICollection& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		void ICollection::CopyTo(System::Array& array, int32_t index)
+		{
+		}
+		
+		DLLEXPORT void SystemCollectionsICollectionCopyTo(int32_t cppHandle, int32_t arrayHandle, int32_t index)
+		{
+			try
+			{
+				auto param0 = System::Array(Plugin::InternalUse::Only, arrayHandle);
+				Plugin::GetSystemCollectionsICollection(cppHandle)->CopyTo(param0, index);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::ICollection";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		System::Collections::IEnumerator ICollection::GetEnumerator()
+		{
+			return nullptr;
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsICollectionGetEnumerator(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetEnumerator().Handle;
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::ICollection";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		int32_t ICollection::GetCount()
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsICollectionGetCount(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetCount();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::ICollection";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		System::Boolean ICollection::GetIsSynchronized()
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsICollectionGetIsSynchronized(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetIsSynchronized();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::ICollection";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		System::Object ICollection::GetSyncRoot()
+		{
+			return nullptr;
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsICollectionGetSyncRoot(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetSyncRoot().Handle;
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::ICollection";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		IList::IList()
+			 : System::Object(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsIList(this);
+			Plugin::SystemCollectionsIListConstructor(CppHandle, &Handle);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemCollectionsIList(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
+		
+		IList::IList(decltype(nullptr) n)
+			: System::Object(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsIList(this);
+		}
+		
+		IList::IList(const IList& other)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsIList(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		IList::IList(IList&& other)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		IList::IList(Plugin::InternalUse iu, int32_t handle)
+			: System::Object(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsIList(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		IList::~IList()
+		{
+			Plugin::RemoveSystemCollectionsIList(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsIList(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		IList& IList::operator=(const IList& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		IList& IList::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsIList(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		IList& IList::operator=(IList&& other)
+		{
+			Plugin::RemoveSystemCollectionsIList(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsIList(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool IList::operator==(const IList& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool IList::operator!=(const IList& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		int32_t IList::Add(System::Object& value)
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListAdd(int32_t cppHandle, int32_t valueHandle)
+		{
+			try
+			{
+				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
+				return Plugin::GetSystemCollectionsIList(cppHandle)->Add(param0);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		void IList::Clear()
+		{
+		}
+		
+		DLLEXPORT void SystemCollectionsIListClear(int32_t cppHandle)
+		{
+			try
+			{
+				Plugin::GetSystemCollectionsIList(cppHandle)->Clear();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		System::Boolean IList::Contains(System::Object& value)
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListContains(int32_t cppHandle, int32_t valueHandle)
+		{
+			try
+			{
+				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
+				return Plugin::GetSystemCollectionsIList(cppHandle)->Contains(param0);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		int32_t IList::IndexOf(System::Object& value)
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListIndexOf(int32_t cppHandle, int32_t valueHandle)
+		{
+			try
+			{
+				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
+				return Plugin::GetSystemCollectionsIList(cppHandle)->IndexOf(param0);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		void IList::Insert(int32_t index, System::Object& value)
+		{
+		}
+		
+		DLLEXPORT void SystemCollectionsIListInsert(int32_t cppHandle, int32_t index, int32_t valueHandle)
+		{
+			try
+			{
+				auto param1 = System::Object(Plugin::InternalUse::Only, valueHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->Insert(index, param1);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		void IList::Remove(System::Object& value)
+		{
+		}
+		
+		DLLEXPORT void SystemCollectionsIListRemove(int32_t cppHandle, int32_t valueHandle)
+		{
+			try
+			{
+				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->Remove(param0);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		void IList::RemoveAt(int32_t index)
+		{
+		}
+		
+		DLLEXPORT void SystemCollectionsIListRemoveAt(int32_t cppHandle, int32_t index)
+		{
+			try
+			{
+				Plugin::GetSystemCollectionsIList(cppHandle)->RemoveAt(index);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		System::Collections::IEnumerator IList::GetEnumerator()
+		{
+			return nullptr;
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListGetEnumerator(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsIList(cppHandle)->GetEnumerator().Handle;
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		void IList::CopyTo(System::Array& array, int32_t index)
+		{
+		}
+		
+		DLLEXPORT void SystemCollectionsIListCopyTo(int32_t cppHandle, int32_t arrayHandle, int32_t index)
+		{
+			try
+			{
+				auto param0 = System::Array(Plugin::InternalUse::Only, arrayHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->CopyTo(param0, index);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		System::Boolean IList::GetIsFixedSize()
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListGetIsFixedSize(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsIList(cppHandle)->GetIsFixedSize();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		System::Boolean IList::GetIsReadOnly()
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListGetIsReadOnly(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsIList(cppHandle)->GetIsReadOnly();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		System::Object IList::GetItem(int32_t index)
+		{
+			return nullptr;
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListGetItem(int32_t cppHandle, int32_t index)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsIList(cppHandle)->GetItem(index).Handle;
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		void IList::SetItem(int32_t index, System::Object& value)
+		{
+		}
+		
+		DLLEXPORT void SystemCollectionsIListSetItem(int32_t cppHandle, int32_t index, int32_t valueHandle)
+		{
+			try
+			{
+				auto param1 = System::Object(Plugin::InternalUse::Only, valueHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->SetItem(index, param1);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+			}
+		}
+		
+		int32_t IList::GetCount()
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListGetCount(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsIList(cppHandle)->GetCount();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		System::Boolean IList::GetIsSynchronized()
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListGetIsSynchronized(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsIList(cppHandle)->GetIsSynchronized();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+		
+		System::Object IList::GetSyncRoot()
+		{
+			return nullptr;
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsIListGetSyncRoot(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsIList(cppHandle)->GetSyncRoot().Handle;
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::IList";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		Queue::Queue()
+			 : System::Object(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
+			Plugin::SystemCollectionsQueueConstructor(CppHandle, &Handle);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemCollectionsQueue(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
+		
+		Queue::Queue(decltype(nullptr) n)
+			: System::Object(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
+		}
+		
+		Queue::Queue(const Queue& other)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		Queue::Queue(Queue&& other)
+			: System::Object(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		Queue::Queue(Plugin::InternalUse iu, int32_t handle)
+			: System::Object(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		Queue::~Queue()
+		{
+			Plugin::RemoveSystemCollectionsQueue(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsQueue(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		Queue& Queue::operator=(const Queue& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		Queue& Queue::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsQueue(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		Queue& Queue::operator=(Queue&& other)
+		{
+			Plugin::RemoveSystemCollectionsQueue(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsQueue(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool Queue::operator==(const Queue& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool Queue::operator!=(const Queue& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		int32_t Queue::GetCount()
+		{
+			return {};
+		}
+		
+		DLLEXPORT int32_t SystemCollectionsQueueGetCount(int32_t cppHandle)
+		{
+			try
+			{
+				return Plugin::GetSystemCollectionsQueue(cppHandle)->GetCount();
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::Collections::Queue";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
+				return {};
+			}
 		}
 	}
 }
@@ -8355,7 +9554,7 @@ namespace System
 	
 	System::String Func3<int16_t, int32_t, System::String>::operator()(int16_t arg1, int32_t arg2)
 	{
-		return {};
+		return nullptr;
 	}
 	
 	DLLEXPORT int32_t SystemFuncSystemInt16_SystemInt32_SystemStringNativeInvoke(int32_t cppHandle, int16_t arg1, int32_t arg2)
@@ -9219,6 +10418,8 @@ DLLEXPORT void Init(
 	UnityEngine::SceneManagement::Scene (*unboxScene)(int32_t valHandle),
 	int32_t (*boxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val),
 	UnityEngine::SceneManagement::LoadSceneMode (*unboxLoadSceneMode)(int32_t valHandle),
+	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
+	System::Boolean (*systemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle),
 	void (*releaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle),
 	void (*systemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemCollectionsGenericIComparerSystemString)(int32_t handle),
@@ -9227,6 +10428,12 @@ DLLEXPORT void Init(
 	void (*systemStringComparerConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemEventArgs)(int32_t handle),
 	void (*systemEventArgsConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemCollectionsICollection)(int32_t handle),
+	void (*systemCollectionsICollectionConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemCollectionsIList)(int32_t handle),
+	void (*systemCollectionsIListConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemCollectionsQueue)(int32_t handle),
+	void (*systemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle),
 	int32_t (*boxBoolean)(System::Boolean val),
 	System::Boolean (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
@@ -9430,6 +10637,8 @@ DLLEXPORT void Init(
 	Plugin::UnboxScene = unboxScene;
 	Plugin::BoxLoadSceneMode = boxLoadSceneMode;
 	Plugin::UnboxLoadSceneMode = unboxLoadSceneMode;
+	Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent = systemCollectionsIEnumeratorPropertyGetCurrent;
+	Plugin::SystemCollectionsIEnumeratorMethodMoveNext = systemCollectionsIEnumeratorMethodMoveNext;
 	SystemCollectionsGenericIComparerSystemInt32FreeListSize = maxManagedObjects;
 	SystemCollectionsGenericIComparerSystemInt32FreeList = new System::Collections::Generic::IComparer<int32_t>*[SystemCollectionsGenericIComparerSystemInt32FreeListSize];
 	for (int32_t i = 0, end = SystemCollectionsGenericIComparerSystemInt32FreeListSize - 1; i < end; ++i)
@@ -9470,6 +10679,36 @@ DLLEXPORT void Init(
 	NextFreeSystemEventArgs = SystemEventArgsFreeList + 1;
 	Plugin::ReleaseSystemEventArgs = releaseSystemEventArgs;
 	Plugin::SystemEventArgsConstructor = systemEventArgsConstructor;
+	SystemCollectionsICollectionFreeListSize = maxManagedObjects;
+	SystemCollectionsICollectionFreeList = new System::Collections::ICollection*[SystemCollectionsICollectionFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsICollectionFreeListSize - 1; i < end; ++i)
+	{
+		SystemCollectionsICollectionFreeList[i] = (System::Collections::ICollection*)(SystemCollectionsICollectionFreeList + i + 1);
+	}
+	SystemCollectionsICollectionFreeList[SystemCollectionsICollectionFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsICollection = SystemCollectionsICollectionFreeList + 1;
+	Plugin::ReleaseSystemCollectionsICollection = releaseSystemCollectionsICollection;
+	Plugin::SystemCollectionsICollectionConstructor = systemCollectionsICollectionConstructor;
+	SystemCollectionsIListFreeListSize = maxManagedObjects;
+	SystemCollectionsIListFreeList = new System::Collections::IList*[SystemCollectionsIListFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsIListFreeListSize - 1; i < end; ++i)
+	{
+		SystemCollectionsIListFreeList[i] = (System::Collections::IList*)(SystemCollectionsIListFreeList + i + 1);
+	}
+	SystemCollectionsIListFreeList[SystemCollectionsIListFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsIList = SystemCollectionsIListFreeList + 1;
+	Plugin::ReleaseSystemCollectionsIList = releaseSystemCollectionsIList;
+	Plugin::SystemCollectionsIListConstructor = systemCollectionsIListConstructor;
+	SystemCollectionsQueueFreeListSize = maxManagedObjects;
+	SystemCollectionsQueueFreeList = new System::Collections::Queue*[SystemCollectionsQueueFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsQueueFreeListSize - 1; i < end; ++i)
+	{
+		SystemCollectionsQueueFreeList[i] = (System::Collections::Queue*)(SystemCollectionsQueueFreeList + i + 1);
+	}
+	SystemCollectionsQueueFreeList[SystemCollectionsQueueFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsQueue = SystemCollectionsQueueFreeList + 1;
+	Plugin::ReleaseSystemCollectionsQueue = releaseSystemCollectionsQueue;
+	Plugin::SystemCollectionsQueueConstructor = systemCollectionsQueueConstructor;
 	Plugin::BoxBoolean = boxBoolean;
 	Plugin::UnboxBoolean = unboxBoolean;
 	Plugin::BoxSByte = boxSByte;

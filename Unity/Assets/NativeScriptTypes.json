@@ -538,6 +538,22 @@
 		},
 		{
 			"Name": "UnityEngine.SceneManagement.LoadSceneMode"
+		},
+		{
+			"Name": "System.Collections.IEnumerator",
+			"Methods": [
+				{
+					"Name": "MoveNext",
+					"ParamTypes": []
+				}
+			],
+			"Properties": [
+				{
+					"Name": "Current",
+					"Get": {},
+					"Set": {}
+				}
+			]
 		}
 	],
 	"BaseTypes": [
@@ -565,6 +581,22 @@
 				{
 					"Name": "ToString",
 					"ParamTypes": []
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.ICollection"
+		},
+		{
+			"Name": "System.Collections.IList"
+		},
+		{
+			"Name": "System.Collections.Queue",
+			"OverrideProperties": [
+				{
+					"Name": "Count",
+					"Get": {},
+					"Set": {}
 				}
 			]
 		}

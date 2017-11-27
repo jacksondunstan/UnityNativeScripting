@@ -13,8 +13,6 @@
 using namespace System;
 using namespace UnityEngine;
 
-void PrintPlatformDefines();
-
 // Called when the plugin is initialized
 // This is mostly full of test code. Feel free to remove it all.
 void PluginMain()
