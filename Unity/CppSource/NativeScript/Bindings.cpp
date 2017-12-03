@@ -145,6 +145,8 @@ namespace Plugin
 	int32_t (*BoxPrimitiveType)(UnityEngine::PrimitiveType val);
 	UnityEngine::PrimitiveType (*UnboxPrimitiveType)(int32_t valHandle);
 	float (*UnityEngineTimePropertyGetDeltaTime)();
+	int32_t (*BoxFileMode)(System::IO::FileMode val);
+	System::IO::FileMode (*UnboxFileMode)(int32_t valHandle);
 	void (*ReleaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle);
 	void (*SystemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemCollectionsGenericIComparerSystemString)(int32_t handle);
@@ -159,6 +161,8 @@ namespace Plugin
 	void (*SystemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemComponentModelDesignIComponentChangeService)(int32_t handle);
 	void (*SystemComponentModelDesignIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemIOFileStream)(int32_t handle);
+	void (*SystemIOFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode);
 	int32_t (*BoxBoolean)(System::Boolean val);
 	System::Boolean (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
@@ -542,6 +546,31 @@ namespace Plugin
 		System::ComponentModel::Design::IComponentChangeService** pRelease = SystemComponentModelDesignIComponentChangeServiceFreeList + handle;
 		*pRelease = (System::ComponentModel::Design::IComponentChangeService*)NextFreeSystemComponentModelDesignIComponentChangeService;
 		NextFreeSystemComponentModelDesignIComponentChangeService = pRelease;
+	}
+	int32_t SystemIOFileStreamFreeListSize;
+	System::IO::FileStream** SystemIOFileStreamFreeList;
+	System::IO::FileStream** NextFreeSystemIOFileStream;
+	
+	int32_t StoreSystemIOFileStream(System::IO::FileStream* del)
+	{
+		assert(NextFreeSystemIOFileStream != nullptr);
+		System::IO::FileStream** pNext = NextFreeSystemIOFileStream;
+		NextFreeSystemIOFileStream = (System::IO::FileStream**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemIOFileStreamFreeList);
+	}
+	
+	System::IO::FileStream* GetSystemIOFileStream(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemIOFileStreamFreeListSize);
+		return SystemIOFileStreamFreeList[handle];
+	}
+	
+	void RemoveSystemIOFileStream(int32_t handle)
+	{
+		System::IO::FileStream** pRelease = SystemIOFileStreamFreeList + handle;
+		*pRelease = (System::IO::FileStream*)NextFreeSystemIOFileStream;
+		NextFreeSystemIOFileStream = pRelease;
 	}
 	int32_t SystemActionFreeListSize;
 	System::Action** SystemActionFreeList;
@@ -5552,6 +5581,206 @@ namespace UnityEngine
 
 namespace System
 {
+	Object::Object(System::IO::FileMode val)
+	{
+		int32_t handle = Plugin::BoxFileMode(val);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator System::IO::FileMode()
+	{
+		System::IO::FileMode returnVal(Plugin::UnboxFileMode(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace System
+{
+	MarshalByRefObject::MarshalByRefObject(decltype(nullptr) n)
+		: MarshalByRefObject(Plugin::InternalUse::Only, 0)
+	{
+	}
+	
+	MarshalByRefObject::MarshalByRefObject(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	MarshalByRefObject::MarshalByRefObject(const MarshalByRefObject& other)
+		: MarshalByRefObject(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	MarshalByRefObject::MarshalByRefObject(MarshalByRefObject&& other)
+		: MarshalByRefObject(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	MarshalByRefObject::~MarshalByRefObject()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	MarshalByRefObject& MarshalByRefObject::operator=(const MarshalByRefObject& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	MarshalByRefObject& MarshalByRefObject::operator=(decltype(nullptr) other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	MarshalByRefObject& MarshalByRefObject::operator=(MarshalByRefObject&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool MarshalByRefObject::operator==(const MarshalByRefObject& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool MarshalByRefObject::operator!=(const MarshalByRefObject& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	namespace IO
+	{
+		Stream::Stream(decltype(nullptr) n)
+			: Stream(Plugin::InternalUse::Only, 0)
+		{
+		}
+		
+		Stream::Stream(Plugin::InternalUse iu, int32_t handle)
+			: System::MarshalByRefObject(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
+		}
+		
+		Stream::Stream(const Stream& other)
+			: Stream(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		Stream::Stream(Stream&& other)
+			: Stream(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		Stream::~Stream()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+		}
+		
+		Stream& Stream::operator=(const Stream& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		Stream& Stream::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		Stream& Stream::operator=(Stream&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool Stream::operator==(const Stream& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool Stream::operator!=(const Stream& other) const
+		{
+			return Handle != other.Handle;
+		}
+	}
+}
+
+namespace System
+{
 	namespace Collections
 	{
 		namespace Generic
@@ -5560,7 +5789,16 @@ namespace System
 				 : System::Object(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
-				Plugin::SystemCollectionsGenericIComparerSystemInt32Constructor(CppHandle, &Handle);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				Plugin::SystemCollectionsGenericIComparerSystemInt32Constructor(cppHandle, handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
@@ -5744,7 +5982,16 @@ namespace System
 				 : System::Object(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
-				Plugin::SystemCollectionsGenericIComparerSystemStringConstructor(CppHandle, &Handle);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				Plugin::SystemCollectionsGenericIComparerSystemStringConstructor(cppHandle, handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
@@ -5899,9 +6146,9 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::String(Plugin::InternalUse::Only, xHandle);
-					auto param1 = System::String(Plugin::InternalUse::Only, yHandle);
-					return Plugin::GetSystemCollectionsGenericIComparerSystemString(cppHandle)->Compare(param0, param1);
+					auto x = System::String(Plugin::InternalUse::Only, xHandle);
+					auto y = System::String(Plugin::InternalUse::Only, yHandle);
+					return Plugin::GetSystemCollectionsGenericIComparerSystemString(cppHandle)->Compare(x, y);
 				}
 				catch (System::Exception ex)
 				{
@@ -5926,7 +6173,16 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemStringComparer(this);
-		Plugin::SystemStringComparerConstructor(CppHandle, &Handle);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		Plugin::SystemStringComparerConstructor(cppHandle, handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -6081,9 +6337,9 @@ namespace System
 	{
 		try
 		{
-			auto param0 = System::String(Plugin::InternalUse::Only, xHandle);
-			auto param1 = System::String(Plugin::InternalUse::Only, yHandle);
-			return Plugin::GetSystemStringComparer(cppHandle)->Compare(param0, param1);
+			auto x = System::String(Plugin::InternalUse::Only, xHandle);
+			auto y = System::String(Plugin::InternalUse::Only, yHandle);
+			return Plugin::GetSystemStringComparer(cppHandle)->Compare(x, y);
 		}
 		catch (System::Exception ex)
 		{
@@ -6108,9 +6364,9 @@ namespace System
 	{
 		try
 		{
-			auto param0 = System::String(Plugin::InternalUse::Only, xHandle);
-			auto param1 = System::String(Plugin::InternalUse::Only, yHandle);
-			return Plugin::GetSystemStringComparer(cppHandle)->Equals(param0, param1);
+			auto x = System::String(Plugin::InternalUse::Only, xHandle);
+			auto y = System::String(Plugin::InternalUse::Only, yHandle);
+			return Plugin::GetSystemStringComparer(cppHandle)->Equals(x, y);
 		}
 		catch (System::Exception ex)
 		{
@@ -6135,8 +6391,8 @@ namespace System
 	{
 		try
 		{
-			auto param0 = System::String(Plugin::InternalUse::Only, objHandle);
-			return Plugin::GetSystemStringComparer(cppHandle)->GetHashCode(param0);
+			auto obj = System::String(Plugin::InternalUse::Only, objHandle);
+			return Plugin::GetSystemStringComparer(cppHandle)->GetHashCode(obj);
 		}
 		catch (System::Exception ex)
 		{
@@ -6161,7 +6417,16 @@ namespace System
 			 : System::Object(nullptr)
 		{
 			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
-			Plugin::SystemCollectionsICollectionConstructor(CppHandle, &Handle);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemCollectionsICollectionConstructor(cppHandle, handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
 			if (Handle)
 			{
 				Plugin::ReferenceManagedClass(Handle);
@@ -6315,8 +6580,8 @@ namespace System
 		{
 			try
 			{
-				auto param0 = System::Array(Plugin::InternalUse::Only, arrayHandle);
-				Plugin::GetSystemCollectionsICollection(cppHandle)->CopyTo(param0, index);
+				auto array = System::Array(Plugin::InternalUse::Only, arrayHandle);
+				Plugin::GetSystemCollectionsICollection(cppHandle)->CopyTo(array, index);
 			}
 			catch (System::Exception ex)
 			{
@@ -6440,7 +6705,16 @@ namespace System
 			 : System::Object(nullptr)
 		{
 			CppHandle = Plugin::StoreSystemCollectionsIList(this);
-			Plugin::SystemCollectionsIListConstructor(CppHandle, &Handle);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemCollectionsIListConstructor(cppHandle, handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
 			if (Handle)
 			{
 				Plugin::ReferenceManagedClass(Handle);
@@ -6595,8 +6869,8 @@ namespace System
 		{
 			try
 			{
-				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
-				return Plugin::GetSystemCollectionsIList(cppHandle)->Add(param0);
+				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
+				return Plugin::GetSystemCollectionsIList(cppHandle)->Add(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6643,8 +6917,8 @@ namespace System
 		{
 			try
 			{
-				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
-				return Plugin::GetSystemCollectionsIList(cppHandle)->Contains(param0);
+				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
+				return Plugin::GetSystemCollectionsIList(cppHandle)->Contains(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6669,8 +6943,8 @@ namespace System
 		{
 			try
 			{
-				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
-				return Plugin::GetSystemCollectionsIList(cppHandle)->IndexOf(param0);
+				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
+				return Plugin::GetSystemCollectionsIList(cppHandle)->IndexOf(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6694,8 +6968,8 @@ namespace System
 		{
 			try
 			{
-				auto param1 = System::Object(Plugin::InternalUse::Only, valueHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->Insert(index, param1);
+				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->Insert(index, value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6717,8 +6991,8 @@ namespace System
 		{
 			try
 			{
-				auto param0 = System::Object(Plugin::InternalUse::Only, valueHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->Remove(param0);
+				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->Remove(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6787,8 +7061,8 @@ namespace System
 		{
 			try
 			{
-				auto param0 = System::Array(Plugin::InternalUse::Only, arrayHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->CopyTo(param0, index);
+				auto array = System::Array(Plugin::InternalUse::Only, arrayHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->CopyTo(array, index);
 			}
 			catch (System::Exception ex)
 			{
@@ -6885,8 +7159,8 @@ namespace System
 		{
 			try
 			{
-				auto param1 = System::Object(Plugin::InternalUse::Only, valueHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->SetItem(index, param1);
+				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
+				Plugin::GetSystemCollectionsIList(cppHandle)->SetItem(index, value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6985,7 +7259,16 @@ namespace System
 			 : System::Object(nullptr)
 		{
 			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
-			Plugin::SystemCollectionsQueueConstructor(CppHandle, &Handle);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemCollectionsQueueConstructor(cppHandle, handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
 			if (Handle)
 			{
 				Plugin::ReferenceManagedClass(Handle);
@@ -7168,7 +7451,16 @@ namespace System
 				 : System::Object(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
-				Plugin::SystemComponentModelDesignIComponentChangeServiceConstructor(CppHandle, &Handle);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				Plugin::SystemComponentModelDesignIComponentChangeServiceConstructor(cppHandle, handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
@@ -7322,11 +7614,11 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::Object(Plugin::InternalUse::Only, componentHandle);
-					auto param1 = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
-					auto param2 = System::Object(Plugin::InternalUse::Only, oldValueHandle);
-					auto param3 = System::Object(Plugin::InternalUse::Only, newValueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanged(param0, param1, param2, param3);
+					auto component = System::Object(Plugin::InternalUse::Only, componentHandle);
+					auto member = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
+					auto oldValue = System::Object(Plugin::InternalUse::Only, oldValueHandle);
+					auto newValue = System::Object(Plugin::InternalUse::Only, newValueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanged(component, member, oldValue, newValue);
 				}
 				catch (System::Exception ex)
 				{
@@ -7348,9 +7640,9 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::Object(Plugin::InternalUse::Only, componentHandle);
-					auto param1 = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanging(param0, param1);
+					auto component = System::Object(Plugin::InternalUse::Only, componentHandle);
+					auto member = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanging(component, member);
 				}
 				catch (System::Exception ex)
 				{
@@ -7372,8 +7664,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdded(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdded(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7395,8 +7687,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdded(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdded(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7418,8 +7710,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdding(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdding(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7441,8 +7733,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdding(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdding(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7464,8 +7756,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanged(param0);
+					auto value = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanged(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7487,8 +7779,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanged(param0);
+					auto value = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanged(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7510,8 +7802,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanging(param0);
+					auto value = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanging(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7533,8 +7825,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanging(param0);
+					auto value = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanging(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7556,8 +7848,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoved(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoved(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7579,8 +7871,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoved(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoved(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7602,8 +7894,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoving(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoving(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7625,8 +7917,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoving(param0);
+					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoving(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7648,8 +7940,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRename(param0);
+					auto value = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRename(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7671,8 +7963,8 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRename(param0);
+					auto value = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRename(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7684,6 +7976,193 @@ namespace System
 					System::Exception ex(msg);
 					Plugin::SetException(ex.Handle);
 				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace IO
+	{
+		FileStream::FileStream(System::String& path, System::IO::FileMode mode)
+			 : System::IO::Stream(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemIOFileStream(this);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemIOFileStreamConstructorSystemString_SystemIOFileMode(cppHandle, handle, path.Handle, mode);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemIOFileStream(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
+		
+		FileStream::FileStream(decltype(nullptr) n)
+			: System::IO::Stream(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemIOFileStream(this);
+		}
+		
+		FileStream::FileStream(const FileStream& other)
+			: System::IO::Stream(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemIOFileStream(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		FileStream::FileStream(FileStream&& other)
+			: System::IO::Stream(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		FileStream::FileStream(Plugin::InternalUse iu, int32_t handle)
+			: System::IO::Stream(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemIOFileStream(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		FileStream::~FileStream()
+		{
+			Plugin::RemoveSystemIOFileStream(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemIOFileStream(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		FileStream& FileStream::operator=(const FileStream& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		FileStream& FileStream::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemIOFileStream(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		FileStream& FileStream::operator=(FileStream&& other)
+		{
+			Plugin::RemoveSystemIOFileStream(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemIOFileStream(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool FileStream::operator==(const FileStream& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool FileStream::operator!=(const FileStream& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		void FileStream::WriteByte(uint8_t value)
+		{
+		}
+		
+		DLLEXPORT void SystemIOFileStreamWriteByte(int32_t cppHandle, uint8_t value)
+		{
+			try
+			{
+				Plugin::GetSystemIOFileStream(cppHandle)->WriteByte(value);
+			}
+			catch (System::Exception ex)
+			{
+				Plugin::SetException(ex.Handle);
+			}
+			catch (...)
+			{
+				System::String msg = "Unhandled exception invoking System::IO::FileStream";
+				System::Exception ex(msg);
+				Plugin::SetException(ex.Handle);
 			}
 		}
 	}
@@ -9704,7 +10183,17 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemAction(this);
-		Plugin::SystemActionConstructor(CppHandle, &Handle, &ClassHandle);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		int32_t* classHandle = &ClassHandle;
+		Plugin::SystemActionConstructor(cppHandle, handle, classHandle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -9931,7 +10420,17 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
-		Plugin::SystemActionSystemSingleConstructor(CppHandle, &Handle, &ClassHandle);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		int32_t* classHandle = &ClassHandle;
+		Plugin::SystemActionSystemSingleConstructor(cppHandle, handle, classHandle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -10158,7 +10657,17 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
-		Plugin::SystemActionSystemSingle_SystemSingleConstructor(CppHandle, &Handle, &ClassHandle);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		int32_t* classHandle = &ClassHandle;
+		Plugin::SystemActionSystemSingle_SystemSingleConstructor(cppHandle, handle, classHandle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -10385,7 +10894,17 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
-		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(CppHandle, &Handle, &ClassHandle);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		int32_t* classHandle = &ClassHandle;
+		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(cppHandle, handle, classHandle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -10616,7 +11135,17 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
-		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(CppHandle, &Handle, &ClassHandle);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		int32_t* classHandle = &ClassHandle;
+		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(cppHandle, handle, classHandle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -10847,7 +11376,17 @@ namespace System
 		 : System::Object(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemAppDomainInitializer(this);
-		Plugin::SystemAppDomainInitializerConstructor(CppHandle, &Handle, &ClassHandle);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		int32_t* classHandle = &ClassHandle;
+		Plugin::SystemAppDomainInitializerConstructor(cppHandle, handle, classHandle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 		if (Handle)
 		{
 			Plugin::ReferenceManagedClass(Handle);
@@ -11041,8 +11580,8 @@ namespace System
 	{
 		try
 		{
-			auto param0 = System::Array1<System::String>(Plugin::InternalUse::Only, argsHandle);
-			Plugin::GetSystemAppDomainInitializer(cppHandle)->operator()(param0);
+			auto args = System::Array1<System::String>(Plugin::InternalUse::Only, argsHandle);
+			Plugin::GetSystemAppDomainInitializer(cppHandle)->operator()(args);
 		}
 		catch (System::Exception ex)
 		{
@@ -11077,7 +11616,17 @@ namespace UnityEngine
 			 : System::Object(nullptr)
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityAction(this);
-			Plugin::UnityEngineEventsUnityActionConstructor(CppHandle, &Handle, &ClassHandle);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			int32_t* classHandle = &ClassHandle;
+			Plugin::UnityEngineEventsUnityActionConstructor(cppHandle, handle, classHandle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
 			if (Handle)
 			{
 				Plugin::ReferenceManagedClass(Handle);
@@ -11307,7 +11856,17 @@ namespace UnityEngine
 			 : System::Object(nullptr)
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(this);
-			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor(CppHandle, &Handle, &ClassHandle);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			int32_t* classHandle = &ClassHandle;
+			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor(cppHandle, handle, classHandle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
 			if (Handle)
 			{
 				Plugin::ReferenceManagedClass(Handle);
@@ -11539,7 +12098,17 @@ namespace System
 				 : System::Object(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
-				Plugin::SystemComponentModelDesignComponentEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				int32_t* classHandle = &ClassHandle;
+				Plugin::SystemComponentModelDesignComponentEventHandlerConstructor(cppHandle, handle, classHandle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
@@ -11733,9 +12302,9 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
-					auto param1 = System::ComponentModel::Design::ComponentEventArgs(Plugin::InternalUse::Only, eHandle);
-					Plugin::GetSystemComponentModelDesignComponentEventHandler(cppHandle)->operator()(param0, param1);
+					auto sender = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto e = System::ComponentModel::Design::ComponentEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentEventHandler(cppHandle)->operator()(sender, e);
 				}
 				catch (System::Exception ex)
 				{
@@ -11774,7 +12343,17 @@ namespace System
 				 : System::Object(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
-				Plugin::SystemComponentModelDesignComponentChangingEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				int32_t* classHandle = &ClassHandle;
+				Plugin::SystemComponentModelDesignComponentChangingEventHandlerConstructor(cppHandle, handle, classHandle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
@@ -11968,9 +12547,9 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
-					auto param1 = System::ComponentModel::Design::ComponentChangingEventArgs(Plugin::InternalUse::Only, eHandle);
-					Plugin::GetSystemComponentModelDesignComponentChangingEventHandler(cppHandle)->operator()(param0, param1);
+					auto sender = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto e = System::ComponentModel::Design::ComponentChangingEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentChangingEventHandler(cppHandle)->operator()(sender, e);
 				}
 				catch (System::Exception ex)
 				{
@@ -12009,7 +12588,17 @@ namespace System
 				 : System::Object(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
-				Plugin::SystemComponentModelDesignComponentChangedEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				int32_t* classHandle = &ClassHandle;
+				Plugin::SystemComponentModelDesignComponentChangedEventHandlerConstructor(cppHandle, handle, classHandle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
@@ -12203,9 +12792,9 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
-					auto param1 = System::ComponentModel::Design::ComponentChangedEventArgs(Plugin::InternalUse::Only, eHandle);
-					Plugin::GetSystemComponentModelDesignComponentChangedEventHandler(cppHandle)->operator()(param0, param1);
+					auto sender = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto e = System::ComponentModel::Design::ComponentChangedEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentChangedEventHandler(cppHandle)->operator()(sender, e);
 				}
 				catch (System::Exception ex)
 				{
@@ -12244,7 +12833,17 @@ namespace System
 				 : System::Object(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
-				Plugin::SystemComponentModelDesignComponentRenameEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				int32_t* classHandle = &ClassHandle;
+				Plugin::SystemComponentModelDesignComponentRenameEventHandlerConstructor(cppHandle, handle, classHandle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
@@ -12438,9 +13037,9 @@ namespace System
 			{
 				try
 				{
-					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
-					auto param1 = System::ComponentModel::Design::ComponentRenameEventArgs(Plugin::InternalUse::Only, eHandle);
-					Plugin::GetSystemComponentModelDesignComponentRenameEventHandler(cppHandle)->operator()(param0, param1);
+					auto sender = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto e = System::ComponentModel::Design::ComponentRenameEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentRenameEventHandler(cppHandle)->operator()(sender, e);
 				}
 				catch (System::Exception ex)
 				{
@@ -12616,6 +13215,8 @@ DLLEXPORT void Init(
 	int32_t (*boxPrimitiveType)(UnityEngine::PrimitiveType val),
 	UnityEngine::PrimitiveType (*unboxPrimitiveType)(int32_t valHandle),
 	float (*unityEngineTimePropertyGetDeltaTime)(),
+	int32_t (*boxFileMode)(System::IO::FileMode val),
+	System::IO::FileMode (*unboxFileMode)(int32_t valHandle),
 	void (*releaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle),
 	void (*systemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemCollectionsGenericIComparerSystemString)(int32_t handle),
@@ -12630,6 +13231,8 @@ DLLEXPORT void Init(
 	void (*systemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemComponentModelDesignIComponentChangeService)(int32_t handle),
 	void (*systemComponentModelDesignIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemIOFileStream)(int32_t handle),
+	void (*systemIOFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode),
 	int32_t (*boxBoolean)(System::Boolean val),
 	System::Boolean (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
@@ -12861,6 +13464,8 @@ DLLEXPORT void Init(
 	Plugin::BoxPrimitiveType = boxPrimitiveType;
 	Plugin::UnboxPrimitiveType = unboxPrimitiveType;
 	Plugin::UnityEngineTimePropertyGetDeltaTime = unityEngineTimePropertyGetDeltaTime;
+	Plugin::BoxFileMode = boxFileMode;
+	Plugin::UnboxFileMode = unboxFileMode;
 	SystemCollectionsGenericIComparerSystemInt32FreeListSize = maxManagedObjects;
 	SystemCollectionsGenericIComparerSystemInt32FreeList = new System::Collections::Generic::IComparer<int32_t>*[SystemCollectionsGenericIComparerSystemInt32FreeListSize];
 	for (int32_t i = 0, end = SystemCollectionsGenericIComparerSystemInt32FreeListSize - 1; i < end; ++i)
@@ -12931,6 +13536,16 @@ DLLEXPORT void Init(
 	NextFreeSystemComponentModelDesignIComponentChangeService = SystemComponentModelDesignIComponentChangeServiceFreeList + 1;
 	Plugin::ReleaseSystemComponentModelDesignIComponentChangeService = releaseSystemComponentModelDesignIComponentChangeService;
 	Plugin::SystemComponentModelDesignIComponentChangeServiceConstructor = systemComponentModelDesignIComponentChangeServiceConstructor;
+	SystemIOFileStreamFreeListSize = maxManagedObjects;
+	SystemIOFileStreamFreeList = new System::IO::FileStream*[SystemIOFileStreamFreeListSize];
+	for (int32_t i = 0, end = SystemIOFileStreamFreeListSize - 1; i < end; ++i)
+	{
+		SystemIOFileStreamFreeList[i] = (System::IO::FileStream*)(SystemIOFileStreamFreeList + i + 1);
+	}
+	SystemIOFileStreamFreeList[SystemIOFileStreamFreeListSize - 1] = nullptr;
+	NextFreeSystemIOFileStream = SystemIOFileStreamFreeList + 1;
+	Plugin::ReleaseSystemIOFileStream = releaseSystemIOFileStream;
+	Plugin::SystemIOFileStreamConstructorSystemString_SystemIOFileMode = systemIOFileStreamConstructorSystemString_SystemIOFileMode;
 	Plugin::BoxBoolean = boxBoolean;
 	Plugin::UnboxBoolean = unboxBoolean;
 	Plugin::BoxSByte = boxSByte;

@@ -379,6 +379,8 @@ namespace NativeScript
 			IntPtr boxPrimitiveType,
 			IntPtr unboxPrimitiveType,
 			IntPtr unityEngineTimePropertyGetDeltaTime,
+			IntPtr boxFileMode,
+			IntPtr unboxFileMode,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
 			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
@@ -393,6 +395,8 @@ namespace NativeScript
 			IntPtr systemCollectionsQueueConstructor,
 			IntPtr releaseSystemComponentModelDesignIComponentChangeService,
 			IntPtr systemComponentModelDesignIComponentChangeServiceConstructor,
+			IntPtr releaseSystemIOFileStream,
+			IntPtr systemIOFileStreamConstructorSystemString_SystemIOFileMode,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -636,6 +640,9 @@ namespace NativeScript
 		
 		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRenameDelegate(int thisHandle, int param0);
 		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentRenameDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename;
+		
+		public delegate void SystemIOFileStreamWriteByteDelegate(int thisHandle, byte param0);
+		public static SystemIOFileStreamWriteByteDelegate SystemIOFileStreamWriteByte;
 		
 		public delegate void MyGameMonoBehavioursTestScriptAwakeDelegate(int thisHandle);
 		public static MyGameMonoBehavioursTestScriptAwakeDelegate MyGameMonoBehavioursTestScriptAwake;
@@ -897,6 +904,8 @@ namespace NativeScript
 			IntPtr boxPrimitiveType,
 			IntPtr unboxPrimitiveType,
 			IntPtr unityEngineTimePropertyGetDeltaTime,
+			IntPtr boxFileMode,
+			IntPtr unboxFileMode,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
 			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
@@ -911,6 +920,8 @@ namespace NativeScript
 			IntPtr systemCollectionsQueueConstructor,
 			IntPtr releaseSystemComponentModelDesignIComponentChangeService,
 			IntPtr systemComponentModelDesignIComponentChangeServiceConstructor,
+			IntPtr releaseSystemIOFileStream,
+			IntPtr systemIOFileStreamConstructorSystemString_SystemIOFileMode,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -1157,6 +1168,9 @@ namespace NativeScript
 		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename(int thisHandle, int param0);
 		
 		[DllImport(Constants.PluginName)]
+		public static extern void SystemIOFileStreamWriteByte(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
 		public static extern void MyGameMonoBehavioursTestScriptAwake(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
@@ -1326,6 +1340,8 @@ namespace NativeScript
 		delegate int BoxPrimitiveTypeDelegate(UnityEngine.PrimitiveType val);
 		delegate UnityEngine.PrimitiveType UnboxPrimitiveTypeDelegate(int valHandle);
 		delegate float UnityEngineTimePropertyGetDeltaTimeDelegate();
+		delegate int BoxFileModeDelegate(System.IO.FileMode val);
+		delegate System.IO.FileMode UnboxFileModeDelegate(int valHandle);
 		delegate void SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(int handle);
 		delegate void SystemCollectionsGenericIComparerSystemStringConstructorDelegate(int cppHandle, ref int handle);
@@ -1340,6 +1356,8 @@ namespace NativeScript
 		delegate void ReleaseSystemCollectionsQueueDelegate(int handle);
 		delegate void SystemComponentModelDesignIComponentChangeServiceConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate(int handle);
+		delegate void SystemIOFileStreamConstructorSystemString_SystemIOFileModeDelegate(int cppHandle, ref int handle, int pathHandle, System.IO.FileMode mode);
+		delegate void ReleaseSystemIOFileStreamDelegate(int handle);
 		delegate int BoxBooleanDelegate(bool val);
 		delegate bool UnboxBooleanDelegate(int valHandle);
 		delegate int BoxSByteDelegate(sbyte val);
@@ -1527,6 +1545,7 @@ namespace NativeScript
 			SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemovingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving");
 			SystemComponentModelDesignIComponentChangeServiceAddComponentRename = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentRenameDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentRename");
 			SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentRenameDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename");
+			SystemIOFileStreamWriteByte = GetDelegate<SystemIOFileStreamWriteByteDelegate>(libraryHandle, "SystemIOFileStreamWriteByte");
 			MyGameMonoBehavioursTestScriptAwake = GetDelegate<MyGameMonoBehavioursTestScriptAwakeDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptAwake");
 			MyGameMonoBehavioursTestScriptOnAnimatorIK = GetDelegate<MyGameMonoBehavioursTestScriptOnAnimatorIKDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnAnimatorIK");
 			MyGameMonoBehavioursTestScriptOnCollisionEnter = GetDelegate<MyGameMonoBehavioursTestScriptOnCollisionEnterDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnCollisionEnter");
@@ -1663,6 +1682,8 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new BoxPrimitiveTypeDelegate(BoxPrimitiveType)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxPrimitiveTypeDelegate(UnboxPrimitiveType)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTimePropertyGetDeltaTimeDelegate(UnityEngineTimePropertyGetDeltaTime)),
+				Marshal.GetFunctionPointerForDelegate(new BoxFileModeDelegate(BoxFileMode)),
+				Marshal.GetFunctionPointerForDelegate(new UnboxFileModeDelegate(UnboxFileMode)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(ReleaseSystemCollectionsGenericIComparerSystemInt32)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(SystemCollectionsGenericIComparerSystemInt32Constructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(ReleaseSystemCollectionsGenericIComparerSystemString)),
@@ -1677,6 +1698,8 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsQueueConstructorDelegate(SystemCollectionsQueueConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate(ReleaseSystemComponentModelDesignIComponentChangeService)),
 				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignIComponentChangeServiceConstructorDelegate(SystemComponentModelDesignIComponentChangeServiceConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemIOFileStreamDelegate(ReleaseSystemIOFileStream)),
+				Marshal.GetFunctionPointerForDelegate(new SystemIOFileStreamConstructorSystemString_SystemIOFileModeDelegate(SystemIOFileStreamConstructorSystemString_SystemIOFileMode)),
 				Marshal.GetFunctionPointerForDelegate(new BoxBooleanDelegate(BoxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxBooleanDelegate(UnboxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new BoxSByteDelegate(BoxSByte)),
@@ -1848,6 +1871,7 @@ namespace NativeScript
 			public int CppHandle;
 			
 			public SystemCollectionsGenericIComparerSystemInt32(int cppHandle)
+				: base()
 			{
 				CppHandle = cppHandle;
 			}
@@ -1876,6 +1900,7 @@ namespace NativeScript
 			public int CppHandle;
 			
 			public SystemCollectionsGenericIComparerSystemString(int cppHandle)
+				: base()
 			{
 				CppHandle = cppHandle;
 			}
@@ -1906,6 +1931,7 @@ namespace NativeScript
 			public int CppHandle;
 			
 			public SystemStringComparer(int cppHandle)
+				: base()
 			{
 				CppHandle = cppHandle;
 			}
@@ -1973,6 +1999,7 @@ namespace NativeScript
 			public int CppHandle;
 			
 			public SystemCollectionsICollection(int cppHandle)
+				: base()
 			{
 				CppHandle = cppHandle;
 			}
@@ -2077,6 +2104,7 @@ namespace NativeScript
 			public int CppHandle;
 			
 			public SystemCollectionsIList(int cppHandle)
+				: base()
 			{
 				CppHandle = cppHandle;
 			}
@@ -2372,6 +2400,7 @@ namespace NativeScript
 			public int CppHandle;
 			
 			public SystemCollectionsQueue(int cppHandle)
+				: base()
 			{
 				CppHandle = cppHandle;
 			}
@@ -2403,6 +2432,7 @@ namespace NativeScript
 			public int CppHandle;
 			
 			public SystemComponentModelDesignIComponentChangeService(int cppHandle)
+				: base()
 			{
 				CppHandle = cppHandle;
 			}
@@ -2677,6 +2707,33 @@ namespace NativeScript
 							NativeScript.Bindings.UnhandledCppException = null;
 							throw ex;
 						}
+					}
+				}
+			}
+			
+		}
+		
+		class SystemIOFileStream : System.IO.FileStream
+		{
+			public int CppHandle;
+			
+			public SystemIOFileStream(int cppHandle, string path, System.IO.FileMode mode)
+				: base(path, mode)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public override void WriteByte(byte value)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					NativeScript.Bindings.SystemIOFileStreamWriteByte(thisHandle, value);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
 					}
 				}
 			}
@@ -5331,6 +5388,51 @@ namespace NativeScript
 			}
 		}
 		
+		[MonoPInvokeCallback(typeof(BoxFileModeDelegate))]
+		static int BoxFileMode(System.IO.FileMode val)
+		{
+			try
+			{
+				var returnValue = NativeScript.Bindings.ObjectStore.Store((object)val);
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnboxFileModeDelegate))]
+		static System.IO.FileMode UnboxFileMode(int valHandle)
+		{
+			try
+			{
+				var val = NativeScript.Bindings.ObjectStore.Get(valHandle);
+				var returnValue = (System.IO.FileMode)val;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(System.IO.FileMode);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(System.IO.FileMode);
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate))]
 		static void SystemCollectionsGenericIComparerSystemInt32Constructor(int cppHandle, ref int handle)
 		{
@@ -5587,6 +5689,46 @@ namespace NativeScript
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate))]
 		static void ReleaseSystemComponentModelDesignIComponentChangeService(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemIOFileStreamConstructorSystemString_SystemIOFileModeDelegate))]
+		static void SystemIOFileStreamConstructorSystemString_SystemIOFileMode(int cppHandle, ref int handle, int pathHandle, System.IO.FileMode mode)
+		{
+			try
+			{
+				var path = (string)NativeScript.Bindings.ObjectStore.Get(pathHandle);
+				var thiz = new SystemIOFileStream(cppHandle, path, mode);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemIOFileStreamDelegate))]
+		static void ReleaseSystemIOFileStream(int handle)
 		{
 			try
 			{

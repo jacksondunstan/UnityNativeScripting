@@ -620,6 +620,35 @@ namespace UnityEngine
 
 namespace System
 {
+	namespace IO
+	{
+		enum struct FileMode : int32_t
+		{
+			CreateNew = 1,
+			Create = 2,
+			Open = 3,
+			OpenOrCreate = 4,
+			Truncate = 5,
+			Append = 6
+		};
+	}
+}
+
+namespace System
+{
+	struct MarshalByRefObject;
+}
+
+namespace System
+{
+	namespace IO
+	{
+		struct Stream;
+	}
+}
+
+namespace System
+{
 	namespace Collections
 	{
 		namespace Generic
@@ -688,6 +717,14 @@ namespace System
 		{
 			struct IComponentChangeService;
 		}
+	}
+}
+
+namespace System
+{
+	namespace IO
+	{
+		struct FileStream;
 	}
 }
 
@@ -962,6 +999,8 @@ namespace System
 		explicit operator UnityEngine::SceneManagement::LoadSceneMode();
 		Object(UnityEngine::PrimitiveType val);
 		explicit operator UnityEngine::PrimitiveType();
+		Object(System::IO::FileMode val);
+		explicit operator System::IO::FileMode();
 		Object(System::Boolean val);
 		explicit operator System::Boolean();
 		Object(int8_t val);
@@ -1892,6 +1931,43 @@ namespace UnityEngine
 
 namespace System
 {
+	struct MarshalByRefObject : System::Object
+	{
+		MarshalByRefObject(decltype(nullptr) n);
+		MarshalByRefObject(Plugin::InternalUse iu, int32_t handle);
+		MarshalByRefObject(const MarshalByRefObject& other);
+		MarshalByRefObject(MarshalByRefObject&& other);
+		virtual ~MarshalByRefObject();
+		MarshalByRefObject& operator=(const MarshalByRefObject& other);
+		MarshalByRefObject& operator=(decltype(nullptr) other);
+		MarshalByRefObject& operator=(MarshalByRefObject&& other);
+		bool operator==(const MarshalByRefObject& other) const;
+		bool operator!=(const MarshalByRefObject& other) const;
+	};
+}
+
+namespace System
+{
+	namespace IO
+	{
+		struct Stream : System::MarshalByRefObject
+		{
+			Stream(decltype(nullptr) n);
+			Stream(Plugin::InternalUse iu, int32_t handle);
+			Stream(const Stream& other);
+			Stream(Stream&& other);
+			virtual ~Stream();
+			Stream& operator=(const Stream& other);
+			Stream& operator=(decltype(nullptr) other);
+			Stream& operator=(Stream&& other);
+			bool operator==(const Stream& other) const;
+			bool operator!=(const Stream& other) const;
+		};
+	}
+}
+
+namespace System
+{
 	namespace Collections
 	{
 		namespace Generic
@@ -2090,6 +2166,29 @@ namespace System
 				virtual void RemoveComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value);
 			};
 		}
+	}
+}
+
+namespace System
+{
+	namespace IO
+	{
+		struct FileStream : System::IO::Stream
+		{
+			FileStream(decltype(nullptr) n);
+			FileStream(Plugin::InternalUse iu, int32_t handle);
+			FileStream(const FileStream& other);
+			FileStream(FileStream&& other);
+			virtual ~FileStream();
+			FileStream& operator=(const FileStream& other);
+			FileStream& operator=(decltype(nullptr) other);
+			FileStream& operator=(FileStream&& other);
+			bool operator==(const FileStream& other) const;
+			bool operator!=(const FileStream& other) const;
+			int32_t CppHandle;
+			FileStream(System::String& path, System::IO::FileMode mode);
+			virtual void WriteByte(uint8_t value);
+		};
 	}
 }
 

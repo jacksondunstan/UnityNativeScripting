@@ -603,6 +603,15 @@
 					"Set": {}
 				}
 			]
+		},
+		{
+			"Name": "System.IO.FileMode"
+		},
+		{
+			"Name": "System.MarshalByRefObject"
+		},
+		{
+			"Name": "System.IO.Stream"
 		}
 	],
 	"BaseTypes": [
@@ -642,6 +651,25 @@
 		},
 		{
 			"Name": "System.ComponentModel.Design.IComponentChangeService"
+		},
+		{
+			"Name": "System.IO.FileStream",
+			"OverrideMethods": [
+				{
+					"Name": "WriteByte",
+					"ParamTypes": [
+						"System.Byte"
+					]
+				}
+			],
+			"Constructors": [
+				{
+					"ParamTypes": [
+						"System.String",
+						"System.IO.FileMode"
+					]
+				}
+			]
 		}
 	],
 	"MonoBehaviours": [
