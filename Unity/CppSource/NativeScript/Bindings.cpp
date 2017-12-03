@@ -52,6 +52,8 @@ namespace Plugin
 	int32_t (*UnityEngineGameObjectConstructorSystemString)(int32_t nameHandle);
 	int32_t (*UnityEngineGameObjectPropertyGetTransform)(int32_t thisHandle);
 	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle);
+	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript)(int32_t thisHandle);
+	int32_t (*UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type);
 	int32_t (*UnityEngineComponentPropertyGetTransform)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineTransformPropertyGetPosition)(int32_t thisHandle);
 	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value);
@@ -60,6 +62,7 @@ namespace Plugin
 	void (*UnityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value);
 	void (*UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle);
 	void (*UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle);
+	int32_t (*UnityEngineMonoBehaviourPropertyGetTransform)(int32_t thisHandle);
 	void (*UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers);
 	void (*UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error);
 	void (*UnityEngineNetworkingNetworkTransportMethodInit)();
@@ -139,6 +142,9 @@ namespace Plugin
 	UnityEngine::SceneManagement::LoadSceneMode (*UnboxLoadSceneMode)(int32_t valHandle);
 	int32_t (*SystemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle);
 	System::Boolean (*SystemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle);
+	int32_t (*BoxPrimitiveType)(UnityEngine::PrimitiveType val);
+	UnityEngine::PrimitiveType (*UnboxPrimitiveType)(int32_t valHandle);
+	float (*UnityEngineTimePropertyGetDeltaTime)();
 	void (*ReleaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle);
 	void (*SystemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemCollectionsGenericIComparerSystemString)(int32_t handle);
@@ -1411,6 +1417,32 @@ namespace UnityEngine
 		}
 		return MyGame::MonoBehaviours::TestScript(Plugin::InternalUse::Only, returnValue);
 	}
+	
+	template<> MyGame::MonoBehaviours::AnotherScript GameObject::AddComponent<MyGame::MonoBehaviours::AnotherScript>()
+	{
+		auto returnValue = Plugin::UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return MyGame::MonoBehaviours::AnotherScript(Plugin::InternalUse::Only, returnValue);
+	}
+	
+	UnityEngine::GameObject GameObject::CreatePrimitive(UnityEngine::PrimitiveType type)
+	{
+		auto returnValue = Plugin::UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType(type);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return UnityEngine::GameObject(Plugin::InternalUse::Only, returnValue);
+	}
 }
 
 namespace UnityEngine
@@ -2007,6 +2039,19 @@ namespace UnityEngine
 	bool MonoBehaviour::operator!=(const MonoBehaviour& other) const
 	{
 		return Handle != other.Handle;
+	}
+	
+	UnityEngine::Transform MonoBehaviour::GetTransform()
+	{
+		auto returnValue = Plugin::UnityEngineMonoBehaviourPropertyGetTransform(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return UnityEngine::Transform(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -5379,6 +5424,134 @@ namespace System
 
 namespace System
 {
+	Object::Object(UnityEngine::PrimitiveType val)
+	{
+		int32_t handle = Plugin::BoxPrimitiveType(val);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::PrimitiveType()
+	{
+		UnityEngine::PrimitiveType returnVal(Plugin::UnboxPrimitiveType(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace UnityEngine
+{
+	Time::Time(decltype(nullptr) n)
+		: Time(Plugin::InternalUse::Only, 0)
+	{
+	}
+	
+	Time::Time(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	Time::Time(const Time& other)
+		: Time(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	Time::Time(Time&& other)
+		: Time(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Time::~Time()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Time& Time::operator=(const Time& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	Time& Time::operator=(decltype(nullptr) other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Time& Time::operator=(Time&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Time::operator==(const Time& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Time::operator!=(const Time& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	float Time::GetDeltaTime()
+	{
+		auto returnValue = Plugin::UnityEngineTimePropertyGetDeltaTime();
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+}
+
+namespace System
+{
 	namespace Collections
 	{
 		namespace Generic
@@ -7991,6 +8164,91 @@ namespace MyGame
 		}
 		
 		bool TestScript::operator!=(const TestScript& other) const
+		{
+			return Handle != other.Handle;
+		}
+	}
+}
+
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		AnotherScript::AnotherScript(decltype(nullptr) n)
+			: AnotherScript(Plugin::InternalUse::Only, 0)
+		{
+		}
+		
+		AnotherScript::AnotherScript(Plugin::InternalUse iu, int32_t handle)
+			: UnityEngine::MonoBehaviour(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
+		}
+		
+		AnotherScript::AnotherScript(const AnotherScript& other)
+			: AnotherScript(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		AnotherScript::AnotherScript(AnotherScript&& other)
+			: AnotherScript(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		AnotherScript::~AnotherScript()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+		}
+		
+		AnotherScript& AnotherScript::operator=(const AnotherScript& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		AnotherScript& AnotherScript::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		AnotherScript& AnotherScript::operator=(AnotherScript&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool AnotherScript::operator==(const AnotherScript& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool AnotherScript::operator!=(const AnotherScript& other) const
 		{
 			return Handle != other.Handle;
 		}
@@ -12265,6 +12523,8 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGameObjectConstructorSystemString)(int32_t nameHandle),
 	int32_t (*unityEngineGameObjectPropertyGetTransform)(int32_t thisHandle),
 	int32_t (*unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)(int32_t thisHandle),
+	int32_t (*unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript)(int32_t thisHandle),
+	int32_t (*unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type),
 	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
 	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value),
@@ -12273,6 +12533,7 @@ DLLEXPORT void Init(
 	void (*unityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value),
 	void (*unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle),
 	void (*unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle),
+	int32_t (*unityEngineMonoBehaviourPropertyGetTransform)(int32_t thisHandle),
 	void (*unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)(int32_t* bufferLength, int32_t* numBuffers),
 	void (*unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)(int32_t hostId, int32_t* addressHandle, int32_t* port, uint8_t* error),
 	void (*unityEngineNetworkingNetworkTransportMethodInit)(),
@@ -12352,6 +12613,9 @@ DLLEXPORT void Init(
 	UnityEngine::SceneManagement::LoadSceneMode (*unboxLoadSceneMode)(int32_t valHandle),
 	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
 	System::Boolean (*systemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle),
+	int32_t (*boxPrimitiveType)(UnityEngine::PrimitiveType val),
+	UnityEngine::PrimitiveType (*unboxPrimitiveType)(int32_t valHandle),
+	float (*unityEngineTimePropertyGetDeltaTime)(),
 	void (*releaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle),
 	void (*systemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemCollectionsGenericIComparerSystemString)(int32_t handle),
@@ -12502,6 +12766,8 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineGameObjectConstructorSystemString = unityEngineGameObjectConstructorSystemString;
 	Plugin::UnityEngineGameObjectPropertyGetTransform = unityEngineGameObjectPropertyGetTransform;
 	Plugin::UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript = unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript;
+	Plugin::UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript = unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript;
+	Plugin::UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType = unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType;
 	Plugin::UnityEngineComponentPropertyGetTransform = unityEngineComponentPropertyGetTransform;
 	Plugin::UnityEngineTransformPropertyGetPosition = unityEngineTransformPropertyGetPosition;
 	Plugin::UnityEngineTransformPropertySetPosition = unityEngineTransformPropertySetPosition;
@@ -12510,6 +12776,7 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineAssertionsAssertFieldSetRaiseExceptions = unityEngineAssertionsAssertFieldSetRaiseExceptions;
 	Plugin::UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString = unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString;
 	Plugin::UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject = unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject;
+	Plugin::UnityEngineMonoBehaviourPropertyGetTransform = unityEngineMonoBehaviourPropertyGetTransform;
 	Plugin::UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32 = unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32;
 	Plugin::UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte = unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte;
 	Plugin::UnityEngineNetworkingNetworkTransportMethodInit = unityEngineNetworkingNetworkTransportMethodInit;
@@ -12591,6 +12858,9 @@ DLLEXPORT void Init(
 	Plugin::UnboxLoadSceneMode = unboxLoadSceneMode;
 	Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent = systemCollectionsIEnumeratorPropertyGetCurrent;
 	Plugin::SystemCollectionsIEnumeratorMethodMoveNext = systemCollectionsIEnumeratorMethodMoveNext;
+	Plugin::BoxPrimitiveType = boxPrimitiveType;
+	Plugin::UnboxPrimitiveType = unboxPrimitiveType;
+	Plugin::UnityEngineTimePropertyGetDeltaTime = unityEngineTimePropertyGetDeltaTime;
 	SystemCollectionsGenericIComparerSystemInt32FreeListSize = maxManagedObjects;
 	SystemCollectionsGenericIComparerSystemInt32FreeList = new System::Collections::Generic::IComparer<int32_t>*[SystemCollectionsGenericIComparerSystemInt32FreeListSize];
 	for (int32_t i = 0, end = SystemCollectionsGenericIComparerSystemInt32FreeListSize - 1; i < end; ++i)
@@ -12969,6 +13239,46 @@ DLLEXPORT void MyGameMonoBehavioursTestScriptUpdate(int32_t thisHandle)
 	catch (...)
 	{
 		System::String msg = "Unhandled exception in MyGame::MonoBehaviours::TestScript::Update";
+		System::Exception ex(msg);
+		Plugin::SetException(ex.Handle);
+	}
+}
+
+
+DLLEXPORT void MyGameMonoBehavioursAnotherScriptAwake(int32_t thisHandle)
+{
+	MyGame::MonoBehaviours::AnotherScript thiz(Plugin::InternalUse::Only, thisHandle);
+	try
+	{
+		thiz.Awake();
+	}
+	catch (System::Exception ex)
+	{
+		Plugin::SetException(ex.Handle);
+	}
+	catch (...)
+	{
+		System::String msg = "Unhandled exception in MyGame::MonoBehaviours::AnotherScript::Awake";
+		System::Exception ex(msg);
+		Plugin::SetException(ex.Handle);
+	}
+}
+
+
+DLLEXPORT void MyGameMonoBehavioursAnotherScriptUpdate(int32_t thisHandle)
+{
+	MyGame::MonoBehaviours::AnotherScript thiz(Plugin::InternalUse::Only, thisHandle);
+	try
+	{
+		thiz.Update();
+	}
+	catch (System::Exception ex)
+	{
+		Plugin::SetException(ex.Handle);
+	}
+	catch (...)
+	{
+		System::String msg = "Unhandled exception in MyGame::MonoBehaviours::AnotherScript::Update";
 		System::Exception ex(msg);
 		Plugin::SetException(ex.Handle);
 	}

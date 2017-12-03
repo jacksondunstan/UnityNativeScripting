@@ -73,10 +73,21 @@
 							"Types": [
 								"MyGame.MonoBehaviours.TestScript"
 							]
+						},
+						{
+							"Types": [
+								"MyGame.MonoBehaviours.AnotherScript"
+							]
 						}
 					],
 					"Exceptions": [
 						"System.NullReferenceException"
+					]
+				},
+				{
+					"Name": "CreatePrimitive",
+					"ParamTypes": [
+						"UnityEngine.PrimitiveType"
 					]
 				}
 			],
@@ -159,7 +170,14 @@
 			"Name": "UnityEngine.Behaviour"
 		},
 		{
-			"Name": "UnityEngine.MonoBehaviour"
+			"Name": "UnityEngine.MonoBehaviour",
+			"Properties": [
+				{
+					"Name": "transform",
+					"Get": {},
+					"Set": {}
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.AudioSettings",
@@ -572,6 +590,19 @@
 		},
 		{
 			"Name": "System.ComponentModel.MemberDescriptor"
+		},
+		{
+			"Name": "UnityEngine.PrimitiveType"
+		},
+		{
+			"Name": "UnityEngine.Time",
+			"Properties": [
+				{
+					"Name": "deltaTime",
+					"Get": {},
+					"Set": {}
+				}
+			]
 		}
 	],
 	"BaseTypes": [
@@ -620,6 +651,13 @@
 				"Awake",
 				"OnAnimatorIK",
 				"OnCollisionEnter",
+				"Update"
+			]
+		},
+		{
+			"Name": "MyGame.MonoBehaviours.AnotherScript",
+			"Messages": [
+				"Awake",
 				"Update"
 			]
 		}

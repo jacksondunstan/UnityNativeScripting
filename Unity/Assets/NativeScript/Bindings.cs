@@ -286,6 +286,8 @@ namespace NativeScript
 			IntPtr unityEngineGameObjectConstructorSystemString,
 			IntPtr unityEngineGameObjectPropertyGetTransform,
 			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
+			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript,
+			IntPtr unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType,
 			IntPtr unityEngineComponentPropertyGetTransform,
 			IntPtr unityEngineTransformPropertyGetPosition,
 			IntPtr unityEngineTransformPropertySetPosition,
@@ -294,6 +296,7 @@ namespace NativeScript
 			IntPtr unityEngineAssertionsAssertFieldSetRaiseExceptions,
 			IntPtr unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString,
 			IntPtr unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject,
+			IntPtr unityEngineMonoBehaviourPropertyGetTransform,
 			IntPtr unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
 			IntPtr unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
 			IntPtr unityEngineNetworkingNetworkTransportMethodInit,
@@ -373,6 +376,9 @@ namespace NativeScript
 			IntPtr unboxLoadSceneMode,
 			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
 			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
+			IntPtr boxPrimitiveType,
+			IntPtr unboxPrimitiveType,
+			IntPtr unityEngineTimePropertyGetDeltaTime,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
 			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
@@ -643,6 +649,12 @@ namespace NativeScript
 		public delegate void MyGameMonoBehavioursTestScriptUpdateDelegate(int thisHandle);
 		public static MyGameMonoBehavioursTestScriptUpdateDelegate MyGameMonoBehavioursTestScriptUpdate;
 		
+		public delegate void MyGameMonoBehavioursAnotherScriptAwakeDelegate(int thisHandle);
+		public static MyGameMonoBehavioursAnotherScriptAwakeDelegate MyGameMonoBehavioursAnotherScriptAwake;
+		
+		public delegate void MyGameMonoBehavioursAnotherScriptUpdateDelegate(int thisHandle);
+		public static MyGameMonoBehavioursAnotherScriptUpdateDelegate MyGameMonoBehavioursAnotherScriptUpdate;
+		
 		public delegate void SystemActionNativeInvokeDelegate(int thisHandle);
 		public static SystemActionNativeInvokeDelegate SystemActionNativeInvoke;
 		
@@ -792,6 +804,8 @@ namespace NativeScript
 			IntPtr unityEngineGameObjectConstructorSystemString,
 			IntPtr unityEngineGameObjectPropertyGetTransform,
 			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript,
+			IntPtr unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript,
+			IntPtr unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType,
 			IntPtr unityEngineComponentPropertyGetTransform,
 			IntPtr unityEngineTransformPropertyGetPosition,
 			IntPtr unityEngineTransformPropertySetPosition,
@@ -800,6 +814,7 @@ namespace NativeScript
 			IntPtr unityEngineAssertionsAssertFieldSetRaiseExceptions,
 			IntPtr unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString,
 			IntPtr unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject,
+			IntPtr unityEngineMonoBehaviourPropertyGetTransform,
 			IntPtr unityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32,
 			IntPtr unityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte,
 			IntPtr unityEngineNetworkingNetworkTransportMethodInit,
@@ -879,6 +894,9 @@ namespace NativeScript
 			IntPtr unboxLoadSceneMode,
 			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
 			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
+			IntPtr boxPrimitiveType,
+			IntPtr unboxPrimitiveType,
+			IntPtr unityEngineTimePropertyGetDeltaTime,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
 			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
 			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
@@ -1151,6 +1169,12 @@ namespace NativeScript
 		public static extern void MyGameMonoBehavioursTestScriptUpdate(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
+		public static extern void MyGameMonoBehavioursAnotherScriptAwake(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void MyGameMonoBehavioursAnotherScriptUpdate(int thisHandle);
+		
+		[DllImport(Constants.PluginName)]
 		public static extern void SystemActionNativeInvoke(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
@@ -1209,6 +1233,8 @@ namespace NativeScript
 		delegate int UnityEngineGameObjectConstructorSystemStringDelegate(int nameHandle);
 		delegate int UnityEngineGameObjectPropertyGetTransformDelegate(int thisHandle);
 		delegate int UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(int thisHandle);
+		delegate int UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScriptDelegate(int thisHandle);
+		delegate int UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate(UnityEngine.PrimitiveType type);
 		delegate int UnityEngineComponentPropertyGetTransformDelegate(int thisHandle);
 		delegate UnityEngine.Vector3 UnityEngineTransformPropertyGetPositionDelegate(int thisHandle);
 		delegate void UnityEngineTransformPropertySetPositionDelegate(int thisHandle, ref UnityEngine.Vector3 value);
@@ -1217,6 +1243,7 @@ namespace NativeScript
 		delegate void UnityEngineAssertionsAssertFieldSetRaiseExceptionsDelegate(bool value);
 		delegate void UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemStringDelegate(int expectedHandle, int actualHandle);
 		delegate void UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObjectDelegate(int expectedHandle, int actualHandle);
+		delegate int UnityEngineMonoBehaviourPropertyGetTransformDelegate(int thisHandle);
 		delegate void UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(ref int bufferLength, ref int numBuffers);
 		delegate void UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(int hostId, ref int addressHandle, ref int port, ref byte error);
 		delegate void UnityEngineNetworkingNetworkTransportMethodInitDelegate();
@@ -1296,6 +1323,9 @@ namespace NativeScript
 		delegate UnityEngine.SceneManagement.LoadSceneMode UnboxLoadSceneModeDelegate(int valHandle);
 		delegate int SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(int thisHandle);
 		delegate bool SystemCollectionsIEnumeratorMethodMoveNextDelegate(int thisHandle);
+		delegate int BoxPrimitiveTypeDelegate(UnityEngine.PrimitiveType val);
+		delegate UnityEngine.PrimitiveType UnboxPrimitiveTypeDelegate(int valHandle);
+		delegate float UnityEngineTimePropertyGetDeltaTimeDelegate();
 		delegate void SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(int handle);
 		delegate void SystemCollectionsGenericIComparerSystemStringConstructorDelegate(int cppHandle, ref int handle);
@@ -1501,6 +1531,8 @@ namespace NativeScript
 			MyGameMonoBehavioursTestScriptOnAnimatorIK = GetDelegate<MyGameMonoBehavioursTestScriptOnAnimatorIKDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnAnimatorIK");
 			MyGameMonoBehavioursTestScriptOnCollisionEnter = GetDelegate<MyGameMonoBehavioursTestScriptOnCollisionEnterDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnCollisionEnter");
 			MyGameMonoBehavioursTestScriptUpdate = GetDelegate<MyGameMonoBehavioursTestScriptUpdateDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptUpdate");
+			MyGameMonoBehavioursAnotherScriptAwake = GetDelegate<MyGameMonoBehavioursAnotherScriptAwakeDelegate>(libraryHandle, "MyGameMonoBehavioursAnotherScriptAwake");
+			MyGameMonoBehavioursAnotherScriptUpdate = GetDelegate<MyGameMonoBehavioursAnotherScriptUpdateDelegate>(libraryHandle, "MyGameMonoBehavioursAnotherScriptUpdate");
 			SystemActionNativeInvoke = GetDelegate<SystemActionNativeInvokeDelegate>(libraryHandle, "SystemActionNativeInvoke");
 			SystemActionSystemSingleNativeInvoke = GetDelegate<SystemActionSystemSingleNativeInvokeDelegate>(libraryHandle, "SystemActionSystemSingleNativeInvoke");
 			SystemActionSystemSingle_SystemSingleNativeInvoke = GetDelegate<SystemActionSystemSingle_SystemSingleNativeInvokeDelegate>(libraryHandle, "SystemActionSystemSingle_SystemSingleNativeInvoke");
@@ -1538,6 +1570,8 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectConstructorSystemStringDelegate(UnityEngineGameObjectConstructorSystemString)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectPropertyGetTransformDelegate(UnityEngineGameObjectPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScriptDelegate(UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursTestScript)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScriptDelegate(UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate(UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineComponentPropertyGetTransformDelegate(UnityEngineComponentPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertyGetPositionDelegate(UnityEngineTransformPropertyGetPosition)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertySetPositionDelegate(UnityEngineTransformPropertySetPosition)),
@@ -1546,6 +1580,7 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineAssertionsAssertFieldSetRaiseExceptionsDelegate(UnityEngineAssertionsAssertFieldSetRaiseExceptions)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemStringDelegate(UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObjectDelegate(UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineMonoBehaviourPropertyGetTransformDelegate(UnityEngineMonoBehaviourPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32Delegate(UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByteDelegate(UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineNetworkingNetworkTransportMethodInitDelegate(UnityEngineNetworkingNetworkTransportMethodInit)),
@@ -1625,6 +1660,9 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnboxLoadSceneModeDelegate(UnboxLoadSceneMode)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(SystemCollectionsIEnumeratorPropertyGetCurrent)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorMethodMoveNextDelegate(SystemCollectionsIEnumeratorMethodMoveNext)),
+				Marshal.GetFunctionPointerForDelegate(new BoxPrimitiveTypeDelegate(BoxPrimitiveType)),
+				Marshal.GetFunctionPointerForDelegate(new UnboxPrimitiveTypeDelegate(UnboxPrimitiveType)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineTimePropertyGetDeltaTimeDelegate(UnityEngineTimePropertyGetDeltaTime)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(ReleaseSystemCollectionsGenericIComparerSystemInt32)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(SystemCollectionsGenericIComparerSystemInt32Constructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(ReleaseSystemCollectionsGenericIComparerSystemString)),
@@ -3263,6 +3301,51 @@ namespace NativeScript
 			}
 		}
 		
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScriptDelegate))]
+		static int UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript(int thisHandle)
+		{
+			try
+			{
+				var thiz = (UnityEngine.GameObject)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.AddComponent<MyGame.MonoBehaviours.AnotherScript>();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate))]
+		static int UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType(UnityEngine.PrimitiveType type)
+		{
+			try
+			{
+				var returnValue = UnityEngine.GameObject.CreatePrimitive(type);
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(UnityEngineComponentPropertyGetTransformDelegate))]
 		static int UnityEngineComponentPropertyGetTransform(int thisHandle)
 		{
@@ -3429,6 +3512,29 @@ namespace NativeScript
 			{
 				UnityEngine.Debug.LogException(ex);
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineMonoBehaviourPropertyGetTransformDelegate))]
+		static int UnityEngineMonoBehaviourPropertyGetTransform(int thisHandle)
+		{
+			try
+			{
+				var thiz = (UnityEngine.MonoBehaviour)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.transform;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
 			}
 		}
 		
@@ -5155,6 +5261,73 @@ namespace NativeScript
 				UnityEngine.Debug.LogException(ex);
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(bool);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(BoxPrimitiveTypeDelegate))]
+		static int BoxPrimitiveType(UnityEngine.PrimitiveType val)
+		{
+			try
+			{
+				var returnValue = NativeScript.Bindings.ObjectStore.Store((object)val);
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnboxPrimitiveTypeDelegate))]
+		static UnityEngine.PrimitiveType UnboxPrimitiveType(int valHandle)
+		{
+			try
+			{
+				var val = NativeScript.Bindings.ObjectStore.Get(valHandle);
+				var returnValue = (UnityEngine.PrimitiveType)val;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.PrimitiveType);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.PrimitiveType);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineTimePropertyGetDeltaTimeDelegate))]
+		static float UnityEngineTimePropertyGetDeltaTime()
+		{
+			try
+			{
+				var returnValue = UnityEngine.Time.deltaTime;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(float);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(float);
 			}
 		}
 		
@@ -7865,6 +8038,38 @@ namespace MyGame
 			{
 				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
 				NativeScript.Bindings.MyGameMonoBehavioursTestScriptUpdate(thisHandle);
+				if (NativeScript.Bindings.UnhandledCppException != null)
+				{
+					Exception ex = NativeScript.Bindings.UnhandledCppException;
+					NativeScript.Bindings.UnhandledCppException = null;
+					throw ex;
+				}
+			}
+		}
+	}
+}
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		public class AnotherScript : UnityEngine.MonoBehaviour
+		{
+			public void Awake()
+			{
+				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
+				NativeScript.Bindings.MyGameMonoBehavioursAnotherScriptAwake(thisHandle);
+				if (NativeScript.Bindings.UnhandledCppException != null)
+				{
+					Exception ex = NativeScript.Bindings.UnhandledCppException;
+					NativeScript.Bindings.UnhandledCppException = null;
+					throw ex;
+				}
+			}
+			
+			public void Update()
+			{
+				int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);
+				NativeScript.Bindings.MyGameMonoBehavioursAnotherScriptUpdate(thisHandle);
 				if (NativeScript.Bindings.UnhandledCppException != null)
 				{
 					Exception ex = NativeScript.Bindings.UnhandledCppException;

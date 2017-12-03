@@ -1111,6 +1111,13 @@ namespace NativeScript
 			return true;
 		}
 		
+		static int ArrayIndexOf<T>(T[] array, T value)
+		{
+			return array != null ?
+				Array.IndexOf(array, value) :
+				-1;
+		}
+		
 		static void AppendTypeNameWithoutGenericSuffix(
 			string typeName,
 			StringBuilder output)
@@ -1945,6 +1952,7 @@ namespace NativeScript
 				false,
 				false,
 				null,
+				typeParams,
 				null,
 				boxParams,
 				builders.CppBoxingMethodDeclarations);
@@ -1957,6 +1965,7 @@ namespace NativeScript
 				false,
 				false,
 				null,
+				typeParams,
 				null,
 				unboxCppParams,
 				builders.CppBoxingMethodDeclarations);
@@ -2296,6 +2305,7 @@ namespace NativeScript
 				false,
 				false,
 				null,
+				enclosingTypeParams,
 				null,
 				parameters,
 				builders.CppTypeDefinitions);
@@ -2849,6 +2859,7 @@ namespace NativeScript
 				false,
 				cppMethodIsStatic,
 				cppReturnType,
+				typeTypeParams,
 				null,
 				cppParameters,
 				builders.CppTypeDefinitions);
@@ -3039,6 +3050,7 @@ namespace NativeScript
 			if (jsonMethod.GenericParams != null)
 			{
 				// Generate for each set of generic types
+				bool generateDeclaration = true;
 				foreach (JsonGenericParams jsonGenericParams
 					in jsonMethod.GenericParams)
 				{
@@ -3062,9 +3074,11 @@ namespace NativeScript
 						typeTypeParams,
 						methodTypeParams,
 						parameters,
+						generateDeclaration,
 						indent,
 						exceptionTypes,
 						builders);
+					generateDeclaration = false;
 				}
 			}
 			else
@@ -3085,6 +3099,7 @@ namespace NativeScript
 					typeTypeParams,
 					null,
 					parameters,
+					true,
 					indent,
 					exceptionTypes,
 					builders);
@@ -3160,6 +3175,7 @@ namespace NativeScript
 			Type[] enclosingTypeParams,
 			Type[] methodTypeParams,
 			ParameterInfo[] parameters,
+			bool generateDeclaration,
 			int indent,
 			Type[] exceptionTypes,
 			StringBuilders builders)
@@ -3534,18 +3550,22 @@ namespace NativeScript
 				cppParameters = parameters;
 				cppCallParameters = parameters;
 			}
-			AppendIndent(
-				indent + 1,
-				builders.CppTypeDefinitions);
-			AppendCppMethodDeclaration(
-				cppMethodName,
-				enclosingTypeIsStatic,
-				false,
-				cppMethodIsStatic,
-				cppReturnType,
-				methodTypeParams,
-				cppParameters,
-				builders.CppTypeDefinitions);
+			if (generateDeclaration)
+			{
+				AppendIndent(
+					indent + 1,
+					builders.CppTypeDefinitions);
+				AppendCppMethodDeclaration(
+					cppMethodName,
+					enclosingTypeIsStatic,
+					false,
+					cppMethodIsStatic,
+					cppReturnType,
+					enclosingTypeParams,
+					methodTypeParams,
+					cppParameters,
+					builders.CppTypeDefinitions);
+			}
 			
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
@@ -3749,6 +3769,7 @@ namespace NativeScript
 					false,
 					false,
 					typeof(void),
+					null,
 					null,
 					parameters,
 					builders.CppTypeDefinitions);
@@ -4946,6 +4967,7 @@ namespace NativeScript
 				false,
 				null,
 				null,
+				null,
 				parameters,
 				builders.CppTypeDefinitions);
 			
@@ -5080,6 +5102,7 @@ namespace NativeScript
 				false,
 				typeof(int),
 				null,
+				null,
 				parameters,
 				builders.CppTypeDefinitions);
 			
@@ -5157,6 +5180,7 @@ namespace NativeScript
 				false,
 				false,
 				typeof(int),
+				null,
 				null,
 				parameters,
 				builders.CppTypeDefinitions);
@@ -5304,6 +5328,7 @@ namespace NativeScript
 				false,
 				false,
 				typeof(int),
+				null,
 				null,
 				parameters,
 				builders.CppTypeDefinitions);
@@ -5833,6 +5858,7 @@ namespace NativeScript
 				false,
 				false,
 				null,
+				typeParams,
 				null,
 				new ParameterInfo[0],
 				builders.CppTypeDefinitions);
@@ -5845,6 +5871,7 @@ namespace NativeScript
 				false,
 				false,
 				typeof(void),
+				typeParams,
 				null,
 				addRemoveParams,
 				builders.CppTypeDefinitions);
@@ -5857,6 +5884,7 @@ namespace NativeScript
 				false,
 				false,
 				typeof(void),
+				typeParams,
 				null,
 				addRemoveParams,
 				builders.CppTypeDefinitions);
@@ -6429,6 +6457,7 @@ namespace NativeScript
 				false,
 				false,
 				null,
+				typeParams,
 				null,
 				new ParameterInfo[0],
 				builders.CppTypeDefinitions);
@@ -7263,6 +7292,7 @@ namespace NativeScript
 				false,
 				false,
 				methodInfo.ReturnType,
+				typeParams,
 				null,
 				invokeParams,
 				builders.CppTypeDefinitions);
@@ -7483,6 +7513,7 @@ namespace NativeScript
 				true,
 				false,
 				invokeMethod.ReturnType,
+				typeParams,
 				null,
 				invokeParams,
 				builders.CppTypeDefinitions);
@@ -9586,6 +9617,7 @@ namespace NativeScript
 				false,
 				methodIsStatic,
 				fieldType,
+				enclosingTypeParams,
 				null,
 				parameters,
 				builders.CppTypeDefinitions);
@@ -9778,6 +9810,7 @@ namespace NativeScript
 				false,
 				methodIsStatic,
 				typeof(void),
+				enclosingTypeParams,
 				null,
 				parameters,
 				builders.CppTypeDefinitions);
@@ -9867,6 +9900,7 @@ namespace NativeScript
 				output);
 			AppendCppTemplateTypenames(
 				numTypeParameters,
+				'T',
 				output);
 			output.Append("struct ");
 			AppendTypeNameWithoutGenericSuffix(
@@ -11187,15 +11221,29 @@ namespace NativeScript
 		
 		static void AppendCppParameterDeclaration(
 			ParameterInfo[] parameters,
+			Type[] typeTypeParameters,
+			Type[] methodTypeParameters,
 			StringBuilder output)
 		{
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
+				Type paramType = param.DereferencedParameterType;
 				
-				AppendCppTypeName(
-					param.DereferencedParameterType,
-					output);
+				int typeParamIndex = ArrayIndexOf(
+					methodTypeParameters,
+					paramType);
+				if (typeParamIndex >= 0)
+				{
+					output.Append("MT");
+					output.Append(typeParamIndex);
+				}
+				else
+				{
+					AppendCppTypeName(
+						paramType,
+						output);
+				}
 				
 				// Pointer (*) or reference (&) suffix if necessary
 				if (param.IsOut || param.IsRef)
@@ -11287,6 +11335,8 @@ namespace NativeScript
 			output.Append('(');
 			AppendCppParameterDeclaration(
 				parameters,
+				null, // don't substitute type type params
+				null, // don't substitute method type params
 				output);
 			output.Append(")\n");
 		}
@@ -11598,6 +11648,7 @@ namespace NativeScript
 		
 		static void AppendCppTemplateTypenames(
 			int numTypeParameters,
+			char prefix,
 			StringBuilder output)
 		{
 			if (numTypeParameters > 0)
@@ -11605,7 +11656,9 @@ namespace NativeScript
 				output.Append("template<");
 				for (int i = 0; i < numTypeParameters; ++i)
 				{
-					output.Append("typename T");
+					output.Append("typename ");
+					output.Append(prefix);
+					output.Append('T');
 					output.Append(i);
 					if (i != numTypeParameters - 1)
 					{
@@ -11622,12 +11675,14 @@ namespace NativeScript
 			bool methodIsVirtual,
 			bool methodIsStatic,
 			Type returnType,
-			Type[] typeParameters,
+			Type[] typeTypeParameters,
+			Type[] methodTypeParameters,
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
 			AppendCppTemplateTypenames(
-				typeParameters == null ? 0 : typeParameters.Length,
+				methodTypeParameters == null ? 0 : methodTypeParameters.Length,
+				'M',
 				output);
 			
 			if (!enclosingTypeIsStatic && methodIsStatic)
@@ -11643,9 +11698,20 @@ namespace NativeScript
 			// Return type
 			if (returnType != null)
 			{
-				AppendCppTypeName(
-					returnType,
-					output);
+				int typeParamIndex = ArrayIndexOf(
+					methodTypeParameters,
+					returnType);
+				if (typeParamIndex >= 0)
+				{
+					output.Append("MT");
+					output.Append(typeParamIndex);
+				}
+				else
+				{
+					AppendCppTypeName(
+						returnType,
+						output);
+				}
 				output.Append(' ');
 			}
 			
@@ -11659,6 +11725,8 @@ namespace NativeScript
 			output.Append('(');
 			AppendCppParameterDeclaration(
 				parameters,
+				typeTypeParameters,
+				methodTypeParameters,
 				output);
 			output.Append(')');
 			

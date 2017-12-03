@@ -310,7 +310,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<typename T0, typename T1> struct KeyValuePair;
+			template<typename TT0, typename TT1> struct KeyValuePair;
 		}
 	}
 }
@@ -332,7 +332,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<typename T0> struct List;
+			template<typename TT0> struct List;
 		}
 	}
 }
@@ -365,7 +365,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<typename T0> struct LinkedListNode;
+			template<typename TT0> struct LinkedListNode;
 		}
 	}
 }
@@ -387,7 +387,7 @@ namespace System
 	{
 		namespace CompilerServices
 		{
-			template<typename T0> struct StrongBox;
+			template<typename TT0> struct StrongBox;
 		}
 	}
 }
@@ -409,7 +409,7 @@ namespace System
 	{
 		namespace ObjectModel
 		{
-			template<typename T0> struct Collection;
+			template<typename TT0> struct Collection;
 		}
 	}
 }
@@ -431,7 +431,7 @@ namespace System
 	{
 		namespace ObjectModel
 		{
-			template<typename T0, typename T1> struct KeyedCollection;
+			template<typename TT0, typename TT1> struct KeyedCollection;
 		}
 	}
 }
@@ -600,13 +600,31 @@ namespace System
 	}
 }
 
+namespace UnityEngine
+{
+	enum struct PrimitiveType : int32_t
+	{
+		Sphere = 0,
+		Capsule = 1,
+		Cylinder = 2,
+		Cube = 3,
+		Plane = 4,
+		Quad = 5
+	};
+}
+
+namespace UnityEngine
+{
+	struct Time;
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			template<typename T0> struct IComparer;
+			template<typename TT0> struct IComparer;
 		}
 	}
 }
@@ -678,6 +696,14 @@ namespace MyGame
 	namespace MonoBehaviours
 	{
 		struct TestScript;
+	}
+}
+
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		struct AnotherScript;
 	}
 }
 
@@ -783,7 +809,7 @@ namespace System
 
 namespace System
 {
-	template<typename T0> struct Action1;
+	template<typename TT0> struct Action1;
 }
 
 namespace System
@@ -793,7 +819,7 @@ namespace System
 
 namespace System
 {
-	template<typename T0, typename T1> struct Action2;
+	template<typename TT0, typename TT1> struct Action2;
 }
 
 namespace System
@@ -803,12 +829,12 @@ namespace System
 
 namespace System
 {
-	template<typename T0, typename T1, typename T2> struct Func3;
+	template<typename TT0, typename TT1, typename TT2> struct Func3;
 }
 
 namespace System
 {
-	template<typename T0, typename T1, typename T2> struct Func3;
+	template<typename TT0, typename TT1, typename TT2> struct Func3;
 }
 
 namespace System
@@ -838,7 +864,7 @@ namespace UnityEngine
 {
 	namespace Events
 	{
-		template<typename T0, typename T1> struct UnityAction2;
+		template<typename TT0, typename TT1> struct UnityAction2;
 	}
 }
 
@@ -934,6 +960,8 @@ namespace System
 		explicit operator UnityEngine::SceneManagement::Scene();
 		Object(UnityEngine::SceneManagement::LoadSceneMode val);
 		explicit operator UnityEngine::SceneManagement::LoadSceneMode();
+		Object(UnityEngine::PrimitiveType val);
+		explicit operator UnityEngine::PrimitiveType();
 		Object(System::Boolean val);
 		explicit operator System::Boolean();
 		Object(int8_t val);
@@ -1054,7 +1082,8 @@ namespace UnityEngine
 		GameObject();
 		GameObject(System::String& name);
 		UnityEngine::Transform GetTransform();
-		template<typename T0> MyGame::MonoBehaviours::TestScript AddComponent();
+		template<typename MT0> MT0 AddComponent();
+		static UnityEngine::GameObject CreatePrimitive(UnityEngine::PrimitiveType type);
 	};
 }
 
@@ -1121,8 +1150,7 @@ namespace UnityEngine
 		{
 			System::Boolean GetRaiseExceptions();
 			void SetRaiseExceptions(System::Boolean value);
-			template<typename T0> void AreEqual(System::String& expected, System::String& actual);
-			template<typename T0> void AreEqual(UnityEngine::GameObject& expected, UnityEngine::GameObject& actual);
+			template<typename MT0> void AreEqual(MT0& expected, MT0& actual);
 		}
 	}
 }
@@ -1175,6 +1203,7 @@ namespace UnityEngine
 		MonoBehaviour& operator=(MonoBehaviour&& other);
 		bool operator==(const MonoBehaviour& other) const;
 		bool operator!=(const MonoBehaviour& other) const;
+		UnityEngine::Transform GetTransform();
 	};
 }
 
@@ -1843,6 +1872,24 @@ namespace System
 	}
 }
 
+namespace UnityEngine
+{
+	struct Time : System::Object
+	{
+		Time(decltype(nullptr) n);
+		Time(Plugin::InternalUse iu, int32_t handle);
+		Time(const Time& other);
+		Time(Time&& other);
+		virtual ~Time();
+		Time& operator=(const Time& other);
+		Time& operator=(decltype(nullptr) other);
+		Time& operator=(Time&& other);
+		bool operator==(const Time& other) const;
+		bool operator!=(const Time& other) const;
+		static float GetDeltaTime();
+	};
+}
+
 namespace System
 {
 	namespace Collections
@@ -2065,6 +2112,28 @@ namespace MyGame
 			void Awake();
 			void OnAnimatorIK(int32_t param0);
 			void OnCollisionEnter(UnityEngine::Collision& param0);
+			void Update();
+		};
+	}
+}
+
+namespace MyGame
+{
+	namespace MonoBehaviours
+	{
+		struct AnotherScript : UnityEngine::MonoBehaviour
+		{
+			AnotherScript(decltype(nullptr) n);
+			AnotherScript(Plugin::InternalUse iu, int32_t handle);
+			AnotherScript(const AnotherScript& other);
+			AnotherScript(AnotherScript&& other);
+			virtual ~AnotherScript();
+			AnotherScript& operator=(const AnotherScript& other);
+			AnotherScript& operator=(decltype(nullptr) other);
+			AnotherScript& operator=(AnotherScript&& other);
+			bool operator==(const AnotherScript& other) const;
+			bool operator!=(const AnotherScript& other) const;
+			void Awake();
 			void Update();
 		};
 	}

@@ -58,6 +58,40 @@ void MyGame::MonoBehaviours::TestScript::Update()
 		{
 			String message("Done spawning game objects");
 			Debug::Log(message);
+			
+			GameObject go = GameObject::CreatePrimitive(PrimitiveType::Sphere);
+			String name("GameObject with an AnotherScript");
+			go.SetName(name);
+			go.AddComponent<MyGame::MonoBehaviours::AnotherScript>();
 		}
 	}
+}
+
+void MyGame::MonoBehaviours::AnotherScript::Awake()
+{
+	String message("C++ AnotherScript Awake");
+	Debug::Log(message);
+}
+
+void MyGame::MonoBehaviours::AnotherScript::Update()
+{
+	Transform transform = GetTransform();
+	Vector3 pos = transform.GetPosition();
+	const float speed = 1.2f;
+	static float dir = 1.0f;
+	static float min = -1.5f;
+	static float max = 1.5f;
+	Vector3 offset(Time::GetDeltaTime() * speed * dir, 0, 0);
+	Vector3 newPos = pos + offset;
+	if (newPos.x > max)
+	{
+		dir = -dir;
+		newPos.x = max - (newPos.x - max);
+	}
+	else if (newPos.x < min)
+	{
+		dir = -dir;
+		newPos.x = min + (min - newPos.x);
+	}
+	transform.SetPosition(newPos);
 }
