@@ -545,6 +545,63 @@ namespace System
 
 namespace System
 {
+	struct EventArgs;
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentEventArgs;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangingEventArgs;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangedEventArgs;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentRenameEventArgs;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		struct MemberDescriptor;
+	}
+}
+
+namespace System
+{
 	namespace Collections
 	{
 		namespace Generic
@@ -583,11 +640,6 @@ namespace System
 
 namespace System
 {
-	struct EventArgs;
-}
-
-namespace System
-{
 	namespace Collections
 	{
 		struct ICollection;
@@ -607,6 +659,17 @@ namespace System
 	namespace Collections
 	{
 		struct Queue;
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct IComponentChangeService;
+		}
 	}
 }
 
@@ -784,6 +847,50 @@ namespace UnityEngine
 	namespace Events
 	{
 		template<> struct UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>;
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentEventHandler;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangingEventHandler;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangedEventHandler;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentRenameEventHandler;
+		}
 	}
 }
 /*END TYPE DECLARATIONS*/
@@ -1609,6 +1716,135 @@ namespace System
 
 namespace System
 {
+	struct EventArgs : System::Object
+	{
+		EventArgs(decltype(nullptr) n);
+		EventArgs(Plugin::InternalUse iu, int32_t handle);
+		EventArgs(const EventArgs& other);
+		EventArgs(EventArgs&& other);
+		virtual ~EventArgs();
+		EventArgs& operator=(const EventArgs& other);
+		EventArgs& operator=(decltype(nullptr) other);
+		EventArgs& operator=(EventArgs&& other);
+		bool operator==(const EventArgs& other) const;
+		bool operator!=(const EventArgs& other) const;
+	};
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentEventArgs : System::EventArgs
+			{
+				ComponentEventArgs(decltype(nullptr) n);
+				ComponentEventArgs(Plugin::InternalUse iu, int32_t handle);
+				ComponentEventArgs(const ComponentEventArgs& other);
+				ComponentEventArgs(ComponentEventArgs&& other);
+				virtual ~ComponentEventArgs();
+				ComponentEventArgs& operator=(const ComponentEventArgs& other);
+				ComponentEventArgs& operator=(decltype(nullptr) other);
+				ComponentEventArgs& operator=(ComponentEventArgs&& other);
+				bool operator==(const ComponentEventArgs& other) const;
+				bool operator!=(const ComponentEventArgs& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangingEventArgs : System::EventArgs
+			{
+				ComponentChangingEventArgs(decltype(nullptr) n);
+				ComponentChangingEventArgs(Plugin::InternalUse iu, int32_t handle);
+				ComponentChangingEventArgs(const ComponentChangingEventArgs& other);
+				ComponentChangingEventArgs(ComponentChangingEventArgs&& other);
+				virtual ~ComponentChangingEventArgs();
+				ComponentChangingEventArgs& operator=(const ComponentChangingEventArgs& other);
+				ComponentChangingEventArgs& operator=(decltype(nullptr) other);
+				ComponentChangingEventArgs& operator=(ComponentChangingEventArgs&& other);
+				bool operator==(const ComponentChangingEventArgs& other) const;
+				bool operator!=(const ComponentChangingEventArgs& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangedEventArgs : System::EventArgs
+			{
+				ComponentChangedEventArgs(decltype(nullptr) n);
+				ComponentChangedEventArgs(Plugin::InternalUse iu, int32_t handle);
+				ComponentChangedEventArgs(const ComponentChangedEventArgs& other);
+				ComponentChangedEventArgs(ComponentChangedEventArgs&& other);
+				virtual ~ComponentChangedEventArgs();
+				ComponentChangedEventArgs& operator=(const ComponentChangedEventArgs& other);
+				ComponentChangedEventArgs& operator=(decltype(nullptr) other);
+				ComponentChangedEventArgs& operator=(ComponentChangedEventArgs&& other);
+				bool operator==(const ComponentChangedEventArgs& other) const;
+				bool operator!=(const ComponentChangedEventArgs& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentRenameEventArgs : System::EventArgs
+			{
+				ComponentRenameEventArgs(decltype(nullptr) n);
+				ComponentRenameEventArgs(Plugin::InternalUse iu, int32_t handle);
+				ComponentRenameEventArgs(const ComponentRenameEventArgs& other);
+				ComponentRenameEventArgs(ComponentRenameEventArgs&& other);
+				virtual ~ComponentRenameEventArgs();
+				ComponentRenameEventArgs& operator=(const ComponentRenameEventArgs& other);
+				ComponentRenameEventArgs& operator=(decltype(nullptr) other);
+				ComponentRenameEventArgs& operator=(ComponentRenameEventArgs&& other);
+				bool operator==(const ComponentRenameEventArgs& other) const;
+				bool operator!=(const ComponentRenameEventArgs& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		struct MemberDescriptor : System::Object
+		{
+			MemberDescriptor(decltype(nullptr) n);
+			MemberDescriptor(Plugin::InternalUse iu, int32_t handle);
+			MemberDescriptor(const MemberDescriptor& other);
+			MemberDescriptor(MemberDescriptor&& other);
+			virtual ~MemberDescriptor();
+			MemberDescriptor& operator=(const MemberDescriptor& other);
+			MemberDescriptor& operator=(decltype(nullptr) other);
+			MemberDescriptor& operator=(MemberDescriptor&& other);
+			bool operator==(const MemberDescriptor& other) const;
+			bool operator!=(const MemberDescriptor& other) const;
+		};
+	}
+}
+
+namespace System
+{
 	namespace Collections
 	{
 		namespace Generic
@@ -1678,26 +1914,6 @@ namespace System
 		virtual int32_t Compare(System::String& x, System::String& y);
 		virtual System::Boolean Equals(System::String& x, System::String& y);
 		virtual int32_t GetHashCode(System::String& obj);
-	};
-}
-
-namespace System
-{
-	struct EventArgs : System::Object
-	{
-		EventArgs(decltype(nullptr) n);
-		EventArgs(Plugin::InternalUse iu, int32_t handle);
-		EventArgs(const EventArgs& other);
-		EventArgs(EventArgs&& other);
-		virtual ~EventArgs();
-		EventArgs& operator=(const EventArgs& other);
-		EventArgs& operator=(decltype(nullptr) other);
-		EventArgs& operator=(EventArgs&& other);
-		bool operator==(const EventArgs& other) const;
-		bool operator!=(const EventArgs& other) const;
-		int32_t CppHandle;
-		EventArgs();
-		virtual System::String ToString();
 	};
 }
 
@@ -1786,6 +2002,47 @@ namespace System
 			Queue();
 			virtual int32_t GetCount();
 		};
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct IComponentChangeService : System::Object
+			{
+				IComponentChangeService(decltype(nullptr) n);
+				IComponentChangeService(Plugin::InternalUse iu, int32_t handle);
+				IComponentChangeService(const IComponentChangeService& other);
+				IComponentChangeService(IComponentChangeService&& other);
+				virtual ~IComponentChangeService();
+				IComponentChangeService& operator=(const IComponentChangeService& other);
+				IComponentChangeService& operator=(decltype(nullptr) other);
+				IComponentChangeService& operator=(IComponentChangeService&& other);
+				bool operator==(const IComponentChangeService& other) const;
+				bool operator!=(const IComponentChangeService& other) const;
+				int32_t CppHandle;
+				IComponentChangeService();
+				virtual void OnComponentChanged(System::Object& component, System::ComponentModel::MemberDescriptor& member, System::Object& oldValue, System::Object& newValue);
+				virtual void OnComponentChanging(System::Object& component, System::ComponentModel::MemberDescriptor& member);
+				virtual void AddComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void RemoveComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void AddComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void RemoveComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void AddComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value);
+				virtual void RemoveComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value);
+				virtual void AddComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value);
+				virtual void RemoveComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value);
+				virtual void AddComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void RemoveComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void AddComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void RemoveComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value);
+				virtual void AddComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value);
+				virtual void RemoveComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value);
+			};
+		}
 	}
 }
 
@@ -2321,6 +2578,126 @@ namespace UnityEngine
 			virtual void operator()(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 			void Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
 		};
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentEventHandler : System::Object
+			{
+				ComponentEventHandler(decltype(nullptr) n);
+				ComponentEventHandler(Plugin::InternalUse iu, int32_t handle);
+				ComponentEventHandler(const ComponentEventHandler& other);
+				ComponentEventHandler(ComponentEventHandler&& other);
+				virtual ~ComponentEventHandler();
+				ComponentEventHandler& operator=(const ComponentEventHandler& other);
+				ComponentEventHandler& operator=(decltype(nullptr) other);
+				ComponentEventHandler& operator=(ComponentEventHandler&& other);
+				bool operator==(const ComponentEventHandler& other) const;
+				bool operator!=(const ComponentEventHandler& other) const;
+				int32_t CppHandle;
+				int32_t ClassHandle;
+				ComponentEventHandler();
+				void operator+=(System::ComponentModel::Design::ComponentEventHandler& del);
+				void operator-=(System::ComponentModel::Design::ComponentEventHandler& del);
+				virtual void operator()(System::Object& sender, System::ComponentModel::Design::ComponentEventArgs& e);
+				void Invoke(System::Object& sender, System::ComponentModel::Design::ComponentEventArgs& e);
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangingEventHandler : System::Object
+			{
+				ComponentChangingEventHandler(decltype(nullptr) n);
+				ComponentChangingEventHandler(Plugin::InternalUse iu, int32_t handle);
+				ComponentChangingEventHandler(const ComponentChangingEventHandler& other);
+				ComponentChangingEventHandler(ComponentChangingEventHandler&& other);
+				virtual ~ComponentChangingEventHandler();
+				ComponentChangingEventHandler& operator=(const ComponentChangingEventHandler& other);
+				ComponentChangingEventHandler& operator=(decltype(nullptr) other);
+				ComponentChangingEventHandler& operator=(ComponentChangingEventHandler&& other);
+				bool operator==(const ComponentChangingEventHandler& other) const;
+				bool operator!=(const ComponentChangingEventHandler& other) const;
+				int32_t CppHandle;
+				int32_t ClassHandle;
+				ComponentChangingEventHandler();
+				void operator+=(System::ComponentModel::Design::ComponentChangingEventHandler& del);
+				void operator-=(System::ComponentModel::Design::ComponentChangingEventHandler& del);
+				virtual void operator()(System::Object& sender, System::ComponentModel::Design::ComponentChangingEventArgs& e);
+				void Invoke(System::Object& sender, System::ComponentModel::Design::ComponentChangingEventArgs& e);
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangedEventHandler : System::Object
+			{
+				ComponentChangedEventHandler(decltype(nullptr) n);
+				ComponentChangedEventHandler(Plugin::InternalUse iu, int32_t handle);
+				ComponentChangedEventHandler(const ComponentChangedEventHandler& other);
+				ComponentChangedEventHandler(ComponentChangedEventHandler&& other);
+				virtual ~ComponentChangedEventHandler();
+				ComponentChangedEventHandler& operator=(const ComponentChangedEventHandler& other);
+				ComponentChangedEventHandler& operator=(decltype(nullptr) other);
+				ComponentChangedEventHandler& operator=(ComponentChangedEventHandler&& other);
+				bool operator==(const ComponentChangedEventHandler& other) const;
+				bool operator!=(const ComponentChangedEventHandler& other) const;
+				int32_t CppHandle;
+				int32_t ClassHandle;
+				ComponentChangedEventHandler();
+				void operator+=(System::ComponentModel::Design::ComponentChangedEventHandler& del);
+				void operator-=(System::ComponentModel::Design::ComponentChangedEventHandler& del);
+				virtual void operator()(System::Object& sender, System::ComponentModel::Design::ComponentChangedEventArgs& e);
+				void Invoke(System::Object& sender, System::ComponentModel::Design::ComponentChangedEventArgs& e);
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentRenameEventHandler : System::Object
+			{
+				ComponentRenameEventHandler(decltype(nullptr) n);
+				ComponentRenameEventHandler(Plugin::InternalUse iu, int32_t handle);
+				ComponentRenameEventHandler(const ComponentRenameEventHandler& other);
+				ComponentRenameEventHandler(ComponentRenameEventHandler&& other);
+				virtual ~ComponentRenameEventHandler();
+				ComponentRenameEventHandler& operator=(const ComponentRenameEventHandler& other);
+				ComponentRenameEventHandler& operator=(decltype(nullptr) other);
+				ComponentRenameEventHandler& operator=(ComponentRenameEventHandler&& other);
+				bool operator==(const ComponentRenameEventHandler& other) const;
+				bool operator!=(const ComponentRenameEventHandler& other) const;
+				int32_t CppHandle;
+				int32_t ClassHandle;
+				ComponentRenameEventHandler();
+				void operator+=(System::ComponentModel::Design::ComponentRenameEventHandler& del);
+				void operator-=(System::ComponentModel::Design::ComponentRenameEventHandler& del);
+				virtual void operator()(System::Object& sender, System::ComponentModel::Design::ComponentRenameEventArgs& e);
+				void Invoke(System::Object& sender, System::ComponentModel::Design::ComponentRenameEventArgs& e);
+			};
+		}
 	}
 }
 /*END TYPE DEFINITIONS*/

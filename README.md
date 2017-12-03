@@ -202,7 +202,6 @@ Note that the code generator does not support (yet):
 * `Array` methods (e.g. `IndexOf`)
 * `string` methods (e.g. `Substring`)
 * Default parameters
-* Overriding events
 * Deriving from classes without a default constructor
 * `decimal`
 * C# pointers

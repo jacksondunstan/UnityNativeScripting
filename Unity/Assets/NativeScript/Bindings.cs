@@ -379,14 +379,14 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericIComparerSystemStringConstructor,
 			IntPtr releaseSystemStringComparer,
 			IntPtr systemStringComparerConstructor,
-			IntPtr releaseSystemEventArgs,
-			IntPtr systemEventArgsConstructor,
 			IntPtr releaseSystemCollectionsICollection,
 			IntPtr systemCollectionsICollectionConstructor,
 			IntPtr releaseSystemCollectionsIList,
 			IntPtr systemCollectionsIListConstructor,
 			IntPtr releaseSystemCollectionsQueue,
 			IntPtr systemCollectionsQueueConstructor,
+			IntPtr releaseSystemComponentModelDesignIComponentChangeService,
+			IntPtr systemComponentModelDesignIComponentChangeServiceConstructor,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -476,7 +476,27 @@ namespace NativeScript
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove,
-			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentEventHandler,
+			IntPtr systemComponentModelDesignComponentEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentEventHandlerInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentChangingEventHandler,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentChangedEventHandler,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentRenameEventHandler,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerInvoke
 			/*END INIT PARAMS*/);
 		
 		public delegate void SetCsharpExceptionDelegate(int handle);
@@ -496,9 +516,6 @@ namespace NativeScript
 		
 		public delegate int SystemStringComparerGetHashCodeDelegate(int thisHandle, int param0);
 		public static SystemStringComparerGetHashCodeDelegate SystemStringComparerGetHashCode;
-		
-		public delegate int SystemEventArgsToStringDelegate(int thisHandle);
-		public static SystemEventArgsToStringDelegate SystemEventArgsToString;
 		
 		public delegate void SystemCollectionsICollectionCopyToDelegate(int thisHandle, int param0, int param1);
 		public static SystemCollectionsICollectionCopyToDelegate SystemCollectionsICollectionCopyTo;
@@ -566,6 +583,54 @@ namespace NativeScript
 		public delegate int SystemCollectionsQueueGetCountDelegate(int thisHandle);
 		public static SystemCollectionsQueueGetCountDelegate SystemCollectionsQueueGetCount;
 		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceOnComponentChangedDelegate(int thisHandle, int param0, int param1, int param2, int param3);
+		public static SystemComponentModelDesignIComponentChangeServiceOnComponentChangedDelegate SystemComponentModelDesignIComponentChangeServiceOnComponentChanged;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceOnComponentChangingDelegate(int thisHandle, int param0, int param1);
+		public static SystemComponentModelDesignIComponentChangeServiceOnComponentChangingDelegate SystemComponentModelDesignIComponentChangeServiceOnComponentChanging;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceAddComponentAddedDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceAddComponentAddedDelegate SystemComponentModelDesignIComponentChangeServiceAddComponentAdded;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentAddedDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentAddedDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdded;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceAddComponentAddingDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceAddComponentAddingDelegate SystemComponentModelDesignIComponentChangeServiceAddComponentAdding;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentAddingDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentAddingDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdding;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceAddComponentChangedDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceAddComponentChangedDelegate SystemComponentModelDesignIComponentChangeServiceAddComponentChanged;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentChangedDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentChangedDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanged;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceAddComponentChangingDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceAddComponentChangingDelegate SystemComponentModelDesignIComponentChangeServiceAddComponentChanging;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentChangingDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentChangingDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanging;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceAddComponentRemovedDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceAddComponentRemovedDelegate SystemComponentModelDesignIComponentChangeServiceAddComponentRemoved;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemovedDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemovedDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoved;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceAddComponentRemovingDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceAddComponentRemovingDelegate SystemComponentModelDesignIComponentChangeServiceAddComponentRemoving;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemovingDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemovingDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceAddComponentRenameDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceAddComponentRenameDelegate SystemComponentModelDesignIComponentChangeServiceAddComponentRename;
+		
+		public delegate void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRenameDelegate(int thisHandle, int param0);
+		public static SystemComponentModelDesignIComponentChangeServiceRemoveComponentRenameDelegate SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename;
+		
 		public delegate void MyGameMonoBehavioursTestScriptAwakeDelegate(int thisHandle);
 		public static MyGameMonoBehavioursTestScriptAwakeDelegate MyGameMonoBehavioursTestScriptAwake;
 		
@@ -601,6 +666,18 @@ namespace NativeScript
 		
 		public delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvokeDelegate(int thisHandle, UnityEngine.SceneManagement.Scene param0, UnityEngine.SceneManagement.LoadSceneMode param1);
 		public static UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvokeDelegate UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke;
+		
+		public delegate void SystemComponentModelDesignComponentEventHandlerNativeInvokeDelegate(int thisHandle, int param0, int param1);
+		public static SystemComponentModelDesignComponentEventHandlerNativeInvokeDelegate SystemComponentModelDesignComponentEventHandlerNativeInvoke;
+		
+		public delegate void SystemComponentModelDesignComponentChangingEventHandlerNativeInvokeDelegate(int thisHandle, int param0, int param1);
+		public static SystemComponentModelDesignComponentChangingEventHandlerNativeInvokeDelegate SystemComponentModelDesignComponentChangingEventHandlerNativeInvoke;
+		
+		public delegate void SystemComponentModelDesignComponentChangedEventHandlerNativeInvokeDelegate(int thisHandle, int param0, int param1);
+		public static SystemComponentModelDesignComponentChangedEventHandlerNativeInvokeDelegate SystemComponentModelDesignComponentChangedEventHandlerNativeInvoke;
+		
+		public delegate void SystemComponentModelDesignComponentRenameEventHandlerNativeInvokeDelegate(int thisHandle, int param0, int param1);
+		public static SystemComponentModelDesignComponentRenameEventHandlerNativeInvokeDelegate SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke;
 		
 		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegate(int param0);
 		public static SetCsharpExceptionSystemNullReferenceExceptionDelegate SetCsharpExceptionSystemNullReferenceException;
@@ -808,14 +885,14 @@ namespace NativeScript
 			IntPtr systemCollectionsGenericIComparerSystemStringConstructor,
 			IntPtr releaseSystemStringComparer,
 			IntPtr systemStringComparerConstructor,
-			IntPtr releaseSystemEventArgs,
-			IntPtr systemEventArgsConstructor,
 			IntPtr releaseSystemCollectionsICollection,
 			IntPtr systemCollectionsICollectionConstructor,
 			IntPtr releaseSystemCollectionsIList,
 			IntPtr systemCollectionsIListConstructor,
 			IntPtr releaseSystemCollectionsQueue,
 			IntPtr systemCollectionsQueueConstructor,
+			IntPtr releaseSystemComponentModelDesignIComponentChangeService,
+			IntPtr systemComponentModelDesignIComponentChangeServiceConstructor,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -905,7 +982,27 @@ namespace NativeScript
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd,
 			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove,
-			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke
+			IntPtr unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentEventHandler,
+			IntPtr systemComponentModelDesignComponentEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentEventHandlerInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentChangingEventHandler,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentChangingEventHandlerInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentChangedEventHandler,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentChangedEventHandlerInvoke,
+			IntPtr releaseSystemComponentModelDesignComponentRenameEventHandler,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerConstructor,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerAdd,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerRemove,
+			IntPtr systemComponentModelDesignComponentRenameEventHandlerInvoke
 			/*END INIT PARAMS*/);
 		
 		[DllImport(PluginName)]
@@ -926,9 +1023,6 @@ namespace NativeScript
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SystemStringComparerGetHashCode(int thisHandle, int param0);
-		
-		[DllImport(Constants.PluginName)]
-		public static extern void SystemEventArgsToString(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SystemCollectionsICollectionCopyTo(int thisHandle, int param0, int param1);
@@ -997,6 +1091,54 @@ namespace NativeScript
 		public static extern void SystemCollectionsQueueGetCount(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceOnComponentChanged(int thisHandle, int param0, int param1, int param2, int param3);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceOnComponentChanging(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceAddComponentAdded(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdded(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceAddComponentAdding(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdding(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceAddComponentChanged(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanged(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceAddComponentChanging(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanging(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceAddComponentRemoved(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoved(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceAddComponentRemoving(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceAddComponentRename(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename(int thisHandle, int param0);
+		
+		[DllImport(Constants.PluginName)]
 		public static extern void MyGameMonoBehavioursTestScriptAwake(int thisHandle);
 		
 		[DllImport(Constants.PluginName)]
@@ -1031,6 +1173,18 @@ namespace NativeScript
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke(int thisHandle, UnityEngine.SceneManagement.Scene param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignComponentEventHandlerNativeInvoke(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignComponentChangingEventHandlerNativeInvoke(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignComponentChangedEventHandlerNativeInvoke(int thisHandle, int param0, int param1);
+		
+		[DllImport(Constants.PluginName)]
+		public static extern void SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke(int thisHandle, int param0, int param1);
 		
 		[DllImport(Constants.PluginName)]
 		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle, int param0);
@@ -1148,14 +1302,14 @@ namespace NativeScript
 		delegate void ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(int handle);
 		delegate void SystemStringComparerConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemStringComparerDelegate(int handle);
-		delegate void SystemEventArgsConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemEventArgsDelegate(int handle);
 		delegate void SystemCollectionsICollectionConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemCollectionsICollectionDelegate(int handle);
 		delegate void SystemCollectionsIListConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemCollectionsIListDelegate(int handle);
 		delegate void SystemCollectionsQueueConstructorDelegate(int cppHandle, ref int handle);
 		delegate void ReleaseSystemCollectionsQueueDelegate(int handle);
+		delegate void SystemComponentModelDesignIComponentChangeServiceConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate(int handle);
 		delegate int BoxBooleanDelegate(bool val);
 		delegate bool UnboxBooleanDelegate(int valHandle);
 		delegate int BoxSByteDelegate(sbyte val);
@@ -1246,6 +1400,26 @@ namespace NativeScript
 		delegate void ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeDelegate(int handle, int classHandle);
 		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAddDelegate(int thisHandle, int delHandle);
 		delegate void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentEventHandlerInvokeDelegate(int thisHandle, int senderHandle, int eHandle);
+		delegate void SystemComponentModelDesignComponentEventHandlerConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemComponentModelDesignComponentEventHandlerDelegate(int handle, int classHandle);
+		delegate void SystemComponentModelDesignComponentEventHandlerAddDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentEventHandlerRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentChangingEventHandlerInvokeDelegate(int thisHandle, int senderHandle, int eHandle);
+		delegate void SystemComponentModelDesignComponentChangingEventHandlerConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemComponentModelDesignComponentChangingEventHandlerDelegate(int handle, int classHandle);
+		delegate void SystemComponentModelDesignComponentChangingEventHandlerAddDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentChangingEventHandlerRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentChangedEventHandlerInvokeDelegate(int thisHandle, int senderHandle, int eHandle);
+		delegate void SystemComponentModelDesignComponentChangedEventHandlerConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemComponentModelDesignComponentChangedEventHandlerDelegate(int handle, int classHandle);
+		delegate void SystemComponentModelDesignComponentChangedEventHandlerAddDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentChangedEventHandlerRemoveDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentRenameEventHandlerInvokeDelegate(int thisHandle, int senderHandle, int eHandle);
+		delegate void SystemComponentModelDesignComponentRenameEventHandlerConstructorDelegate(int cppHandle, ref int handle, ref int classHandle);
+		delegate void ReleaseSystemComponentModelDesignComponentRenameEventHandlerDelegate(int handle, int classHandle);
+		delegate void SystemComponentModelDesignComponentRenameEventHandlerAddDelegate(int thisHandle, int delHandle);
+		delegate void SystemComponentModelDesignComponentRenameEventHandlerRemoveDelegate(int thisHandle, int delHandle);
 		/*END DELEGATE TYPES*/
 		
 		public static Exception UnhandledCppException;
@@ -1285,7 +1459,6 @@ namespace NativeScript
 			SystemStringComparerCompare = GetDelegate<SystemStringComparerCompareDelegate>(libraryHandle, "SystemStringComparerCompare");
 			SystemStringComparerEquals = GetDelegate<SystemStringComparerEqualsDelegate>(libraryHandle, "SystemStringComparerEquals");
 			SystemStringComparerGetHashCode = GetDelegate<SystemStringComparerGetHashCodeDelegate>(libraryHandle, "SystemStringComparerGetHashCode");
-			SystemEventArgsToString = GetDelegate<SystemEventArgsToStringDelegate>(libraryHandle, "SystemEventArgsToString");
 			SystemCollectionsICollectionCopyTo = GetDelegate<SystemCollectionsICollectionCopyToDelegate>(libraryHandle, "SystemCollectionsICollectionCopyTo");
 			SystemCollectionsICollectionGetEnumerator = GetDelegate<SystemCollectionsICollectionGetEnumeratorDelegate>(libraryHandle, "SystemCollectionsICollectionGetEnumerator");
 			SystemCollectionsICollectionGetCount = GetDelegate<SystemCollectionsICollectionGetCountDelegate>(libraryHandle, "SystemCollectionsICollectionGetCount");
@@ -1308,6 +1481,22 @@ namespace NativeScript
 			SystemCollectionsIListGetIsSynchronized = GetDelegate<SystemCollectionsIListGetIsSynchronizedDelegate>(libraryHandle, "SystemCollectionsIListGetIsSynchronized");
 			SystemCollectionsIListGetSyncRoot = GetDelegate<SystemCollectionsIListGetSyncRootDelegate>(libraryHandle, "SystemCollectionsIListGetSyncRoot");
 			SystemCollectionsQueueGetCount = GetDelegate<SystemCollectionsQueueGetCountDelegate>(libraryHandle, "SystemCollectionsQueueGetCount");
+			SystemComponentModelDesignIComponentChangeServiceOnComponentChanged = GetDelegate<SystemComponentModelDesignIComponentChangeServiceOnComponentChangedDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceOnComponentChanged");
+			SystemComponentModelDesignIComponentChangeServiceOnComponentChanging = GetDelegate<SystemComponentModelDesignIComponentChangeServiceOnComponentChangingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceOnComponentChanging");
+			SystemComponentModelDesignIComponentChangeServiceAddComponentAdded = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentAddedDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentAdded");
+			SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdded = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentAddedDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdded");
+			SystemComponentModelDesignIComponentChangeServiceAddComponentAdding = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentAddingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentAdding");
+			SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdding = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentAddingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdding");
+			SystemComponentModelDesignIComponentChangeServiceAddComponentChanged = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentChangedDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentChanged");
+			SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanged = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentChangedDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanged");
+			SystemComponentModelDesignIComponentChangeServiceAddComponentChanging = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentChangingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentChanging");
+			SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanging = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentChangingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanging");
+			SystemComponentModelDesignIComponentChangeServiceAddComponentRemoved = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentRemovedDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentRemoved");
+			SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoved = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemovedDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoved");
+			SystemComponentModelDesignIComponentChangeServiceAddComponentRemoving = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentRemovingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentRemoving");
+			SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemovingDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving");
+			SystemComponentModelDesignIComponentChangeServiceAddComponentRename = GetDelegate<SystemComponentModelDesignIComponentChangeServiceAddComponentRenameDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceAddComponentRename");
+			SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename = GetDelegate<SystemComponentModelDesignIComponentChangeServiceRemoveComponentRenameDelegate>(libraryHandle, "SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename");
 			MyGameMonoBehavioursTestScriptAwake = GetDelegate<MyGameMonoBehavioursTestScriptAwakeDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptAwake");
 			MyGameMonoBehavioursTestScriptOnAnimatorIK = GetDelegate<MyGameMonoBehavioursTestScriptOnAnimatorIKDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnAnimatorIK");
 			MyGameMonoBehavioursTestScriptOnCollisionEnter = GetDelegate<MyGameMonoBehavioursTestScriptOnCollisionEnterDelegate>(libraryHandle, "MyGameMonoBehavioursTestScriptOnCollisionEnter");
@@ -1320,6 +1509,10 @@ namespace NativeScript
 			SystemAppDomainInitializerNativeInvoke = GetDelegate<SystemAppDomainInitializerNativeInvokeDelegate>(libraryHandle, "SystemAppDomainInitializerNativeInvoke");
 			UnityEngineEventsUnityActionNativeInvoke = GetDelegate<UnityEngineEventsUnityActionNativeInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionNativeInvoke");
 			UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke = GetDelegate<UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvokeDelegate>(libraryHandle, "UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke");
+			SystemComponentModelDesignComponentEventHandlerNativeInvoke = GetDelegate<SystemComponentModelDesignComponentEventHandlerNativeInvokeDelegate>(libraryHandle, "SystemComponentModelDesignComponentEventHandlerNativeInvoke");
+			SystemComponentModelDesignComponentChangingEventHandlerNativeInvoke = GetDelegate<SystemComponentModelDesignComponentChangingEventHandlerNativeInvokeDelegate>(libraryHandle, "SystemComponentModelDesignComponentChangingEventHandlerNativeInvoke");
+			SystemComponentModelDesignComponentChangedEventHandlerNativeInvoke = GetDelegate<SystemComponentModelDesignComponentChangedEventHandlerNativeInvokeDelegate>(libraryHandle, "SystemComponentModelDesignComponentChangedEventHandlerNativeInvoke");
+			SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke = GetDelegate<SystemComponentModelDesignComponentRenameEventHandlerNativeInvokeDelegate>(libraryHandle, "SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke");
 			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegate>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
 
@@ -1438,14 +1631,14 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemStringConstructorDelegate(SystemCollectionsGenericIComparerSystemStringConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemStringComparerDelegate(ReleaseSystemStringComparer)),
 				Marshal.GetFunctionPointerForDelegate(new SystemStringComparerConstructorDelegate(SystemStringComparerConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemEventArgsDelegate(ReleaseSystemEventArgs)),
-				Marshal.GetFunctionPointerForDelegate(new SystemEventArgsConstructorDelegate(SystemEventArgsConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsICollectionDelegate(ReleaseSystemCollectionsICollection)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsICollectionConstructorDelegate(SystemCollectionsICollectionConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsIListDelegate(ReleaseSystemCollectionsIList)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIListConstructorDelegate(SystemCollectionsIListConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsQueueDelegate(ReleaseSystemCollectionsQueue)),
 				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsQueueConstructorDelegate(SystemCollectionsQueueConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate(ReleaseSystemComponentModelDesignIComponentChangeService)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignIComponentChangeServiceConstructorDelegate(SystemComponentModelDesignIComponentChangeServiceConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new BoxBooleanDelegate(BoxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxBooleanDelegate(UnboxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new BoxSByteDelegate(BoxSByte)),
@@ -1535,7 +1728,27 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructorDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAddDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemoveDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke))
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvokeDelegate(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignComponentEventHandlerDelegate(ReleaseSystemComponentModelDesignComponentEventHandler)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentEventHandlerConstructorDelegate(SystemComponentModelDesignComponentEventHandlerConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentEventHandlerAddDelegate(SystemComponentModelDesignComponentEventHandlerAdd)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentEventHandlerRemoveDelegate(SystemComponentModelDesignComponentEventHandlerRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentEventHandlerInvokeDelegate(SystemComponentModelDesignComponentEventHandlerInvoke)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignComponentChangingEventHandlerDelegate(ReleaseSystemComponentModelDesignComponentChangingEventHandler)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangingEventHandlerConstructorDelegate(SystemComponentModelDesignComponentChangingEventHandlerConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangingEventHandlerAddDelegate(SystemComponentModelDesignComponentChangingEventHandlerAdd)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangingEventHandlerRemoveDelegate(SystemComponentModelDesignComponentChangingEventHandlerRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangingEventHandlerInvokeDelegate(SystemComponentModelDesignComponentChangingEventHandlerInvoke)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignComponentChangedEventHandlerDelegate(ReleaseSystemComponentModelDesignComponentChangedEventHandler)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangedEventHandlerConstructorDelegate(SystemComponentModelDesignComponentChangedEventHandlerConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangedEventHandlerAddDelegate(SystemComponentModelDesignComponentChangedEventHandlerAdd)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangedEventHandlerRemoveDelegate(SystemComponentModelDesignComponentChangedEventHandlerRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentChangedEventHandlerInvokeDelegate(SystemComponentModelDesignComponentChangedEventHandlerInvoke)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignComponentRenameEventHandlerDelegate(ReleaseSystemComponentModelDesignComponentRenameEventHandler)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentRenameEventHandlerConstructorDelegate(SystemComponentModelDesignComponentRenameEventHandlerConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentRenameEventHandlerAddDelegate(SystemComponentModelDesignComponentRenameEventHandlerAdd)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentRenameEventHandlerRemoveDelegate(SystemComponentModelDesignComponentRenameEventHandlerRemove)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignComponentRenameEventHandlerInvokeDelegate(SystemComponentModelDesignComponentRenameEventHandlerInvoke))
 				/*END INIT CALL*/
 				);
 			if (UnhandledCppException != null)
@@ -1713,34 +1926,6 @@ namespace NativeScript
 					return returnVal;
 				}
 				return default(int);
-			}
-			
-		}
-		
-		class SystemEventArgs : System.EventArgs
-		{
-			public int CppHandle;
-			
-			public SystemEventArgs(int cppHandle)
-			{
-				CppHandle = cppHandle;
-			}
-			
-			public override string ToString()
-			{
-				if (CppHandle != 0)
-				{
-					int thisHandle = CppHandle;
-					var returnVal = NativeScript.Bindings.SystemEventArgsToString(thisHandle);
-					if (NativeScript.Bindings.UnhandledCppException != null)
-					{
-						Exception ex = NativeScript.Bindings.UnhandledCppException;
-						NativeScript.Bindings.UnhandledCppException = null;
-						throw ex;
-					}
-					return (string)NativeScript.Bindings.ObjectStore.Get(returnVal);
-				}
-				return default(string);
 			}
 			
 		}
@@ -2175,6 +2360,291 @@ namespace NativeScript
 			
 		}
 		
+		class SystemComponentModelDesignIComponentChangeService : System.ComponentModel.Design.IComponentChangeService
+		{
+			public int CppHandle;
+			
+			public SystemComponentModelDesignIComponentChangeService(int cppHandle)
+			{
+				CppHandle = cppHandle;
+			}
+			
+			public void OnComponentChanged(object component, System.ComponentModel.MemberDescriptor member, object oldValue, object newValue)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int componentHandle = NativeScript.Bindings.ObjectStore.GetHandle(component);
+					int memberHandle = NativeScript.Bindings.ObjectStore.GetHandle(member);
+					int oldValueHandle = NativeScript.Bindings.ObjectStore.GetHandle(oldValue);
+					int newValueHandle = NativeScript.Bindings.ObjectStore.GetHandle(newValue);
+					NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceOnComponentChanged(thisHandle, componentHandle, memberHandle, oldValueHandle, newValueHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public void OnComponentChanging(object component, System.ComponentModel.MemberDescriptor member)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int componentHandle = NativeScript.Bindings.ObjectStore.GetHandle(component);
+					int memberHandle = NativeScript.Bindings.ObjectStore.GetHandle(member);
+					NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceOnComponentChanging(thisHandle, componentHandle, memberHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+			public event System.ComponentModel.Design.ComponentEventHandler ComponentAdded
+			{
+				add
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceAddComponentAdded(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+				remove
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdded(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+			public event System.ComponentModel.Design.ComponentEventHandler ComponentAdding
+			{
+				add
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceAddComponentAdding(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+				remove
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdding(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+			public event System.ComponentModel.Design.ComponentChangedEventHandler ComponentChanged
+			{
+				add
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceAddComponentChanged(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+				remove
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanged(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+			public event System.ComponentModel.Design.ComponentChangingEventHandler ComponentChanging
+			{
+				add
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceAddComponentChanging(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+				remove
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanging(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+			public event System.ComponentModel.Design.ComponentEventHandler ComponentRemoved
+			{
+				add
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceAddComponentRemoved(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+				remove
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoved(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+			public event System.ComponentModel.Design.ComponentEventHandler ComponentRemoving
+			{
+				add
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceAddComponentRemoving(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+				remove
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+			public event System.ComponentModel.Design.ComponentRenameEventHandler ComponentRename
+			{
+				add
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceAddComponentRename(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+				remove
+				{
+					if (CppHandle != 0)
+					{
+						int thisHandle = CppHandle;
+						int valueHandle = NativeScript.Bindings.ObjectStore.GetHandle(value);
+						NativeScript.Bindings.SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename(thisHandle, valueHandle);
+						if (NativeScript.Bindings.UnhandledCppException != null)
+						{
+							Exception ex = NativeScript.Bindings.UnhandledCppException;
+							NativeScript.Bindings.UnhandledCppException = null;
+							throw ex;
+						}
+					}
+				}
+			}
+			
+		}
+		
 		class SystemAction
 		{
 			public int CppHandle;
@@ -2393,6 +2863,126 @@ namespace NativeScript
 				{
 					int thisHandle = CppHandle;
 					NativeScript.Bindings.UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke(thisHandle, arg0, arg1);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+		}
+		
+		class SystemComponentModelDesignComponentEventHandler
+		{
+			public int CppHandle;
+			public System.ComponentModel.Design.ComponentEventHandler Delegate;
+			
+			public SystemComponentModelDesignComponentEventHandler(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(object sender, System.ComponentModel.Design.ComponentEventArgs e)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int senderHandle = NativeScript.Bindings.ObjectStore.GetHandle(sender);
+					int eHandle = NativeScript.Bindings.ObjectStore.GetHandle(e);
+					NativeScript.Bindings.SystemComponentModelDesignComponentEventHandlerNativeInvoke(thisHandle, senderHandle, eHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+		}
+		
+		class SystemComponentModelDesignComponentChangingEventHandler
+		{
+			public int CppHandle;
+			public System.ComponentModel.Design.ComponentChangingEventHandler Delegate;
+			
+			public SystemComponentModelDesignComponentChangingEventHandler(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(object sender, System.ComponentModel.Design.ComponentChangingEventArgs e)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int senderHandle = NativeScript.Bindings.ObjectStore.GetHandle(sender);
+					int eHandle = NativeScript.Bindings.ObjectStore.GetHandle(e);
+					NativeScript.Bindings.SystemComponentModelDesignComponentChangingEventHandlerNativeInvoke(thisHandle, senderHandle, eHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+		}
+		
+		class SystemComponentModelDesignComponentChangedEventHandler
+		{
+			public int CppHandle;
+			public System.ComponentModel.Design.ComponentChangedEventHandler Delegate;
+			
+			public SystemComponentModelDesignComponentChangedEventHandler(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(object sender, System.ComponentModel.Design.ComponentChangedEventArgs e)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int senderHandle = NativeScript.Bindings.ObjectStore.GetHandle(sender);
+					int eHandle = NativeScript.Bindings.ObjectStore.GetHandle(e);
+					NativeScript.Bindings.SystemComponentModelDesignComponentChangedEventHandlerNativeInvoke(thisHandle, senderHandle, eHandle);
+					if (NativeScript.Bindings.UnhandledCppException != null)
+					{
+						Exception ex = NativeScript.Bindings.UnhandledCppException;
+						NativeScript.Bindings.UnhandledCppException = null;
+						throw ex;
+					}
+				}
+			}
+			
+		}
+		
+		class SystemComponentModelDesignComponentRenameEventHandler
+		{
+			public int CppHandle;
+			public System.ComponentModel.Design.ComponentRenameEventHandler Delegate;
+			
+			public SystemComponentModelDesignComponentRenameEventHandler(int cppHandle)
+			{
+				CppHandle = cppHandle;
+				Delegate = NativeInvoke;
+			}
+			
+			public void NativeInvoke(object sender, System.ComponentModel.Design.ComponentRenameEventArgs e)
+			{
+				if (CppHandle != 0)
+				{
+					int thisHandle = CppHandle;
+					int senderHandle = NativeScript.Bindings.ObjectStore.GetHandle(sender);
+					int eHandle = NativeScript.Bindings.ObjectStore.GetHandle(e);
+					NativeScript.Bindings.SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke(thisHandle, senderHandle, eHandle);
 					if (NativeScript.Bindings.UnhandledCppException != null)
 					{
 						Exception ex = NativeScript.Bindings.UnhandledCppException;
@@ -4685,45 +5275,6 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemEventArgsConstructorDelegate))]
-		static void SystemEventArgsConstructor(int cppHandle, ref int handle)
-		{
-			try
-			{
-				var thiz = new SystemEventArgs(cppHandle);
-				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(ReleaseSystemEventArgsDelegate))]
-		static void ReleaseSystemEventArgs(int handle)
-		{
-			try
-			{
-				NativeScript.Bindings.ObjectStore.Remove(handle);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-			}
-		}
-		
 		[MonoPInvokeCallback(typeof(SystemCollectionsICollectionConstructorDelegate))]
 		static void SystemCollectionsICollectionConstructor(int cppHandle, ref int handle)
 		{
@@ -4824,6 +5375,45 @@ namespace NativeScript
 		
 		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsQueueDelegate))]
 		static void ReleaseSystemCollectionsQueue(int handle)
+		{
+			try
+			{
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignIComponentChangeServiceConstructorDelegate))]
+		static void SystemComponentModelDesignIComponentChangeServiceConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemComponentModelDesignIComponentChangeService(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate))]
+		static void ReleaseSystemComponentModelDesignIComponentChangeService(int handle)
 		{
 			try
 			{
@@ -6782,6 +7372,434 @@ namespace NativeScript
 			{
 				var thiz = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				var del = (UnityEngine.Events.UnityAction<UnityEngine.SceneManagement.Scene, UnityEngine.SceneManagement.LoadSceneMode>)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz -= del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentEventHandlerInvokeDelegate))]
+		static void SystemComponentModelDesignComponentEventHandlerInvoke(int thisHandle, int senderHandle, int eHandle)
+		{
+			try
+			{
+				var sender = NativeScript.Bindings.ObjectStore.Get(senderHandle);
+				var e = (System.ComponentModel.Design.ComponentEventArgs)NativeScript.Bindings.ObjectStore.Get(eHandle);
+				((System.ComponentModel.Design.ComponentEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle))(sender, e);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentEventHandlerConstructorDelegate))]
+		static void SystemComponentModelDesignComponentEventHandlerConstructor(int cppHandle, ref int handle, ref int classHandle)
+		{
+			try
+			{
+				var thiz = new SystemComponentModelDesignComponentEventHandler(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignComponentEventHandlerDelegate))]
+		static void ReleaseSystemComponentModelDesignComponentEventHandler(int handle, int classHandle)
+		{
+			try
+			{
+				if (classHandle != 0)
+				{
+					var thiz = (SystemComponentModelDesignComponentEventHandler)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentEventHandlerAddDelegate))]
+		static void SystemComponentModelDesignComponentEventHandlerAdd(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentEventHandlerRemoveDelegate))]
+		static void SystemComponentModelDesignComponentEventHandlerRemove(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz -= del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangingEventHandlerInvokeDelegate))]
+		static void SystemComponentModelDesignComponentChangingEventHandlerInvoke(int thisHandle, int senderHandle, int eHandle)
+		{
+			try
+			{
+				var sender = NativeScript.Bindings.ObjectStore.Get(senderHandle);
+				var e = (System.ComponentModel.Design.ComponentChangingEventArgs)NativeScript.Bindings.ObjectStore.Get(eHandle);
+				((System.ComponentModel.Design.ComponentChangingEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle))(sender, e);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangingEventHandlerConstructorDelegate))]
+		static void SystemComponentModelDesignComponentChangingEventHandlerConstructor(int cppHandle, ref int handle, ref int classHandle)
+		{
+			try
+			{
+				var thiz = new SystemComponentModelDesignComponentChangingEventHandler(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignComponentChangingEventHandlerDelegate))]
+		static void ReleaseSystemComponentModelDesignComponentChangingEventHandler(int handle, int classHandle)
+		{
+			try
+			{
+				if (classHandle != 0)
+				{
+					var thiz = (SystemComponentModelDesignComponentChangingEventHandler)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangingEventHandlerAddDelegate))]
+		static void SystemComponentModelDesignComponentChangingEventHandlerAdd(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentChangingEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentChangingEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangingEventHandlerRemoveDelegate))]
+		static void SystemComponentModelDesignComponentChangingEventHandlerRemove(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentChangingEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentChangingEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz -= del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangedEventHandlerInvokeDelegate))]
+		static void SystemComponentModelDesignComponentChangedEventHandlerInvoke(int thisHandle, int senderHandle, int eHandle)
+		{
+			try
+			{
+				var sender = NativeScript.Bindings.ObjectStore.Get(senderHandle);
+				var e = (System.ComponentModel.Design.ComponentChangedEventArgs)NativeScript.Bindings.ObjectStore.Get(eHandle);
+				((System.ComponentModel.Design.ComponentChangedEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle))(sender, e);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangedEventHandlerConstructorDelegate))]
+		static void SystemComponentModelDesignComponentChangedEventHandlerConstructor(int cppHandle, ref int handle, ref int classHandle)
+		{
+			try
+			{
+				var thiz = new SystemComponentModelDesignComponentChangedEventHandler(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignComponentChangedEventHandlerDelegate))]
+		static void ReleaseSystemComponentModelDesignComponentChangedEventHandler(int handle, int classHandle)
+		{
+			try
+			{
+				if (classHandle != 0)
+				{
+					var thiz = (SystemComponentModelDesignComponentChangedEventHandler)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangedEventHandlerAddDelegate))]
+		static void SystemComponentModelDesignComponentChangedEventHandlerAdd(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentChangedEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentChangedEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentChangedEventHandlerRemoveDelegate))]
+		static void SystemComponentModelDesignComponentChangedEventHandlerRemove(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentChangedEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentChangedEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz -= del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentRenameEventHandlerInvokeDelegate))]
+		static void SystemComponentModelDesignComponentRenameEventHandlerInvoke(int thisHandle, int senderHandle, int eHandle)
+		{
+			try
+			{
+				var sender = NativeScript.Bindings.ObjectStore.Get(senderHandle);
+				var e = (System.ComponentModel.Design.ComponentRenameEventArgs)NativeScript.Bindings.ObjectStore.Get(eHandle);
+				((System.ComponentModel.Design.ComponentRenameEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle))(sender, e);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentRenameEventHandlerConstructorDelegate))]
+		static void SystemComponentModelDesignComponentRenameEventHandlerConstructor(int cppHandle, ref int handle, ref int classHandle)
+		{
+			try
+			{
+				var thiz = new SystemComponentModelDesignComponentRenameEventHandler(cppHandle);
+				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignComponentRenameEventHandlerDelegate))]
+		static void ReleaseSystemComponentModelDesignComponentRenameEventHandler(int handle, int classHandle)
+		{
+			try
+			{
+				if (classHandle != 0)
+				{
+					var thiz = (SystemComponentModelDesignComponentRenameEventHandler)NativeScript.Bindings.ObjectStore.Remove(classHandle);
+					thiz.CppHandle = 0;
+				}
+				NativeScript.Bindings.ObjectStore.Remove(handle);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentRenameEventHandlerAddDelegate))]
+		static void SystemComponentModelDesignComponentRenameEventHandlerAdd(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentRenameEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentRenameEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
+				thiz += del;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignComponentRenameEventHandlerRemoveDelegate))]
+		static void SystemComponentModelDesignComponentRenameEventHandlerRemove(int thisHandle, int delHandle)
+		{
+			try
+			{
+				var thiz = (System.ComponentModel.Design.ComponentRenameEventHandler)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var del = (System.ComponentModel.Design.ComponentRenameEventHandler)NativeScript.Bindings.ObjectStore.Get(delHandle);
 				thiz -= del;
 			}
 			catch (System.NullReferenceException ex)

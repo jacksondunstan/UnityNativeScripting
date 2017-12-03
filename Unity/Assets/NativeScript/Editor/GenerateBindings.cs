@@ -102,6 +102,7 @@ namespace NativeScript
 			public int MaxSimultaneous;
 			public JsonMethod[] OverrideMethods;
 			public JsonProperty[] OverrideProperties;
+			public JsonEvent[] OverrideEvents;
 		}
 		
 		[Serializable]
@@ -6821,6 +6822,115 @@ namespace NativeScript
 				}
 			}
 			
+			// All abstract events
+			foreach (EventInfo eventInfo in type.GetEvents())
+			{
+				MethodInfo addMethodInfo = eventInfo.GetAddMethod();
+				MethodInfo removeMethodInfo = eventInfo.GetRemoveMethod();
+				if ((addMethodInfo == null || !addMethodInfo.IsAbstract) &&
+					(removeMethodInfo == null || !removeMethodInfo.IsAbstract))
+				{
+					continue;
+				}
+				AppendBaseTypeEvent(
+					type,
+					typeName,
+					cppTypeName,
+					typeParams,
+					eventInfo,
+					addMethodInfo,
+					removeMethodInfo,
+					indent,
+					builders);
+			}
+			
+			// All interface events
+			if (type.IsInterface)
+			{
+				foreach (Type interfaceType in type.GetInterfaces())
+				{
+					foreach (EventInfo eventInfo in interfaceType.GetEvents())
+					{
+						MethodInfo addMethodInfo = eventInfo.GetAddMethod();
+						MethodInfo removeMethodInfo = eventInfo.GetRemoveMethod();
+						if ((addMethodInfo == null || !addMethodInfo.IsAbstract) &&
+							(removeMethodInfo == null || !removeMethodInfo.IsAbstract))
+						{
+							continue;
+						}
+						AppendBaseTypeEvent(
+							type,
+							typeName,
+							cppTypeName,
+							typeParams,
+							eventInfo,
+							addMethodInfo,
+							removeMethodInfo,
+							indent,
+							builders);
+					}
+				}
+			}
+			
+			// Specified virtual events
+			if (jsonBaseType.OverrideEvents != null)
+			{
+				EventInfo[] events = type.GetEvents();
+				foreach (JsonEvent jsonEvent in jsonBaseType.OverrideEvents)
+				{
+					EventInfo eventInfo = null;
+					foreach (EventInfo curEventInfo in events)
+					{
+						if (curEventInfo.Name == jsonEvent.Name)
+						{
+							eventInfo = curEventInfo;
+							break;
+						}
+					}
+					if (eventInfo == null)
+					{
+						// Throw an exception so the user knows what to fix in the JSON
+						StringBuilder errorBuilder = new StringBuilder(1024);
+						errorBuilder.Append("Event \"");
+						AppendCsharpTypeName(
+							type,
+							errorBuilder);
+						errorBuilder.Append('.');
+						errorBuilder.Append(jsonEvent.Name);
+						errorBuilder.Append(")\" not found");
+						throw new Exception(errorBuilder.ToString());
+					}
+					
+					MethodInfo addMethodInfo = eventInfo.GetAddMethod();
+					MethodInfo removeMethodInfo = eventInfo.GetRemoveMethod();
+					if ((addMethodInfo == null || !addMethodInfo.IsVirtual) &&
+						(removeMethodInfo == null || !removeMethodInfo.IsVirtual))
+					{
+						// Throw an exception so the user knows what to fix in the JSON
+						StringBuilder errorBuilder = new StringBuilder(1024);
+						errorBuilder.Append("Event \"");
+						AppendCsharpTypeName(
+							type,
+							errorBuilder);
+						errorBuilder.Append('.');
+						errorBuilder.Append(jsonEvent.Name);
+						errorBuilder.Append(
+							")\" doesn't have either a virtual 'add' or 'remove' to override");
+						throw new Exception(errorBuilder.ToString());
+					}
+					AppendBaseTypeEvent(
+						type,
+						typeName,
+						cppTypeName,
+						typeParams,
+						eventInfo,
+						addMethodInfo,
+						removeMethodInfo,
+						indent,
+						builders);
+				}
+			}
+			
 			// C# class (ending)
 			builders.CsharpBaseTypes.Append("\t\t}\n");
 			builders.CsharpBaseTypes.Append("\t\t\n");
@@ -6929,14 +7039,18 @@ namespace NativeScript
 			builders.CsharpBaseTypes.Append('\n');
 			builders.CsharpBaseTypes.Append("\t\t\t{\n");
 			
+			TypeKind propertyTypeKind = GetTypeKind(
+				propertyInfo.PropertyType);
+			
 			if (getMethodInfo != null && getMethodInfo.IsVirtual)
 			{
-				AppendBaseTypeNativeProperty(
+				AppendBaseTypeNativePropertyOrEvent(
 					type,
 					typeName,
 					typeParams,
 					cppTypeName,
-					propertyInfo,
+					propertyInfo.Name,
+					propertyTypeKind,
 					getMethodInfo,
 					"Get",
 					isOverride,
@@ -6946,12 +7060,13 @@ namespace NativeScript
 			
 			if (setMethodInfo != null && setMethodInfo.IsVirtual)
 			{
-				AppendBaseTypeNativeProperty(
+				AppendBaseTypeNativePropertyOrEvent(
 					type,
 					typeName,
 					typeParams,
 					cppTypeName,
-					propertyInfo,
+					propertyInfo.Name,
+					propertyTypeKind,
 					setMethodInfo,
 					"Set",
 					isOverride,
@@ -6963,12 +7078,79 @@ namespace NativeScript
 			builders.CsharpBaseTypes.Append("\t\t\t\n");
 		}
 		
-		static void AppendBaseTypeNativeProperty(
+		static void AppendBaseTypeEvent(
+			Type type,
+			string typeName,
+			string cppTypeName,
+			Type[] typeParams,
+			EventInfo eventInfo,
+			MethodInfo addMethodInfo,
+			MethodInfo removeMethodInfo,
+			int indent,
+			StringBuilders builders)
+		{
+			bool isOverride = IsNonDelegateClass(type);
+			
+			builders.CsharpBaseTypes.Append("\t\t\tpublic ");
+			if (isOverride)
+			{
+				builders.CsharpBaseTypes.Append("override ");
+			}
+			builders.CsharpBaseTypes.Append("event ");
+			AppendCsharpTypeName(
+				eventInfo.EventHandlerType,
+				builders.CsharpBaseTypes);
+			builders.CsharpBaseTypes.Append(' ');
+			builders.CsharpBaseTypes.Append(eventInfo.Name);
+			builders.CsharpBaseTypes.Append('\n');
+			builders.CsharpBaseTypes.Append("\t\t\t{\n");
+			
+			TypeKind eventHandlerTypeKind = GetTypeKind(
+				eventInfo.EventHandlerType);
+			
+			if (addMethodInfo != null && addMethodInfo.IsVirtual)
+			{
+				AppendBaseTypeNativePropertyOrEvent(
+					type,
+					typeName,
+					typeParams,
+					cppTypeName,
+					eventInfo.Name,
+					eventHandlerTypeKind,
+					addMethodInfo,
+					"Add",
+					isOverride,
+					indent,
+					builders);
+			}
+			
+			if (removeMethodInfo != null && removeMethodInfo.IsVirtual)
+			{
+				AppendBaseTypeNativePropertyOrEvent(
+					type,
+					typeName,
+					typeParams,
+					cppTypeName,
+					eventInfo.Name,
+					eventHandlerTypeKind,
+					removeMethodInfo,
+					"Remove",
+					isOverride,
+					indent,
+					builders);
+			}
+			
+			builders.CsharpBaseTypes.Append("\t\t\t}\n");
+			builders.CsharpBaseTypes.Append("\t\t\t\n");
+		}
+		
+		static void AppendBaseTypeNativePropertyOrEvent(
 			Type type,
 			string typeName,
 			Type[] typeParams,
 			string cppTypeName,
-			PropertyInfo propertyInfo,
+			string propertyOrEventName,
+			TypeKind propertyOrEventTypeKind,
 			MethodInfo methodInfo,
 			string operationType,
 			bool isOverride,
@@ -6977,7 +7159,7 @@ namespace NativeScript
 		{
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append(operationType);
-			builders.TempStrBuilder.Append(propertyInfo.Name);
+			builders.TempStrBuilder.Append(propertyOrEventName);
 			string funcName = builders.TempStrBuilder.ToString();
 			
 			AppendCsharpGetDelegateCall(
@@ -7012,8 +7194,6 @@ namespace NativeScript
 			// C# method that calls the C++ binding function
 			ParameterInfo[] invokeParamsWithThis = PrependThisParameter(
 				invokeParams);
-			TypeKind invokeReturnTypeKind = GetTypeKind(
-				propertyInfo.PropertyType);
 			builders.CsharpBaseTypes.Append("\t\t\t\t");
 			builders.CsharpBaseTypes.Append(char.ToLower(operationType[0]));
 			builders.CsharpBaseTypes.Append(
@@ -7026,7 +7206,7 @@ namespace NativeScript
 				methodInfo,
 				nativeInvokeFuncName,
 				invokeParamsWithThis,
-				invokeReturnTypeKind,
+				propertyOrEventTypeKind,
 				5,
 				builders.CsharpBaseTypes);
 			builders.CsharpBaseTypes.Append("\t\t\t\t}\n");

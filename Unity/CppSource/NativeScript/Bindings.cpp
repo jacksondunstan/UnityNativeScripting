@@ -145,14 +145,14 @@ namespace Plugin
 	void (*SystemCollectionsGenericIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemStringComparer)(int32_t handle);
 	void (*SystemStringComparerConstructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemEventArgs)(int32_t handle);
-	void (*SystemEventArgsConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemCollectionsICollection)(int32_t handle);
 	void (*SystemCollectionsICollectionConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemCollectionsIList)(int32_t handle);
 	void (*SystemCollectionsIListConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemCollectionsQueue)(int32_t handle);
 	void (*SystemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemComponentModelDesignIComponentChangeService)(int32_t handle);
+	void (*SystemComponentModelDesignIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle);
 	int32_t (*BoxBoolean)(System::Boolean val);
 	System::Boolean (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
@@ -243,6 +243,26 @@ namespace Plugin
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+	void (*ReleaseSystemComponentModelDesignComponentEventHandler)(int32_t handle, int32_t classHandle);
+	void (*SystemComponentModelDesignComponentEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
+	void (*SystemComponentModelDesignComponentEventHandlerAdd)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentEventHandlerRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle);
+	void (*ReleaseSystemComponentModelDesignComponentChangingEventHandler)(int32_t handle, int32_t classHandle);
+	void (*SystemComponentModelDesignComponentChangingEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
+	void (*SystemComponentModelDesignComponentChangingEventHandlerAdd)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentChangingEventHandlerRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentChangingEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle);
+	void (*ReleaseSystemComponentModelDesignComponentChangedEventHandler)(int32_t handle, int32_t classHandle);
+	void (*SystemComponentModelDesignComponentChangedEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
+	void (*SystemComponentModelDesignComponentChangedEventHandlerAdd)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentChangedEventHandlerRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentChangedEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle);
+	void (*ReleaseSystemComponentModelDesignComponentRenameEventHandler)(int32_t handle, int32_t classHandle);
+	void (*SystemComponentModelDesignComponentRenameEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
+	void (*SystemComponentModelDesignComponentRenameEventHandlerAdd)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentRenameEventHandlerRemove)(int32_t thisHandle, int32_t delHandle);
+	void (*SystemComponentModelDesignComponentRenameEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -417,31 +437,6 @@ namespace Plugin
 		*pRelease = (System::StringComparer*)NextFreeSystemStringComparer;
 		NextFreeSystemStringComparer = pRelease;
 	}
-	int32_t SystemEventArgsFreeListSize;
-	System::EventArgs** SystemEventArgsFreeList;
-	System::EventArgs** NextFreeSystemEventArgs;
-	
-	int32_t StoreSystemEventArgs(System::EventArgs* del)
-	{
-		assert(NextFreeSystemEventArgs != nullptr);
-		System::EventArgs** pNext = NextFreeSystemEventArgs;
-		NextFreeSystemEventArgs = (System::EventArgs**)*pNext;
-		*pNext = del;
-		return (int32_t)(pNext - SystemEventArgsFreeList);
-	}
-	
-	System::EventArgs* GetSystemEventArgs(int32_t handle)
-	{
-		assert(handle >= 0 && handle < SystemEventArgsFreeListSize);
-		return SystemEventArgsFreeList[handle];
-	}
-	
-	void RemoveSystemEventArgs(int32_t handle)
-	{
-		System::EventArgs** pRelease = SystemEventArgsFreeList + handle;
-		*pRelease = (System::EventArgs*)NextFreeSystemEventArgs;
-		NextFreeSystemEventArgs = pRelease;
-	}
 	int32_t SystemCollectionsICollectionFreeListSize;
 	System::Collections::ICollection** SystemCollectionsICollectionFreeList;
 	System::Collections::ICollection** NextFreeSystemCollectionsICollection;
@@ -516,6 +511,31 @@ namespace Plugin
 		System::Collections::Queue** pRelease = SystemCollectionsQueueFreeList + handle;
 		*pRelease = (System::Collections::Queue*)NextFreeSystemCollectionsQueue;
 		NextFreeSystemCollectionsQueue = pRelease;
+	}
+	int32_t SystemComponentModelDesignIComponentChangeServiceFreeListSize;
+	System::ComponentModel::Design::IComponentChangeService** SystemComponentModelDesignIComponentChangeServiceFreeList;
+	System::ComponentModel::Design::IComponentChangeService** NextFreeSystemComponentModelDesignIComponentChangeService;
+	
+	int32_t StoreSystemComponentModelDesignIComponentChangeService(System::ComponentModel::Design::IComponentChangeService* del)
+	{
+		assert(NextFreeSystemComponentModelDesignIComponentChangeService != nullptr);
+		System::ComponentModel::Design::IComponentChangeService** pNext = NextFreeSystemComponentModelDesignIComponentChangeService;
+		NextFreeSystemComponentModelDesignIComponentChangeService = (System::ComponentModel::Design::IComponentChangeService**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemComponentModelDesignIComponentChangeServiceFreeList);
+	}
+	
+	System::ComponentModel::Design::IComponentChangeService* GetSystemComponentModelDesignIComponentChangeService(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemComponentModelDesignIComponentChangeServiceFreeListSize);
+		return SystemComponentModelDesignIComponentChangeServiceFreeList[handle];
+	}
+	
+	void RemoveSystemComponentModelDesignIComponentChangeService(int32_t handle)
+	{
+		System::ComponentModel::Design::IComponentChangeService** pRelease = SystemComponentModelDesignIComponentChangeServiceFreeList + handle;
+		*pRelease = (System::ComponentModel::Design::IComponentChangeService*)NextFreeSystemComponentModelDesignIComponentChangeService;
+		NextFreeSystemComponentModelDesignIComponentChangeService = pRelease;
 	}
 	int32_t SystemActionFreeListSize;
 	System::Action** SystemActionFreeList;
@@ -716,6 +736,106 @@ namespace Plugin
 		UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>** pRelease = UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList + handle;
 		*pRelease = (UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>*)NextFreeUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode;
 		NextFreeUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode = pRelease;
+	}
+	int32_t SystemComponentModelDesignComponentEventHandlerFreeListSize;
+	System::ComponentModel::Design::ComponentEventHandler** SystemComponentModelDesignComponentEventHandlerFreeList;
+	System::ComponentModel::Design::ComponentEventHandler** NextFreeSystemComponentModelDesignComponentEventHandler;
+	
+	int32_t StoreSystemComponentModelDesignComponentEventHandler(System::ComponentModel::Design::ComponentEventHandler* del)
+	{
+		assert(NextFreeSystemComponentModelDesignComponentEventHandler != nullptr);
+		System::ComponentModel::Design::ComponentEventHandler** pNext = NextFreeSystemComponentModelDesignComponentEventHandler;
+		NextFreeSystemComponentModelDesignComponentEventHandler = (System::ComponentModel::Design::ComponentEventHandler**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemComponentModelDesignComponentEventHandlerFreeList);
+	}
+	
+	System::ComponentModel::Design::ComponentEventHandler* GetSystemComponentModelDesignComponentEventHandler(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemComponentModelDesignComponentEventHandlerFreeListSize);
+		return SystemComponentModelDesignComponentEventHandlerFreeList[handle];
+	}
+	
+	void RemoveSystemComponentModelDesignComponentEventHandler(int32_t handle)
+	{
+		System::ComponentModel::Design::ComponentEventHandler** pRelease = SystemComponentModelDesignComponentEventHandlerFreeList + handle;
+		*pRelease = (System::ComponentModel::Design::ComponentEventHandler*)NextFreeSystemComponentModelDesignComponentEventHandler;
+		NextFreeSystemComponentModelDesignComponentEventHandler = pRelease;
+	}
+	int32_t SystemComponentModelDesignComponentChangingEventHandlerFreeListSize;
+	System::ComponentModel::Design::ComponentChangingEventHandler** SystemComponentModelDesignComponentChangingEventHandlerFreeList;
+	System::ComponentModel::Design::ComponentChangingEventHandler** NextFreeSystemComponentModelDesignComponentChangingEventHandler;
+	
+	int32_t StoreSystemComponentModelDesignComponentChangingEventHandler(System::ComponentModel::Design::ComponentChangingEventHandler* del)
+	{
+		assert(NextFreeSystemComponentModelDesignComponentChangingEventHandler != nullptr);
+		System::ComponentModel::Design::ComponentChangingEventHandler** pNext = NextFreeSystemComponentModelDesignComponentChangingEventHandler;
+		NextFreeSystemComponentModelDesignComponentChangingEventHandler = (System::ComponentModel::Design::ComponentChangingEventHandler**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemComponentModelDesignComponentChangingEventHandlerFreeList);
+	}
+	
+	System::ComponentModel::Design::ComponentChangingEventHandler* GetSystemComponentModelDesignComponentChangingEventHandler(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemComponentModelDesignComponentChangingEventHandlerFreeListSize);
+		return SystemComponentModelDesignComponentChangingEventHandlerFreeList[handle];
+	}
+	
+	void RemoveSystemComponentModelDesignComponentChangingEventHandler(int32_t handle)
+	{
+		System::ComponentModel::Design::ComponentChangingEventHandler** pRelease = SystemComponentModelDesignComponentChangingEventHandlerFreeList + handle;
+		*pRelease = (System::ComponentModel::Design::ComponentChangingEventHandler*)NextFreeSystemComponentModelDesignComponentChangingEventHandler;
+		NextFreeSystemComponentModelDesignComponentChangingEventHandler = pRelease;
+	}
+	int32_t SystemComponentModelDesignComponentChangedEventHandlerFreeListSize;
+	System::ComponentModel::Design::ComponentChangedEventHandler** SystemComponentModelDesignComponentChangedEventHandlerFreeList;
+	System::ComponentModel::Design::ComponentChangedEventHandler** NextFreeSystemComponentModelDesignComponentChangedEventHandler;
+	
+	int32_t StoreSystemComponentModelDesignComponentChangedEventHandler(System::ComponentModel::Design::ComponentChangedEventHandler* del)
+	{
+		assert(NextFreeSystemComponentModelDesignComponentChangedEventHandler != nullptr);
+		System::ComponentModel::Design::ComponentChangedEventHandler** pNext = NextFreeSystemComponentModelDesignComponentChangedEventHandler;
+		NextFreeSystemComponentModelDesignComponentChangedEventHandler = (System::ComponentModel::Design::ComponentChangedEventHandler**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemComponentModelDesignComponentChangedEventHandlerFreeList);
+	}
+	
+	System::ComponentModel::Design::ComponentChangedEventHandler* GetSystemComponentModelDesignComponentChangedEventHandler(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemComponentModelDesignComponentChangedEventHandlerFreeListSize);
+		return SystemComponentModelDesignComponentChangedEventHandlerFreeList[handle];
+	}
+	
+	void RemoveSystemComponentModelDesignComponentChangedEventHandler(int32_t handle)
+	{
+		System::ComponentModel::Design::ComponentChangedEventHandler** pRelease = SystemComponentModelDesignComponentChangedEventHandlerFreeList + handle;
+		*pRelease = (System::ComponentModel::Design::ComponentChangedEventHandler*)NextFreeSystemComponentModelDesignComponentChangedEventHandler;
+		NextFreeSystemComponentModelDesignComponentChangedEventHandler = pRelease;
+	}
+	int32_t SystemComponentModelDesignComponentRenameEventHandlerFreeListSize;
+	System::ComponentModel::Design::ComponentRenameEventHandler** SystemComponentModelDesignComponentRenameEventHandlerFreeList;
+	System::ComponentModel::Design::ComponentRenameEventHandler** NextFreeSystemComponentModelDesignComponentRenameEventHandler;
+	
+	int32_t StoreSystemComponentModelDesignComponentRenameEventHandler(System::ComponentModel::Design::ComponentRenameEventHandler* del)
+	{
+		assert(NextFreeSystemComponentModelDesignComponentRenameEventHandler != nullptr);
+		System::ComponentModel::Design::ComponentRenameEventHandler** pNext = NextFreeSystemComponentModelDesignComponentRenameEventHandler;
+		NextFreeSystemComponentModelDesignComponentRenameEventHandler = (System::ComponentModel::Design::ComponentRenameEventHandler**)*pNext;
+		*pNext = del;
+		return (int32_t)(pNext - SystemComponentModelDesignComponentRenameEventHandlerFreeList);
+	}
+	
+	System::ComponentModel::Design::ComponentRenameEventHandler* GetSystemComponentModelDesignComponentRenameEventHandler(int32_t handle)
+	{
+		assert(handle >= 0 && handle < SystemComponentModelDesignComponentRenameEventHandlerFreeListSize);
+		return SystemComponentModelDesignComponentRenameEventHandlerFreeList[handle];
+	}
+	
+	void RemoveSystemComponentModelDesignComponentRenameEventHandler(int32_t handle)
+	{
+		System::ComponentModel::Design::ComponentRenameEventHandler** pRelease = SystemComponentModelDesignComponentRenameEventHandlerFreeList + handle;
+		*pRelease = (System::ComponentModel::Design::ComponentRenameEventHandler*)NextFreeSystemComponentModelDesignComponentRenameEventHandler;
+		NextFreeSystemComponentModelDesignComponentRenameEventHandler = pRelease;
 	}
 	/*END GLOBAL STATE AND FUNCTIONS*/
 }
@@ -4740,6 +4860,525 @@ namespace System
 
 namespace System
 {
+	EventArgs::EventArgs(decltype(nullptr) n)
+		: EventArgs(Plugin::InternalUse::Only, 0)
+	{
+	}
+	
+	EventArgs::EventArgs(Plugin::InternalUse iu, int32_t handle)
+		: System::Object(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	EventArgs::EventArgs(const EventArgs& other)
+		: EventArgs(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	EventArgs::EventArgs(EventArgs&& other)
+		: EventArgs(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	EventArgs::~EventArgs()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	EventArgs& EventArgs::operator=(const EventArgs& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	EventArgs& EventArgs::operator=(decltype(nullptr) other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	EventArgs& EventArgs::operator=(EventArgs&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool EventArgs::operator==(const EventArgs& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool EventArgs::operator!=(const EventArgs& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentEventArgs::ComponentEventArgs(decltype(nullptr) n)
+				: ComponentEventArgs(Plugin::InternalUse::Only, 0)
+			{
+			}
+			
+			ComponentEventArgs::ComponentEventArgs(Plugin::InternalUse iu, int32_t handle)
+				: System::EventArgs(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ComponentEventArgs::ComponentEventArgs(const ComponentEventArgs& other)
+				: ComponentEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ComponentEventArgs::ComponentEventArgs(ComponentEventArgs&& other)
+				: ComponentEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ComponentEventArgs::~ComponentEventArgs()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ComponentEventArgs& ComponentEventArgs::operator=(const ComponentEventArgs& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ComponentEventArgs& ComponentEventArgs::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ComponentEventArgs& ComponentEventArgs::operator=(ComponentEventArgs&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentEventArgs::operator==(const ComponentEventArgs& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentEventArgs::operator!=(const ComponentEventArgs& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentChangingEventArgs::ComponentChangingEventArgs(decltype(nullptr) n)
+				: ComponentChangingEventArgs(Plugin::InternalUse::Only, 0)
+			{
+			}
+			
+			ComponentChangingEventArgs::ComponentChangingEventArgs(Plugin::InternalUse iu, int32_t handle)
+				: System::EventArgs(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ComponentChangingEventArgs::ComponentChangingEventArgs(const ComponentChangingEventArgs& other)
+				: ComponentChangingEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ComponentChangingEventArgs::ComponentChangingEventArgs(ComponentChangingEventArgs&& other)
+				: ComponentChangingEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ComponentChangingEventArgs::~ComponentChangingEventArgs()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ComponentChangingEventArgs& ComponentChangingEventArgs::operator=(const ComponentChangingEventArgs& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ComponentChangingEventArgs& ComponentChangingEventArgs::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ComponentChangingEventArgs& ComponentChangingEventArgs::operator=(ComponentChangingEventArgs&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentChangingEventArgs::operator==(const ComponentChangingEventArgs& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentChangingEventArgs::operator!=(const ComponentChangingEventArgs& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentChangedEventArgs::ComponentChangedEventArgs(decltype(nullptr) n)
+				: ComponentChangedEventArgs(Plugin::InternalUse::Only, 0)
+			{
+			}
+			
+			ComponentChangedEventArgs::ComponentChangedEventArgs(Plugin::InternalUse iu, int32_t handle)
+				: System::EventArgs(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ComponentChangedEventArgs::ComponentChangedEventArgs(const ComponentChangedEventArgs& other)
+				: ComponentChangedEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ComponentChangedEventArgs::ComponentChangedEventArgs(ComponentChangedEventArgs&& other)
+				: ComponentChangedEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ComponentChangedEventArgs::~ComponentChangedEventArgs()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ComponentChangedEventArgs& ComponentChangedEventArgs::operator=(const ComponentChangedEventArgs& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ComponentChangedEventArgs& ComponentChangedEventArgs::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ComponentChangedEventArgs& ComponentChangedEventArgs::operator=(ComponentChangedEventArgs&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentChangedEventArgs::operator==(const ComponentChangedEventArgs& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentChangedEventArgs::operator!=(const ComponentChangedEventArgs& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentRenameEventArgs::ComponentRenameEventArgs(decltype(nullptr) n)
+				: ComponentRenameEventArgs(Plugin::InternalUse::Only, 0)
+			{
+			}
+			
+			ComponentRenameEventArgs::ComponentRenameEventArgs(Plugin::InternalUse iu, int32_t handle)
+				: System::EventArgs(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ComponentRenameEventArgs::ComponentRenameEventArgs(const ComponentRenameEventArgs& other)
+				: ComponentRenameEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ComponentRenameEventArgs::ComponentRenameEventArgs(ComponentRenameEventArgs&& other)
+				: ComponentRenameEventArgs(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ComponentRenameEventArgs::~ComponentRenameEventArgs()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ComponentRenameEventArgs& ComponentRenameEventArgs::operator=(const ComponentRenameEventArgs& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ComponentRenameEventArgs& ComponentRenameEventArgs::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ComponentRenameEventArgs& ComponentRenameEventArgs::operator=(ComponentRenameEventArgs&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentRenameEventArgs::operator==(const ComponentRenameEventArgs& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentRenameEventArgs::operator!=(const ComponentRenameEventArgs& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		MemberDescriptor::MemberDescriptor(decltype(nullptr) n)
+			: MemberDescriptor(Plugin::InternalUse::Only, 0)
+		{
+		}
+		
+		MemberDescriptor::MemberDescriptor(Plugin::InternalUse iu, int32_t handle)
+			: System::Object(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
+		}
+		
+		MemberDescriptor::MemberDescriptor(const MemberDescriptor& other)
+			: MemberDescriptor(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		MemberDescriptor::MemberDescriptor(MemberDescriptor&& other)
+			: MemberDescriptor(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		MemberDescriptor::~MemberDescriptor()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+		}
+		
+		MemberDescriptor& MemberDescriptor::operator=(const MemberDescriptor& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		MemberDescriptor& MemberDescriptor::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		MemberDescriptor& MemberDescriptor::operator=(MemberDescriptor&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool MemberDescriptor::operator==(const MemberDescriptor& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool MemberDescriptor::operator!=(const MemberDescriptor& other) const
+		{
+			return Handle != other.Handle;
+		}
+	}
+}
+
+namespace System
+{
 	namespace Collections
 	{
 		namespace Generic
@@ -5334,184 +5973,6 @@ namespace System
 		catch (...)
 		{
 			System::String msg = "Unhandled exception invoking System::StringComparer";
-			System::Exception ex(msg);
-			Plugin::SetException(ex.Handle);
-			return {};
-		}
-	}
-}
-
-namespace System
-{
-	EventArgs::EventArgs()
-		 : System::Object(nullptr)
-	{
-		CppHandle = Plugin::StoreSystemEventArgs(this);
-		Plugin::SystemEventArgsConstructor(CppHandle, &Handle);
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
-		else
-		{
-			Plugin::RemoveSystemEventArgs(CppHandle);
-			CppHandle = 0;
-		}
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-	}
-	
-	EventArgs::EventArgs(decltype(nullptr) n)
-		: System::Object(Plugin::InternalUse::Only, 0)
-	{
-		CppHandle = Plugin::StoreSystemEventArgs(this);
-	}
-	
-	EventArgs::EventArgs(const EventArgs& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
-	{
-		CppHandle = Plugin::StoreSystemEventArgs(this);
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
-	}
-	
-	EventArgs::EventArgs(EventArgs&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
-	{
-		CppHandle = other.CppHandle;
-		other.Handle = 0;
-		other.CppHandle = 0;
-	}
-	
-	EventArgs::EventArgs(Plugin::InternalUse iu, int32_t handle)
-		: System::Object(iu, handle)
-	{
-		CppHandle = Plugin::StoreSystemEventArgs(this);
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
-	}
-	
-	EventArgs::~EventArgs()
-	{
-		Plugin::RemoveSystemEventArgs(CppHandle);
-		CppHandle = 0;
-		if (Handle)
-		{
-			int32_t handle = Handle;
-			Handle = 0;
-			if (Plugin::DereferenceManagedClassNoRelease(handle))
-			{
-				Plugin::ReleaseSystemEventArgs(handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-		}
-	}
-	
-	EventArgs& EventArgs::operator=(const EventArgs& other)
-	{
-		if (this->Handle)
-		{
-			Plugin::DereferenceManagedClass(this->Handle);
-		}
-		this->Handle = other.Handle;
-		if (this->Handle)
-		{
-			Plugin::ReferenceManagedClass(this->Handle);
-		}
-		return *this;
-	}
-	
-	EventArgs& EventArgs::operator=(decltype(nullptr) other)
-	{
-		if (Handle)
-		{
-			int32_t handle = Handle;
-			Handle = 0;
-			if (Plugin::DereferenceManagedClassNoRelease(handle))
-			{
-				Plugin::ReleaseSystemEventArgs(handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-		}
-		Handle = 0;
-		return *this;
-	}
-	
-	EventArgs& EventArgs::operator=(EventArgs&& other)
-	{
-		Plugin::RemoveSystemEventArgs(CppHandle);
-		CppHandle = 0;
-		if (Handle)
-		{
-			int32_t handle = Handle;
-			Handle = 0;
-			if (Plugin::DereferenceManagedClassNoRelease(handle))
-			{
-				Plugin::ReleaseSystemEventArgs(handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-		}
-		Handle = other.Handle;
-		other.Handle = 0;
-		return *this;
-	}
-	
-	bool EventArgs::operator==(const EventArgs& other) const
-	{
-		return Handle == other.Handle;
-	}
-	
-	bool EventArgs::operator!=(const EventArgs& other) const
-	{
-		return Handle != other.Handle;
-	}
-	
-	System::String EventArgs::ToString()
-	{
-		return nullptr;
-	}
-	
-	DLLEXPORT int32_t SystemEventArgsToString(int32_t cppHandle)
-	{
-		try
-		{
-			return Plugin::GetSystemEventArgs(cppHandle)->ToString().Handle;
-		}
-		catch (System::Exception ex)
-		{
-			Plugin::SetException(ex.Handle);
-			return {};
-		}
-		catch (...)
-		{
-			System::String msg = "Unhandled exception invoking System::EventArgs";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
 			return {};
@@ -6519,6 +6980,537 @@ namespace System
 				System::Exception ex(msg);
 				Plugin::SetException(ex.Handle);
 				return {};
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			IComponentChangeService::IComponentChangeService()
+				 : System::Object(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
+				Plugin::SystemComponentModelDesignIComponentChangeServiceConstructor(CppHandle, &Handle);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemComponentModelDesignIComponentChangeService(CppHandle);
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			IComponentChangeService::IComponentChangeService(decltype(nullptr) n)
+				: System::Object(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
+			}
+			
+			IComponentChangeService::IComponentChangeService(const IComponentChangeService& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			IComponentChangeService::IComponentChangeService(IComponentChangeService&& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+			}
+			
+			IComponentChangeService::IComponentChangeService(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			IComponentChangeService::~IComponentChangeService()
+			{
+				Plugin::RemoveSystemComponentModelDesignIComponentChangeService(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignIComponentChangeService(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			IComponentChangeService& IComponentChangeService::operator=(const IComponentChangeService& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IComponentChangeService& IComponentChangeService::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignIComponentChangeService(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = 0;
+				return *this;
+			}
+			
+			IComponentChangeService& IComponentChangeService::operator=(IComponentChangeService&& other)
+			{
+				Plugin::RemoveSystemComponentModelDesignIComponentChangeService(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignIComponentChangeService(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IComponentChangeService::operator==(const IComponentChangeService& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IComponentChangeService::operator!=(const IComponentChangeService& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			void IComponentChangeService::OnComponentChanged(System::Object& component, System::ComponentModel::MemberDescriptor& member, System::Object& oldValue, System::Object& newValue)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceOnComponentChanged(int32_t cppHandle, int32_t componentHandle, int32_t memberHandle, int32_t oldValueHandle, int32_t newValueHandle)
+			{
+				try
+				{
+					auto param0 = System::Object(Plugin::InternalUse::Only, componentHandle);
+					auto param1 = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
+					auto param2 = System::Object(Plugin::InternalUse::Only, oldValueHandle);
+					auto param3 = System::Object(Plugin::InternalUse::Only, newValueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanged(param0, param1, param2, param3);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::OnComponentChanging(System::Object& component, System::ComponentModel::MemberDescriptor& member)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceOnComponentChanging(int32_t cppHandle, int32_t componentHandle, int32_t memberHandle)
+			{
+				try
+				{
+					auto param0 = System::Object(Plugin::InternalUse::Only, componentHandle);
+					auto param1 = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanging(param0, param1);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::AddComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceAddComponentAdded(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdded(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::RemoveComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdded(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdded(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::AddComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceAddComponentAdding(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdding(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::RemoveComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceRemoveComponentAdding(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdding(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::AddComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceAddComponentChanged(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanged(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::RemoveComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanged(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanged(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::AddComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceAddComponentChanging(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanging(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::RemoveComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceRemoveComponentChanging(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanging(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::AddComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceAddComponentRemoved(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoved(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::RemoveComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoved(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoved(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::AddComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceAddComponentRemoving(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoving(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::RemoveComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRemoving(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoving(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::AddComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceAddComponentRename(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRename(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void IComponentChangeService::RemoveComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignIComponentChangeServiceRemoveComponentRename(int32_t cppHandle, int32_t valueHandle)
+			{
+				try
+				{
+					auto param0 = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
+					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRename(param0);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::IComponentChangeService";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
 			}
 		}
 	}
@@ -10281,6 +11273,946 @@ namespace UnityEngine
 
 namespace System
 {
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentEventHandler::ComponentEventHandler()
+				 : System::Object(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
+				Plugin::SystemComponentModelDesignComponentEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemComponentModelDesignComponentEventHandler(CppHandle);
+					ClassHandle = 0;
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			ComponentEventHandler::ComponentEventHandler(decltype(nullptr) n)
+				: System::Object(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
+				ClassHandle = 0;
+			}
+			
+			ComponentEventHandler::ComponentEventHandler(const ComponentEventHandler& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = other.ClassHandle;
+			}
+			
+			ComponentEventHandler::ComponentEventHandler(ComponentEventHandler&& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				ClassHandle = other.ClassHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+				other.ClassHandle = 0;
+			}
+			
+			ComponentEventHandler::ComponentEventHandler(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = 0;
+			}
+			
+			ComponentEventHandler::~ComponentEventHandler()
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			ComponentEventHandler& ComponentEventHandler::operator=(const ComponentEventHandler& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				ClassHandle = other.ClassHandle;
+				return *this;
+			}
+			
+			ComponentEventHandler& ComponentEventHandler::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = 0;
+				Handle = 0;
+				return *this;
+			}
+			
+			ComponentEventHandler& ComponentEventHandler::operator=(ComponentEventHandler&& other)
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = other.ClassHandle;
+				other.ClassHandle = 0;
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentEventHandler::operator==(const ComponentEventHandler& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentEventHandler::operator!=(const ComponentEventHandler& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			void ComponentEventHandler::operator+=(System::ComponentModel::Design::ComponentEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentEventHandlerAdd(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentEventHandler::operator-=(System::ComponentModel::Design::ComponentEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentEventHandlerRemove(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentEventHandler::operator()(System::Object& sender, System::ComponentModel::Design::ComponentEventArgs& e)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignComponentEventHandlerNativeInvoke(int32_t cppHandle, int32_t senderHandle, int32_t eHandle)
+			{
+				try
+				{
+					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto param1 = System::ComponentModel::Design::ComponentEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentEventHandler(cppHandle)->operator()(param0, param1);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::ComponentEventHandler";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void ComponentEventHandler::Invoke(System::Object& sender, System::ComponentModel::Design::ComponentEventArgs& e)
+			{
+				Plugin::SystemComponentModelDesignComponentEventHandlerInvoke(Handle, sender.Handle, e.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentChangingEventHandler::ComponentChangingEventHandler()
+				 : System::Object(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
+				Plugin::SystemComponentModelDesignComponentChangingEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemComponentModelDesignComponentChangingEventHandler(CppHandle);
+					ClassHandle = 0;
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			ComponentChangingEventHandler::ComponentChangingEventHandler(decltype(nullptr) n)
+				: System::Object(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
+				ClassHandle = 0;
+			}
+			
+			ComponentChangingEventHandler::ComponentChangingEventHandler(const ComponentChangingEventHandler& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = other.ClassHandle;
+			}
+			
+			ComponentChangingEventHandler::ComponentChangingEventHandler(ComponentChangingEventHandler&& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				ClassHandle = other.ClassHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+				other.ClassHandle = 0;
+			}
+			
+			ComponentChangingEventHandler::ComponentChangingEventHandler(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = 0;
+			}
+			
+			ComponentChangingEventHandler::~ComponentChangingEventHandler()
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentChangingEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentChangingEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			ComponentChangingEventHandler& ComponentChangingEventHandler::operator=(const ComponentChangingEventHandler& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				ClassHandle = other.ClassHandle;
+				return *this;
+			}
+			
+			ComponentChangingEventHandler& ComponentChangingEventHandler::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentChangingEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = 0;
+				Handle = 0;
+				return *this;
+			}
+			
+			ComponentChangingEventHandler& ComponentChangingEventHandler::operator=(ComponentChangingEventHandler&& other)
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentChangingEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentChangingEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = other.ClassHandle;
+				other.ClassHandle = 0;
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentChangingEventHandler::operator==(const ComponentChangingEventHandler& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentChangingEventHandler::operator!=(const ComponentChangingEventHandler& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			void ComponentChangingEventHandler::operator+=(System::ComponentModel::Design::ComponentChangingEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentChangingEventHandlerAdd(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentChangingEventHandler::operator-=(System::ComponentModel::Design::ComponentChangingEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentChangingEventHandlerRemove(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentChangingEventHandler::operator()(System::Object& sender, System::ComponentModel::Design::ComponentChangingEventArgs& e)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignComponentChangingEventHandlerNativeInvoke(int32_t cppHandle, int32_t senderHandle, int32_t eHandle)
+			{
+				try
+				{
+					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto param1 = System::ComponentModel::Design::ComponentChangingEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentChangingEventHandler(cppHandle)->operator()(param0, param1);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::ComponentChangingEventHandler";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void ComponentChangingEventHandler::Invoke(System::Object& sender, System::ComponentModel::Design::ComponentChangingEventArgs& e)
+			{
+				Plugin::SystemComponentModelDesignComponentChangingEventHandlerInvoke(Handle, sender.Handle, e.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentChangedEventHandler::ComponentChangedEventHandler()
+				 : System::Object(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
+				Plugin::SystemComponentModelDesignComponentChangedEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemComponentModelDesignComponentChangedEventHandler(CppHandle);
+					ClassHandle = 0;
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			ComponentChangedEventHandler::ComponentChangedEventHandler(decltype(nullptr) n)
+				: System::Object(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
+				ClassHandle = 0;
+			}
+			
+			ComponentChangedEventHandler::ComponentChangedEventHandler(const ComponentChangedEventHandler& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = other.ClassHandle;
+			}
+			
+			ComponentChangedEventHandler::ComponentChangedEventHandler(ComponentChangedEventHandler&& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				ClassHandle = other.ClassHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+				other.ClassHandle = 0;
+			}
+			
+			ComponentChangedEventHandler::ComponentChangedEventHandler(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = 0;
+			}
+			
+			ComponentChangedEventHandler::~ComponentChangedEventHandler()
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentChangedEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentChangedEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			ComponentChangedEventHandler& ComponentChangedEventHandler::operator=(const ComponentChangedEventHandler& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				ClassHandle = other.ClassHandle;
+				return *this;
+			}
+			
+			ComponentChangedEventHandler& ComponentChangedEventHandler::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentChangedEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = 0;
+				Handle = 0;
+				return *this;
+			}
+			
+			ComponentChangedEventHandler& ComponentChangedEventHandler::operator=(ComponentChangedEventHandler&& other)
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentChangedEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentChangedEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = other.ClassHandle;
+				other.ClassHandle = 0;
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentChangedEventHandler::operator==(const ComponentChangedEventHandler& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentChangedEventHandler::operator!=(const ComponentChangedEventHandler& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			void ComponentChangedEventHandler::operator+=(System::ComponentModel::Design::ComponentChangedEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentChangedEventHandlerAdd(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentChangedEventHandler::operator-=(System::ComponentModel::Design::ComponentChangedEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentChangedEventHandlerRemove(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentChangedEventHandler::operator()(System::Object& sender, System::ComponentModel::Design::ComponentChangedEventArgs& e)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignComponentChangedEventHandlerNativeInvoke(int32_t cppHandle, int32_t senderHandle, int32_t eHandle)
+			{
+				try
+				{
+					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto param1 = System::ComponentModel::Design::ComponentChangedEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentChangedEventHandler(cppHandle)->operator()(param0, param1);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::ComponentChangedEventHandler";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void ComponentChangedEventHandler::Invoke(System::Object& sender, System::ComponentModel::Design::ComponentChangedEventArgs& e)
+			{
+				Plugin::SystemComponentModelDesignComponentChangedEventHandlerInvoke(Handle, sender.Handle, e.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			ComponentRenameEventHandler::ComponentRenameEventHandler()
+				 : System::Object(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
+				Plugin::SystemComponentModelDesignComponentRenameEventHandlerConstructor(CppHandle, &Handle, &ClassHandle);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemComponentModelDesignComponentRenameEventHandler(CppHandle);
+					ClassHandle = 0;
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			ComponentRenameEventHandler::ComponentRenameEventHandler(decltype(nullptr) n)
+				: System::Object(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
+				ClassHandle = 0;
+			}
+			
+			ComponentRenameEventHandler::ComponentRenameEventHandler(const ComponentRenameEventHandler& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = other.ClassHandle;
+			}
+			
+			ComponentRenameEventHandler::ComponentRenameEventHandler(ComponentRenameEventHandler&& other)
+				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				ClassHandle = other.ClassHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+				other.ClassHandle = 0;
+			}
+			
+			ComponentRenameEventHandler::ComponentRenameEventHandler(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				ClassHandle = 0;
+			}
+			
+			ComponentRenameEventHandler::~ComponentRenameEventHandler()
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentRenameEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentRenameEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			ComponentRenameEventHandler& ComponentRenameEventHandler::operator=(const ComponentRenameEventHandler& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				ClassHandle = other.ClassHandle;
+				return *this;
+			}
+			
+			ComponentRenameEventHandler& ComponentRenameEventHandler::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentRenameEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = 0;
+				Handle = 0;
+				return *this;
+			}
+			
+			ComponentRenameEventHandler& ComponentRenameEventHandler::operator=(ComponentRenameEventHandler&& other)
+			{
+				Plugin::RemoveSystemComponentModelDesignComponentRenameEventHandler(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					int32_t classHandle = ClassHandle;
+					Handle = 0;
+					ClassHandle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignComponentRenameEventHandler(handle, classHandle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				ClassHandle = other.ClassHandle;
+				other.ClassHandle = 0;
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ComponentRenameEventHandler::operator==(const ComponentRenameEventHandler& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ComponentRenameEventHandler::operator!=(const ComponentRenameEventHandler& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			void ComponentRenameEventHandler::operator+=(System::ComponentModel::Design::ComponentRenameEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentRenameEventHandlerAdd(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentRenameEventHandler::operator-=(System::ComponentModel::Design::ComponentRenameEventHandler& del)
+			{
+				Plugin::SystemComponentModelDesignComponentRenameEventHandlerRemove(Handle, del.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void ComponentRenameEventHandler::operator()(System::Object& sender, System::ComponentModel::Design::ComponentRenameEventArgs& e)
+			{
+			}
+			
+			DLLEXPORT void SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke(int32_t cppHandle, int32_t senderHandle, int32_t eHandle)
+			{
+				try
+				{
+					auto param0 = System::Object(Plugin::InternalUse::Only, senderHandle);
+					auto param1 = System::ComponentModel::Design::ComponentRenameEventArgs(Plugin::InternalUse::Only, eHandle);
+					Plugin::GetSystemComponentModelDesignComponentRenameEventHandler(cppHandle)->operator()(param0, param1);
+				}
+				catch (System::Exception ex)
+				{
+					Plugin::SetException(ex.Handle);
+				}
+				catch (...)
+				{
+					System::String msg = "Unhandled exception invoking System::ComponentModel::Design::ComponentRenameEventHandler";
+					System::Exception ex(msg);
+					Plugin::SetException(ex.Handle);
+				}
+			}
+			
+			void ComponentRenameEventHandler::Invoke(System::Object& sender, System::ComponentModel::Design::ComponentRenameEventArgs& e)
+			{
+				Plugin::SystemComponentModelDesignComponentRenameEventHandlerInvoke(Handle, sender.Handle, e.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
 	struct NullReferenceExceptionThrower : System::NullReferenceException
 	{
 		NullReferenceExceptionThrower(int32_t handle)
@@ -10426,14 +12358,14 @@ DLLEXPORT void Init(
 	void (*systemCollectionsGenericIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemStringComparer)(int32_t handle),
 	void (*systemStringComparerConstructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemEventArgs)(int32_t handle),
-	void (*systemEventArgsConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemCollectionsICollection)(int32_t handle),
 	void (*systemCollectionsICollectionConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemCollectionsIList)(int32_t handle),
 	void (*systemCollectionsIListConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemCollectionsQueue)(int32_t handle),
 	void (*systemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemComponentModelDesignIComponentChangeService)(int32_t handle),
+	void (*systemComponentModelDesignIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle),
 	int32_t (*boxBoolean)(System::Boolean val),
 	System::Boolean (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
@@ -10523,7 +12455,27 @@ DLLEXPORT void Init(
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle),
-	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1),
+	void (*releaseSystemComponentModelDesignComponentEventHandler)(int32_t handle, int32_t classHandle),
+	void (*systemComponentModelDesignComponentEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
+	void (*systemComponentModelDesignComponentEventHandlerAdd)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentEventHandlerRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle),
+	void (*releaseSystemComponentModelDesignComponentChangingEventHandler)(int32_t handle, int32_t classHandle),
+	void (*systemComponentModelDesignComponentChangingEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
+	void (*systemComponentModelDesignComponentChangingEventHandlerAdd)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentChangingEventHandlerRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentChangingEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle),
+	void (*releaseSystemComponentModelDesignComponentChangedEventHandler)(int32_t handle, int32_t classHandle),
+	void (*systemComponentModelDesignComponentChangedEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
+	void (*systemComponentModelDesignComponentChangedEventHandlerAdd)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentChangedEventHandlerRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentChangedEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle),
+	void (*releaseSystemComponentModelDesignComponentRenameEventHandler)(int32_t handle, int32_t classHandle),
+	void (*systemComponentModelDesignComponentRenameEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
+	void (*systemComponentModelDesignComponentRenameEventHandlerAdd)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentRenameEventHandlerRemove)(int32_t thisHandle, int32_t delHandle),
+	void (*systemComponentModelDesignComponentRenameEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle)
 	/*END INIT PARAMS*/)
 {
 	using namespace Plugin;
@@ -10669,16 +12621,6 @@ DLLEXPORT void Init(
 	NextFreeSystemStringComparer = SystemStringComparerFreeList + 1;
 	Plugin::ReleaseSystemStringComparer = releaseSystemStringComparer;
 	Plugin::SystemStringComparerConstructor = systemStringComparerConstructor;
-	SystemEventArgsFreeListSize = maxManagedObjects;
-	SystemEventArgsFreeList = new System::EventArgs*[SystemEventArgsFreeListSize];
-	for (int32_t i = 0, end = SystemEventArgsFreeListSize - 1; i < end; ++i)
-	{
-		SystemEventArgsFreeList[i] = (System::EventArgs*)(SystemEventArgsFreeList + i + 1);
-	}
-	SystemEventArgsFreeList[SystemEventArgsFreeListSize - 1] = nullptr;
-	NextFreeSystemEventArgs = SystemEventArgsFreeList + 1;
-	Plugin::ReleaseSystemEventArgs = releaseSystemEventArgs;
-	Plugin::SystemEventArgsConstructor = systemEventArgsConstructor;
 	SystemCollectionsICollectionFreeListSize = maxManagedObjects;
 	SystemCollectionsICollectionFreeList = new System::Collections::ICollection*[SystemCollectionsICollectionFreeListSize];
 	for (int32_t i = 0, end = SystemCollectionsICollectionFreeListSize - 1; i < end; ++i)
@@ -10709,6 +12651,16 @@ DLLEXPORT void Init(
 	NextFreeSystemCollectionsQueue = SystemCollectionsQueueFreeList + 1;
 	Plugin::ReleaseSystemCollectionsQueue = releaseSystemCollectionsQueue;
 	Plugin::SystemCollectionsQueueConstructor = systemCollectionsQueueConstructor;
+	SystemComponentModelDesignIComponentChangeServiceFreeListSize = maxManagedObjects;
+	SystemComponentModelDesignIComponentChangeServiceFreeList = new System::ComponentModel::Design::IComponentChangeService*[SystemComponentModelDesignIComponentChangeServiceFreeListSize];
+	for (int32_t i = 0, end = SystemComponentModelDesignIComponentChangeServiceFreeListSize - 1; i < end; ++i)
+	{
+		SystemComponentModelDesignIComponentChangeServiceFreeList[i] = (System::ComponentModel::Design::IComponentChangeService*)(SystemComponentModelDesignIComponentChangeServiceFreeList + i + 1);
+	}
+	SystemComponentModelDesignIComponentChangeServiceFreeList[SystemComponentModelDesignIComponentChangeServiceFreeListSize - 1] = nullptr;
+	NextFreeSystemComponentModelDesignIComponentChangeService = SystemComponentModelDesignIComponentChangeServiceFreeList + 1;
+	Plugin::ReleaseSystemComponentModelDesignIComponentChangeService = releaseSystemComponentModelDesignIComponentChangeService;
+	Plugin::SystemComponentModelDesignIComponentChangeServiceConstructor = systemComponentModelDesignIComponentChangeServiceConstructor;
 	Plugin::BoxBoolean = boxBoolean;
 	Plugin::UnboxBoolean = unboxBoolean;
 	Plugin::BoxSByte = boxSByte;
@@ -10863,6 +12815,58 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke;
+	SystemComponentModelDesignComponentEventHandlerFreeListSize = maxManagedObjects;
+	SystemComponentModelDesignComponentEventHandlerFreeList = new System::ComponentModel::Design::ComponentEventHandler*[SystemComponentModelDesignComponentEventHandlerFreeListSize];
+	for (int32_t i = 0, end = SystemComponentModelDesignComponentEventHandlerFreeListSize - 1; i < end; ++i)
+	{
+		SystemComponentModelDesignComponentEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentEventHandler*)(SystemComponentModelDesignComponentEventHandlerFreeList + i + 1);
+	}
+	SystemComponentModelDesignComponentEventHandlerFreeList[SystemComponentModelDesignComponentEventHandlerFreeListSize - 1] = nullptr;
+	NextFreeSystemComponentModelDesignComponentEventHandler = SystemComponentModelDesignComponentEventHandlerFreeList + 1;
+	Plugin::ReleaseSystemComponentModelDesignComponentEventHandler = releaseSystemComponentModelDesignComponentEventHandler;
+	Plugin::SystemComponentModelDesignComponentEventHandlerConstructor = systemComponentModelDesignComponentEventHandlerConstructor;
+	Plugin::SystemComponentModelDesignComponentEventHandlerAdd = systemComponentModelDesignComponentEventHandlerAdd;
+	Plugin::SystemComponentModelDesignComponentEventHandlerRemove = systemComponentModelDesignComponentEventHandlerRemove;
+	Plugin::SystemComponentModelDesignComponentEventHandlerInvoke = systemComponentModelDesignComponentEventHandlerInvoke;
+	SystemComponentModelDesignComponentChangingEventHandlerFreeListSize = maxManagedObjects;
+	SystemComponentModelDesignComponentChangingEventHandlerFreeList = new System::ComponentModel::Design::ComponentChangingEventHandler*[SystemComponentModelDesignComponentChangingEventHandlerFreeListSize];
+	for (int32_t i = 0, end = SystemComponentModelDesignComponentChangingEventHandlerFreeListSize - 1; i < end; ++i)
+	{
+		SystemComponentModelDesignComponentChangingEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentChangingEventHandler*)(SystemComponentModelDesignComponentChangingEventHandlerFreeList + i + 1);
+	}
+	SystemComponentModelDesignComponentChangingEventHandlerFreeList[SystemComponentModelDesignComponentChangingEventHandlerFreeListSize - 1] = nullptr;
+	NextFreeSystemComponentModelDesignComponentChangingEventHandler = SystemComponentModelDesignComponentChangingEventHandlerFreeList + 1;
+	Plugin::ReleaseSystemComponentModelDesignComponentChangingEventHandler = releaseSystemComponentModelDesignComponentChangingEventHandler;
+	Plugin::SystemComponentModelDesignComponentChangingEventHandlerConstructor = systemComponentModelDesignComponentChangingEventHandlerConstructor;
+	Plugin::SystemComponentModelDesignComponentChangingEventHandlerAdd = systemComponentModelDesignComponentChangingEventHandlerAdd;
+	Plugin::SystemComponentModelDesignComponentChangingEventHandlerRemove = systemComponentModelDesignComponentChangingEventHandlerRemove;
+	Plugin::SystemComponentModelDesignComponentChangingEventHandlerInvoke = systemComponentModelDesignComponentChangingEventHandlerInvoke;
+	SystemComponentModelDesignComponentChangedEventHandlerFreeListSize = maxManagedObjects;
+	SystemComponentModelDesignComponentChangedEventHandlerFreeList = new System::ComponentModel::Design::ComponentChangedEventHandler*[SystemComponentModelDesignComponentChangedEventHandlerFreeListSize];
+	for (int32_t i = 0, end = SystemComponentModelDesignComponentChangedEventHandlerFreeListSize - 1; i < end; ++i)
+	{
+		SystemComponentModelDesignComponentChangedEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentChangedEventHandler*)(SystemComponentModelDesignComponentChangedEventHandlerFreeList + i + 1);
+	}
+	SystemComponentModelDesignComponentChangedEventHandlerFreeList[SystemComponentModelDesignComponentChangedEventHandlerFreeListSize - 1] = nullptr;
+	NextFreeSystemComponentModelDesignComponentChangedEventHandler = SystemComponentModelDesignComponentChangedEventHandlerFreeList + 1;
+	Plugin::ReleaseSystemComponentModelDesignComponentChangedEventHandler = releaseSystemComponentModelDesignComponentChangedEventHandler;
+	Plugin::SystemComponentModelDesignComponentChangedEventHandlerConstructor = systemComponentModelDesignComponentChangedEventHandlerConstructor;
+	Plugin::SystemComponentModelDesignComponentChangedEventHandlerAdd = systemComponentModelDesignComponentChangedEventHandlerAdd;
+	Plugin::SystemComponentModelDesignComponentChangedEventHandlerRemove = systemComponentModelDesignComponentChangedEventHandlerRemove;
+	Plugin::SystemComponentModelDesignComponentChangedEventHandlerInvoke = systemComponentModelDesignComponentChangedEventHandlerInvoke;
+	SystemComponentModelDesignComponentRenameEventHandlerFreeListSize = maxManagedObjects;
+	SystemComponentModelDesignComponentRenameEventHandlerFreeList = new System::ComponentModel::Design::ComponentRenameEventHandler*[SystemComponentModelDesignComponentRenameEventHandlerFreeListSize];
+	for (int32_t i = 0, end = SystemComponentModelDesignComponentRenameEventHandlerFreeListSize - 1; i < end; ++i)
+	{
+		SystemComponentModelDesignComponentRenameEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentRenameEventHandler*)(SystemComponentModelDesignComponentRenameEventHandlerFreeList + i + 1);
+	}
+	SystemComponentModelDesignComponentRenameEventHandlerFreeList[SystemComponentModelDesignComponentRenameEventHandlerFreeListSize - 1] = nullptr;
+	NextFreeSystemComponentModelDesignComponentRenameEventHandler = SystemComponentModelDesignComponentRenameEventHandlerFreeList + 1;
+	Plugin::ReleaseSystemComponentModelDesignComponentRenameEventHandler = releaseSystemComponentModelDesignComponentRenameEventHandler;
+	Plugin::SystemComponentModelDesignComponentRenameEventHandlerConstructor = systemComponentModelDesignComponentRenameEventHandlerConstructor;
+	Plugin::SystemComponentModelDesignComponentRenameEventHandlerAdd = systemComponentModelDesignComponentRenameEventHandlerAdd;
+	Plugin::SystemComponentModelDesignComponentRenameEventHandlerRemove = systemComponentModelDesignComponentRenameEventHandlerRemove;
+	Plugin::SystemComponentModelDesignComponentRenameEventHandlerInvoke = systemComponentModelDesignComponentRenameEventHandlerInvoke;
 	/*END INIT BODY*/
 	
 	try

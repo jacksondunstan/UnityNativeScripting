@@ -554,6 +554,24 @@
 					"Set": {}
 				}
 			]
+		},
+		{
+			"Name": "System.EventArgs"
+		},
+		{
+			"Name": "System.ComponentModel.Design.ComponentEventArgs"
+		},
+		{
+			"Name": "System.ComponentModel.Design.ComponentChangingEventArgs"
+		},
+		{
+			"Name": "System.ComponentModel.Design.ComponentChangedEventArgs"
+		},
+		{
+			"Name": "System.ComponentModel.Design.ComponentRenameEventArgs"
+		},
+		{
+			"Name": "System.ComponentModel.MemberDescriptor"
 		}
 	],
 	"BaseTypes": [
@@ -576,15 +594,6 @@
 			"Name": "System.StringComparer"
 		},
 		{
-			"Name": "System.EventArgs",
-			"OverrideMethods": [
-				{
-					"Name": "ToString",
-					"ParamTypes": []
-				}
-			]
-		},
-		{
 			"Name": "System.Collections.ICollection"
 		},
 		{
@@ -599,6 +608,9 @@
 					"Set": {}
 				}
 			]
+		},
+		{
+			"Name": "System.ComponentModel.Design.IComponentChangeService"
 		}
 	],
 	"MonoBehaviours": [
@@ -697,6 +709,18 @@
 					"MaxSimultaneous": 10
 				}
 			]
+		},
+		{
+			"Type": "System.ComponentModel.Design.ComponentEventHandler"
+		},
+		{
+			"Type": "System.ComponentModel.Design.ComponentChangingEventHandler"
+		},
+		{
+			"Type": "System.ComponentModel.Design.ComponentChangedEventHandler"
+		},
+		{
+			"Type": "System.ComponentModel.Design.ComponentRenameEventHandler"
 		}
 	]
 }
