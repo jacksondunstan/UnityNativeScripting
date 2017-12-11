@@ -92,12 +92,12 @@ namespace NativeScript
 			public JsonEvent[] Events;
 			public JsonGenericParams[] GenericParams;
 			public int MaxSimultaneous;
+			public JsonBaseType[] BaseTypes;
 		}
 		
 		[Serializable]
 		class JsonBaseType
 		{
-			public string Name;
 			public JsonGenericParams[] GenericParams;
 			public int MaxSimultaneous;
 			public JsonConstructor[] Constructors;
@@ -133,7 +133,6 @@ namespace NativeScript
 		{
 			public string[] Assemblies;
 			public JsonType[] Types;
-			public JsonBaseType[] BaseTypes;
 			public JsonMonoBehaviour[] MonoBehaviours;
 			public JsonArray[] Arrays;
 			public JsonDelegate[] Delegates;
@@ -519,18 +518,18 @@ namespace NativeScript
 						jsonType,
 						assemblies,
 						builders);
-				}
-			}
-
-			// Generate base types
-			if (doc.BaseTypes != null)
-			{
-				foreach (JsonBaseType jsonBaseType in doc.BaseTypes)
-				{
-					AppendBaseType(
-						jsonBaseType,
-						assemblies,
-						builders);
+					
+					if (jsonType.BaseTypes != null)
+					{
+						foreach (JsonBaseType jsonBaseType in jsonType.BaseTypes)
+						{
+							AppendBaseType(
+								jsonType.Name,
+								jsonBaseType,
+								assemblies,
+								builders);
+						}
+					}
 				}
 			}
 
@@ -1629,18 +1628,20 @@ namespace NativeScript
 		}
 		
 		static void AppendBaseType(
+			string typeName,
 			JsonBaseType jsonBaseType,
 			Assembly[] assemblies,
 			StringBuilders builders)
 		{
-			Type type = GetType(jsonBaseType.Name, assemblies);
+			Type type = GetType(typeName, assemblies);
+			string cppTypeName = "Base" + type.Name;
 			Type[] genericArgTypes = type.GetGenericArguments();
 			if (jsonBaseType.GenericParams != null)
 			{
 				if (!IsStatic(type))
 				{
 					AppendCppTemplateDeclaration(
-						type.Name,
+						cppTypeName,
 						type.Namespace,
 						genericArgTypes.Length,
 						builders.CppTypeDeclarations);
@@ -1661,7 +1662,7 @@ namespace NativeScript
 					AppendBaseType(
 						genericType,
 						jsonBaseType,
-						type.Name,
+						cppTypeName,
 						typeParams,
 						maxSimultaneous,
 						assemblies,
@@ -1676,7 +1677,7 @@ namespace NativeScript
 				AppendBaseType(
 					type,
 					jsonBaseType,
-					type.Name,
+					cppTypeName,
 					null,
 					maxSimultaneous,
 					assemblies,
@@ -5830,11 +5831,15 @@ namespace NativeScript
 			
 			AppendCppFreeListStateAndFunctions(
 				type,
+				typeParams,
+				cppTypeName,
 				bindingTypeName,
 				builders.CppGlobalStateAndFunctions);
 
 			AppendCppFreeListInit(
 				type,
+				typeParams,
+				cppTypeName,
 				maxSimultaneous,
 				bindingTypeName,
 				builders.CppInitBody);
@@ -6034,6 +6039,7 @@ namespace NativeScript
 				cppTypeName,
 				typeof(object),
 				typeParams,
+				null,
 				new ParameterInfo[0],
 				constructorParams,
 				true,
@@ -6047,6 +6053,7 @@ namespace NativeScript
 				typeParams,
 				"Object",
 				"System",
+				null,
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6057,6 +6064,7 @@ namespace NativeScript
 				typeParams,
 				"Object",
 				"System",
+				null,
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6066,6 +6074,7 @@ namespace NativeScript
 				typeParams,
 				"Object",
 				"System",
+				null,
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6076,6 +6085,7 @@ namespace NativeScript
 				typeParams,
 				"Object",
 				"System",
+				null,
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6382,6 +6392,7 @@ namespace NativeScript
 				type.Namespace,
 				string.Empty,
 				builders.TempStrBuilder);
+			builders.TempStrBuilder.Append("Base");
 			AppendTypeNameWithoutSuffixes(
 				type.Name,
 				builders.TempStrBuilder);
@@ -6512,25 +6523,28 @@ namespace NativeScript
 			
 			AppendCppFreeListStateAndFunctions(
 				type,
+				typeParams,
+				cppTypeName,
 				bindingTypeName,
 				builders.CppGlobalStateAndFunctions);
 
 			AppendCppFreeListInit(
 				type,
+				typeParams,
+				cppTypeName,
 				maxSimultaneous,
 				bindingTypeName,
 				builders.CppInitBody);
 
 			// C++ type definition (begin)
-			Type baseType = type.BaseType ?? typeof(object);
 			AppendCppTypeDefinitionBegin(
 				cppTypeName,
 				type.Namespace,
 				TypeKind.Class,
 				typeParams,
-				baseType.Name,
-				baseType.Namespace,
-				null,
+				type.Name,
+				type.Namespace,
+				typeParams,
 				false,
 				indent,
 				builders.CppTypeDefinitions);
@@ -6645,7 +6659,8 @@ namespace NativeScript
 					type.Namespace,
 					TypeKind.Class,
 					cppTypeName,
-					type.BaseType,
+					type,
+					typeParams,
 					typeParams,
 					cppConstructorParams[i],
 					constructorParams[i],
@@ -6659,8 +6674,9 @@ namespace NativeScript
 				bindingTypeName,
 				cppTypeName,
 				typeParams,
-				baseType.Name,
-				baseType.Namespace,
+				type.Name,
+				type.Namespace,
+				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6669,8 +6685,9 @@ namespace NativeScript
 				bindingTypeName,
 				cppTypeName,
 				typeParams,
-				baseType.Name,
-				baseType.Namespace,
+				type.Name,
+				type.Namespace,
+				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6678,8 +6695,9 @@ namespace NativeScript
 			AppendCppBaseTypeMoveConstructor(
 				cppTypeName,
 				typeParams,
-				baseType.Name,
-				baseType.Namespace,
+				type.Name,
+				type.Namespace,
+				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6688,8 +6706,9 @@ namespace NativeScript
 				bindingTypeName,
 				cppTypeName,
 				typeParams,
-				baseType.Name,
-				baseType.Namespace,
+				type.Name,
+				type.Namespace,
+				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -8719,6 +8738,7 @@ namespace NativeScript
 			Type[] typeParams,
 			string baseTypeName,
 			string baseTypeNamespace,
+			Type[] baseTypeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -8745,6 +8765,9 @@ namespace NativeScript
 			AppendCppTypeName(
 				baseTypeNamespace,
 				baseTypeName,
+				output);
+			AppendCppTypeParameters(
+				baseTypeParams,
 				output);
 			output.Append("(iu, handle)\n");
 			AppendIndent(
@@ -8797,6 +8820,7 @@ namespace NativeScript
 			Type[] typeParams,
 			string baseTypeName,
 			string baseTypeNamespace,
+			Type[] baseTypeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -8829,6 +8853,9 @@ namespace NativeScript
 			AppendCppTypeName(
 				baseTypeNamespace,
 				baseTypeName,
+				output);
+			AppendCppTypeParameters(
+				baseTypeParams,
 				output);
 			output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
 			AppendIndent(
@@ -8879,6 +8906,7 @@ namespace NativeScript
 			Type[] typeParams,
 			string baseTypeName,
 			string baseTypeNamespace,
+			Type[] baseTypeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -8911,6 +8939,9 @@ namespace NativeScript
 			AppendCppTypeName(
 				baseTypeNamespace,
 				baseTypeName,
+				output);
+			AppendCppTypeParameters(
+				baseTypeParams,
 				output);
 			output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
 			AppendIndent(
@@ -8964,6 +8995,7 @@ namespace NativeScript
 			Type[] typeParams,
 			string baseTypeName,
 			string baseTypeNamespace,
+			Type[] baseTypeParams,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -8989,6 +9021,9 @@ namespace NativeScript
 			AppendCppTypeName(
 				baseTypeNamespace,
 				baseTypeName,
+				output);
+			AppendCppTypeParameters(
+				baseTypeParams,
 				output);
 			output.Append("(Plugin::InternalUse::Only, 0)\n");
 			AppendIndent(
@@ -9026,6 +9061,7 @@ namespace NativeScript
 			string cppTypeName,
 			Type baseType,
 			Type[] typeParams,
+			Type[] baseTypeParams,
 			ParameterInfo[] cppParameters,
 			ParameterInfo[] parameters,
 			bool typeIsDelegate,
@@ -9147,6 +9183,8 @@ namespace NativeScript
 
 		static void AppendCppFreeListInit(
 			Type type,
+			Type[] typeParams,
+			string cppTypeName,
 			int? maxSimultaneous,
 			string typeName,
 			StringBuilder output)
@@ -9167,7 +9205,11 @@ namespace NativeScript
 			output.Append(typeName);
 			output.Append("FreeList = new ");
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("*[");
 			output.Append(typeName);
@@ -9180,7 +9222,11 @@ namespace NativeScript
 			output.Append(typeName);
 			output.Append("FreeList[i] = (");
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("*)(");
 			output.Append(typeName);
@@ -9200,95 +9246,129 @@ namespace NativeScript
 
 		static void AppendCppFreeListStateAndFunctions(
 			Type type,
-			string typeName,
+			Type[] typeParams,
+			string cppTypeName,
+			string bindingTypeName,
 			StringBuilder output)
 		{
 			output.Append("\tint32_t ");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("FreeListSize;\n");
 			output.Append('\t');
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("** ");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("FreeList;\n");
 			output.Append('\t');
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("** NextFree");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append(";\n");
 			output.Append("\t\n");
 			output.Append("\tint32_t Store");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append('(');
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("* del)\n");
 			output.Append("\t{\n");
 			output.Append("\t\tassert(NextFree");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append(" != nullptr);\n");
 			output.Append("\t\t");
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("** pNext = NextFree");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append(";\n");
 			output.Append("\t\tNextFree");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append(" = (");
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("**)*pNext;\n");
 			output.Append("\t\t*pNext = del;\n");
 			output.Append("\t\treturn (int32_t)(pNext - ");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("FreeList);\n");
 			output.Append("\t}\n");
 			output.Append("\t\n");
 			output.Append('\t');
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("* Get");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("(int32_t handle)\n");
 			output.Append("\t{\n");
 			output.Append(
 				"\t\tassert(handle >= 0 && handle < ");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("FreeListSize);\n");
 			output.Append("\t\treturn ");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("FreeList[handle];\n");
 			output.Append("\t}\n");
 			output.Append("\t\n");
 			output.Append("\tvoid Remove");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("(int32_t handle)\n");
 			output.Append("\t{\n");
 			output.Append("\t\t");
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("** pRelease = ");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append("FreeList + handle;\n");
 			output.Append("\t\t*pRelease = (");
 			AppendCppTypeName(
-				type,
+				type.Namespace,
+				cppTypeName,
+				output);
+			AppendCppTypeParameters(
+				typeParams,
 				output);
 			output.Append("*)NextFree");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append(";\n");
 			output.Append("\t\tNextFree");
-			output.Append(typeName);
+			output.Append(bindingTypeName);
 			output.Append(" = pRelease;\n");
 			output.Append("\t}\n");
 		}

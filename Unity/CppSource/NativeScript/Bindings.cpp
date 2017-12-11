@@ -147,22 +147,25 @@ namespace Plugin
 	float (*UnityEngineTimePropertyGetDeltaTime)();
 	int32_t (*BoxFileMode)(System::IO::FileMode val);
 	System::IO::FileMode (*UnboxFileMode)(int32_t valHandle);
-	void (*ReleaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle);
-	void (*SystemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemCollectionsGenericIComparerSystemString)(int32_t handle);
-	void (*SystemCollectionsGenericIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemStringComparer)(int32_t handle);
-	void (*SystemStringComparerConstructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemCollectionsICollection)(int32_t handle);
-	void (*SystemCollectionsICollectionConstructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemCollectionsIList)(int32_t handle);
-	void (*SystemCollectionsIListConstructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemCollectionsQueue)(int32_t handle);
-	void (*SystemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemComponentModelDesignIComponentChangeService)(int32_t handle);
-	void (*SystemComponentModelDesignIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle);
-	void (*ReleaseSystemIOFileStream)(int32_t handle);
-	void (*SystemIOFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode);
+	void (*ReleaseSystemCollectionsGenericBaseIComparerSystemInt32)(int32_t handle);
+	void (*SystemCollectionsGenericBaseIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemCollectionsGenericBaseIComparerSystemString)(int32_t handle);
+	void (*SystemCollectionsGenericBaseIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemBaseStringComparer)(int32_t handle);
+	void (*SystemBaseStringComparerConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemCollectionsBaseICollection)(int32_t handle);
+	void (*SystemCollectionsBaseICollectionConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemCollectionsBaseIList)(int32_t handle);
+	void (*SystemCollectionsBaseIListConstructor)(int32_t cppHandle, int32_t* handle);
+	int32_t (*SystemCollectionsQueuePropertyGetCount)(int32_t thisHandle);
+	void (*ReleaseSystemCollectionsBaseQueue)(int32_t handle);
+	void (*SystemCollectionsBaseQueueConstructor)(int32_t cppHandle, int32_t* handle);
+	void (*ReleaseSystemComponentModelDesignBaseIComponentChangeService)(int32_t handle);
+	void (*SystemComponentModelDesignBaseIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle);
+	int32_t (*SystemIOFileStreamConstructorSystemString_SystemIOFileMode)(int32_t pathHandle, System::IO::FileMode mode);
+	void (*SystemIOFileStreamMethodWriteByteSystemByte)(int32_t thisHandle, uint8_t value);
+	void (*ReleaseSystemIOBaseFileStream)(int32_t handle);
+	void (*SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode);
 	int32_t (*BoxBoolean)(System::Boolean val);
 	System::Boolean (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
@@ -372,205 +375,205 @@ namespace Plugin
 		}
 	}
 	
-	int32_t SystemCollectionsGenericIComparerSystemInt32FreeListSize;
-	System::Collections::Generic::IComparer<int32_t>** SystemCollectionsGenericIComparerSystemInt32FreeList;
-	System::Collections::Generic::IComparer<int32_t>** NextFreeSystemCollectionsGenericIComparerSystemInt32;
+	int32_t SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize;
+	System::Collections::Generic::BaseIComparer<int32_t>** SystemCollectionsGenericBaseIComparerSystemInt32FreeList;
+	System::Collections::Generic::BaseIComparer<int32_t>** NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
 	
-	int32_t StoreSystemCollectionsGenericIComparerSystemInt32(System::Collections::Generic::IComparer<int32_t>* del)
+	int32_t StoreSystemCollectionsGenericBaseIComparerSystemInt32(System::Collections::Generic::BaseIComparer<int32_t>* del)
 	{
-		assert(NextFreeSystemCollectionsGenericIComparerSystemInt32 != nullptr);
-		System::Collections::Generic::IComparer<int32_t>** pNext = NextFreeSystemCollectionsGenericIComparerSystemInt32;
-		NextFreeSystemCollectionsGenericIComparerSystemInt32 = (System::Collections::Generic::IComparer<int32_t>**)*pNext;
+		assert(NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 != nullptr);
+		System::Collections::Generic::BaseIComparer<int32_t>** pNext = NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
+		NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = (System::Collections::Generic::BaseIComparer<int32_t>**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemCollectionsGenericIComparerSystemInt32FreeList);
+		return (int32_t)(pNext - SystemCollectionsGenericBaseIComparerSystemInt32FreeList);
 	}
 	
-	System::Collections::Generic::IComparer<int32_t>* GetSystemCollectionsGenericIComparerSystemInt32(int32_t handle)
+	System::Collections::Generic::BaseIComparer<int32_t>* GetSystemCollectionsGenericBaseIComparerSystemInt32(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemCollectionsGenericIComparerSystemInt32FreeListSize);
-		return SystemCollectionsGenericIComparerSystemInt32FreeList[handle];
+		assert(handle >= 0 && handle < SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize);
+		return SystemCollectionsGenericBaseIComparerSystemInt32FreeList[handle];
 	}
 	
-	void RemoveSystemCollectionsGenericIComparerSystemInt32(int32_t handle)
+	void RemoveSystemCollectionsGenericBaseIComparerSystemInt32(int32_t handle)
 	{
-		System::Collections::Generic::IComparer<int32_t>** pRelease = SystemCollectionsGenericIComparerSystemInt32FreeList + handle;
-		*pRelease = (System::Collections::Generic::IComparer<int32_t>*)NextFreeSystemCollectionsGenericIComparerSystemInt32;
-		NextFreeSystemCollectionsGenericIComparerSystemInt32 = pRelease;
+		System::Collections::Generic::BaseIComparer<int32_t>** pRelease = SystemCollectionsGenericBaseIComparerSystemInt32FreeList + handle;
+		*pRelease = (System::Collections::Generic::BaseIComparer<int32_t>*)NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
+		NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = pRelease;
 	}
-	int32_t SystemCollectionsGenericIComparerSystemStringFreeListSize;
-	System::Collections::Generic::IComparer<System::String>** SystemCollectionsGenericIComparerSystemStringFreeList;
-	System::Collections::Generic::IComparer<System::String>** NextFreeSystemCollectionsGenericIComparerSystemString;
+	int32_t SystemCollectionsGenericBaseIComparerSystemStringFreeListSize;
+	System::Collections::Generic::BaseIComparer<System::String>** SystemCollectionsGenericBaseIComparerSystemStringFreeList;
+	System::Collections::Generic::BaseIComparer<System::String>** NextFreeSystemCollectionsGenericBaseIComparerSystemString;
 	
-	int32_t StoreSystemCollectionsGenericIComparerSystemString(System::Collections::Generic::IComparer<System::String>* del)
+	int32_t StoreSystemCollectionsGenericBaseIComparerSystemString(System::Collections::Generic::BaseIComparer<System::String>* del)
 	{
-		assert(NextFreeSystemCollectionsGenericIComparerSystemString != nullptr);
-		System::Collections::Generic::IComparer<System::String>** pNext = NextFreeSystemCollectionsGenericIComparerSystemString;
-		NextFreeSystemCollectionsGenericIComparerSystemString = (System::Collections::Generic::IComparer<System::String>**)*pNext;
+		assert(NextFreeSystemCollectionsGenericBaseIComparerSystemString != nullptr);
+		System::Collections::Generic::BaseIComparer<System::String>** pNext = NextFreeSystemCollectionsGenericBaseIComparerSystemString;
+		NextFreeSystemCollectionsGenericBaseIComparerSystemString = (System::Collections::Generic::BaseIComparer<System::String>**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemCollectionsGenericIComparerSystemStringFreeList);
+		return (int32_t)(pNext - SystemCollectionsGenericBaseIComparerSystemStringFreeList);
 	}
 	
-	System::Collections::Generic::IComparer<System::String>* GetSystemCollectionsGenericIComparerSystemString(int32_t handle)
+	System::Collections::Generic::BaseIComparer<System::String>* GetSystemCollectionsGenericBaseIComparerSystemString(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemCollectionsGenericIComparerSystemStringFreeListSize);
-		return SystemCollectionsGenericIComparerSystemStringFreeList[handle];
+		assert(handle >= 0 && handle < SystemCollectionsGenericBaseIComparerSystemStringFreeListSize);
+		return SystemCollectionsGenericBaseIComparerSystemStringFreeList[handle];
 	}
 	
-	void RemoveSystemCollectionsGenericIComparerSystemString(int32_t handle)
+	void RemoveSystemCollectionsGenericBaseIComparerSystemString(int32_t handle)
 	{
-		System::Collections::Generic::IComparer<System::String>** pRelease = SystemCollectionsGenericIComparerSystemStringFreeList + handle;
-		*pRelease = (System::Collections::Generic::IComparer<System::String>*)NextFreeSystemCollectionsGenericIComparerSystemString;
-		NextFreeSystemCollectionsGenericIComparerSystemString = pRelease;
+		System::Collections::Generic::BaseIComparer<System::String>** pRelease = SystemCollectionsGenericBaseIComparerSystemStringFreeList + handle;
+		*pRelease = (System::Collections::Generic::BaseIComparer<System::String>*)NextFreeSystemCollectionsGenericBaseIComparerSystemString;
+		NextFreeSystemCollectionsGenericBaseIComparerSystemString = pRelease;
 	}
-	int32_t SystemStringComparerFreeListSize;
-	System::StringComparer** SystemStringComparerFreeList;
-	System::StringComparer** NextFreeSystemStringComparer;
+	int32_t SystemBaseStringComparerFreeListSize;
+	System::BaseStringComparer** SystemBaseStringComparerFreeList;
+	System::BaseStringComparer** NextFreeSystemBaseStringComparer;
 	
-	int32_t StoreSystemStringComparer(System::StringComparer* del)
+	int32_t StoreSystemBaseStringComparer(System::BaseStringComparer* del)
 	{
-		assert(NextFreeSystemStringComparer != nullptr);
-		System::StringComparer** pNext = NextFreeSystemStringComparer;
-		NextFreeSystemStringComparer = (System::StringComparer**)*pNext;
+		assert(NextFreeSystemBaseStringComparer != nullptr);
+		System::BaseStringComparer** pNext = NextFreeSystemBaseStringComparer;
+		NextFreeSystemBaseStringComparer = (System::BaseStringComparer**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemStringComparerFreeList);
+		return (int32_t)(pNext - SystemBaseStringComparerFreeList);
 	}
 	
-	System::StringComparer* GetSystemStringComparer(int32_t handle)
+	System::BaseStringComparer* GetSystemBaseStringComparer(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemStringComparerFreeListSize);
-		return SystemStringComparerFreeList[handle];
+		assert(handle >= 0 && handle < SystemBaseStringComparerFreeListSize);
+		return SystemBaseStringComparerFreeList[handle];
 	}
 	
-	void RemoveSystemStringComparer(int32_t handle)
+	void RemoveSystemBaseStringComparer(int32_t handle)
 	{
-		System::StringComparer** pRelease = SystemStringComparerFreeList + handle;
-		*pRelease = (System::StringComparer*)NextFreeSystemStringComparer;
-		NextFreeSystemStringComparer = pRelease;
+		System::BaseStringComparer** pRelease = SystemBaseStringComparerFreeList + handle;
+		*pRelease = (System::BaseStringComparer*)NextFreeSystemBaseStringComparer;
+		NextFreeSystemBaseStringComparer = pRelease;
 	}
-	int32_t SystemCollectionsICollectionFreeListSize;
-	System::Collections::ICollection** SystemCollectionsICollectionFreeList;
-	System::Collections::ICollection** NextFreeSystemCollectionsICollection;
+	int32_t SystemCollectionsBaseICollectionFreeListSize;
+	System::Collections::BaseICollection** SystemCollectionsBaseICollectionFreeList;
+	System::Collections::BaseICollection** NextFreeSystemCollectionsBaseICollection;
 	
-	int32_t StoreSystemCollectionsICollection(System::Collections::ICollection* del)
+	int32_t StoreSystemCollectionsBaseICollection(System::Collections::BaseICollection* del)
 	{
-		assert(NextFreeSystemCollectionsICollection != nullptr);
-		System::Collections::ICollection** pNext = NextFreeSystemCollectionsICollection;
-		NextFreeSystemCollectionsICollection = (System::Collections::ICollection**)*pNext;
+		assert(NextFreeSystemCollectionsBaseICollection != nullptr);
+		System::Collections::BaseICollection** pNext = NextFreeSystemCollectionsBaseICollection;
+		NextFreeSystemCollectionsBaseICollection = (System::Collections::BaseICollection**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemCollectionsICollectionFreeList);
+		return (int32_t)(pNext - SystemCollectionsBaseICollectionFreeList);
 	}
 	
-	System::Collections::ICollection* GetSystemCollectionsICollection(int32_t handle)
+	System::Collections::BaseICollection* GetSystemCollectionsBaseICollection(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemCollectionsICollectionFreeListSize);
-		return SystemCollectionsICollectionFreeList[handle];
+		assert(handle >= 0 && handle < SystemCollectionsBaseICollectionFreeListSize);
+		return SystemCollectionsBaseICollectionFreeList[handle];
 	}
 	
-	void RemoveSystemCollectionsICollection(int32_t handle)
+	void RemoveSystemCollectionsBaseICollection(int32_t handle)
 	{
-		System::Collections::ICollection** pRelease = SystemCollectionsICollectionFreeList + handle;
-		*pRelease = (System::Collections::ICollection*)NextFreeSystemCollectionsICollection;
-		NextFreeSystemCollectionsICollection = pRelease;
+		System::Collections::BaseICollection** pRelease = SystemCollectionsBaseICollectionFreeList + handle;
+		*pRelease = (System::Collections::BaseICollection*)NextFreeSystemCollectionsBaseICollection;
+		NextFreeSystemCollectionsBaseICollection = pRelease;
 	}
-	int32_t SystemCollectionsIListFreeListSize;
-	System::Collections::IList** SystemCollectionsIListFreeList;
-	System::Collections::IList** NextFreeSystemCollectionsIList;
+	int32_t SystemCollectionsBaseIListFreeListSize;
+	System::Collections::BaseIList** SystemCollectionsBaseIListFreeList;
+	System::Collections::BaseIList** NextFreeSystemCollectionsBaseIList;
 	
-	int32_t StoreSystemCollectionsIList(System::Collections::IList* del)
+	int32_t StoreSystemCollectionsBaseIList(System::Collections::BaseIList* del)
 	{
-		assert(NextFreeSystemCollectionsIList != nullptr);
-		System::Collections::IList** pNext = NextFreeSystemCollectionsIList;
-		NextFreeSystemCollectionsIList = (System::Collections::IList**)*pNext;
+		assert(NextFreeSystemCollectionsBaseIList != nullptr);
+		System::Collections::BaseIList** pNext = NextFreeSystemCollectionsBaseIList;
+		NextFreeSystemCollectionsBaseIList = (System::Collections::BaseIList**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemCollectionsIListFreeList);
+		return (int32_t)(pNext - SystemCollectionsBaseIListFreeList);
 	}
 	
-	System::Collections::IList* GetSystemCollectionsIList(int32_t handle)
+	System::Collections::BaseIList* GetSystemCollectionsBaseIList(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemCollectionsIListFreeListSize);
-		return SystemCollectionsIListFreeList[handle];
+		assert(handle >= 0 && handle < SystemCollectionsBaseIListFreeListSize);
+		return SystemCollectionsBaseIListFreeList[handle];
 	}
 	
-	void RemoveSystemCollectionsIList(int32_t handle)
+	void RemoveSystemCollectionsBaseIList(int32_t handle)
 	{
-		System::Collections::IList** pRelease = SystemCollectionsIListFreeList + handle;
-		*pRelease = (System::Collections::IList*)NextFreeSystemCollectionsIList;
-		NextFreeSystemCollectionsIList = pRelease;
+		System::Collections::BaseIList** pRelease = SystemCollectionsBaseIListFreeList + handle;
+		*pRelease = (System::Collections::BaseIList*)NextFreeSystemCollectionsBaseIList;
+		NextFreeSystemCollectionsBaseIList = pRelease;
 	}
-	int32_t SystemCollectionsQueueFreeListSize;
-	System::Collections::Queue** SystemCollectionsQueueFreeList;
-	System::Collections::Queue** NextFreeSystemCollectionsQueue;
+	int32_t SystemCollectionsBaseQueueFreeListSize;
+	System::Collections::BaseQueue** SystemCollectionsBaseQueueFreeList;
+	System::Collections::BaseQueue** NextFreeSystemCollectionsBaseQueue;
 	
-	int32_t StoreSystemCollectionsQueue(System::Collections::Queue* del)
+	int32_t StoreSystemCollectionsBaseQueue(System::Collections::BaseQueue* del)
 	{
-		assert(NextFreeSystemCollectionsQueue != nullptr);
-		System::Collections::Queue** pNext = NextFreeSystemCollectionsQueue;
-		NextFreeSystemCollectionsQueue = (System::Collections::Queue**)*pNext;
+		assert(NextFreeSystemCollectionsBaseQueue != nullptr);
+		System::Collections::BaseQueue** pNext = NextFreeSystemCollectionsBaseQueue;
+		NextFreeSystemCollectionsBaseQueue = (System::Collections::BaseQueue**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemCollectionsQueueFreeList);
+		return (int32_t)(pNext - SystemCollectionsBaseQueueFreeList);
 	}
 	
-	System::Collections::Queue* GetSystemCollectionsQueue(int32_t handle)
+	System::Collections::BaseQueue* GetSystemCollectionsBaseQueue(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemCollectionsQueueFreeListSize);
-		return SystemCollectionsQueueFreeList[handle];
+		assert(handle >= 0 && handle < SystemCollectionsBaseQueueFreeListSize);
+		return SystemCollectionsBaseQueueFreeList[handle];
 	}
 	
-	void RemoveSystemCollectionsQueue(int32_t handle)
+	void RemoveSystemCollectionsBaseQueue(int32_t handle)
 	{
-		System::Collections::Queue** pRelease = SystemCollectionsQueueFreeList + handle;
-		*pRelease = (System::Collections::Queue*)NextFreeSystemCollectionsQueue;
-		NextFreeSystemCollectionsQueue = pRelease;
+		System::Collections::BaseQueue** pRelease = SystemCollectionsBaseQueueFreeList + handle;
+		*pRelease = (System::Collections::BaseQueue*)NextFreeSystemCollectionsBaseQueue;
+		NextFreeSystemCollectionsBaseQueue = pRelease;
 	}
-	int32_t SystemComponentModelDesignIComponentChangeServiceFreeListSize;
-	System::ComponentModel::Design::IComponentChangeService** SystemComponentModelDesignIComponentChangeServiceFreeList;
-	System::ComponentModel::Design::IComponentChangeService** NextFreeSystemComponentModelDesignIComponentChangeService;
+	int32_t SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize;
+	System::ComponentModel::Design::BaseIComponentChangeService** SystemComponentModelDesignBaseIComponentChangeServiceFreeList;
+	System::ComponentModel::Design::BaseIComponentChangeService** NextFreeSystemComponentModelDesignBaseIComponentChangeService;
 	
-	int32_t StoreSystemComponentModelDesignIComponentChangeService(System::ComponentModel::Design::IComponentChangeService* del)
+	int32_t StoreSystemComponentModelDesignBaseIComponentChangeService(System::ComponentModel::Design::BaseIComponentChangeService* del)
 	{
-		assert(NextFreeSystemComponentModelDesignIComponentChangeService != nullptr);
-		System::ComponentModel::Design::IComponentChangeService** pNext = NextFreeSystemComponentModelDesignIComponentChangeService;
-		NextFreeSystemComponentModelDesignIComponentChangeService = (System::ComponentModel::Design::IComponentChangeService**)*pNext;
+		assert(NextFreeSystemComponentModelDesignBaseIComponentChangeService != nullptr);
+		System::ComponentModel::Design::BaseIComponentChangeService** pNext = NextFreeSystemComponentModelDesignBaseIComponentChangeService;
+		NextFreeSystemComponentModelDesignBaseIComponentChangeService = (System::ComponentModel::Design::BaseIComponentChangeService**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemComponentModelDesignIComponentChangeServiceFreeList);
+		return (int32_t)(pNext - SystemComponentModelDesignBaseIComponentChangeServiceFreeList);
 	}
 	
-	System::ComponentModel::Design::IComponentChangeService* GetSystemComponentModelDesignIComponentChangeService(int32_t handle)
+	System::ComponentModel::Design::BaseIComponentChangeService* GetSystemComponentModelDesignBaseIComponentChangeService(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemComponentModelDesignIComponentChangeServiceFreeListSize);
-		return SystemComponentModelDesignIComponentChangeServiceFreeList[handle];
+		assert(handle >= 0 && handle < SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize);
+		return SystemComponentModelDesignBaseIComponentChangeServiceFreeList[handle];
 	}
 	
-	void RemoveSystemComponentModelDesignIComponentChangeService(int32_t handle)
+	void RemoveSystemComponentModelDesignBaseIComponentChangeService(int32_t handle)
 	{
-		System::ComponentModel::Design::IComponentChangeService** pRelease = SystemComponentModelDesignIComponentChangeServiceFreeList + handle;
-		*pRelease = (System::ComponentModel::Design::IComponentChangeService*)NextFreeSystemComponentModelDesignIComponentChangeService;
-		NextFreeSystemComponentModelDesignIComponentChangeService = pRelease;
+		System::ComponentModel::Design::BaseIComponentChangeService** pRelease = SystemComponentModelDesignBaseIComponentChangeServiceFreeList + handle;
+		*pRelease = (System::ComponentModel::Design::BaseIComponentChangeService*)NextFreeSystemComponentModelDesignBaseIComponentChangeService;
+		NextFreeSystemComponentModelDesignBaseIComponentChangeService = pRelease;
 	}
-	int32_t SystemIOFileStreamFreeListSize;
-	System::IO::FileStream** SystemIOFileStreamFreeList;
-	System::IO::FileStream** NextFreeSystemIOFileStream;
+	int32_t SystemIOBaseFileStreamFreeListSize;
+	System::IO::BaseFileStream** SystemIOBaseFileStreamFreeList;
+	System::IO::BaseFileStream** NextFreeSystemIOBaseFileStream;
 	
-	int32_t StoreSystemIOFileStream(System::IO::FileStream* del)
+	int32_t StoreSystemIOBaseFileStream(System::IO::BaseFileStream* del)
 	{
-		assert(NextFreeSystemIOFileStream != nullptr);
-		System::IO::FileStream** pNext = NextFreeSystemIOFileStream;
-		NextFreeSystemIOFileStream = (System::IO::FileStream**)*pNext;
+		assert(NextFreeSystemIOBaseFileStream != nullptr);
+		System::IO::BaseFileStream** pNext = NextFreeSystemIOBaseFileStream;
+		NextFreeSystemIOBaseFileStream = (System::IO::BaseFileStream**)*pNext;
 		*pNext = del;
-		return (int32_t)(pNext - SystemIOFileStreamFreeList);
+		return (int32_t)(pNext - SystemIOBaseFileStreamFreeList);
 	}
 	
-	System::IO::FileStream* GetSystemIOFileStream(int32_t handle)
+	System::IO::BaseFileStream* GetSystemIOBaseFileStream(int32_t handle)
 	{
-		assert(handle >= 0 && handle < SystemIOFileStreamFreeListSize);
-		return SystemIOFileStreamFreeList[handle];
+		assert(handle >= 0 && handle < SystemIOBaseFileStreamFreeListSize);
+		return SystemIOBaseFileStreamFreeList[handle];
 	}
 	
-	void RemoveSystemIOFileStream(int32_t handle)
+	void RemoveSystemIOBaseFileStream(int32_t handle)
 	{
-		System::IO::FileStream** pRelease = SystemIOFileStreamFreeList + handle;
-		*pRelease = (System::IO::FileStream*)NextFreeSystemIOFileStream;
-		NextFreeSystemIOFileStream = pRelease;
+		System::IO::BaseFileStream** pRelease = SystemIOBaseFileStreamFreeList + handle;
+		*pRelease = (System::IO::BaseFileStream*)NextFreeSystemIOBaseFileStream;
+		NextFreeSystemIOBaseFileStream = pRelease;
 	}
 	int32_t SystemActionFreeListSize;
 	System::Action** SystemActionFreeList;
@@ -5785,91 +5788,37 @@ namespace System
 	{
 		namespace Generic
 		{
-			IComparer<int32_t>::IComparer()
-				 : System::Object(nullptr)
-			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
-				int32_t* handle = &Handle;
-				int32_t cppHandle = CppHandle;
-				Plugin::SystemCollectionsGenericIComparerSystemInt32Constructor(cppHandle, handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
-				else
-				{
-					Plugin::RemoveSystemCollectionsGenericIComparerSystemInt32(CppHandle);
-					CppHandle = 0;
-				}
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-			
 			IComparer<int32_t>::IComparer(decltype(nullptr) n)
-				: System::Object(Plugin::InternalUse::Only, 0)
+				: IComparer(Plugin::InternalUse::Only, 0)
 			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
-			}
-			
-			IComparer<int32_t>::IComparer(const IComparer<int32_t>& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
-			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
-			}
-			
-			IComparer<int32_t>::IComparer(IComparer<int32_t>&& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
-			{
-				CppHandle = other.CppHandle;
-				other.Handle = 0;
-				other.CppHandle = 0;
 			}
 			
 			IComparer<int32_t>::IComparer(Plugin::InternalUse iu, int32_t handle)
 				: System::Object(iu, handle)
 			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemInt32(this);
-				if (Handle)
+				if (handle)
 				{
-					Plugin::ReferenceManagedClass(Handle);
+					Plugin::ReferenceManagedClass(handle);
 				}
 			}
 			
-			IComparer<int32_t>::~IComparer()
+			IComparer<int32_t>::IComparer(const IComparer<int32_t>& other)
+				: IComparer(Plugin::InternalUse::Only, other.Handle)
 			{
-				Plugin::RemoveSystemCollectionsGenericIComparerSystemInt32(CppHandle);
-				CppHandle = 0;
+			}
+			
+			IComparer<int32_t>::IComparer(IComparer<int32_t>&& other)
+				: IComparer(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IComparer<int32_t>::~IComparer<int32_t>()
+			{
 				if (Handle)
 				{
-					int32_t handle = Handle;
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
-					if (Plugin::DereferenceManagedClassNoRelease(handle))
-					{
-						Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32(handle);
-						if (Plugin::unhandledCsharpException)
-						{
-							System::Exception* ex = Plugin::unhandledCsharpException;
-							Plugin::unhandledCsharpException = nullptr;
-							ex->ThrowReferenceToThis();
-							delete ex;
-						}
-					}
 				}
 			}
 			
@@ -5891,43 +5840,17 @@ namespace System
 			{
 				if (Handle)
 				{
-					int32_t handle = Handle;
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
-					if (Plugin::DereferenceManagedClassNoRelease(handle))
-					{
-						Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32(handle);
-						if (Plugin::unhandledCsharpException)
-						{
-							System::Exception* ex = Plugin::unhandledCsharpException;
-							Plugin::unhandledCsharpException = nullptr;
-							ex->ThrowReferenceToThis();
-							delete ex;
-						}
-					}
 				}
-				Handle = 0;
 				return *this;
 			}
 			
 			IComparer<int32_t>& IComparer<int32_t>::operator=(IComparer<int32_t>&& other)
 			{
-				Plugin::RemoveSystemCollectionsGenericIComparerSystemInt32(CppHandle);
-				CppHandle = 0;
 				if (Handle)
 				{
-					int32_t handle = Handle;
-					Handle = 0;
-					if (Plugin::DereferenceManagedClassNoRelease(handle))
-					{
-						Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32(handle);
-						if (Plugin::unhandledCsharpException)
-						{
-							System::Exception* ex = Plugin::unhandledCsharpException;
-							Plugin::unhandledCsharpException = nullptr;
-							ex->ThrowReferenceToThis();
-							delete ex;
-						}
-					}
+					Plugin::DereferenceManagedClass(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -5943,8 +5866,264 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IComparer<System::String>::IComparer(decltype(nullptr) n)
+				: IComparer(Plugin::InternalUse::Only, 0)
+			{
+			}
 			
-			int32_t IComparer<int32_t>::Compare(int32_t x, int32_t y)
+			IComparer<System::String>::IComparer(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IComparer<System::String>::IComparer(const IComparer<System::String>& other)
+				: IComparer(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IComparer<System::String>::IComparer(IComparer<System::String>&& other)
+				: IComparer(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IComparer<System::String>::~IComparer<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IComparer<System::String>& IComparer<System::String>::operator=(const IComparer<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IComparer<System::String>& IComparer<System::String>::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IComparer<System::String>& IComparer<System::String>::operator=(IComparer<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IComparer<System::String>::operator==(const IComparer<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IComparer<System::String>::operator!=(const IComparer<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			BaseIComparer<int32_t>::BaseIComparer()
+				 : System::Collections::Generic::IComparer<int32_t>(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				Plugin::SystemCollectionsGenericBaseIComparerSystemInt32Constructor(cppHandle, handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemInt32(CppHandle);
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			BaseIComparer<int32_t>::BaseIComparer(decltype(nullptr) n)
+				: System::Collections::Generic::IComparer<int32_t>(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
+			}
+			
+			BaseIComparer<int32_t>::BaseIComparer(const BaseIComparer<int32_t>& other)
+				: System::Collections::Generic::IComparer<int32_t>(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			BaseIComparer<int32_t>::BaseIComparer(BaseIComparer<int32_t>&& other)
+				: System::Collections::Generic::IComparer<int32_t>(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+			}
+			
+			BaseIComparer<int32_t>::BaseIComparer(Plugin::InternalUse iu, int32_t handle)
+				: System::Collections::Generic::IComparer<int32_t>(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			BaseIComparer<int32_t>::~BaseIComparer()
+			{
+				Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemInt32(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemInt32(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(const BaseIComparer<int32_t>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemInt32(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = 0;
+				return *this;
+			}
+			
+			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(BaseIComparer<int32_t>&& other)
+			{
+				Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemInt32(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemInt32(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool BaseIComparer<int32_t>::operator==(const BaseIComparer<int32_t>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool BaseIComparer<int32_t>::operator!=(const BaseIComparer<int32_t>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			int32_t BaseIComparer<int32_t>::Compare(int32_t x, int32_t y)
 			{
 				return {};
 			}
@@ -5953,7 +6132,7 @@ namespace System
 			{
 				try
 				{
-					return Plugin::GetSystemCollectionsGenericIComparerSystemInt32(cppHandle)->Compare(x, y);
+					return Plugin::GetSystemCollectionsGenericBaseIComparerSystemInt32(cppHandle)->Compare(x, y);
 				}
 				catch (System::Exception ex)
 				{
@@ -5978,13 +6157,13 @@ namespace System
 	{
 		namespace Generic
 		{
-			IComparer<System::String>::IComparer()
-				 : System::Object(nullptr)
+			BaseIComparer<System::String>::BaseIComparer()
+				 : System::Collections::Generic::IComparer<System::String>(nullptr)
 			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemString(this);
 				int32_t* handle = &Handle;
 				int32_t cppHandle = CppHandle;
-				Plugin::SystemCollectionsGenericIComparerSystemStringConstructor(cppHandle, handle);
+				Plugin::SystemCollectionsGenericBaseIComparerSystemStringConstructor(cppHandle, handle);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -5998,7 +6177,7 @@ namespace System
 				}
 				else
 				{
-					Plugin::RemoveSystemCollectionsGenericIComparerSystemString(CppHandle);
+					Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemString(CppHandle);
 					CppHandle = 0;
 				}
 				if (Plugin::unhandledCsharpException)
@@ -6010,43 +6189,43 @@ namespace System
 				}
 			}
 			
-			IComparer<System::String>::IComparer(decltype(nullptr) n)
-				: System::Object(Plugin::InternalUse::Only, 0)
+			BaseIComparer<System::String>::BaseIComparer(decltype(nullptr) n)
+				: System::Collections::Generic::IComparer<System::String>(Plugin::InternalUse::Only, 0)
 			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemString(this);
 			}
 			
-			IComparer<System::String>::IComparer(const IComparer<System::String>& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			BaseIComparer<System::String>::BaseIComparer(const BaseIComparer<System::String>& other)
+				: System::Collections::Generic::IComparer<System::String>(Plugin::InternalUse::Only, other.Handle)
 			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemString(this);
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
 				}
 			}
 			
-			IComparer<System::String>::IComparer(IComparer<System::String>&& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
+			BaseIComparer<System::String>::BaseIComparer(BaseIComparer<System::String>&& other)
+				: System::Collections::Generic::IComparer<System::String>(Plugin::InternalUse::Only, other.Handle)
 			{
 				CppHandle = other.CppHandle;
 				other.Handle = 0;
 				other.CppHandle = 0;
 			}
 			
-			IComparer<System::String>::IComparer(Plugin::InternalUse iu, int32_t handle)
-				: System::Object(iu, handle)
+			BaseIComparer<System::String>::BaseIComparer(Plugin::InternalUse iu, int32_t handle)
+				: System::Collections::Generic::IComparer<System::String>(iu, handle)
 			{
-				CppHandle = Plugin::StoreSystemCollectionsGenericIComparerSystemString(this);
+				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemString(this);
 				if (Handle)
 				{
 					Plugin::ReferenceManagedClass(Handle);
 				}
 			}
 			
-			IComparer<System::String>::~IComparer()
+			BaseIComparer<System::String>::~BaseIComparer()
 			{
-				Plugin::RemoveSystemCollectionsGenericIComparerSystemString(CppHandle);
+				Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemString(CppHandle);
 				CppHandle = 0;
 				if (Handle)
 				{
@@ -6054,7 +6233,7 @@ namespace System
 					Handle = 0;
 					if (Plugin::DereferenceManagedClassNoRelease(handle))
 					{
-						Plugin::ReleaseSystemCollectionsGenericIComparerSystemString(handle);
+						Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemString(handle);
 						if (Plugin::unhandledCsharpException)
 						{
 							System::Exception* ex = Plugin::unhandledCsharpException;
@@ -6066,7 +6245,7 @@ namespace System
 				}
 			}
 			
-			IComparer<System::String>& IComparer<System::String>::operator=(const IComparer<System::String>& other)
+			BaseIComparer<System::String>& BaseIComparer<System::String>::operator=(const BaseIComparer<System::String>& other)
 			{
 				if (this->Handle)
 				{
@@ -6080,7 +6259,7 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<System::String>& IComparer<System::String>::operator=(decltype(nullptr) other)
+			BaseIComparer<System::String>& BaseIComparer<System::String>::operator=(decltype(nullptr) other)
 			{
 				if (Handle)
 				{
@@ -6088,7 +6267,7 @@ namespace System
 					Handle = 0;
 					if (Plugin::DereferenceManagedClassNoRelease(handle))
 					{
-						Plugin::ReleaseSystemCollectionsGenericIComparerSystemString(handle);
+						Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemString(handle);
 						if (Plugin::unhandledCsharpException)
 						{
 							System::Exception* ex = Plugin::unhandledCsharpException;
@@ -6102,9 +6281,9 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<System::String>& IComparer<System::String>::operator=(IComparer<System::String>&& other)
+			BaseIComparer<System::String>& BaseIComparer<System::String>::operator=(BaseIComparer<System::String>&& other)
 			{
-				Plugin::RemoveSystemCollectionsGenericIComparerSystemString(CppHandle);
+				Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemString(CppHandle);
 				CppHandle = 0;
 				if (Handle)
 				{
@@ -6112,7 +6291,7 @@ namespace System
 					Handle = 0;
 					if (Plugin::DereferenceManagedClassNoRelease(handle))
 					{
-						Plugin::ReleaseSystemCollectionsGenericIComparerSystemString(handle);
+						Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemString(handle);
 						if (Plugin::unhandledCsharpException)
 						{
 							System::Exception* ex = Plugin::unhandledCsharpException;
@@ -6127,17 +6306,17 @@ namespace System
 				return *this;
 			}
 			
-			bool IComparer<System::String>::operator==(const IComparer<System::String>& other) const
+			bool BaseIComparer<System::String>::operator==(const BaseIComparer<System::String>& other) const
 			{
 				return Handle == other.Handle;
 			}
 			
-			bool IComparer<System::String>::operator!=(const IComparer<System::String>& other) const
+			bool BaseIComparer<System::String>::operator!=(const BaseIComparer<System::String>& other) const
 			{
 				return Handle != other.Handle;
 			}
 			
-			int32_t IComparer<System::String>::Compare(System::String& x, System::String& y)
+			int32_t BaseIComparer<System::String>::Compare(System::String& x, System::String& y)
 			{
 				return {};
 			}
@@ -6148,7 +6327,7 @@ namespace System
 				{
 					auto x = System::String(Plugin::InternalUse::Only, xHandle);
 					auto y = System::String(Plugin::InternalUse::Only, yHandle);
-					return Plugin::GetSystemCollectionsGenericIComparerSystemString(cppHandle)->Compare(x, y);
+					return Plugin::GetSystemCollectionsGenericBaseIComparerSystemString(cppHandle)->Compare(x, y);
 				}
 				catch (System::Exception ex)
 				{
@@ -6169,91 +6348,37 @@ namespace System
 
 namespace System
 {
-	StringComparer::StringComparer()
-		 : System::Object(nullptr)
-	{
-		CppHandle = Plugin::StoreSystemStringComparer(this);
-		int32_t* handle = &Handle;
-		int32_t cppHandle = CppHandle;
-		Plugin::SystemStringComparerConstructor(cppHandle, handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
-		else
-		{
-			Plugin::RemoveSystemStringComparer(CppHandle);
-			CppHandle = 0;
-		}
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-	}
-	
 	StringComparer::StringComparer(decltype(nullptr) n)
-		: System::Object(Plugin::InternalUse::Only, 0)
+		: StringComparer(Plugin::InternalUse::Only, 0)
 	{
-		CppHandle = Plugin::StoreSystemStringComparer(this);
-	}
-	
-	StringComparer::StringComparer(const StringComparer& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
-	{
-		CppHandle = Plugin::StoreSystemStringComparer(this);
-		if (Handle)
-		{
-			Plugin::ReferenceManagedClass(Handle);
-		}
-	}
-	
-	StringComparer::StringComparer(StringComparer&& other)
-		: System::Object(Plugin::InternalUse::Only, other.Handle)
-	{
-		CppHandle = other.CppHandle;
-		other.Handle = 0;
-		other.CppHandle = 0;
 	}
 	
 	StringComparer::StringComparer(Plugin::InternalUse iu, int32_t handle)
 		: System::Object(iu, handle)
 	{
-		CppHandle = Plugin::StoreSystemStringComparer(this);
-		if (Handle)
+		if (handle)
 		{
-			Plugin::ReferenceManagedClass(Handle);
+			Plugin::ReferenceManagedClass(handle);
 		}
+	}
+	
+	StringComparer::StringComparer(const StringComparer& other)
+		: StringComparer(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	StringComparer::StringComparer(StringComparer&& other)
+		: StringComparer(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
 	}
 	
 	StringComparer::~StringComparer()
 	{
-		Plugin::RemoveSystemStringComparer(CppHandle);
-		CppHandle = 0;
 		if (Handle)
 		{
-			int32_t handle = Handle;
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
-			if (Plugin::DereferenceManagedClassNoRelease(handle))
-			{
-				Plugin::ReleaseSystemStringComparer(handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
 		}
 	}
 	
@@ -6275,43 +6400,17 @@ namespace System
 	{
 		if (Handle)
 		{
-			int32_t handle = Handle;
+			Plugin::DereferenceManagedClass(Handle);
 			Handle = 0;
-			if (Plugin::DereferenceManagedClassNoRelease(handle))
-			{
-				Plugin::ReleaseSystemStringComparer(handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
 		}
-		Handle = 0;
 		return *this;
 	}
 	
 	StringComparer& StringComparer::operator=(StringComparer&& other)
 	{
-		Plugin::RemoveSystemStringComparer(CppHandle);
-		CppHandle = 0;
 		if (Handle)
 		{
-			int32_t handle = Handle;
-			Handle = 0;
-			if (Plugin::DereferenceManagedClassNoRelease(handle))
-			{
-				Plugin::ReleaseSystemStringComparer(handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
+			Plugin::DereferenceManagedClass(Handle);
 		}
 		Handle = other.Handle;
 		other.Handle = 0;
@@ -6327,8 +6426,170 @@ namespace System
 	{
 		return Handle != other.Handle;
 	}
+}
+
+namespace System
+{
+	BaseStringComparer::BaseStringComparer()
+		 : System::StringComparer(nullptr)
+	{
+		CppHandle = Plugin::StoreSystemBaseStringComparer(this);
+		int32_t* handle = &Handle;
+		int32_t cppHandle = CppHandle;
+		Plugin::SystemBaseStringComparerConstructor(cppHandle, handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+		else
+		{
+			Plugin::RemoveSystemBaseStringComparer(CppHandle);
+			CppHandle = 0;
+		}
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
 	
-	int32_t StringComparer::Compare(System::String& x, System::String& y)
+	BaseStringComparer::BaseStringComparer(decltype(nullptr) n)
+		: System::StringComparer(Plugin::InternalUse::Only, 0)
+	{
+		CppHandle = Plugin::StoreSystemBaseStringComparer(this);
+	}
+	
+	BaseStringComparer::BaseStringComparer(const BaseStringComparer& other)
+		: System::StringComparer(Plugin::InternalUse::Only, other.Handle)
+	{
+		CppHandle = Plugin::StoreSystemBaseStringComparer(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	BaseStringComparer::BaseStringComparer(BaseStringComparer&& other)
+		: System::StringComparer(Plugin::InternalUse::Only, other.Handle)
+	{
+		CppHandle = other.CppHandle;
+		other.Handle = 0;
+		other.CppHandle = 0;
+	}
+	
+	BaseStringComparer::BaseStringComparer(Plugin::InternalUse iu, int32_t handle)
+		: System::StringComparer(iu, handle)
+	{
+		CppHandle = Plugin::StoreSystemBaseStringComparer(this);
+		if (Handle)
+		{
+			Plugin::ReferenceManagedClass(Handle);
+		}
+	}
+	
+	BaseStringComparer::~BaseStringComparer()
+	{
+		Plugin::RemoveSystemBaseStringComparer(CppHandle);
+		CppHandle = 0;
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemBaseStringComparer(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+	
+	BaseStringComparer& BaseStringComparer::operator=(const BaseStringComparer& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	BaseStringComparer& BaseStringComparer::operator=(decltype(nullptr) other)
+	{
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemBaseStringComparer(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+		Handle = 0;
+		return *this;
+	}
+	
+	BaseStringComparer& BaseStringComparer::operator=(BaseStringComparer&& other)
+	{
+		Plugin::RemoveSystemBaseStringComparer(CppHandle);
+		CppHandle = 0;
+		if (Handle)
+		{
+			int32_t handle = Handle;
+			Handle = 0;
+			if (Plugin::DereferenceManagedClassNoRelease(handle))
+			{
+				Plugin::ReleaseSystemBaseStringComparer(handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool BaseStringComparer::operator==(const BaseStringComparer& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool BaseStringComparer::operator!=(const BaseStringComparer& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	int32_t BaseStringComparer::Compare(System::String& x, System::String& y)
 	{
 		return {};
 	}
@@ -6339,7 +6600,7 @@ namespace System
 		{
 			auto x = System::String(Plugin::InternalUse::Only, xHandle);
 			auto y = System::String(Plugin::InternalUse::Only, yHandle);
-			return Plugin::GetSystemStringComparer(cppHandle)->Compare(x, y);
+			return Plugin::GetSystemBaseStringComparer(cppHandle)->Compare(x, y);
 		}
 		catch (System::Exception ex)
 		{
@@ -6355,7 +6616,7 @@ namespace System
 		}
 	}
 	
-	System::Boolean StringComparer::Equals(System::String& x, System::String& y)
+	System::Boolean BaseStringComparer::Equals(System::String& x, System::String& y)
 	{
 		return {};
 	}
@@ -6366,7 +6627,7 @@ namespace System
 		{
 			auto x = System::String(Plugin::InternalUse::Only, xHandle);
 			auto y = System::String(Plugin::InternalUse::Only, yHandle);
-			return Plugin::GetSystemStringComparer(cppHandle)->Equals(x, y);
+			return Plugin::GetSystemBaseStringComparer(cppHandle)->Equals(x, y);
 		}
 		catch (System::Exception ex)
 		{
@@ -6382,7 +6643,7 @@ namespace System
 		}
 	}
 	
-	int32_t StringComparer::GetHashCode(System::String& obj)
+	int32_t BaseStringComparer::GetHashCode(System::String& obj)
 	{
 		return {};
 	}
@@ -6392,7 +6653,7 @@ namespace System
 		try
 		{
 			auto obj = System::String(Plugin::InternalUse::Only, objHandle);
-			return Plugin::GetSystemStringComparer(cppHandle)->GetHashCode(obj);
+			return Plugin::GetSystemBaseStringComparer(cppHandle)->GetHashCode(obj);
 		}
 		catch (System::Exception ex)
 		{
@@ -6413,91 +6674,37 @@ namespace System
 {
 	namespace Collections
 	{
-		ICollection::ICollection()
-			 : System::Object(nullptr)
-		{
-			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
-			int32_t* handle = &Handle;
-			int32_t cppHandle = CppHandle;
-			Plugin::SystemCollectionsICollectionConstructor(cppHandle, handle);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-			else
-			{
-				Plugin::RemoveSystemCollectionsICollection(CppHandle);
-				CppHandle = 0;
-			}
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-		}
-		
 		ICollection::ICollection(decltype(nullptr) n)
-			: System::Object(Plugin::InternalUse::Only, 0)
+			: ICollection(Plugin::InternalUse::Only, 0)
 		{
-			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
-		}
-		
-		ICollection::ICollection(const ICollection& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-		}
-		
-		ICollection::ICollection(ICollection&& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = other.CppHandle;
-			other.Handle = 0;
-			other.CppHandle = 0;
 		}
 		
 		ICollection::ICollection(Plugin::InternalUse iu, int32_t handle)
 			: System::Object(iu, handle)
 		{
-			CppHandle = Plugin::StoreSystemCollectionsICollection(this);
-			if (Handle)
+			if (handle)
 			{
-				Plugin::ReferenceManagedClass(Handle);
+				Plugin::ReferenceManagedClass(handle);
 			}
+		}
+		
+		ICollection::ICollection(const ICollection& other)
+			: ICollection(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		ICollection::ICollection(ICollection&& other)
+			: ICollection(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
 		}
 		
 		ICollection::~ICollection()
 		{
-			Plugin::RemoveSystemCollectionsICollection(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsICollection(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
 		}
 		
@@ -6519,43 +6726,17 @@ namespace System
 		{
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsICollection(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
-			Handle = 0;
 			return *this;
 		}
 		
 		ICollection& ICollection::operator=(ICollection&& other)
 		{
-			Plugin::RemoveSystemCollectionsICollection(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
-				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsICollection(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = other.Handle;
 			other.Handle = 0;
@@ -6571,8 +6752,173 @@ namespace System
 		{
 			return Handle != other.Handle;
 		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		BaseICollection::BaseICollection()
+			 : System::Collections::ICollection(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseICollection(this);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemCollectionsBaseICollectionConstructor(cppHandle, handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemCollectionsBaseICollection(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
 		
-		void ICollection::CopyTo(System::Array& array, int32_t index)
+		BaseICollection::BaseICollection(decltype(nullptr) n)
+			: System::Collections::ICollection(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseICollection(this);
+		}
+		
+		BaseICollection::BaseICollection(const BaseICollection& other)
+			: System::Collections::ICollection(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseICollection(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseICollection::BaseICollection(BaseICollection&& other)
+			: System::Collections::ICollection(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		BaseICollection::BaseICollection(Plugin::InternalUse iu, int32_t handle)
+			: System::Collections::ICollection(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseICollection(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseICollection::~BaseICollection()
+		{
+			Plugin::RemoveSystemCollectionsBaseICollection(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseICollection(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		BaseICollection& BaseICollection::operator=(const BaseICollection& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		BaseICollection& BaseICollection::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseICollection(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		BaseICollection& BaseICollection::operator=(BaseICollection&& other)
+		{
+			Plugin::RemoveSystemCollectionsBaseICollection(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseICollection(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool BaseICollection::operator==(const BaseICollection& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool BaseICollection::operator!=(const BaseICollection& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		void BaseICollection::CopyTo(System::Array& array, int32_t index)
 		{
 		}
 		
@@ -6581,7 +6927,7 @@ namespace System
 			try
 			{
 				auto array = System::Array(Plugin::InternalUse::Only, arrayHandle);
-				Plugin::GetSystemCollectionsICollection(cppHandle)->CopyTo(array, index);
+				Plugin::GetSystemCollectionsBaseICollection(cppHandle)->CopyTo(array, index);
 			}
 			catch (System::Exception ex)
 			{
@@ -6595,7 +6941,7 @@ namespace System
 			}
 		}
 		
-		System::Collections::IEnumerator ICollection::GetEnumerator()
+		System::Collections::IEnumerator BaseICollection::GetEnumerator()
 		{
 			return nullptr;
 		}
@@ -6604,7 +6950,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetEnumerator().Handle;
+				return Plugin::GetSystemCollectionsBaseICollection(cppHandle)->GetEnumerator().Handle;
 			}
 			catch (System::Exception ex)
 			{
@@ -6620,7 +6966,7 @@ namespace System
 			}
 		}
 		
-		int32_t ICollection::GetCount()
+		int32_t BaseICollection::GetCount()
 		{
 			return {};
 		}
@@ -6629,7 +6975,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetCount();
+				return Plugin::GetSystemCollectionsBaseICollection(cppHandle)->GetCount();
 			}
 			catch (System::Exception ex)
 			{
@@ -6645,7 +6991,7 @@ namespace System
 			}
 		}
 		
-		System::Boolean ICollection::GetIsSynchronized()
+		System::Boolean BaseICollection::GetIsSynchronized()
 		{
 			return {};
 		}
@@ -6654,7 +7000,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetIsSynchronized();
+				return Plugin::GetSystemCollectionsBaseICollection(cppHandle)->GetIsSynchronized();
 			}
 			catch (System::Exception ex)
 			{
@@ -6670,7 +7016,7 @@ namespace System
 			}
 		}
 		
-		System::Object ICollection::GetSyncRoot()
+		System::Object BaseICollection::GetSyncRoot()
 		{
 			return nullptr;
 		}
@@ -6679,7 +7025,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsICollection(cppHandle)->GetSyncRoot().Handle;
+				return Plugin::GetSystemCollectionsBaseICollection(cppHandle)->GetSyncRoot().Handle;
 			}
 			catch (System::Exception ex)
 			{
@@ -6701,91 +7047,37 @@ namespace System
 {
 	namespace Collections
 	{
-		IList::IList()
-			 : System::Object(nullptr)
-		{
-			CppHandle = Plugin::StoreSystemCollectionsIList(this);
-			int32_t* handle = &Handle;
-			int32_t cppHandle = CppHandle;
-			Plugin::SystemCollectionsIListConstructor(cppHandle, handle);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-			else
-			{
-				Plugin::RemoveSystemCollectionsIList(CppHandle);
-				CppHandle = 0;
-			}
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-		}
-		
 		IList::IList(decltype(nullptr) n)
-			: System::Object(Plugin::InternalUse::Only, 0)
+			: IList(Plugin::InternalUse::Only, 0)
 		{
-			CppHandle = Plugin::StoreSystemCollectionsIList(this);
-		}
-		
-		IList::IList(const IList& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = Plugin::StoreSystemCollectionsIList(this);
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-		}
-		
-		IList::IList(IList&& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = other.CppHandle;
-			other.Handle = 0;
-			other.CppHandle = 0;
 		}
 		
 		IList::IList(Plugin::InternalUse iu, int32_t handle)
 			: System::Object(iu, handle)
 		{
-			CppHandle = Plugin::StoreSystemCollectionsIList(this);
-			if (Handle)
+			if (handle)
 			{
-				Plugin::ReferenceManagedClass(Handle);
+				Plugin::ReferenceManagedClass(handle);
 			}
+		}
+		
+		IList::IList(const IList& other)
+			: IList(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		IList::IList(IList&& other)
+			: IList(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
 		}
 		
 		IList::~IList()
 		{
-			Plugin::RemoveSystemCollectionsIList(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsIList(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
 		}
 		
@@ -6807,43 +7099,17 @@ namespace System
 		{
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsIList(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
-			Handle = 0;
 			return *this;
 		}
 		
 		IList& IList::operator=(IList&& other)
 		{
-			Plugin::RemoveSystemCollectionsIList(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
-				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsIList(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = other.Handle;
 			other.Handle = 0;
@@ -6859,8 +7125,173 @@ namespace System
 		{
 			return Handle != other.Handle;
 		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		BaseIList::BaseIList()
+			 : System::Collections::IList(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseIList(this);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemCollectionsBaseIListConstructor(cppHandle, handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemCollectionsBaseIList(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
 		
-		int32_t IList::Add(System::Object& value)
+		BaseIList::BaseIList(decltype(nullptr) n)
+			: System::Collections::IList(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseIList(this);
+		}
+		
+		BaseIList::BaseIList(const BaseIList& other)
+			: System::Collections::IList(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseIList(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseIList::BaseIList(BaseIList&& other)
+			: System::Collections::IList(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		BaseIList::BaseIList(Plugin::InternalUse iu, int32_t handle)
+			: System::Collections::IList(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseIList(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseIList::~BaseIList()
+		{
+			Plugin::RemoveSystemCollectionsBaseIList(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseIList(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		BaseIList& BaseIList::operator=(const BaseIList& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		BaseIList& BaseIList::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseIList(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		BaseIList& BaseIList::operator=(BaseIList&& other)
+		{
+			Plugin::RemoveSystemCollectionsBaseIList(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseIList(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool BaseIList::operator==(const BaseIList& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool BaseIList::operator!=(const BaseIList& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		int32_t BaseIList::Add(System::Object& value)
 		{
 			return {};
 		}
@@ -6870,7 +7301,7 @@ namespace System
 			try
 			{
 				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
-				return Plugin::GetSystemCollectionsIList(cppHandle)->Add(value);
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->Add(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6886,7 +7317,7 @@ namespace System
 			}
 		}
 		
-		void IList::Clear()
+		void BaseIList::Clear()
 		{
 		}
 		
@@ -6894,7 +7325,7 @@ namespace System
 		{
 			try
 			{
-				Plugin::GetSystemCollectionsIList(cppHandle)->Clear();
+				Plugin::GetSystemCollectionsBaseIList(cppHandle)->Clear();
 			}
 			catch (System::Exception ex)
 			{
@@ -6908,7 +7339,7 @@ namespace System
 			}
 		}
 		
-		System::Boolean IList::Contains(System::Object& value)
+		System::Boolean BaseIList::Contains(System::Object& value)
 		{
 			return {};
 		}
@@ -6918,7 +7349,7 @@ namespace System
 			try
 			{
 				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
-				return Plugin::GetSystemCollectionsIList(cppHandle)->Contains(value);
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->Contains(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6934,7 +7365,7 @@ namespace System
 			}
 		}
 		
-		int32_t IList::IndexOf(System::Object& value)
+		int32_t BaseIList::IndexOf(System::Object& value)
 		{
 			return {};
 		}
@@ -6944,7 +7375,7 @@ namespace System
 			try
 			{
 				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
-				return Plugin::GetSystemCollectionsIList(cppHandle)->IndexOf(value);
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->IndexOf(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6960,7 +7391,7 @@ namespace System
 			}
 		}
 		
-		void IList::Insert(int32_t index, System::Object& value)
+		void BaseIList::Insert(int32_t index, System::Object& value)
 		{
 		}
 		
@@ -6969,7 +7400,7 @@ namespace System
 			try
 			{
 				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->Insert(index, value);
+				Plugin::GetSystemCollectionsBaseIList(cppHandle)->Insert(index, value);
 			}
 			catch (System::Exception ex)
 			{
@@ -6983,7 +7414,7 @@ namespace System
 			}
 		}
 		
-		void IList::Remove(System::Object& value)
+		void BaseIList::Remove(System::Object& value)
 		{
 		}
 		
@@ -6992,7 +7423,7 @@ namespace System
 			try
 			{
 				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->Remove(value);
+				Plugin::GetSystemCollectionsBaseIList(cppHandle)->Remove(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -7006,7 +7437,7 @@ namespace System
 			}
 		}
 		
-		void IList::RemoveAt(int32_t index)
+		void BaseIList::RemoveAt(int32_t index)
 		{
 		}
 		
@@ -7014,7 +7445,7 @@ namespace System
 		{
 			try
 			{
-				Plugin::GetSystemCollectionsIList(cppHandle)->RemoveAt(index);
+				Plugin::GetSystemCollectionsBaseIList(cppHandle)->RemoveAt(index);
 			}
 			catch (System::Exception ex)
 			{
@@ -7028,7 +7459,7 @@ namespace System
 			}
 		}
 		
-		System::Collections::IEnumerator IList::GetEnumerator()
+		System::Collections::IEnumerator BaseIList::GetEnumerator()
 		{
 			return nullptr;
 		}
@@ -7037,7 +7468,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsIList(cppHandle)->GetEnumerator().Handle;
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->GetEnumerator().Handle;
 			}
 			catch (System::Exception ex)
 			{
@@ -7053,7 +7484,7 @@ namespace System
 			}
 		}
 		
-		void IList::CopyTo(System::Array& array, int32_t index)
+		void BaseIList::CopyTo(System::Array& array, int32_t index)
 		{
 		}
 		
@@ -7062,7 +7493,7 @@ namespace System
 			try
 			{
 				auto array = System::Array(Plugin::InternalUse::Only, arrayHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->CopyTo(array, index);
+				Plugin::GetSystemCollectionsBaseIList(cppHandle)->CopyTo(array, index);
 			}
 			catch (System::Exception ex)
 			{
@@ -7076,7 +7507,7 @@ namespace System
 			}
 		}
 		
-		System::Boolean IList::GetIsFixedSize()
+		System::Boolean BaseIList::GetIsFixedSize()
 		{
 			return {};
 		}
@@ -7085,7 +7516,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsIList(cppHandle)->GetIsFixedSize();
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->GetIsFixedSize();
 			}
 			catch (System::Exception ex)
 			{
@@ -7101,7 +7532,7 @@ namespace System
 			}
 		}
 		
-		System::Boolean IList::GetIsReadOnly()
+		System::Boolean BaseIList::GetIsReadOnly()
 		{
 			return {};
 		}
@@ -7110,7 +7541,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsIList(cppHandle)->GetIsReadOnly();
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->GetIsReadOnly();
 			}
 			catch (System::Exception ex)
 			{
@@ -7126,7 +7557,7 @@ namespace System
 			}
 		}
 		
-		System::Object IList::GetItem(int32_t index)
+		System::Object BaseIList::GetItem(int32_t index)
 		{
 			return nullptr;
 		}
@@ -7135,7 +7566,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsIList(cppHandle)->GetItem(index).Handle;
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->GetItem(index).Handle;
 			}
 			catch (System::Exception ex)
 			{
@@ -7151,7 +7582,7 @@ namespace System
 			}
 		}
 		
-		void IList::SetItem(int32_t index, System::Object& value)
+		void BaseIList::SetItem(int32_t index, System::Object& value)
 		{
 		}
 		
@@ -7160,7 +7591,7 @@ namespace System
 			try
 			{
 				auto value = System::Object(Plugin::InternalUse::Only, valueHandle);
-				Plugin::GetSystemCollectionsIList(cppHandle)->SetItem(index, value);
+				Plugin::GetSystemCollectionsBaseIList(cppHandle)->SetItem(index, value);
 			}
 			catch (System::Exception ex)
 			{
@@ -7174,7 +7605,7 @@ namespace System
 			}
 		}
 		
-		int32_t IList::GetCount()
+		int32_t BaseIList::GetCount()
 		{
 			return {};
 		}
@@ -7183,7 +7614,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsIList(cppHandle)->GetCount();
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->GetCount();
 			}
 			catch (System::Exception ex)
 			{
@@ -7199,7 +7630,7 @@ namespace System
 			}
 		}
 		
-		System::Boolean IList::GetIsSynchronized()
+		System::Boolean BaseIList::GetIsSynchronized()
 		{
 			return {};
 		}
@@ -7208,7 +7639,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsIList(cppHandle)->GetIsSynchronized();
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->GetIsSynchronized();
 			}
 			catch (System::Exception ex)
 			{
@@ -7224,7 +7655,7 @@ namespace System
 			}
 		}
 		
-		System::Object IList::GetSyncRoot()
+		System::Object BaseIList::GetSyncRoot()
 		{
 			return nullptr;
 		}
@@ -7233,7 +7664,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsIList(cppHandle)->GetSyncRoot().Handle;
+				return Plugin::GetSystemCollectionsBaseIList(cppHandle)->GetSyncRoot().Handle;
 			}
 			catch (System::Exception ex)
 			{
@@ -7255,91 +7686,37 @@ namespace System
 {
 	namespace Collections
 	{
-		Queue::Queue()
-			 : System::Object(nullptr)
-		{
-			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
-			int32_t* handle = &Handle;
-			int32_t cppHandle = CppHandle;
-			Plugin::SystemCollectionsQueueConstructor(cppHandle, handle);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-			else
-			{
-				Plugin::RemoveSystemCollectionsQueue(CppHandle);
-				CppHandle = 0;
-			}
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-		}
-		
 		Queue::Queue(decltype(nullptr) n)
-			: System::Object(Plugin::InternalUse::Only, 0)
+			: Queue(Plugin::InternalUse::Only, 0)
 		{
-			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
-		}
-		
-		Queue::Queue(const Queue& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-		}
-		
-		Queue::Queue(Queue&& other)
-			: System::Object(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = other.CppHandle;
-			other.Handle = 0;
-			other.CppHandle = 0;
 		}
 		
 		Queue::Queue(Plugin::InternalUse iu, int32_t handle)
 			: System::Object(iu, handle)
 		{
-			CppHandle = Plugin::StoreSystemCollectionsQueue(this);
-			if (Handle)
+			if (handle)
 			{
-				Plugin::ReferenceManagedClass(Handle);
+				Plugin::ReferenceManagedClass(handle);
 			}
+		}
+		
+		Queue::Queue(const Queue& other)
+			: Queue(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		Queue::Queue(Queue&& other)
+			: Queue(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
 		}
 		
 		Queue::~Queue()
 		{
-			Plugin::RemoveSystemCollectionsQueue(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsQueue(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
 		}
 		
@@ -7361,43 +7738,17 @@ namespace System
 		{
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsQueue(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
-			Handle = 0;
 			return *this;
 		}
 		
 		Queue& Queue::operator=(Queue&& other)
 		{
-			Plugin::RemoveSystemCollectionsQueue(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
-				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemCollectionsQueue(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = other.Handle;
 			other.Handle = 0;
@@ -7416,6 +7767,184 @@ namespace System
 		
 		int32_t Queue::GetCount()
 		{
+			auto returnValue = Plugin::SystemCollectionsQueuePropertyGetCount(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			return returnValue;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		BaseQueue::BaseQueue()
+			 : System::Collections::Queue(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseQueue(this);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemCollectionsBaseQueueConstructor(cppHandle, handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemCollectionsBaseQueue(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
+		
+		BaseQueue::BaseQueue(decltype(nullptr) n)
+			: System::Collections::Queue(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseQueue(this);
+		}
+		
+		BaseQueue::BaseQueue(const BaseQueue& other)
+			: System::Collections::Queue(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseQueue(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseQueue::BaseQueue(BaseQueue&& other)
+			: System::Collections::Queue(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		BaseQueue::BaseQueue(Plugin::InternalUse iu, int32_t handle)
+			: System::Collections::Queue(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemCollectionsBaseQueue(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseQueue::~BaseQueue()
+		{
+			Plugin::RemoveSystemCollectionsBaseQueue(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseQueue(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		BaseQueue& BaseQueue::operator=(const BaseQueue& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		BaseQueue& BaseQueue::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseQueue(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		BaseQueue& BaseQueue::operator=(BaseQueue&& other)
+		{
+			Plugin::RemoveSystemCollectionsBaseQueue(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemCollectionsBaseQueue(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool BaseQueue::operator==(const BaseQueue& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool BaseQueue::operator!=(const BaseQueue& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		int32_t BaseQueue::GetCount()
+		{
 			return {};
 		}
 		
@@ -7423,7 +7952,7 @@ namespace System
 		{
 			try
 			{
-				return Plugin::GetSystemCollectionsQueue(cppHandle)->GetCount();
+				return Plugin::GetSystemCollectionsBaseQueue(cppHandle)->GetCount();
 			}
 			catch (System::Exception ex)
 			{
@@ -7447,91 +7976,37 @@ namespace System
 	{
 		namespace Design
 		{
-			IComponentChangeService::IComponentChangeService()
-				 : System::Object(nullptr)
-			{
-				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
-				int32_t* handle = &Handle;
-				int32_t cppHandle = CppHandle;
-				Plugin::SystemComponentModelDesignIComponentChangeServiceConstructor(cppHandle, handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
-				else
-				{
-					Plugin::RemoveSystemComponentModelDesignIComponentChangeService(CppHandle);
-					CppHandle = 0;
-				}
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-			
 			IComponentChangeService::IComponentChangeService(decltype(nullptr) n)
-				: System::Object(Plugin::InternalUse::Only, 0)
+				: IComponentChangeService(Plugin::InternalUse::Only, 0)
 			{
-				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
-			}
-			
-			IComponentChangeService::IComponentChangeService(const IComponentChangeService& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
-			{
-				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
-				if (Handle)
-				{
-					Plugin::ReferenceManagedClass(Handle);
-				}
-			}
-			
-			IComponentChangeService::IComponentChangeService(IComponentChangeService&& other)
-				: System::Object(Plugin::InternalUse::Only, other.Handle)
-			{
-				CppHandle = other.CppHandle;
-				other.Handle = 0;
-				other.CppHandle = 0;
 			}
 			
 			IComponentChangeService::IComponentChangeService(Plugin::InternalUse iu, int32_t handle)
 				: System::Object(iu, handle)
 			{
-				CppHandle = Plugin::StoreSystemComponentModelDesignIComponentChangeService(this);
-				if (Handle)
+				if (handle)
 				{
-					Plugin::ReferenceManagedClass(Handle);
+					Plugin::ReferenceManagedClass(handle);
 				}
+			}
+			
+			IComponentChangeService::IComponentChangeService(const IComponentChangeService& other)
+				: IComponentChangeService(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IComponentChangeService::IComponentChangeService(IComponentChangeService&& other)
+				: IComponentChangeService(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
 			}
 			
 			IComponentChangeService::~IComponentChangeService()
 			{
-				Plugin::RemoveSystemComponentModelDesignIComponentChangeService(CppHandle);
-				CppHandle = 0;
 				if (Handle)
 				{
-					int32_t handle = Handle;
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
-					if (Plugin::DereferenceManagedClassNoRelease(handle))
-					{
-						Plugin::ReleaseSystemComponentModelDesignIComponentChangeService(handle);
-						if (Plugin::unhandledCsharpException)
-						{
-							System::Exception* ex = Plugin::unhandledCsharpException;
-							Plugin::unhandledCsharpException = nullptr;
-							ex->ThrowReferenceToThis();
-							delete ex;
-						}
-					}
 				}
 			}
 			
@@ -7553,43 +8028,17 @@ namespace System
 			{
 				if (Handle)
 				{
-					int32_t handle = Handle;
+					Plugin::DereferenceManagedClass(Handle);
 					Handle = 0;
-					if (Plugin::DereferenceManagedClassNoRelease(handle))
-					{
-						Plugin::ReleaseSystemComponentModelDesignIComponentChangeService(handle);
-						if (Plugin::unhandledCsharpException)
-						{
-							System::Exception* ex = Plugin::unhandledCsharpException;
-							Plugin::unhandledCsharpException = nullptr;
-							ex->ThrowReferenceToThis();
-							delete ex;
-						}
-					}
 				}
-				Handle = 0;
 				return *this;
 			}
 			
 			IComponentChangeService& IComponentChangeService::operator=(IComponentChangeService&& other)
 			{
-				Plugin::RemoveSystemComponentModelDesignIComponentChangeService(CppHandle);
-				CppHandle = 0;
 				if (Handle)
 				{
-					int32_t handle = Handle;
-					Handle = 0;
-					if (Plugin::DereferenceManagedClassNoRelease(handle))
-					{
-						Plugin::ReleaseSystemComponentModelDesignIComponentChangeService(handle);
-						if (Plugin::unhandledCsharpException)
-						{
-							System::Exception* ex = Plugin::unhandledCsharpException;
-							Plugin::unhandledCsharpException = nullptr;
-							ex->ThrowReferenceToThis();
-							delete ex;
-						}
-					}
+					Plugin::DereferenceManagedClass(Handle);
 				}
 				Handle = other.Handle;
 				other.Handle = 0;
@@ -7605,8 +8054,176 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			BaseIComponentChangeService::BaseIComponentChangeService()
+				 : System::ComponentModel::Design::IComponentChangeService(nullptr)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignBaseIComponentChangeService(this);
+				int32_t* handle = &Handle;
+				int32_t cppHandle = CppHandle;
+				Plugin::SystemComponentModelDesignBaseIComponentChangeServiceConstructor(cppHandle, handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+				else
+				{
+					Plugin::RemoveSystemComponentModelDesignBaseIComponentChangeService(CppHandle);
+					CppHandle = 0;
+				}
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
 			
-			void IComponentChangeService::OnComponentChanged(System::Object& component, System::ComponentModel::MemberDescriptor& member, System::Object& oldValue, System::Object& newValue)
+			BaseIComponentChangeService::BaseIComponentChangeService(decltype(nullptr) n)
+				: System::ComponentModel::Design::IComponentChangeService(Plugin::InternalUse::Only, 0)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignBaseIComponentChangeService(this);
+			}
+			
+			BaseIComponentChangeService::BaseIComponentChangeService(const BaseIComponentChangeService& other)
+				: System::ComponentModel::Design::IComponentChangeService(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignBaseIComponentChangeService(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			BaseIComponentChangeService::BaseIComponentChangeService(BaseIComponentChangeService&& other)
+				: System::ComponentModel::Design::IComponentChangeService(Plugin::InternalUse::Only, other.Handle)
+			{
+				CppHandle = other.CppHandle;
+				other.Handle = 0;
+				other.CppHandle = 0;
+			}
+			
+			BaseIComponentChangeService::BaseIComponentChangeService(Plugin::InternalUse iu, int32_t handle)
+				: System::ComponentModel::Design::IComponentChangeService(iu, handle)
+			{
+				CppHandle = Plugin::StoreSystemComponentModelDesignBaseIComponentChangeService(this);
+				if (Handle)
+				{
+					Plugin::ReferenceManagedClass(Handle);
+				}
+			}
+			
+			BaseIComponentChangeService::~BaseIComponentChangeService()
+			{
+				Plugin::RemoveSystemComponentModelDesignBaseIComponentChangeService(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignBaseIComponentChangeService(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+			}
+			
+			BaseIComponentChangeService& BaseIComponentChangeService::operator=(const BaseIComponentChangeService& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			BaseIComponentChangeService& BaseIComponentChangeService::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignBaseIComponentChangeService(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = 0;
+				return *this;
+			}
+			
+			BaseIComponentChangeService& BaseIComponentChangeService::operator=(BaseIComponentChangeService&& other)
+			{
+				Plugin::RemoveSystemComponentModelDesignBaseIComponentChangeService(CppHandle);
+				CppHandle = 0;
+				if (Handle)
+				{
+					int32_t handle = Handle;
+					Handle = 0;
+					if (Plugin::DereferenceManagedClassNoRelease(handle))
+					{
+						Plugin::ReleaseSystemComponentModelDesignBaseIComponentChangeService(handle);
+						if (Plugin::unhandledCsharpException)
+						{
+							System::Exception* ex = Plugin::unhandledCsharpException;
+							Plugin::unhandledCsharpException = nullptr;
+							ex->ThrowReferenceToThis();
+							delete ex;
+						}
+					}
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool BaseIComponentChangeService::operator==(const BaseIComponentChangeService& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool BaseIComponentChangeService::operator!=(const BaseIComponentChangeService& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			void BaseIComponentChangeService::OnComponentChanged(System::Object& component, System::ComponentModel::MemberDescriptor& member, System::Object& oldValue, System::Object& newValue)
 			{
 			}
 			
@@ -7618,7 +8235,7 @@ namespace System
 					auto member = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
 					auto oldValue = System::Object(Plugin::InternalUse::Only, oldValueHandle);
 					auto newValue = System::Object(Plugin::InternalUse::Only, newValueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanged(component, member, oldValue, newValue);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->OnComponentChanged(component, member, oldValue, newValue);
 				}
 				catch (System::Exception ex)
 				{
@@ -7632,7 +8249,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::OnComponentChanging(System::Object& component, System::ComponentModel::MemberDescriptor& member)
+			void BaseIComponentChangeService::OnComponentChanging(System::Object& component, System::ComponentModel::MemberDescriptor& member)
 			{
 			}
 			
@@ -7642,7 +8259,7 @@ namespace System
 				{
 					auto component = System::Object(Plugin::InternalUse::Only, componentHandle);
 					auto member = System::ComponentModel::MemberDescriptor(Plugin::InternalUse::Only, memberHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->OnComponentChanging(component, member);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->OnComponentChanging(component, member);
 				}
 				catch (System::Exception ex)
 				{
@@ -7656,7 +8273,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::AddComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::AddComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7665,7 +8282,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdded(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->AddComponentAdded(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7679,7 +8296,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::RemoveComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::RemoveComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7688,7 +8305,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdded(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->RemoveComponentAdded(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7702,7 +8319,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::AddComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::AddComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7711,7 +8328,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentAdding(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->AddComponentAdding(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7725,7 +8342,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::RemoveComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::RemoveComponentAdding(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7734,7 +8351,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentAdding(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->RemoveComponentAdding(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7748,7 +8365,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::AddComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value)
+			void BaseIComponentChangeService::AddComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value)
 			{
 			}
 			
@@ -7757,7 +8374,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanged(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->AddComponentChanged(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7771,7 +8388,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::RemoveComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value)
+			void BaseIComponentChangeService::RemoveComponentChanged(System::ComponentModel::Design::ComponentChangedEventHandler& value)
 			{
 			}
 			
@@ -7780,7 +8397,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentChangedEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanged(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->RemoveComponentChanged(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7794,7 +8411,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::AddComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value)
+			void BaseIComponentChangeService::AddComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value)
 			{
 			}
 			
@@ -7803,7 +8420,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentChanging(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->AddComponentChanging(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7817,7 +8434,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::RemoveComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value)
+			void BaseIComponentChangeService::RemoveComponentChanging(System::ComponentModel::Design::ComponentChangingEventHandler& value)
 			{
 			}
 			
@@ -7826,7 +8443,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentChangingEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentChanging(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->RemoveComponentChanging(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7840,7 +8457,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::AddComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::AddComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7849,7 +8466,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoved(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->AddComponentRemoved(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7863,7 +8480,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::RemoveComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::RemoveComponentRemoved(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7872,7 +8489,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoved(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->RemoveComponentRemoved(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7886,7 +8503,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::AddComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::AddComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7895,7 +8512,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRemoving(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->AddComponentRemoving(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7909,7 +8526,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::RemoveComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value)
+			void BaseIComponentChangeService::RemoveComponentRemoving(System::ComponentModel::Design::ComponentEventHandler& value)
 			{
 			}
 			
@@ -7918,7 +8535,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRemoving(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->RemoveComponentRemoving(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7932,7 +8549,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::AddComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value)
+			void BaseIComponentChangeService::AddComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value)
 			{
 			}
 			
@@ -7941,7 +8558,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->AddComponentRename(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->AddComponentRename(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7955,7 +8572,7 @@ namespace System
 				}
 			}
 			
-			void IComponentChangeService::RemoveComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value)
+			void BaseIComponentChangeService::RemoveComponentRename(System::ComponentModel::Design::ComponentRenameEventHandler& value)
 			{
 			}
 			
@@ -7964,7 +8581,7 @@ namespace System
 				try
 				{
 					auto value = System::ComponentModel::Design::ComponentRenameEventHandler(Plugin::InternalUse::Only, valueHandle);
-					Plugin::GetSystemComponentModelDesignIComponentChangeService(cppHandle)->RemoveComponentRename(value);
+					Plugin::GetSystemComponentModelDesignBaseIComponentChangeService(cppHandle)->RemoveComponentRename(value);
 				}
 				catch (System::Exception ex)
 				{
@@ -7985,91 +8602,37 @@ namespace System
 {
 	namespace IO
 	{
-		FileStream::FileStream(System::String& path, System::IO::FileMode mode)
-			 : System::IO::Stream(nullptr)
-		{
-			CppHandle = Plugin::StoreSystemIOFileStream(this);
-			int32_t* handle = &Handle;
-			int32_t cppHandle = CppHandle;
-			Plugin::SystemIOFileStreamConstructorSystemString_SystemIOFileMode(cppHandle, handle, path.Handle, mode);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-			else
-			{
-				Plugin::RemoveSystemIOFileStream(CppHandle);
-				CppHandle = 0;
-			}
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-		}
-		
 		FileStream::FileStream(decltype(nullptr) n)
-			: System::IO::Stream(Plugin::InternalUse::Only, 0)
+			: FileStream(Plugin::InternalUse::Only, 0)
 		{
-			CppHandle = Plugin::StoreSystemIOFileStream(this);
-		}
-		
-		FileStream::FileStream(const FileStream& other)
-			: System::IO::Stream(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = Plugin::StoreSystemIOFileStream(this);
-			if (Handle)
-			{
-				Plugin::ReferenceManagedClass(Handle);
-			}
-		}
-		
-		FileStream::FileStream(FileStream&& other)
-			: System::IO::Stream(Plugin::InternalUse::Only, other.Handle)
-		{
-			CppHandle = other.CppHandle;
-			other.Handle = 0;
-			other.CppHandle = 0;
 		}
 		
 		FileStream::FileStream(Plugin::InternalUse iu, int32_t handle)
 			: System::IO::Stream(iu, handle)
 		{
-			CppHandle = Plugin::StoreSystemIOFileStream(this);
-			if (Handle)
+			if (handle)
 			{
-				Plugin::ReferenceManagedClass(Handle);
+				Plugin::ReferenceManagedClass(handle);
 			}
+		}
+		
+		FileStream::FileStream(const FileStream& other)
+			: FileStream(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		FileStream::FileStream(FileStream&& other)
+			: FileStream(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
 		}
 		
 		FileStream::~FileStream()
 		{
-			Plugin::RemoveSystemIOFileStream(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemIOFileStream(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
 		}
 		
@@ -8091,43 +8654,17 @@ namespace System
 		{
 			if (Handle)
 			{
-				int32_t handle = Handle;
+				Plugin::DereferenceManagedClass(Handle);
 				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemIOFileStream(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
 			}
-			Handle = 0;
 			return *this;
 		}
 		
 		FileStream& FileStream::operator=(FileStream&& other)
 		{
-			Plugin::RemoveSystemIOFileStream(CppHandle);
-			CppHandle = 0;
 			if (Handle)
 			{
-				int32_t handle = Handle;
-				Handle = 0;
-				if (Plugin::DereferenceManagedClassNoRelease(handle))
-				{
-					Plugin::ReleaseSystemIOFileStream(handle);
-					if (Plugin::unhandledCsharpException)
-					{
-						System::Exception* ex = Plugin::unhandledCsharpException;
-						Plugin::unhandledCsharpException = nullptr;
-						ex->ThrowReferenceToThis();
-						delete ex;
-					}
-				}
+				Plugin::DereferenceManagedClass(Handle);
 			}
 			Handle = other.Handle;
 			other.Handle = 0;
@@ -8144,7 +8681,202 @@ namespace System
 			return Handle != other.Handle;
 		}
 		
+		FileStream::FileStream(System::String& path, System::IO::FileMode mode)
+			 : System::IO::Stream(nullptr)
+		{
+			auto returnValue = Plugin::SystemIOFileStreamConstructorSystemString_SystemIOFileMode(path.Handle, mode);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			Handle = returnValue;
+			if (returnValue)
+			{
+				Plugin::ReferenceManagedClass(returnValue);
+			}
+		}
+		
 		void FileStream::WriteByte(uint8_t value)
+		{
+			Plugin::SystemIOFileStreamMethodWriteByteSystemByte(Handle, value);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace IO
+	{
+		BaseFileStream::BaseFileStream(System::String& path, System::IO::FileMode mode)
+			 : System::IO::FileStream(nullptr)
+		{
+			CppHandle = Plugin::StoreSystemIOBaseFileStream(this);
+			int32_t* handle = &Handle;
+			int32_t cppHandle = CppHandle;
+			Plugin::SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode(cppHandle, handle, path.Handle, mode);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+			else
+			{
+				Plugin::RemoveSystemIOBaseFileStream(CppHandle);
+				CppHandle = 0;
+			}
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+		}
+		
+		BaseFileStream::BaseFileStream(decltype(nullptr) n)
+			: System::IO::FileStream(Plugin::InternalUse::Only, 0)
+		{
+			CppHandle = Plugin::StoreSystemIOBaseFileStream(this);
+		}
+		
+		BaseFileStream::BaseFileStream(const BaseFileStream& other)
+			: System::IO::FileStream(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = Plugin::StoreSystemIOBaseFileStream(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseFileStream::BaseFileStream(BaseFileStream&& other)
+			: System::IO::FileStream(Plugin::InternalUse::Only, other.Handle)
+		{
+			CppHandle = other.CppHandle;
+			other.Handle = 0;
+			other.CppHandle = 0;
+		}
+		
+		BaseFileStream::BaseFileStream(Plugin::InternalUse iu, int32_t handle)
+			: System::IO::FileStream(iu, handle)
+		{
+			CppHandle = Plugin::StoreSystemIOBaseFileStream(this);
+			if (Handle)
+			{
+				Plugin::ReferenceManagedClass(Handle);
+			}
+		}
+		
+		BaseFileStream::~BaseFileStream()
+		{
+			Plugin::RemoveSystemIOBaseFileStream(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemIOBaseFileStream(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+		}
+		
+		BaseFileStream& BaseFileStream::operator=(const BaseFileStream& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		BaseFileStream& BaseFileStream::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemIOBaseFileStream(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = 0;
+			return *this;
+		}
+		
+		BaseFileStream& BaseFileStream::operator=(BaseFileStream&& other)
+		{
+			Plugin::RemoveSystemIOBaseFileStream(CppHandle);
+			CppHandle = 0;
+			if (Handle)
+			{
+				int32_t handle = Handle;
+				Handle = 0;
+				if (Plugin::DereferenceManagedClassNoRelease(handle))
+				{
+					Plugin::ReleaseSystemIOBaseFileStream(handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+				}
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool BaseFileStream::operator==(const BaseFileStream& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool BaseFileStream::operator!=(const BaseFileStream& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		void BaseFileStream::WriteByte(uint8_t value)
 		{
 		}
 		
@@ -8152,7 +8884,7 @@ namespace System
 		{
 			try
 			{
-				Plugin::GetSystemIOFileStream(cppHandle)->WriteByte(value);
+				Plugin::GetSystemIOBaseFileStream(cppHandle)->WriteByte(value);
 			}
 			catch (System::Exception ex)
 			{
@@ -13217,22 +13949,25 @@ DLLEXPORT void Init(
 	float (*unityEngineTimePropertyGetDeltaTime)(),
 	int32_t (*boxFileMode)(System::IO::FileMode val),
 	System::IO::FileMode (*unboxFileMode)(int32_t valHandle),
-	void (*releaseSystemCollectionsGenericIComparerSystemInt32)(int32_t handle),
-	void (*systemCollectionsGenericIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemCollectionsGenericIComparerSystemString)(int32_t handle),
-	void (*systemCollectionsGenericIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemStringComparer)(int32_t handle),
-	void (*systemStringComparerConstructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemCollectionsICollection)(int32_t handle),
-	void (*systemCollectionsICollectionConstructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemCollectionsIList)(int32_t handle),
-	void (*systemCollectionsIListConstructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemCollectionsQueue)(int32_t handle),
-	void (*systemCollectionsQueueConstructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemComponentModelDesignIComponentChangeService)(int32_t handle),
-	void (*systemComponentModelDesignIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle),
-	void (*releaseSystemIOFileStream)(int32_t handle),
-	void (*systemIOFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode),
+	void (*releaseSystemCollectionsGenericBaseIComparerSystemInt32)(int32_t handle),
+	void (*systemCollectionsGenericBaseIComparerSystemInt32Constructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemCollectionsGenericBaseIComparerSystemString)(int32_t handle),
+	void (*systemCollectionsGenericBaseIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemBaseStringComparer)(int32_t handle),
+	void (*systemBaseStringComparerConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemCollectionsBaseICollection)(int32_t handle),
+	void (*systemCollectionsBaseICollectionConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemCollectionsBaseIList)(int32_t handle),
+	void (*systemCollectionsBaseIListConstructor)(int32_t cppHandle, int32_t* handle),
+	int32_t (*systemCollectionsQueuePropertyGetCount)(int32_t thisHandle),
+	void (*releaseSystemCollectionsBaseQueue)(int32_t handle),
+	void (*systemCollectionsBaseQueueConstructor)(int32_t cppHandle, int32_t* handle),
+	void (*releaseSystemComponentModelDesignBaseIComponentChangeService)(int32_t handle),
+	void (*systemComponentModelDesignBaseIComponentChangeServiceConstructor)(int32_t cppHandle, int32_t* handle),
+	int32_t (*systemIOFileStreamConstructorSystemString_SystemIOFileMode)(int32_t pathHandle, System::IO::FileMode mode),
+	void (*systemIOFileStreamMethodWriteByteSystemByte)(int32_t thisHandle, uint8_t value),
+	void (*releaseSystemIOBaseFileStream)(int32_t handle),
+	void (*systemIOBaseFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode),
 	int32_t (*boxBoolean)(System::Boolean val),
 	System::Boolean (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
@@ -13466,86 +14201,89 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineTimePropertyGetDeltaTime = unityEngineTimePropertyGetDeltaTime;
 	Plugin::BoxFileMode = boxFileMode;
 	Plugin::UnboxFileMode = unboxFileMode;
-	SystemCollectionsGenericIComparerSystemInt32FreeListSize = maxManagedObjects;
-	SystemCollectionsGenericIComparerSystemInt32FreeList = new System::Collections::Generic::IComparer<int32_t>*[SystemCollectionsGenericIComparerSystemInt32FreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsGenericIComparerSystemInt32FreeListSize - 1; i < end; ++i)
+	SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize = maxManagedObjects;
+	SystemCollectionsGenericBaseIComparerSystemInt32FreeList = new System::Collections::Generic::BaseIComparer<int32_t>*[SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1; i < end; ++i)
 	{
-		SystemCollectionsGenericIComparerSystemInt32FreeList[i] = (System::Collections::Generic::IComparer<int32_t>*)(SystemCollectionsGenericIComparerSystemInt32FreeList + i + 1);
+		SystemCollectionsGenericBaseIComparerSystemInt32FreeList[i] = (System::Collections::Generic::BaseIComparer<int32_t>*)(SystemCollectionsGenericBaseIComparerSystemInt32FreeList + i + 1);
 	}
-	SystemCollectionsGenericIComparerSystemInt32FreeList[SystemCollectionsGenericIComparerSystemInt32FreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsGenericIComparerSystemInt32 = SystemCollectionsGenericIComparerSystemInt32FreeList + 1;
-	Plugin::ReleaseSystemCollectionsGenericIComparerSystemInt32 = releaseSystemCollectionsGenericIComparerSystemInt32;
-	Plugin::SystemCollectionsGenericIComparerSystemInt32Constructor = systemCollectionsGenericIComparerSystemInt32Constructor;
-	SystemCollectionsGenericIComparerSystemStringFreeListSize = maxManagedObjects;
-	SystemCollectionsGenericIComparerSystemStringFreeList = new System::Collections::Generic::IComparer<System::String>*[SystemCollectionsGenericIComparerSystemStringFreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsGenericIComparerSystemStringFreeListSize - 1; i < end; ++i)
+	SystemCollectionsGenericBaseIComparerSystemInt32FreeList[SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = SystemCollectionsGenericBaseIComparerSystemInt32FreeList + 1;
+	Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemInt32 = releaseSystemCollectionsGenericBaseIComparerSystemInt32;
+	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32Constructor = systemCollectionsGenericBaseIComparerSystemInt32Constructor;
+	SystemCollectionsGenericBaseIComparerSystemStringFreeListSize = maxManagedObjects;
+	SystemCollectionsGenericBaseIComparerSystemStringFreeList = new System::Collections::Generic::BaseIComparer<System::String>*[SystemCollectionsGenericBaseIComparerSystemStringFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsGenericBaseIComparerSystemStringFreeListSize - 1; i < end; ++i)
 	{
-		SystemCollectionsGenericIComparerSystemStringFreeList[i] = (System::Collections::Generic::IComparer<System::String>*)(SystemCollectionsGenericIComparerSystemStringFreeList + i + 1);
+		SystemCollectionsGenericBaseIComparerSystemStringFreeList[i] = (System::Collections::Generic::BaseIComparer<System::String>*)(SystemCollectionsGenericBaseIComparerSystemStringFreeList + i + 1);
 	}
-	SystemCollectionsGenericIComparerSystemStringFreeList[SystemCollectionsGenericIComparerSystemStringFreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsGenericIComparerSystemString = SystemCollectionsGenericIComparerSystemStringFreeList + 1;
-	Plugin::ReleaseSystemCollectionsGenericIComparerSystemString = releaseSystemCollectionsGenericIComparerSystemString;
-	Plugin::SystemCollectionsGenericIComparerSystemStringConstructor = systemCollectionsGenericIComparerSystemStringConstructor;
-	SystemStringComparerFreeListSize = maxManagedObjects;
-	SystemStringComparerFreeList = new System::StringComparer*[SystemStringComparerFreeListSize];
-	for (int32_t i = 0, end = SystemStringComparerFreeListSize - 1; i < end; ++i)
+	SystemCollectionsGenericBaseIComparerSystemStringFreeList[SystemCollectionsGenericBaseIComparerSystemStringFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsGenericBaseIComparerSystemString = SystemCollectionsGenericBaseIComparerSystemStringFreeList + 1;
+	Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemString = releaseSystemCollectionsGenericBaseIComparerSystemString;
+	Plugin::SystemCollectionsGenericBaseIComparerSystemStringConstructor = systemCollectionsGenericBaseIComparerSystemStringConstructor;
+	SystemBaseStringComparerFreeListSize = maxManagedObjects;
+	SystemBaseStringComparerFreeList = new System::BaseStringComparer*[SystemBaseStringComparerFreeListSize];
+	for (int32_t i = 0, end = SystemBaseStringComparerFreeListSize - 1; i < end; ++i)
 	{
-		SystemStringComparerFreeList[i] = (System::StringComparer*)(SystemStringComparerFreeList + i + 1);
+		SystemBaseStringComparerFreeList[i] = (System::BaseStringComparer*)(SystemBaseStringComparerFreeList + i + 1);
 	}
-	SystemStringComparerFreeList[SystemStringComparerFreeListSize - 1] = nullptr;
-	NextFreeSystemStringComparer = SystemStringComparerFreeList + 1;
-	Plugin::ReleaseSystemStringComparer = releaseSystemStringComparer;
-	Plugin::SystemStringComparerConstructor = systemStringComparerConstructor;
-	SystemCollectionsICollectionFreeListSize = maxManagedObjects;
-	SystemCollectionsICollectionFreeList = new System::Collections::ICollection*[SystemCollectionsICollectionFreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsICollectionFreeListSize - 1; i < end; ++i)
+	SystemBaseStringComparerFreeList[SystemBaseStringComparerFreeListSize - 1] = nullptr;
+	NextFreeSystemBaseStringComparer = SystemBaseStringComparerFreeList + 1;
+	Plugin::ReleaseSystemBaseStringComparer = releaseSystemBaseStringComparer;
+	Plugin::SystemBaseStringComparerConstructor = systemBaseStringComparerConstructor;
+	SystemCollectionsBaseICollectionFreeListSize = maxManagedObjects;
+	SystemCollectionsBaseICollectionFreeList = new System::Collections::BaseICollection*[SystemCollectionsBaseICollectionFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsBaseICollectionFreeListSize - 1; i < end; ++i)
 	{
-		SystemCollectionsICollectionFreeList[i] = (System::Collections::ICollection*)(SystemCollectionsICollectionFreeList + i + 1);
+		SystemCollectionsBaseICollectionFreeList[i] = (System::Collections::BaseICollection*)(SystemCollectionsBaseICollectionFreeList + i + 1);
 	}
-	SystemCollectionsICollectionFreeList[SystemCollectionsICollectionFreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsICollection = SystemCollectionsICollectionFreeList + 1;
-	Plugin::ReleaseSystemCollectionsICollection = releaseSystemCollectionsICollection;
-	Plugin::SystemCollectionsICollectionConstructor = systemCollectionsICollectionConstructor;
-	SystemCollectionsIListFreeListSize = maxManagedObjects;
-	SystemCollectionsIListFreeList = new System::Collections::IList*[SystemCollectionsIListFreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsIListFreeListSize - 1; i < end; ++i)
+	SystemCollectionsBaseICollectionFreeList[SystemCollectionsBaseICollectionFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsBaseICollection = SystemCollectionsBaseICollectionFreeList + 1;
+	Plugin::ReleaseSystemCollectionsBaseICollection = releaseSystemCollectionsBaseICollection;
+	Plugin::SystemCollectionsBaseICollectionConstructor = systemCollectionsBaseICollectionConstructor;
+	SystemCollectionsBaseIListFreeListSize = maxManagedObjects;
+	SystemCollectionsBaseIListFreeList = new System::Collections::BaseIList*[SystemCollectionsBaseIListFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsBaseIListFreeListSize - 1; i < end; ++i)
 	{
-		SystemCollectionsIListFreeList[i] = (System::Collections::IList*)(SystemCollectionsIListFreeList + i + 1);
+		SystemCollectionsBaseIListFreeList[i] = (System::Collections::BaseIList*)(SystemCollectionsBaseIListFreeList + i + 1);
 	}
-	SystemCollectionsIListFreeList[SystemCollectionsIListFreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsIList = SystemCollectionsIListFreeList + 1;
-	Plugin::ReleaseSystemCollectionsIList = releaseSystemCollectionsIList;
-	Plugin::SystemCollectionsIListConstructor = systemCollectionsIListConstructor;
-	SystemCollectionsQueueFreeListSize = maxManagedObjects;
-	SystemCollectionsQueueFreeList = new System::Collections::Queue*[SystemCollectionsQueueFreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsQueueFreeListSize - 1; i < end; ++i)
+	SystemCollectionsBaseIListFreeList[SystemCollectionsBaseIListFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsBaseIList = SystemCollectionsBaseIListFreeList + 1;
+	Plugin::ReleaseSystemCollectionsBaseIList = releaseSystemCollectionsBaseIList;
+	Plugin::SystemCollectionsBaseIListConstructor = systemCollectionsBaseIListConstructor;
+	Plugin::SystemCollectionsQueuePropertyGetCount = systemCollectionsQueuePropertyGetCount;
+	SystemCollectionsBaseQueueFreeListSize = maxManagedObjects;
+	SystemCollectionsBaseQueueFreeList = new System::Collections::BaseQueue*[SystemCollectionsBaseQueueFreeListSize];
+	for (int32_t i = 0, end = SystemCollectionsBaseQueueFreeListSize - 1; i < end; ++i)
 	{
-		SystemCollectionsQueueFreeList[i] = (System::Collections::Queue*)(SystemCollectionsQueueFreeList + i + 1);
+		SystemCollectionsBaseQueueFreeList[i] = (System::Collections::BaseQueue*)(SystemCollectionsBaseQueueFreeList + i + 1);
 	}
-	SystemCollectionsQueueFreeList[SystemCollectionsQueueFreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsQueue = SystemCollectionsQueueFreeList + 1;
-	Plugin::ReleaseSystemCollectionsQueue = releaseSystemCollectionsQueue;
-	Plugin::SystemCollectionsQueueConstructor = systemCollectionsQueueConstructor;
-	SystemComponentModelDesignIComponentChangeServiceFreeListSize = maxManagedObjects;
-	SystemComponentModelDesignIComponentChangeServiceFreeList = new System::ComponentModel::Design::IComponentChangeService*[SystemComponentModelDesignIComponentChangeServiceFreeListSize];
-	for (int32_t i = 0, end = SystemComponentModelDesignIComponentChangeServiceFreeListSize - 1; i < end; ++i)
+	SystemCollectionsBaseQueueFreeList[SystemCollectionsBaseQueueFreeListSize - 1] = nullptr;
+	NextFreeSystemCollectionsBaseQueue = SystemCollectionsBaseQueueFreeList + 1;
+	Plugin::ReleaseSystemCollectionsBaseQueue = releaseSystemCollectionsBaseQueue;
+	Plugin::SystemCollectionsBaseQueueConstructor = systemCollectionsBaseQueueConstructor;
+	SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize = maxManagedObjects;
+	SystemComponentModelDesignBaseIComponentChangeServiceFreeList = new System::ComponentModel::Design::BaseIComponentChangeService*[SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize];
+	for (int32_t i = 0, end = SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize - 1; i < end; ++i)
 	{
-		SystemComponentModelDesignIComponentChangeServiceFreeList[i] = (System::ComponentModel::Design::IComponentChangeService*)(SystemComponentModelDesignIComponentChangeServiceFreeList + i + 1);
+		SystemComponentModelDesignBaseIComponentChangeServiceFreeList[i] = (System::ComponentModel::Design::BaseIComponentChangeService*)(SystemComponentModelDesignBaseIComponentChangeServiceFreeList + i + 1);
 	}
-	SystemComponentModelDesignIComponentChangeServiceFreeList[SystemComponentModelDesignIComponentChangeServiceFreeListSize - 1] = nullptr;
-	NextFreeSystemComponentModelDesignIComponentChangeService = SystemComponentModelDesignIComponentChangeServiceFreeList + 1;
-	Plugin::ReleaseSystemComponentModelDesignIComponentChangeService = releaseSystemComponentModelDesignIComponentChangeService;
-	Plugin::SystemComponentModelDesignIComponentChangeServiceConstructor = systemComponentModelDesignIComponentChangeServiceConstructor;
-	SystemIOFileStreamFreeListSize = maxManagedObjects;
-	SystemIOFileStreamFreeList = new System::IO::FileStream*[SystemIOFileStreamFreeListSize];
-	for (int32_t i = 0, end = SystemIOFileStreamFreeListSize - 1; i < end; ++i)
-	{
-		SystemIOFileStreamFreeList[i] = (System::IO::FileStream*)(SystemIOFileStreamFreeList + i + 1);
-	}
-	SystemIOFileStreamFreeList[SystemIOFileStreamFreeListSize - 1] = nullptr;
-	NextFreeSystemIOFileStream = SystemIOFileStreamFreeList + 1;
-	Plugin::ReleaseSystemIOFileStream = releaseSystemIOFileStream;
+	SystemComponentModelDesignBaseIComponentChangeServiceFreeList[SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize - 1] = nullptr;
+	NextFreeSystemComponentModelDesignBaseIComponentChangeService = SystemComponentModelDesignBaseIComponentChangeServiceFreeList + 1;
+	Plugin::ReleaseSystemComponentModelDesignBaseIComponentChangeService = releaseSystemComponentModelDesignBaseIComponentChangeService;
+	Plugin::SystemComponentModelDesignBaseIComponentChangeServiceConstructor = systemComponentModelDesignBaseIComponentChangeServiceConstructor;
 	Plugin::SystemIOFileStreamConstructorSystemString_SystemIOFileMode = systemIOFileStreamConstructorSystemString_SystemIOFileMode;
+	Plugin::SystemIOFileStreamMethodWriteByteSystemByte = systemIOFileStreamMethodWriteByteSystemByte;
+	SystemIOBaseFileStreamFreeListSize = maxManagedObjects;
+	SystemIOBaseFileStreamFreeList = new System::IO::BaseFileStream*[SystemIOBaseFileStreamFreeListSize];
+	for (int32_t i = 0, end = SystemIOBaseFileStreamFreeListSize - 1; i < end; ++i)
+	{
+		SystemIOBaseFileStreamFreeList[i] = (System::IO::BaseFileStream*)(SystemIOBaseFileStreamFreeList + i + 1);
+	}
+	SystemIOBaseFileStreamFreeList[SystemIOBaseFileStreamFreeListSize - 1] = nullptr;
+	NextFreeSystemIOBaseFileStream = SystemIOBaseFileStreamFreeList + 1;
+	Plugin::ReleaseSystemIOBaseFileStream = releaseSystemIOBaseFileStream;
+	Plugin::SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode = systemIOBaseFileStreamConstructorSystemString_SystemIOFileMode;
 	Plugin::BoxBoolean = boxBoolean;
 	Plugin::UnboxBoolean = unboxBoolean;
 	Plugin::BoxSByte = boxSByte;

@@ -381,22 +381,25 @@ namespace NativeScript
 			IntPtr unityEngineTimePropertyGetDeltaTime,
 			IntPtr boxFileMode,
 			IntPtr unboxFileMode,
-			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
-			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
-			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
-			IntPtr systemCollectionsGenericIComparerSystemStringConstructor,
-			IntPtr releaseSystemStringComparer,
-			IntPtr systemStringComparerConstructor,
-			IntPtr releaseSystemCollectionsICollection,
-			IntPtr systemCollectionsICollectionConstructor,
-			IntPtr releaseSystemCollectionsIList,
-			IntPtr systemCollectionsIListConstructor,
-			IntPtr releaseSystemCollectionsQueue,
-			IntPtr systemCollectionsQueueConstructor,
-			IntPtr releaseSystemComponentModelDesignIComponentChangeService,
-			IntPtr systemComponentModelDesignIComponentChangeServiceConstructor,
-			IntPtr releaseSystemIOFileStream,
+			IntPtr releaseSystemCollectionsGenericBaseIComparerSystemInt32,
+			IntPtr systemCollectionsGenericBaseIComparerSystemInt32Constructor,
+			IntPtr releaseSystemCollectionsGenericBaseIComparerSystemString,
+			IntPtr systemCollectionsGenericBaseIComparerSystemStringConstructor,
+			IntPtr releaseSystemBaseStringComparer,
+			IntPtr systemBaseStringComparerConstructor,
+			IntPtr releaseSystemCollectionsBaseICollection,
+			IntPtr systemCollectionsBaseICollectionConstructor,
+			IntPtr releaseSystemCollectionsBaseIList,
+			IntPtr systemCollectionsBaseIListConstructor,
+			IntPtr systemCollectionsQueuePropertyGetCount,
+			IntPtr releaseSystemCollectionsBaseQueue,
+			IntPtr systemCollectionsBaseQueueConstructor,
+			IntPtr releaseSystemComponentModelDesignBaseIComponentChangeService,
+			IntPtr systemComponentModelDesignBaseIComponentChangeServiceConstructor,
 			IntPtr systemIOFileStreamConstructorSystemString_SystemIOFileMode,
+			IntPtr systemIOFileStreamMethodWriteByteSystemByte,
+			IntPtr releaseSystemIOBaseFileStream,
+			IntPtr systemIOBaseFileStreamConstructorSystemString_SystemIOFileMode,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -906,22 +909,25 @@ namespace NativeScript
 			IntPtr unityEngineTimePropertyGetDeltaTime,
 			IntPtr boxFileMode,
 			IntPtr unboxFileMode,
-			IntPtr releaseSystemCollectionsGenericIComparerSystemInt32,
-			IntPtr systemCollectionsGenericIComparerSystemInt32Constructor,
-			IntPtr releaseSystemCollectionsGenericIComparerSystemString,
-			IntPtr systemCollectionsGenericIComparerSystemStringConstructor,
-			IntPtr releaseSystemStringComparer,
-			IntPtr systemStringComparerConstructor,
-			IntPtr releaseSystemCollectionsICollection,
-			IntPtr systemCollectionsICollectionConstructor,
-			IntPtr releaseSystemCollectionsIList,
-			IntPtr systemCollectionsIListConstructor,
-			IntPtr releaseSystemCollectionsQueue,
-			IntPtr systemCollectionsQueueConstructor,
-			IntPtr releaseSystemComponentModelDesignIComponentChangeService,
-			IntPtr systemComponentModelDesignIComponentChangeServiceConstructor,
-			IntPtr releaseSystemIOFileStream,
+			IntPtr releaseSystemCollectionsGenericBaseIComparerSystemInt32,
+			IntPtr systemCollectionsGenericBaseIComparerSystemInt32Constructor,
+			IntPtr releaseSystemCollectionsGenericBaseIComparerSystemString,
+			IntPtr systemCollectionsGenericBaseIComparerSystemStringConstructor,
+			IntPtr releaseSystemBaseStringComparer,
+			IntPtr systemBaseStringComparerConstructor,
+			IntPtr releaseSystemCollectionsBaseICollection,
+			IntPtr systemCollectionsBaseICollectionConstructor,
+			IntPtr releaseSystemCollectionsBaseIList,
+			IntPtr systemCollectionsBaseIListConstructor,
+			IntPtr systemCollectionsQueuePropertyGetCount,
+			IntPtr releaseSystemCollectionsBaseQueue,
+			IntPtr systemCollectionsBaseQueueConstructor,
+			IntPtr releaseSystemComponentModelDesignBaseIComponentChangeService,
+			IntPtr systemComponentModelDesignBaseIComponentChangeServiceConstructor,
 			IntPtr systemIOFileStreamConstructorSystemString_SystemIOFileMode,
+			IntPtr systemIOFileStreamMethodWriteByteSystemByte,
+			IntPtr releaseSystemIOBaseFileStream,
+			IntPtr systemIOBaseFileStreamConstructorSystemString_SystemIOFileMode,
 			IntPtr boxBoolean,
 			IntPtr unboxBoolean,
 			IntPtr boxSByte,
@@ -1342,22 +1348,25 @@ namespace NativeScript
 		delegate float UnityEngineTimePropertyGetDeltaTimeDelegate();
 		delegate int BoxFileModeDelegate(System.IO.FileMode val);
 		delegate System.IO.FileMode UnboxFileModeDelegate(int valHandle);
-		delegate void SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(int handle);
-		delegate void SystemCollectionsGenericIComparerSystemStringConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(int handle);
-		delegate void SystemStringComparerConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemStringComparerDelegate(int handle);
-		delegate void SystemCollectionsICollectionConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemCollectionsICollectionDelegate(int handle);
-		delegate void SystemCollectionsIListConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemCollectionsIListDelegate(int handle);
-		delegate void SystemCollectionsQueueConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemCollectionsQueueDelegate(int handle);
-		delegate void SystemComponentModelDesignIComponentChangeServiceConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate(int handle);
-		delegate void SystemIOFileStreamConstructorSystemString_SystemIOFileModeDelegate(int cppHandle, ref int handle, int pathHandle, System.IO.FileMode mode);
-		delegate void ReleaseSystemIOFileStreamDelegate(int handle);
+		delegate void SystemCollectionsGenericBaseIComparerSystemInt32ConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsGenericBaseIComparerSystemInt32Delegate(int handle);
+		delegate void SystemCollectionsGenericBaseIComparerSystemStringConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsGenericBaseIComparerSystemStringDelegate(int handle);
+		delegate void SystemBaseStringComparerConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemBaseStringComparerDelegate(int handle);
+		delegate void SystemCollectionsBaseICollectionConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsBaseICollectionDelegate(int handle);
+		delegate void SystemCollectionsBaseIListConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsBaseIListDelegate(int handle);
+		delegate int SystemCollectionsQueuePropertyGetCountDelegate(int thisHandle);
+		delegate void SystemCollectionsBaseQueueConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemCollectionsBaseQueueDelegate(int handle);
+		delegate void SystemComponentModelDesignBaseIComponentChangeServiceConstructorDelegate(int cppHandle, ref int handle);
+		delegate void ReleaseSystemComponentModelDesignBaseIComponentChangeServiceDelegate(int handle);
+		delegate int SystemIOFileStreamConstructorSystemString_SystemIOFileModeDelegate(int pathHandle, System.IO.FileMode mode);
+		delegate void SystemIOFileStreamMethodWriteByteSystemByteDelegate(int thisHandle, byte value);
+		delegate void SystemIOBaseFileStreamConstructorSystemString_SystemIOFileModeDelegate(int cppHandle, ref int handle, int pathHandle, System.IO.FileMode mode);
+		delegate void ReleaseSystemIOBaseFileStreamDelegate(int handle);
 		delegate int BoxBooleanDelegate(bool val);
 		delegate bool UnboxBooleanDelegate(int valHandle);
 		delegate int BoxSByteDelegate(sbyte val);
@@ -1684,22 +1693,25 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTimePropertyGetDeltaTimeDelegate(UnityEngineTimePropertyGetDeltaTime)),
 				Marshal.GetFunctionPointerForDelegate(new BoxFileModeDelegate(BoxFileMode)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxFileModeDelegate(UnboxFileMode)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate(ReleaseSystemCollectionsGenericIComparerSystemInt32)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate(SystemCollectionsGenericIComparerSystemInt32Constructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericIComparerSystemStringDelegate(ReleaseSystemCollectionsGenericIComparerSystemString)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIComparerSystemStringConstructorDelegate(SystemCollectionsGenericIComparerSystemStringConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemStringComparerDelegate(ReleaseSystemStringComparer)),
-				Marshal.GetFunctionPointerForDelegate(new SystemStringComparerConstructorDelegate(SystemStringComparerConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsICollectionDelegate(ReleaseSystemCollectionsICollection)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsICollectionConstructorDelegate(SystemCollectionsICollectionConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsIListDelegate(ReleaseSystemCollectionsIList)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIListConstructorDelegate(SystemCollectionsIListConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsQueueDelegate(ReleaseSystemCollectionsQueue)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsQueueConstructorDelegate(SystemCollectionsQueueConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate(ReleaseSystemComponentModelDesignIComponentChangeService)),
-				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignIComponentChangeServiceConstructorDelegate(SystemComponentModelDesignIComponentChangeServiceConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemIOFileStreamDelegate(ReleaseSystemIOFileStream)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericBaseIComparerSystemInt32Delegate(ReleaseSystemCollectionsGenericBaseIComparerSystemInt32)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericBaseIComparerSystemInt32ConstructorDelegate(SystemCollectionsGenericBaseIComparerSystemInt32Constructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsGenericBaseIComparerSystemStringDelegate(ReleaseSystemCollectionsGenericBaseIComparerSystemString)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericBaseIComparerSystemStringConstructorDelegate(SystemCollectionsGenericBaseIComparerSystemStringConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemBaseStringComparerDelegate(ReleaseSystemBaseStringComparer)),
+				Marshal.GetFunctionPointerForDelegate(new SystemBaseStringComparerConstructorDelegate(SystemBaseStringComparerConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsBaseICollectionDelegate(ReleaseSystemCollectionsBaseICollection)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsBaseICollectionConstructorDelegate(SystemCollectionsBaseICollectionConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsBaseIListDelegate(ReleaseSystemCollectionsBaseIList)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsBaseIListConstructorDelegate(SystemCollectionsBaseIListConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsQueuePropertyGetCountDelegate(SystemCollectionsQueuePropertyGetCount)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemCollectionsBaseQueueDelegate(ReleaseSystemCollectionsBaseQueue)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsBaseQueueConstructorDelegate(SystemCollectionsBaseQueueConstructor)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemComponentModelDesignBaseIComponentChangeServiceDelegate(ReleaseSystemComponentModelDesignBaseIComponentChangeService)),
+				Marshal.GetFunctionPointerForDelegate(new SystemComponentModelDesignBaseIComponentChangeServiceConstructorDelegate(SystemComponentModelDesignBaseIComponentChangeServiceConstructor)),
 				Marshal.GetFunctionPointerForDelegate(new SystemIOFileStreamConstructorSystemString_SystemIOFileModeDelegate(SystemIOFileStreamConstructorSystemString_SystemIOFileMode)),
+				Marshal.GetFunctionPointerForDelegate(new SystemIOFileStreamMethodWriteByteSystemByteDelegate(SystemIOFileStreamMethodWriteByteSystemByte)),
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemIOBaseFileStreamDelegate(ReleaseSystemIOBaseFileStream)),
+				Marshal.GetFunctionPointerForDelegate(new SystemIOBaseFileStreamConstructorSystemString_SystemIOFileModeDelegate(SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode)),
 				Marshal.GetFunctionPointerForDelegate(new BoxBooleanDelegate(BoxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxBooleanDelegate(UnboxBoolean)),
 				Marshal.GetFunctionPointerForDelegate(new BoxSByteDelegate(BoxSByte)),
@@ -1866,11 +1878,11 @@ namespace NativeScript
 		}
 		
 		/*BEGIN BASE TYPES*/
-		class SystemCollectionsGenericIComparerSystemInt32 : System.Collections.Generic.IComparer<int>
+		class SystemCollectionsGenericBaseIComparerSystemInt32 : System.Collections.Generic.IComparer<int>
 		{
 			public int CppHandle;
 			
-			public SystemCollectionsGenericIComparerSystemInt32(int cppHandle)
+			public SystemCollectionsGenericBaseIComparerSystemInt32(int cppHandle)
 				: base()
 			{
 				CppHandle = cppHandle;
@@ -1895,11 +1907,11 @@ namespace NativeScript
 			
 		}
 		
-		class SystemCollectionsGenericIComparerSystemString : System.Collections.Generic.IComparer<string>
+		class SystemCollectionsGenericBaseIComparerSystemString : System.Collections.Generic.IComparer<string>
 		{
 			public int CppHandle;
 			
-			public SystemCollectionsGenericIComparerSystemString(int cppHandle)
+			public SystemCollectionsGenericBaseIComparerSystemString(int cppHandle)
 				: base()
 			{
 				CppHandle = cppHandle;
@@ -1926,11 +1938,11 @@ namespace NativeScript
 			
 		}
 		
-		class SystemStringComparer : System.StringComparer
+		class SystemBaseStringComparer : System.StringComparer
 		{
 			public int CppHandle;
 			
-			public SystemStringComparer(int cppHandle)
+			public SystemBaseStringComparer(int cppHandle)
 				: base()
 			{
 				CppHandle = cppHandle;
@@ -1994,11 +2006,11 @@ namespace NativeScript
 			
 		}
 		
-		class SystemCollectionsICollection : System.Collections.ICollection
+		class SystemCollectionsBaseICollection : System.Collections.ICollection
 		{
 			public int CppHandle;
 			
-			public SystemCollectionsICollection(int cppHandle)
+			public SystemCollectionsBaseICollection(int cppHandle)
 				: base()
 			{
 				CppHandle = cppHandle;
@@ -2099,11 +2111,11 @@ namespace NativeScript
 			
 		}
 		
-		class SystemCollectionsIList : System.Collections.IList
+		class SystemCollectionsBaseIList : System.Collections.IList
 		{
 			public int CppHandle;
 			
-			public SystemCollectionsIList(int cppHandle)
+			public SystemCollectionsBaseIList(int cppHandle)
 				: base()
 			{
 				CppHandle = cppHandle;
@@ -2395,11 +2407,11 @@ namespace NativeScript
 			
 		}
 		
-		class SystemCollectionsQueue : System.Collections.Queue
+		class SystemCollectionsBaseQueue : System.Collections.Queue
 		{
 			public int CppHandle;
 			
-			public SystemCollectionsQueue(int cppHandle)
+			public SystemCollectionsBaseQueue(int cppHandle)
 				: base()
 			{
 				CppHandle = cppHandle;
@@ -2427,11 +2439,11 @@ namespace NativeScript
 			
 		}
 		
-		class SystemComponentModelDesignIComponentChangeService : System.ComponentModel.Design.IComponentChangeService
+		class SystemComponentModelDesignBaseIComponentChangeService : System.ComponentModel.Design.IComponentChangeService
 		{
 			public int CppHandle;
 			
-			public SystemComponentModelDesignIComponentChangeService(int cppHandle)
+			public SystemComponentModelDesignBaseIComponentChangeService(int cppHandle)
 				: base()
 			{
 				CppHandle = cppHandle;
@@ -2713,11 +2725,11 @@ namespace NativeScript
 			
 		}
 		
-		class SystemIOFileStream : System.IO.FileStream
+		class SystemIOBaseFileStream : System.IO.FileStream
 		{
 			public int CppHandle;
 			
-			public SystemIOFileStream(int cppHandle, string path, System.IO.FileMode mode)
+			public SystemIOBaseFileStream(int cppHandle, string path, System.IO.FileMode mode)
 				: base(path, mode)
 			{
 				CppHandle = cppHandle;
@@ -5433,12 +5445,12 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIComparerSystemInt32ConstructorDelegate))]
-		static void SystemCollectionsGenericIComparerSystemInt32Constructor(int cppHandle, ref int handle)
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericBaseIComparerSystemInt32ConstructorDelegate))]
+		static void SystemCollectionsGenericBaseIComparerSystemInt32Constructor(int cppHandle, ref int handle)
 		{
 			try
 			{
-				var thiz = new SystemCollectionsGenericIComparerSystemInt32(cppHandle);
+				var thiz = new SystemCollectionsGenericBaseIComparerSystemInt32(cppHandle);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5453,8 +5465,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericIComparerSystemInt32Delegate))]
-		static void ReleaseSystemCollectionsGenericIComparerSystemInt32(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericBaseIComparerSystemInt32Delegate))]
+		static void ReleaseSystemCollectionsGenericBaseIComparerSystemInt32(int handle)
 		{
 			try
 			{
@@ -5472,12 +5484,12 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIComparerSystemStringConstructorDelegate))]
-		static void SystemCollectionsGenericIComparerSystemStringConstructor(int cppHandle, ref int handle)
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericBaseIComparerSystemStringConstructorDelegate))]
+		static void SystemCollectionsGenericBaseIComparerSystemStringConstructor(int cppHandle, ref int handle)
 		{
 			try
 			{
-				var thiz = new SystemCollectionsGenericIComparerSystemString(cppHandle);
+				var thiz = new SystemCollectionsGenericBaseIComparerSystemString(cppHandle);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5492,8 +5504,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericIComparerSystemStringDelegate))]
-		static void ReleaseSystemCollectionsGenericIComparerSystemString(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsGenericBaseIComparerSystemStringDelegate))]
+		static void ReleaseSystemCollectionsGenericBaseIComparerSystemString(int handle)
 		{
 			try
 			{
@@ -5511,12 +5523,12 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemStringComparerConstructorDelegate))]
-		static void SystemStringComparerConstructor(int cppHandle, ref int handle)
+		[MonoPInvokeCallback(typeof(SystemBaseStringComparerConstructorDelegate))]
+		static void SystemBaseStringComparerConstructor(int cppHandle, ref int handle)
 		{
 			try
 			{
-				var thiz = new SystemStringComparer(cppHandle);
+				var thiz = new SystemBaseStringComparer(cppHandle);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5531,8 +5543,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemStringComparerDelegate))]
-		static void ReleaseSystemStringComparer(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemBaseStringComparerDelegate))]
+		static void ReleaseSystemBaseStringComparer(int handle)
 		{
 			try
 			{
@@ -5550,12 +5562,12 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemCollectionsICollectionConstructorDelegate))]
-		static void SystemCollectionsICollectionConstructor(int cppHandle, ref int handle)
+		[MonoPInvokeCallback(typeof(SystemCollectionsBaseICollectionConstructorDelegate))]
+		static void SystemCollectionsBaseICollectionConstructor(int cppHandle, ref int handle)
 		{
 			try
 			{
-				var thiz = new SystemCollectionsICollection(cppHandle);
+				var thiz = new SystemCollectionsBaseICollection(cppHandle);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5570,8 +5582,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsICollectionDelegate))]
-		static void ReleaseSystemCollectionsICollection(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsBaseICollectionDelegate))]
+		static void ReleaseSystemCollectionsBaseICollection(int handle)
 		{
 			try
 			{
@@ -5589,12 +5601,12 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemCollectionsIListConstructorDelegate))]
-		static void SystemCollectionsIListConstructor(int cppHandle, ref int handle)
+		[MonoPInvokeCallback(typeof(SystemCollectionsBaseIListConstructorDelegate))]
+		static void SystemCollectionsBaseIListConstructor(int cppHandle, ref int handle)
 		{
 			try
 			{
-				var thiz = new SystemCollectionsIList(cppHandle);
+				var thiz = new SystemCollectionsBaseIList(cppHandle);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5609,8 +5621,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsIListDelegate))]
-		static void ReleaseSystemCollectionsIList(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsBaseIListDelegate))]
+		static void ReleaseSystemCollectionsBaseIList(int handle)
 		{
 			try
 			{
@@ -5628,12 +5640,35 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemCollectionsQueueConstructorDelegate))]
-		static void SystemCollectionsQueueConstructor(int cppHandle, ref int handle)
+		[MonoPInvokeCallback(typeof(SystemCollectionsQueuePropertyGetCountDelegate))]
+		static int SystemCollectionsQueuePropertyGetCount(int thisHandle)
 		{
 			try
 			{
-				var thiz = new SystemCollectionsQueue(cppHandle);
+				var thiz = (System.Collections.Queue)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Count;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsBaseQueueConstructorDelegate))]
+		static void SystemCollectionsBaseQueueConstructor(int cppHandle, ref int handle)
+		{
+			try
+			{
+				var thiz = new SystemCollectionsBaseQueue(cppHandle);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5648,8 +5683,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsQueueDelegate))]
-		static void ReleaseSystemCollectionsQueue(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemCollectionsBaseQueueDelegate))]
+		static void ReleaseSystemCollectionsBaseQueue(int handle)
 		{
 			try
 			{
@@ -5667,12 +5702,12 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemComponentModelDesignIComponentChangeServiceConstructorDelegate))]
-		static void SystemComponentModelDesignIComponentChangeServiceConstructor(int cppHandle, ref int handle)
+		[MonoPInvokeCallback(typeof(SystemComponentModelDesignBaseIComponentChangeServiceConstructorDelegate))]
+		static void SystemComponentModelDesignBaseIComponentChangeServiceConstructor(int cppHandle, ref int handle)
 		{
 			try
 			{
-				var thiz = new SystemComponentModelDesignIComponentChangeService(cppHandle);
+				var thiz = new SystemComponentModelDesignBaseIComponentChangeService(cppHandle);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5687,8 +5722,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignIComponentChangeServiceDelegate))]
-		static void ReleaseSystemComponentModelDesignIComponentChangeService(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemComponentModelDesignBaseIComponentChangeServiceDelegate))]
+		static void ReleaseSystemComponentModelDesignBaseIComponentChangeService(int handle)
 		{
 			try
 			{
@@ -5707,12 +5742,55 @@ namespace NativeScript
 		}
 		
 		[MonoPInvokeCallback(typeof(SystemIOFileStreamConstructorSystemString_SystemIOFileModeDelegate))]
-		static void SystemIOFileStreamConstructorSystemString_SystemIOFileMode(int cppHandle, ref int handle, int pathHandle, System.IO.FileMode mode)
+		static int SystemIOFileStreamConstructorSystemString_SystemIOFileMode(int pathHandle, System.IO.FileMode mode)
 		{
 			try
 			{
 				var path = (string)NativeScript.Bindings.ObjectStore.Get(pathHandle);
-				var thiz = new SystemIOFileStream(cppHandle, path, mode);
+				var returnValue = NativeScript.Bindings.ObjectStore.Store(new System.IO.FileStream(path, mode));
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemIOFileStreamMethodWriteByteSystemByteDelegate))]
+		static void SystemIOFileStreamMethodWriteByteSystemByte(int thisHandle, byte value)
+		{
+			try
+			{
+				var thiz = (System.IO.FileStream)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				thiz.WriteByte(value);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemIOBaseFileStreamConstructorSystemString_SystemIOFileModeDelegate))]
+		static void SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode(int cppHandle, ref int handle, int pathHandle, System.IO.FileMode mode)
+		{
+			try
+			{
+				var path = (string)NativeScript.Bindings.ObjectStore.Get(pathHandle);
+				var thiz = new SystemIOBaseFileStream(cppHandle, path, mode);
 				handle = NativeScript.Bindings.ObjectStore.Store(thiz);
 			}
 			catch (System.NullReferenceException ex)
@@ -5727,8 +5805,8 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseSystemIOFileStreamDelegate))]
-		static void ReleaseSystemIOFileStream(int handle)
+		[MonoPInvokeCallback(typeof(ReleaseSystemIOBaseFileStreamDelegate))]
+		static void ReleaseSystemIOBaseFileStream(int handle)
 		{
 			try
 			{

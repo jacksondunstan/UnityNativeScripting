@@ -612,9 +612,7 @@
 		},
 		{
 			"Name": "System.IO.Stream"
-		}
-	],
-	"BaseTypes": [
+		},
 		{
 			"Name": "System.Collections.Generic.IComparer`1",
 			"GenericParams": [
@@ -628,33 +626,82 @@
 						"System.String"
 					]
 				}
+			],
+			"BaseTypes": [
+				{
+					"Name": "System.Collections.Generic.IComparer`1",
+					"GenericParams": [
+						{
+							"Types": [
+								"System.Int32"
+							]
+						},
+						{
+							"Types": [
+								"System.String"
+							]
+						}
+					]
+				}
 			]
 		},
 		{
-			"Name": "System.StringComparer"
+			"Name": "System.StringComparer",
+			"BaseTypes": [
+				{
+					"Name": "System.StringComparer"
+				}
+			]
 		},
 		{
-			"Name": "System.Collections.ICollection"
+			"Name": "System.Collections.ICollection",
+			"BaseTypes": [
+				{
+					"Name": "System.Collections.ICollection"
+				}
+			]
 		},
 		{
-			"Name": "System.Collections.IList"
+			"Name": "System.Collections.IList",
+			"BaseTypes": [
+				{
+					"Name": "System.Collections.IList"
+				}
+			]
 		},
 		{
 			"Name": "System.Collections.Queue",
-			"OverrideProperties": [
+			"Properties": [
 				{
 					"Name": "Count",
 					"Get": {},
 					"Set": {}
 				}
+			],
+			"BaseTypes": [
+				{
+					"Name": "System.Collections.Queue",
+					"OverrideProperties": [
+						{
+							"Name": "Count",
+							"Get": {},
+							"Set": {}
+						}
+					]
+				}
 			]
 		},
 		{
-			"Name": "System.ComponentModel.Design.IComponentChangeService"
+			"Name": "System.ComponentModel.Design.IComponentChangeService",
+			"BaseTypes": [
+				{
+					"Name": "System.ComponentModel.Design.IComponentChangeService"
+				}
+			]
 		},
 		{
 			"Name": "System.IO.FileStream",
-			"OverrideMethods": [
+			"Methods": [
 				{
 					"Name": "WriteByte",
 					"ParamTypes": [
@@ -667,6 +714,27 @@
 					"ParamTypes": [
 						"System.String",
 						"System.IO.FileMode"
+					]
+				}
+			],
+			"BaseTypes": [
+				{
+					"Name": "System.IO.FileStream",
+					"OverrideMethods": [
+						{
+							"Name": "WriteByte",
+							"ParamTypes": [
+								"System.Byte"
+							]
+						}
+					],
+					"Constructors": [
+						{
+							"ParamTypes": [
+								"System.String",
+								"System.IO.FileMode"
+							]
+						}
 					]
 				}
 			]

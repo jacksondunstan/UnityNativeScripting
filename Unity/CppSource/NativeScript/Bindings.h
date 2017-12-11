@@ -682,7 +682,45 @@ namespace System
 
 namespace System
 {
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct BaseIComparer;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct BaseIComparer<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct BaseIComparer<System::String>;
+		}
+	}
+}
+
+namespace System
+{
 	struct StringComparer;
+}
+
+namespace System
+{
+	struct BaseStringComparer;
 }
 
 namespace System
@@ -690,6 +728,14 @@ namespace System
 	namespace Collections
 	{
 		struct ICollection;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct BaseICollection;
 	}
 }
 
@@ -705,7 +751,23 @@ namespace System
 {
 	namespace Collections
 	{
+		struct BaseIList;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
 		struct Queue;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct BaseQueue;
 	}
 }
 
@@ -722,9 +784,28 @@ namespace System
 
 namespace System
 {
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct BaseIComponentChangeService;
+		}
+	}
+}
+
+namespace System
+{
 	namespace IO
 	{
 		struct FileStream;
+	}
+}
+
+namespace System
+{
+	namespace IO
+	{
+		struct BaseFileStream;
 	}
 }
 
@@ -1984,9 +2065,6 @@ namespace System
 				IComparer<int32_t>& operator=(IComparer<int32_t>&& other);
 				bool operator==(const IComparer<int32_t>& other) const;
 				bool operator!=(const IComparer<int32_t>& other) const;
-				int32_t CppHandle;
-				IComparer();
-				virtual int32_t Compare(int32_t x, int32_t y);
 			};
 		}
 	}
@@ -2010,8 +2088,57 @@ namespace System
 				IComparer<System::String>& operator=(IComparer<System::String>&& other);
 				bool operator==(const IComparer<System::String>& other) const;
 				bool operator!=(const IComparer<System::String>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct BaseIComparer<int32_t> : System::Collections::Generic::IComparer<int32_t>
+			{
+				BaseIComparer<int32_t>(decltype(nullptr) n);
+				BaseIComparer<int32_t>(Plugin::InternalUse iu, int32_t handle);
+				BaseIComparer<int32_t>(const BaseIComparer<int32_t>& other);
+				BaseIComparer<int32_t>(BaseIComparer<int32_t>&& other);
+				virtual ~BaseIComparer<int32_t>();
+				BaseIComparer<int32_t>& operator=(const BaseIComparer<int32_t>& other);
+				BaseIComparer<int32_t>& operator=(decltype(nullptr) other);
+				BaseIComparer<int32_t>& operator=(BaseIComparer<int32_t>&& other);
+				bool operator==(const BaseIComparer<int32_t>& other) const;
+				bool operator!=(const BaseIComparer<int32_t>& other) const;
 				int32_t CppHandle;
-				IComparer();
+				BaseIComparer();
+				virtual int32_t Compare(int32_t x, int32_t y);
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct BaseIComparer<System::String> : System::Collections::Generic::IComparer<System::String>
+			{
+				BaseIComparer<System::String>(decltype(nullptr) n);
+				BaseIComparer<System::String>(Plugin::InternalUse iu, int32_t handle);
+				BaseIComparer<System::String>(const BaseIComparer<System::String>& other);
+				BaseIComparer<System::String>(BaseIComparer<System::String>&& other);
+				virtual ~BaseIComparer<System::String>();
+				BaseIComparer<System::String>& operator=(const BaseIComparer<System::String>& other);
+				BaseIComparer<System::String>& operator=(decltype(nullptr) other);
+				BaseIComparer<System::String>& operator=(BaseIComparer<System::String>&& other);
+				bool operator==(const BaseIComparer<System::String>& other) const;
+				bool operator!=(const BaseIComparer<System::String>& other) const;
+				int32_t CppHandle;
+				BaseIComparer();
 				virtual int32_t Compare(System::String& x, System::String& y);
 			};
 		}
@@ -2032,8 +2159,25 @@ namespace System
 		StringComparer& operator=(StringComparer&& other);
 		bool operator==(const StringComparer& other) const;
 		bool operator!=(const StringComparer& other) const;
+	};
+}
+
+namespace System
+{
+	struct BaseStringComparer : System::StringComparer
+	{
+		BaseStringComparer(decltype(nullptr) n);
+		BaseStringComparer(Plugin::InternalUse iu, int32_t handle);
+		BaseStringComparer(const BaseStringComparer& other);
+		BaseStringComparer(BaseStringComparer&& other);
+		virtual ~BaseStringComparer();
+		BaseStringComparer& operator=(const BaseStringComparer& other);
+		BaseStringComparer& operator=(decltype(nullptr) other);
+		BaseStringComparer& operator=(BaseStringComparer&& other);
+		bool operator==(const BaseStringComparer& other) const;
+		bool operator!=(const BaseStringComparer& other) const;
 		int32_t CppHandle;
-		StringComparer();
+		BaseStringComparer();
 		virtual int32_t Compare(System::String& x, System::String& y);
 		virtual System::Boolean Equals(System::String& x, System::String& y);
 		virtual int32_t GetHashCode(System::String& obj);
@@ -2056,8 +2200,28 @@ namespace System
 			ICollection& operator=(ICollection&& other);
 			bool operator==(const ICollection& other) const;
 			bool operator!=(const ICollection& other) const;
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct BaseICollection : System::Collections::ICollection
+		{
+			BaseICollection(decltype(nullptr) n);
+			BaseICollection(Plugin::InternalUse iu, int32_t handle);
+			BaseICollection(const BaseICollection& other);
+			BaseICollection(BaseICollection&& other);
+			virtual ~BaseICollection();
+			BaseICollection& operator=(const BaseICollection& other);
+			BaseICollection& operator=(decltype(nullptr) other);
+			BaseICollection& operator=(BaseICollection&& other);
+			bool operator==(const BaseICollection& other) const;
+			bool operator!=(const BaseICollection& other) const;
 			int32_t CppHandle;
-			ICollection();
+			BaseICollection();
 			virtual void CopyTo(System::Array& array, int32_t index);
 			virtual System::Collections::IEnumerator GetEnumerator();
 			virtual int32_t GetCount();
@@ -2083,8 +2247,28 @@ namespace System
 			IList& operator=(IList&& other);
 			bool operator==(const IList& other) const;
 			bool operator!=(const IList& other) const;
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct BaseIList : System::Collections::IList
+		{
+			BaseIList(decltype(nullptr) n);
+			BaseIList(Plugin::InternalUse iu, int32_t handle);
+			BaseIList(const BaseIList& other);
+			BaseIList(BaseIList&& other);
+			virtual ~BaseIList();
+			BaseIList& operator=(const BaseIList& other);
+			BaseIList& operator=(decltype(nullptr) other);
+			BaseIList& operator=(BaseIList&& other);
+			bool operator==(const BaseIList& other) const;
+			bool operator!=(const BaseIList& other) const;
 			int32_t CppHandle;
-			IList();
+			BaseIList();
 			virtual int32_t Add(System::Object& value);
 			virtual void Clear();
 			virtual System::Boolean Contains(System::Object& value);
@@ -2121,8 +2305,29 @@ namespace System
 			Queue& operator=(Queue&& other);
 			bool operator==(const Queue& other) const;
 			bool operator!=(const Queue& other) const;
+			int32_t GetCount();
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct BaseQueue : System::Collections::Queue
+		{
+			BaseQueue(decltype(nullptr) n);
+			BaseQueue(Plugin::InternalUse iu, int32_t handle);
+			BaseQueue(const BaseQueue& other);
+			BaseQueue(BaseQueue&& other);
+			virtual ~BaseQueue();
+			BaseQueue& operator=(const BaseQueue& other);
+			BaseQueue& operator=(decltype(nullptr) other);
+			BaseQueue& operator=(BaseQueue&& other);
+			bool operator==(const BaseQueue& other) const;
+			bool operator!=(const BaseQueue& other) const;
 			int32_t CppHandle;
-			Queue();
+			BaseQueue();
 			virtual int32_t GetCount();
 		};
 	}
@@ -2146,8 +2351,31 @@ namespace System
 				IComponentChangeService& operator=(IComponentChangeService&& other);
 				bool operator==(const IComponentChangeService& other) const;
 				bool operator!=(const IComponentChangeService& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct BaseIComponentChangeService : System::ComponentModel::Design::IComponentChangeService
+			{
+				BaseIComponentChangeService(decltype(nullptr) n);
+				BaseIComponentChangeService(Plugin::InternalUse iu, int32_t handle);
+				BaseIComponentChangeService(const BaseIComponentChangeService& other);
+				BaseIComponentChangeService(BaseIComponentChangeService&& other);
+				virtual ~BaseIComponentChangeService();
+				BaseIComponentChangeService& operator=(const BaseIComponentChangeService& other);
+				BaseIComponentChangeService& operator=(decltype(nullptr) other);
+				BaseIComponentChangeService& operator=(BaseIComponentChangeService&& other);
+				bool operator==(const BaseIComponentChangeService& other) const;
+				bool operator!=(const BaseIComponentChangeService& other) const;
 				int32_t CppHandle;
-				IComponentChangeService();
+				BaseIComponentChangeService();
 				virtual void OnComponentChanged(System::Object& component, System::ComponentModel::MemberDescriptor& member, System::Object& oldValue, System::Object& newValue);
 				virtual void OnComponentChanging(System::Object& component, System::ComponentModel::MemberDescriptor& member);
 				virtual void AddComponentAdded(System::ComponentModel::Design::ComponentEventHandler& value);
@@ -2185,8 +2413,30 @@ namespace System
 			FileStream& operator=(FileStream&& other);
 			bool operator==(const FileStream& other) const;
 			bool operator!=(const FileStream& other) const;
-			int32_t CppHandle;
 			FileStream(System::String& path, System::IO::FileMode mode);
+			void WriteByte(uint8_t value);
+		};
+	}
+}
+
+namespace System
+{
+	namespace IO
+	{
+		struct BaseFileStream : System::IO::FileStream
+		{
+			BaseFileStream(decltype(nullptr) n);
+			BaseFileStream(Plugin::InternalUse iu, int32_t handle);
+			BaseFileStream(const BaseFileStream& other);
+			BaseFileStream(BaseFileStream&& other);
+			virtual ~BaseFileStream();
+			BaseFileStream& operator=(const BaseFileStream& other);
+			BaseFileStream& operator=(decltype(nullptr) other);
+			BaseFileStream& operator=(BaseFileStream&& other);
+			bool operator==(const BaseFileStream& other) const;
+			bool operator!=(const BaseFileStream& other) const;
+			int32_t CppHandle;
+			BaseFileStream(System::String& path, System::IO::FileMode mode);
 			virtual void WriteByte(uint8_t value);
 		};
 	}
