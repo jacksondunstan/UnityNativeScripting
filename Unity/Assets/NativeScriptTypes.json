@@ -629,18 +629,13 @@
 			],
 			"BaseTypes": [
 				{
-					"Name": "System.Collections.Generic.IComparer`1",
-					"GenericParams": [
-						{
-							"Types": [
-								"System.Int32"
-							]
-						},
-						{
-							"Types": [
-								"System.String"
-							]
-						}
+					"GenericTypes": [
+						"System.Int32"
+					]
+				},
+				{
+					"GenericTypes": [
+						"System.String"
 					]
 				}
 			]
@@ -648,25 +643,19 @@
 		{
 			"Name": "System.StringComparer",
 			"BaseTypes": [
-				{
-					"Name": "System.StringComparer"
-				}
+				{}
 			]
 		},
 		{
 			"Name": "System.Collections.ICollection",
 			"BaseTypes": [
-				{
-					"Name": "System.Collections.ICollection"
-				}
+				{}
 			]
 		},
 		{
 			"Name": "System.Collections.IList",
 			"BaseTypes": [
-				{
-					"Name": "System.Collections.IList"
-				}
+				{}
 			]
 		},
 		{
@@ -680,7 +669,6 @@
 			],
 			"BaseTypes": [
 				{
-					"Name": "System.Collections.Queue",
 					"OverrideProperties": [
 						{
 							"Name": "Count",
@@ -694,9 +682,7 @@
 		{
 			"Name": "System.ComponentModel.Design.IComponentChangeService",
 			"BaseTypes": [
-				{
-					"Name": "System.ComponentModel.Design.IComponentChangeService"
-				}
+				{}
 			]
 		},
 		{
@@ -719,7 +705,6 @@
 			],
 			"BaseTypes": [
 				{
-					"Name": "System.IO.FileStream",
 					"OverrideMethods": [
 						{
 							"Name": "WriteByte",

@@ -98,7 +98,7 @@ namespace NativeScript
 		[Serializable]
 		class JsonBaseType
 		{
-			public JsonGenericParams[] GenericParams;
+			public string[] GenericTypes;
 			public int MaxSimultaneous;
 			public JsonConstructor[] Constructors;
 			public JsonMethod[] OverrideMethods;
@@ -521,10 +521,34 @@ namespace NativeScript
 					
 					if (jsonType.BaseTypes != null)
 					{
+						// C++ template declaration if necessary
+						Type type = GetType(
+							jsonType.Name,
+							assemblies);
+						Type[] genericArgTypes = type.GetGenericArguments();
+						string cppBaseTypeName = "Base" + type.Name;
+						if (!IsStatic(type))
+						{
+							foreach (JsonBaseType jsonBaseType in jsonType.BaseTypes)
+							{
+								if (jsonBaseType.GenericTypes != null)
+								{
+									AppendCppTemplateDeclaration(
+										cppBaseTypeName,
+										type.Namespace,
+										genericArgTypes.Length,
+										builders.CppTypeDeclarations);
+								}
+							}
+						}
+						
 						foreach (JsonBaseType jsonBaseType in jsonType.BaseTypes)
 						{
 							AppendBaseType(
+								type,
+								genericArgTypes,
 								jsonType.Name,
+								cppBaseTypeName,
 								jsonBaseType,
 								assemblies,
 								builders);
@@ -1628,56 +1652,38 @@ namespace NativeScript
 		}
 		
 		static void AppendBaseType(
+			Type type,
+			Type[] genericArgTypes,
 			string typeName,
+			string cppBaseTypeName,
 			JsonBaseType jsonBaseType,
 			Assembly[] assemblies,
 			StringBuilders builders)
 		{
-			Type type = GetType(typeName, assemblies);
-			string cppTypeName = "Base" + type.Name;
-			Type[] genericArgTypes = type.GetGenericArguments();
-			if (jsonBaseType.GenericParams != null)
+			int? maxSimultaneous = jsonBaseType.MaxSimultaneous != 0
+				? jsonBaseType.MaxSimultaneous
+				: default(int?);
+			if (jsonBaseType.GenericTypes != null)
 			{
-				if (!IsStatic(type))
-				{
-					AppendCppTemplateDeclaration(
-						cppTypeName,
-						type.Namespace,
-						genericArgTypes.Length,
-						builders.CppTypeDeclarations);
-				}
-				
-				foreach (JsonGenericParams jsonGenericParams
-					in jsonBaseType.GenericParams)
-				{
-					Type[] typeParams = GetTypes(
-						jsonGenericParams.Types,
-						assemblies);
-					Type genericType = type.MakeGenericType(typeParams);
-					int? maxSimultaneous = jsonGenericParams.MaxSimultaneous != 0
-						? jsonGenericParams.MaxSimultaneous
-						: jsonBaseType.MaxSimultaneous != 0
-							? jsonBaseType.MaxSimultaneous
-							: default(int?);
-					AppendBaseType(
-						genericType,
-						jsonBaseType,
-						cppTypeName,
-						typeParams,
-						maxSimultaneous,
-						assemblies,
-						builders);
-				}
+				Type[] typeParams = GetTypes(
+					jsonBaseType.GenericTypes,
+					assemblies);
+				Type genericType = type.MakeGenericType(typeParams);
+				AppendBaseType(
+					genericType,
+					jsonBaseType,
+					cppBaseTypeName,
+					typeParams,
+					maxSimultaneous,
+					assemblies,
+					builders);
 			}
 			else
 			{
-				int? maxSimultaneous = jsonBaseType.MaxSimultaneous != 0
-					? jsonBaseType.MaxSimultaneous
-					: default(int?);
 				AppendBaseType(
 					type,
 					jsonBaseType,
-					cppTypeName,
+					cppBaseTypeName,
 					null,
 					maxSimultaneous,
 					assemblies,
@@ -6381,7 +6387,7 @@ namespace NativeScript
 		static void AppendBaseType(
 			Type type,
 			JsonBaseType jsonBaseType,
-			string cppTypeName,
+			string cppBaseTypeName,
 			Type[] typeParams,
 			int? maxSimultaneous,
 			Assembly[] assemblies,
@@ -6410,7 +6416,8 @@ namespace NativeScript
 				builders.TempStrBuilder[0]);
 			string releaseFuncNameLower = builders.TempStrBuilder.ToString();
 			
-			// Either use specified constructors or the default constructor
+			// Either use specified constructors, the default constructor, or
+			// nothing in the case of MonoBehaviour (where you can't call 'new')
 			JsonConstructor[] jsonConstructors = jsonBaseType.Constructors;
 			if (jsonConstructors == null)
 			{
@@ -6505,7 +6512,7 @@ namespace NativeScript
 			// C++ type declaration
 			int indent = AppendCppTypeDeclaration(
 				type.Namespace,
-				cppTypeName,
+				cppBaseTypeName,
 				false,
 				typeParams,
 				builders.CppTypeDeclarations);
@@ -6524,21 +6531,21 @@ namespace NativeScript
 			AppendCppFreeListStateAndFunctions(
 				type,
 				typeParams,
-				cppTypeName,
+				cppBaseTypeName,
 				bindingTypeName,
 				builders.CppGlobalStateAndFunctions);
 
 			AppendCppFreeListInit(
 				type,
 				typeParams,
-				cppTypeName,
+				cppBaseTypeName,
 				maxSimultaneous,
 				bindingTypeName,
 				builders.CppInitBody);
 
 			// C++ type definition (begin)
 			AppendCppTypeDefinitionBegin(
-				cppTypeName,
+				cppBaseTypeName,
 				type.Namespace,
 				TypeKind.Class,
 				typeParams,
@@ -6562,7 +6569,7 @@ namespace NativeScript
 					indent + 1,
 					builders.CppTypeDefinitions);
 				AppendCppMethodDeclaration(
-					cppTypeName,
+					cppBaseTypeName,
 					false,
 					false,
 					false,
@@ -6658,7 +6665,7 @@ namespace NativeScript
 					type.Name,
 					type.Namespace,
 					TypeKind.Class,
-					cppTypeName,
+					cppBaseTypeName,
 					type,
 					typeParams,
 					typeParams,
@@ -6672,7 +6679,7 @@ namespace NativeScript
 			
 			AppendCppBaseTypeNullptrConstructor(
 				bindingTypeName,
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				type.Name,
 				type.Namespace,
@@ -6683,7 +6690,7 @@ namespace NativeScript
 			
 			AppendCppBaseTypeCopyConstructor(
 				bindingTypeName,
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				type.Name,
 				type.Namespace,
@@ -6693,7 +6700,7 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeMoveConstructor(
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				type.Name,
 				type.Namespace,
@@ -6704,7 +6711,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeHandleConstructor(
 				bindingTypeName,
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				type.Name,
 				type.Namespace,
@@ -6712,10 +6719,10 @@ namespace NativeScript
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-
+			
 			AppendCppBaseTypeDestructor(
 				bindingTypeName,
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				false,
 				releaseFuncName,
@@ -6724,14 +6731,14 @@ namespace NativeScript
 
 			AppendCppBaseTypeAssignmentOperatorSameType(
 				type,
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeAssignmentOperatorNullptr(
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				false,
 				releaseFuncName,
@@ -6740,7 +6747,7 @@ namespace NativeScript
 
 			AppendCppBaseTypeMoveAssignmentOperator(
 				bindingTypeName,
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				false,
 				releaseFuncName,
@@ -6748,13 +6755,13 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeEqualityOperator(
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
 
 			AppendCppBaseTypeInequalityOperator(
-				cppTypeName,
+				cppBaseTypeName,
 				typeParams,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6855,7 +6862,7 @@ namespace NativeScript
 						type,
 						bindingTypeName,
 						typeParams,
-						cppTypeName,
+						cppBaseTypeName,
 						methodInfo,
 						indent,
 						builders);
@@ -6876,7 +6883,7 @@ namespace NativeScript
 								type,
 								bindingTypeName,
 								typeParams,
-								cppTypeName,
+								cppBaseTypeName,
 								methodInfo,
 								indent,
 								builders);
@@ -6902,7 +6909,7 @@ namespace NativeScript
 						type,
 						bindingTypeName,
 						typeParams,
-						cppTypeName,
+						cppBaseTypeName,
 						methodInfo,
 						indent,
 						builders);
@@ -6922,7 +6929,7 @@ namespace NativeScript
 				AppendBaseTypeProperty(
 					type,
 					bindingTypeName,
-					cppTypeName,
+					cppBaseTypeName,
 					typeParams,
 					propertyInfo,
 					getMethodInfo,
@@ -6949,7 +6956,7 @@ namespace NativeScript
 						AppendBaseTypeProperty(
 							type,
 							bindingTypeName,
-							cppTypeName,
+							cppBaseTypeName,
 							typeParams,
 							propertyInfo,
 							getMethodInfo,
@@ -7009,7 +7016,7 @@ namespace NativeScript
 					AppendBaseTypeProperty(
 						type,
 						bindingTypeName,
-						cppTypeName,
+						cppBaseTypeName,
 						typeParams,
 						propertyInfo,
 						getMethodInfo,
@@ -7032,7 +7039,7 @@ namespace NativeScript
 				AppendBaseTypeEvent(
 					type,
 					bindingTypeName,
-					cppTypeName,
+					cppBaseTypeName,
 					typeParams,
 					eventInfo,
 					addMethodInfo,
@@ -7058,7 +7065,7 @@ namespace NativeScript
 						AppendBaseTypeEvent(
 							type,
 							bindingTypeName,
-							cppTypeName,
+							cppBaseTypeName,
 							typeParams,
 							eventInfo,
 							addMethodInfo,
@@ -7118,7 +7125,7 @@ namespace NativeScript
 					AppendBaseTypeEvent(
 						type,
 						bindingTypeName,
-						cppTypeName,
+						cppBaseTypeName,
 						typeParams,
 						eventInfo,
 						addMethodInfo,
@@ -8814,7 +8821,7 @@ namespace NativeScript
 				output);
 			output.Append("\n");
 		}
-
+		
 		static void AppendCppBaseTypeMoveConstructor(
 			string cppTypeName,
 			Type[] typeParams,

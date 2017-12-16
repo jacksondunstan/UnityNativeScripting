@@ -697,6 +697,17 @@ namespace System
 	{
 		namespace Generic
 		{
+			template<typename TT0> struct BaseIComparer;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
 			template<> struct BaseIComparer<int32_t>;
 		}
 	}
