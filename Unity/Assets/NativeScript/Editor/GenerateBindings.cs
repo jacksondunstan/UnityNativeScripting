@@ -180,6 +180,8 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppBoxingMethodDeclarations =
 				new StringBuilder(InitialStringBuilderCapacity);
+			public readonly StringBuilder CppStringDefaultParams =
+				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder TempStrBuilder =
 				new StringBuilder(InitialStringBuilderCapacity);
 		}
@@ -193,6 +195,9 @@ namespace NativeScript
 			public bool IsRef;
 			public TypeKind Kind;
 			public bool IsVirtual;
+			public bool HasDefault;
+			public object DefaultValue;
+			public bool IsVarArg;
 		}
 		
 		enum TypeKind
@@ -850,7 +855,8 @@ namespace NativeScript
 			Type type,
 			MethodInfo[] methods,
 			string methodName,
-			string[] paramTypeNames)
+			string[] paramTypeNames,
+			string[] genericTypeNames)
 		{
 			foreach (MethodInfo method in methods)
 			{
@@ -861,9 +867,17 @@ namespace NativeScript
 				}
 				
 				// All parameters must match
-				if (CheckParametersMatch(
+				if (!CheckParametersMatch(
 					paramTypeNames,
 					method.GetParameters()))
+				{
+					continue;
+				}
+				
+				// Generic arg count must match
+				Type[] methodGenericArgs = method.GetGenericArguments();
+				int numGenericTypeNames = genericTypeNames == null ? 0 : genericTypeNames.Length;
+				if (methodGenericArgs.Length == numGenericTypeNames)
 				{
 					return method;
 				}
@@ -971,6 +985,11 @@ namespace NativeScript
 				AppendTypeNameWithoutSuffixes(
 					type.Name,
 					output);
+				if (type.IsArray)
+				{
+					output.Append("Array");
+					output.Append(type.GetArrayRank());
+				}
 				if (i != len - 1)
 				{
 					output.Append('_');
@@ -1049,7 +1068,8 @@ namespace NativeScript
 			ParameterInfo[] parameters = new ParameterInfo[num];
 			for (int i = start; i < num; ++i)
 			{
-				var reflectionInfo = reflectionParameters[i];
+				System.Reflection.ParameterInfo reflectionInfo =
+					reflectionParameters[i];
 				ParameterInfo info = new ParameterInfo();
 				info.Name = reflectionInfo.Name;
 				info.ParameterType = reflectionInfo.ParameterType;
@@ -1059,6 +1079,13 @@ namespace NativeScript
 					reflectionInfo);
 				info.Kind = GetTypeKind(
 					info.DereferencedParameterType);
+				info.HasDefault = (reflectionInfo.Attributes &
+					ParameterAttributes.HasDefault) ==
+					ParameterAttributes.HasDefault;
+				info.DefaultValue = reflectionInfo.DefaultValue;
+				info.IsVarArg = reflectionInfo.IsDefined(
+					typeof(ParamArrayAttribute),
+					false);
 				parameters[i - start] = info;
 			}
 			return parameters;
@@ -1122,7 +1149,7 @@ namespace NativeScript
 			{
 				return false;
 			}
-			if (type.IsPrimitive || type.IsEnum)
+			if (type.IsPrimitive || type.IsEnum || type == typeof(void))
 			{
 				return true;
 			}
@@ -1132,8 +1159,9 @@ namespace NativeScript
 				| BindingFlags.Public;
 			foreach (FieldInfo field in type.GetFields(bindingFlags))
 			{
-				if (!field.IsStatic
-					&& !IsFullValueType(field.FieldType))
+				if (!field.IsPublic
+					|| (!field.IsStatic
+						&& !IsFullValueType(field.FieldType)))
 				{
 					return false;
 				}
@@ -1398,6 +1426,7 @@ namespace NativeScript
 				AppendCsharpFunctionEnd(
 					typeof(void),
 					new Type[0],
+					parameters,
 					builders.CsharpFunctions);
 				
 				// C++ function pointer definition
@@ -2850,6 +2879,7 @@ namespace NativeScript
 			AppendCsharpFunctionEnd(
 				typeof(void),
 				null,
+				methodParams,
 				builders.CsharpFunctions);
 			
 			// C++ function pointer
@@ -2936,7 +2966,8 @@ namespace NativeScript
 			Type enclosingType,
 			Type[] typeTypeParams,
 			Type[] genericArgTypes,
-			MethodInfo[] methods)
+			MethodInfo[] methods,
+			string[] methodGenericTypeNames)
 		{
 			// Map convenience method names to actual method names
 			switch (jsonMethod.Name)
@@ -3031,7 +3062,8 @@ namespace NativeScript
 					enclosingType,
 					methods,
 					jsonMethod.Name,
-					overriddenParamTypeNames);
+					overriddenParamTypeNames,
+					methodGenericTypeNames);
 			}
 			else
 			{
@@ -3039,7 +3071,8 @@ namespace NativeScript
 					enclosingType,
 					methods,
 					jsonMethod.Name,
-					jsonMethod.ParamTypes);
+					jsonMethod.ParamTypes,
+					methodGenericTypeNames);
 			}
 		}
 		
@@ -3055,13 +3088,6 @@ namespace NativeScript
 			int indent,
 			StringBuilders builders)
 		{
-			MethodInfo method = GetMethod(
-				jsonMethod,
-				enclosingType,
-				typeTypeParams,
-				genericArgTypes,
-				methods);
-			
 			Type[] exceptionTypes = GetTypes(
 				jsonMethod.Exceptions,
 				assemblies);
@@ -3073,6 +3099,13 @@ namespace NativeScript
 				foreach (JsonGenericParams jsonGenericParams
 					in jsonMethod.GenericParams)
 				{
+					MethodInfo method = GetMethod(
+						jsonMethod,
+						enclosingType,
+						typeTypeParams,
+						genericArgTypes,
+						methods,
+						jsonGenericParams.Types);
 					Type[] methodTypeParams = GetTypes(
 						jsonGenericParams.Types,
 						assemblies);
@@ -3102,6 +3135,13 @@ namespace NativeScript
 			}
 			else
 			{
+				MethodInfo method = GetMethod(
+					jsonMethod,
+					enclosingType,
+					typeTypeParams,
+					genericArgTypes,
+					methods,
+					null);
 				ParameterInfo[] parameters = ConvertParameters(
 					method.GetParameters());
 				Type returnType = method.ReturnType;
@@ -3386,6 +3426,7 @@ namespace NativeScript
 			}
 			builders.CsharpFunctions.Append(';');
 			if (!isReadOnly
+				&& !methodIsStatic
 				&& enclosingTypeKind == TypeKind.ManagedStruct)
 			{
 				AppendStructStoreReplace(
@@ -6899,20 +6940,46 @@ namespace NativeScript
 				Type[] genericArgTypes = type.GetGenericArguments();
 				foreach (JsonMethod jsonMethod in jsonBaseType.OverrideMethods)
 				{
-					MethodInfo methodInfo = GetMethod(
-						jsonMethod,
-						type,
-						typeParams,
-						genericArgTypes,
-						methods);
-					AppendBaseTypeNativeMethod(
-						type,
-						bindingTypeName,
-						typeParams,
-						cppBaseTypeName,
-						methodInfo,
-						indent,
-						builders);
+					if (jsonMethod.GenericParams != null)
+					{
+						foreach (JsonGenericParams jsonGenericParams in
+							jsonMethod.GenericParams)
+						{
+							MethodInfo methodInfo = GetMethod(
+								jsonMethod,
+								type,
+								typeParams,
+								genericArgTypes,
+								methods,
+								jsonGenericParams.Types);
+							AppendBaseTypeNativeMethod(
+								type,
+								bindingTypeName,
+								typeParams,
+								cppBaseTypeName,
+								methodInfo,
+								indent,
+								builders);
+						}
+					}
+					else
+					{
+						MethodInfo methodInfo = GetMethod(
+							jsonMethod,
+							type,
+							typeParams,
+							genericArgTypes,
+							methods,
+							null);
+						AppendBaseTypeNativeMethod(
+							type,
+							bindingTypeName,
+							typeParams,
+							cppBaseTypeName,
+							methodInfo,
+							indent,
+							builders);
+					}
 				}
 			}
 			
@@ -9876,6 +9943,7 @@ namespace NativeScript
 			}
 			builders.CsharpFunctions.Append(';');
 			if (!isReadOnly
+				&& !methodIsStatic
 				&& enclosingTypeKind == TypeKind.ManagedStruct)
 			{
 				AppendStructStoreReplace(
@@ -10069,6 +10137,7 @@ namespace NativeScript
 			}
 			builders.CsharpFunctions.Append(';');
 			if (!isReadOnly
+				&& !methodIsStatic
 				&& enclosingTypeKind == TypeKind.ManagedStruct)
 			{
 				AppendStructStoreReplace(
@@ -11356,12 +11425,14 @@ namespace NativeScript
 			AppendCsharpFunctionEnd(
 				returnType,
 				exceptionTypes,
+				parameters,
 				output);
 		}
 		
 		static void AppendCsharpFunctionEnd(
 			Type returnType,
 			Type[] exceptionTypes,
+			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
 			output.Append('\n');
@@ -11374,6 +11445,7 @@ namespace NativeScript
 				AppendCsharpCatchException(
 					typeof(NullReferenceException),
 					returnType,
+					parameters,
 					output);
 			}
 			if (exceptionTypes != null)
@@ -11383,12 +11455,14 @@ namespace NativeScript
 					AppendCsharpCatchException(
 						exceptionType,
 						returnType,
+						parameters,
 						output);
 				}
 			}
 			AppendCsharpCatchException(
 				typeof(Exception),
 				returnType,
+				parameters,
 				output);
 			output.Append("\t\t}\n");
 			output.Append("\t\t\n");
@@ -11397,6 +11471,7 @@ namespace NativeScript
 		static void AppendCsharpCatchException(
 			Type exceptionType,
 			Type returnType,
+			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
 			output.Append("\t\t\tcatch (");
@@ -11411,6 +11486,27 @@ namespace NativeScript
 				exceptionType,
 				output);
 			output.Append("(NativeScript.Bindings.ObjectStore.Store(ex));\n");
+			foreach (ParameterInfo param in parameters)
+			{
+				if (param.IsOut)
+				{
+					output.Append("\t\t\t\t");
+					output.Append(param.Name);
+					if (param.Kind == TypeKind.Class
+						|| param.Kind == TypeKind.ManagedStruct)
+					{
+						output.Append("Handle = default(int);\n");
+					}
+					else
+					{
+						output.Append(" = default(");
+						AppendCsharpTypeName(
+							param.DereferencedParameterType,
+							output);
+						output.Append(");\n");
+					}
+				}
+			}
 			if (returnType != typeof(void))
 			{
 				output.Append("\t\t\t\treturn default(");
@@ -11515,8 +11611,11 @@ namespace NativeScript
 			ParameterInfo[] parameters,
 			Type[] typeTypeParameters,
 			Type[] methodTypeParameters,
+			bool includeDefaults,
 			StringBuilder output)
 		{
+			bool hasVarArgs = parameters.Length > 0 &&
+				parameters[parameters.Length-1].IsVarArg;
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
@@ -11555,9 +11654,89 @@ namespace NativeScript
 				output.Append(' ');
 				output.Append(param.Name);
 				
+				// Default if desired, present, and the method has no var args
+				if (includeDefaults && param.HasDefault && !hasVarArgs)
+				{
+					output.Append(" = ");
+					if (param.DereferencedParameterType == typeof(string))
+					{
+						if (param.DefaultValue != null)
+						{
+							throw new Exception(
+								"Non-null string default parameters aren't supported");
+						}
+						output.Append("Plugin::NullString");
+					}
+					else if (object.ReferenceEquals(param.DefaultValue, null))
+					{
+						output.Append("nullptr");
+					}
+					else
+					{
+						if ((param.DefaultValue is sbyte) ||
+							(param.DefaultValue is byte) ||
+							(param.DefaultValue is short) ||
+							(param.DefaultValue is ushort) ||
+							(param.DefaultValue is int) ||
+							(param.DefaultValue is uint) ||
+							(param.DefaultValue is long) ||
+							(param.DefaultValue is ulong))
+						{
+							output.Append(param.DefaultValue);
+						}
+						else if (param.DefaultValue is bool)
+						{
+							bool val = (bool)param.DefaultValue;
+							output.Append(val ? "true" : "false");
+						}
+						else if (param.DefaultValue is char)
+						{
+							char val = (char)param.DefaultValue;
+							output.Append('\'');
+							output.Append(val);
+							output.Append('\'');
+						}
+						else
+						{
+							Type type = param.DefaultValue.GetType();
+							if (type.IsEnum)
+							{
+								AppendCppTypeName(
+									type,
+									output);
+								output.Append("::");
+								output.Append(param.DefaultValue);
+							}
+							else
+							{
+								StringBuilder error = new StringBuilder();
+								error.Append("Default parameter type (");
+								AppendCsharpTypeName(
+									param.DefaultValue.GetType(),
+									error);
+								error.Append(") not supported");
+								throw new Exception(error.ToString());
+							}
+						}
+					}
+				}
+				
 				if (i != parameters.Length - 1)
 				{
 					output.Append(", ");
+				}
+			}
+		}
+		
+		static void AppendDefaultStringParamName(
+			string str,
+			StringBuilder output)
+		{
+			foreach (char c in str)
+			{
+				if (char.IsLetterOrDigit(c))
+				{
+					output.Append(c);
 				}
 			}
 		}
@@ -11629,6 +11808,7 @@ namespace NativeScript
 				parameters,
 				null, // don't substitute type type params
 				null, // don't substitute method type params
+				false,
 				output);
 			output.Append(")\n");
 		}
@@ -12019,6 +12199,7 @@ namespace NativeScript
 				parameters,
 				typeTypeParameters,
 				methodTypeParameters,
+				true,
 				output);
 			output.Append(')');
 			
@@ -12172,6 +12353,10 @@ namespace NativeScript
 			{
 				output.Append("System::String");
 			}
+			else if (type == typeof(IntPtr))
+			{
+				output.Append("void*");
+			}
 			else if (type.IsArray)
 			{
 				int rank = type.GetArrayRank();
@@ -12253,6 +12438,7 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CppMonoBehaviourMessages);
 			RemoveTrailingChars(builders.CppGlobalStateAndFunctions);
 			RemoveTrailingChars(builders.CppBoxingMethodDeclarations);
+			RemoveTrailingChars(builders.CppStringDefaultParams);
 		}
 		
 		// Remove trailing chars (e.g. commas) for last elements
@@ -12380,9 +12566,14 @@ namespace NativeScript
 				builders.CppGlobalStateAndFunctions.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"*BEGIN BOXING METHOD DECLARATIONS*/\n",
+				"/*BEGIN BOXING METHOD DECLARATIONS*/\n",
 				"\n\t\t/*END BOXING METHOD DECLARATIONS*/",
 				builders.CppBoxingMethodDeclarations.ToString());
+			cppHeaderContents = InjectIntoString(
+				cppHeaderContents,
+				"/*BEGIN STRING DEFAULT PARAMETERS*/\n",
+				"\n\t/*END STRING DEFAULT PARAMETERS*/",
+				builders.CppStringDefaultParams.ToString());
 			
 			File.WriteAllText(CsharpPath, csharpContents);
 			File.WriteAllText(CppHeaderPath, cppHeaderContents);

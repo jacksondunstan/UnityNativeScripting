@@ -251,6 +251,9 @@
 			]
 		},
 		{
+			"Name": "UnityEngine.Quaternion"
+		},
+		{
 			"Name": "UnityEngine.Matrix4x4",
 			"Properties": [
 				{
@@ -720,6 +723,70 @@
 								"System.IO.FileMode"
 							]
 						}
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Playables.PlayableHandle"
+		},
+		{
+			"Name": "UnityEngine.Playables.PlayableGraph"
+		},
+		{
+			"Name": "UnityEngine.Animations.AnimationMixerPlayable",
+			"Methods": [
+				{
+					"Name": "Create",
+					"ParamTypes": [
+						"UnityEngine.Playables.PlayableGraph",
+						"System.Int32",
+						"System.Boolean"
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.CallbackEventHandler"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.VisualElement"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.UQueryExtensions",
+			"Methods": [
+				{
+					"Name": "Q",
+					"ParamTypes": [
+						"UnityEngine.Experimental.UIElements.VisualElement",
+						"System.String",
+						"System.String[]"
+					]
+				},
+				{
+					"Name": "Q",
+					"ParamTypes": [
+						"UnityEngine.Experimental.UIElements.VisualElement",
+						"System.String",
+						"System.String"
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.XR.WSA.Input.InteractionSourcePositionAccuracy"
+		},
+		{
+			"Name": "UnityEngine.XR.WSA.Input.InteractionSourceNode"
+		},
+		{
+			"Name": "UnityEngine.XR.WSA.Input.InteractionSourcePose",
+			"Methods": [
+				{
+					"Name": "TryGetRotation",
+					"ParamTypes": [
+						"UnityEngine.Quaternion",
+						"UnityEngine.XR.WSA.Input.InteractionSourceNode"
 					]
 				}
 			]

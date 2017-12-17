@@ -286,6 +286,11 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
+	struct Quaternion;
+}
+
+namespace UnityEngine
+{
 	struct Matrix4x4;
 }
 
@@ -820,6 +825,116 @@ namespace System
 	}
 }
 
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct PlayableHandle;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct PlayableGraph;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Animations
+	{
+		struct AnimationMixerPlayable;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct CallbackEventHandler;
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct VisualElement;
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			namespace UQueryExtensions
+			{
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace XR
+	{
+		namespace WSA
+		{
+			namespace Input
+			{
+				enum struct InteractionSourcePositionAccuracy : int32_t
+				{
+					None = 0,
+					Approximate = 1,
+					High = 2
+				};
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace XR
+	{
+		namespace WSA
+		{
+			namespace Input
+			{
+				enum struct InteractionSourceNode : int32_t
+				{
+					Grip = 0,
+					Pointer = 1
+				};
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace XR
+	{
+		namespace WSA
+		{
+			namespace Input
+			{
+				struct InteractionSourcePose;
+			}
+		}
+	}
+}
+
 namespace MyGame
 {
 	namespace MonoBehaviours
@@ -1069,6 +1184,8 @@ namespace System
 		/*BEGIN BOXING METHOD DECLARATIONS*/
 		Object(UnityEngine::Vector3& val);
 		explicit operator UnityEngine::Vector3();
+		Object(UnityEngine::Quaternion& val);
+		explicit operator UnityEngine::Quaternion();
 		Object(UnityEngine::Matrix4x4& val);
 		explicit operator UnityEngine::Matrix4x4();
 		Object(UnityEngine::RaycastHit& val);
@@ -1093,6 +1210,18 @@ namespace System
 		explicit operator UnityEngine::PrimitiveType();
 		Object(System::IO::FileMode val);
 		explicit operator System::IO::FileMode();
+		Object(UnityEngine::Playables::PlayableHandle& val);
+		explicit operator UnityEngine::Playables::PlayableHandle();
+		Object(UnityEngine::Playables::PlayableGraph& val);
+		explicit operator UnityEngine::Playables::PlayableGraph();
+		Object(UnityEngine::Animations::AnimationMixerPlayable& val);
+		explicit operator UnityEngine::Animations::AnimationMixerPlayable();
+		Object(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val);
+		explicit operator UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy();
+		Object(UnityEngine::XR::WSA::Input::InteractionSourceNode val);
+		explicit operator UnityEngine::XR::WSA::Input::InteractionSourceNode();
+		Object(UnityEngine::XR::WSA::Input::InteractionSourcePose& val);
+		explicit operator UnityEngine::XR::WSA::Input::InteractionSourcePose();
 		Object(System::Boolean val);
 		explicit operator System::Boolean();
 		Object(int8_t val);
@@ -1137,7 +1266,6 @@ namespace System
 		String& operator=(const String& other);
 		String& operator=(decltype(nullptr) other);
 		String& operator=(String&& other);
-		String();
 		String(const char* chars);
 	};
 	
@@ -1148,6 +1276,15 @@ namespace System
 		int32_t GetLength();
 		int32_t GetRank();
 	};
+}
+
+////////////////////////////////////////////////////////////////
+// Global variables
+////////////////////////////////////////////////////////////////
+
+namespace Plugin
+{
+	extern System::String NullString;
 }
 
 /*BEGIN TYPE DEFINITIONS*/
@@ -1391,6 +1528,18 @@ namespace UnityEngine
 		void Set(float newX, float newY, float newZ);
 		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
 		UnityEngine::Vector3 operator-();
+	};
+}
+
+namespace UnityEngine
+{
+	struct Quaternion
+	{
+		Quaternion();
+		float x;
+		float y;
+		float z;
+		float w;
 	};
 }
 
@@ -1674,18 +1823,24 @@ namespace System
 
 namespace UnityEngine
 {
-	struct Resolution
+	struct Resolution : System::ValueType
 	{
-		Resolution();
+		Resolution(decltype(nullptr) n);
+		Resolution(Plugin::InternalUse iu, int32_t handle);
+		Resolution(const Resolution& other);
+		Resolution(Resolution&& other);
+		virtual ~Resolution();
+		Resolution& operator=(const Resolution& other);
+		Resolution& operator=(decltype(nullptr) other);
+		Resolution& operator=(Resolution&& other);
+		bool operator==(const Resolution& other) const;
+		bool operator!=(const Resolution& other) const;
 		int32_t GetWidth();
 		void SetWidth(int32_t value);
 		int32_t GetHeight();
 		void SetHeight(int32_t value);
 		int32_t GetRefreshRate();
 		void SetRefreshRate(int32_t value);
-		int32_t m_Width;
-		int32_t m_Height;
-		int32_t m_RefreshRate;
 	};
 }
 
@@ -1709,12 +1864,19 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Ray
+	struct Ray : System::ValueType
 	{
-		Ray();
+		Ray(decltype(nullptr) n);
+		Ray(Plugin::InternalUse iu, int32_t handle);
+		Ray(const Ray& other);
+		Ray(Ray&& other);
+		virtual ~Ray();
+		Ray& operator=(const Ray& other);
+		Ray& operator=(decltype(nullptr) other);
+		Ray& operator=(Ray&& other);
+		bool operator==(const Ray& other) const;
+		bool operator!=(const Ray& other) const;
 		Ray(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
-		UnityEngine::Vector3 m_Origin;
-		UnityEngine::Vector3 m_Direction;
 	};
 }
 
@@ -1844,10 +2006,18 @@ namespace UnityEngine
 {
 	namespace SceneManagement
 	{
-		struct Scene
+		struct Scene : System::ValueType
 		{
-			Scene();
-			int32_t m_Handle;
+			Scene(decltype(nullptr) n);
+			Scene(Plugin::InternalUse iu, int32_t handle);
+			Scene(const Scene& other);
+			Scene(Scene&& other);
+			virtual ~Scene();
+			Scene& operator=(const Scene& other);
+			Scene& operator=(decltype(nullptr) other);
+			Scene& operator=(Scene&& other);
+			bool operator==(const Scene& other) const;
+			bool operator!=(const Scene& other) const;
 		};
 	}
 }
@@ -2450,6 +2620,155 @@ namespace System
 			BaseFileStream(System::String& path, System::IO::FileMode mode);
 			virtual void WriteByte(uint8_t value);
 		};
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct PlayableHandle : System::ValueType
+		{
+			PlayableHandle(decltype(nullptr) n);
+			PlayableHandle(Plugin::InternalUse iu, int32_t handle);
+			PlayableHandle(const PlayableHandle& other);
+			PlayableHandle(PlayableHandle&& other);
+			virtual ~PlayableHandle();
+			PlayableHandle& operator=(const PlayableHandle& other);
+			PlayableHandle& operator=(decltype(nullptr) other);
+			PlayableHandle& operator=(PlayableHandle&& other);
+			bool operator==(const PlayableHandle& other) const;
+			bool operator!=(const PlayableHandle& other) const;
+		};
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct PlayableGraph : System::ValueType
+		{
+			PlayableGraph(decltype(nullptr) n);
+			PlayableGraph(Plugin::InternalUse iu, int32_t handle);
+			PlayableGraph(const PlayableGraph& other);
+			PlayableGraph(PlayableGraph&& other);
+			virtual ~PlayableGraph();
+			PlayableGraph& operator=(const PlayableGraph& other);
+			PlayableGraph& operator=(decltype(nullptr) other);
+			PlayableGraph& operator=(PlayableGraph&& other);
+			bool operator==(const PlayableGraph& other) const;
+			bool operator!=(const PlayableGraph& other) const;
+		};
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Animations
+	{
+		struct AnimationMixerPlayable : System::ValueType
+		{
+			AnimationMixerPlayable(decltype(nullptr) n);
+			AnimationMixerPlayable(Plugin::InternalUse iu, int32_t handle);
+			AnimationMixerPlayable(const AnimationMixerPlayable& other);
+			AnimationMixerPlayable(AnimationMixerPlayable&& other);
+			virtual ~AnimationMixerPlayable();
+			AnimationMixerPlayable& operator=(const AnimationMixerPlayable& other);
+			AnimationMixerPlayable& operator=(decltype(nullptr) other);
+			AnimationMixerPlayable& operator=(AnimationMixerPlayable&& other);
+			bool operator==(const AnimationMixerPlayable& other) const;
+			bool operator!=(const AnimationMixerPlayable& other) const;
+			static UnityEngine::Animations::AnimationMixerPlayable Create(UnityEngine::Playables::PlayableGraph& graph, int32_t inputCount = 0, System::Boolean normalizeWeights = false);
+		};
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct CallbackEventHandler : System::Object
+			{
+				CallbackEventHandler(decltype(nullptr) n);
+				CallbackEventHandler(Plugin::InternalUse iu, int32_t handle);
+				CallbackEventHandler(const CallbackEventHandler& other);
+				CallbackEventHandler(CallbackEventHandler&& other);
+				virtual ~CallbackEventHandler();
+				CallbackEventHandler& operator=(const CallbackEventHandler& other);
+				CallbackEventHandler& operator=(decltype(nullptr) other);
+				CallbackEventHandler& operator=(CallbackEventHandler&& other);
+				bool operator==(const CallbackEventHandler& other) const;
+				bool operator!=(const CallbackEventHandler& other) const;
+			};
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct VisualElement : UnityEngine::Experimental::UIElements::CallbackEventHandler
+			{
+				VisualElement(decltype(nullptr) n);
+				VisualElement(Plugin::InternalUse iu, int32_t handle);
+				VisualElement(const VisualElement& other);
+				VisualElement(VisualElement&& other);
+				virtual ~VisualElement();
+				VisualElement& operator=(const VisualElement& other);
+				VisualElement& operator=(decltype(nullptr) other);
+				VisualElement& operator=(VisualElement&& other);
+				bool operator==(const VisualElement& other) const;
+				bool operator!=(const VisualElement& other) const;
+			};
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			namespace UQueryExtensions
+			{
+				UnityEngine::Experimental::UIElements::VisualElement Q(UnityEngine::Experimental::UIElements::VisualElement& e, System::String& name, System::Array1<System::String>& classes);
+				UnityEngine::Experimental::UIElements::VisualElement Q(UnityEngine::Experimental::UIElements::VisualElement& e, System::String& name = Plugin::NullString, System::String& className = Plugin::NullString);
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace XR
+	{
+		namespace WSA
+		{
+			namespace Input
+			{
+				struct InteractionSourcePose : System::ValueType
+				{
+					InteractionSourcePose(decltype(nullptr) n);
+					InteractionSourcePose(Plugin::InternalUse iu, int32_t handle);
+					InteractionSourcePose(const InteractionSourcePose& other);
+					InteractionSourcePose(InteractionSourcePose&& other);
+					virtual ~InteractionSourcePose();
+					InteractionSourcePose& operator=(const InteractionSourcePose& other);
+					InteractionSourcePose& operator=(decltype(nullptr) other);
+					InteractionSourcePose& operator=(InteractionSourcePose&& other);
+					bool operator==(const InteractionSourcePose& other) const;
+					bool operator!=(const InteractionSourcePose& other) const;
+					System::Boolean TryGetRotation(UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node = UnityEngine::XR::WSA::Input::InteractionSourceNode::Grip);
+				};
+			}
+		}
 	}
 }
 

@@ -29,6 +29,15 @@
 #endif
 
 ////////////////////////////////////////////////////////////////
+// Global variables
+////////////////////////////////////////////////////////////////
+
+namespace Plugin
+{
+	System::String NullString(nullptr);
+}
+
+////////////////////////////////////////////////////////////////
 // C# functions for C++ to call
 ////////////////////////////////////////////////////////////////
 
@@ -73,6 +82,8 @@ namespace Plugin
 	UnityEngine::Vector3 (*UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a);
 	int32_t (*BoxVector3)(UnityEngine::Vector3& val);
 	UnityEngine::Vector3 (*UnboxVector3)(int32_t valHandle);
+	int32_t (*BoxQuaternion)(UnityEngine::Quaternion& val);
+	UnityEngine::Quaternion (*UnboxQuaternion)(int32_t valHandle);
 	float (*UnityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column);
 	void (*UnityEngineMatrix4x4PropertySetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column, float value);
 	int32_t (*BoxMatrix4x4)(UnityEngine::Matrix4x4& val);
@@ -108,20 +119,22 @@ namespace Plugin
 	int32_t (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle);
 	void (*SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle);
 	int32_t (*SystemExceptionConstructorSystemString)(int32_t messageHandle);
-	int32_t (*UnityEngineResolutionPropertyGetWidth)(UnityEngine::Resolution* thiz);
-	void (*UnityEngineResolutionPropertySetWidth)(UnityEngine::Resolution* thiz, int32_t value);
-	int32_t (*UnityEngineResolutionPropertyGetHeight)(UnityEngine::Resolution* thiz);
-	void (*UnityEngineResolutionPropertySetHeight)(UnityEngine::Resolution* thiz, int32_t value);
-	int32_t (*UnityEngineResolutionPropertyGetRefreshRate)(UnityEngine::Resolution* thiz);
-	void (*UnityEngineResolutionPropertySetRefreshRate)(UnityEngine::Resolution* thiz, int32_t value);
-	int32_t (*BoxResolution)(UnityEngine::Resolution& val);
-	UnityEngine::Resolution (*UnboxResolution)(int32_t valHandle);
+	void (*ReleaseUnityEngineResolution)(int32_t handle);
+	int32_t (*UnityEngineResolutionPropertyGetWidth)(int32_t thisHandle);
+	void (*UnityEngineResolutionPropertySetWidth)(int32_t thisHandle, int32_t value);
+	int32_t (*UnityEngineResolutionPropertyGetHeight)(int32_t thisHandle);
+	void (*UnityEngineResolutionPropertySetHeight)(int32_t thisHandle, int32_t value);
+	int32_t (*UnityEngineResolutionPropertyGetRefreshRate)(int32_t thisHandle);
+	void (*UnityEngineResolutionPropertySetRefreshRate)(int32_t thisHandle, int32_t value);
+	int32_t (*BoxResolution)(int32_t valHandle);
+	int32_t (*UnboxResolution)(int32_t valHandle);
 	int32_t (*UnityEngineScreenPropertyGetResolutions)();
-	UnityEngine::Ray (*UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
-	int32_t (*BoxRay)(UnityEngine::Ray& val);
-	UnityEngine::Ray (*UnboxRay)(int32_t valHandle);
-	int32_t (*UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(UnityEngine::Ray& ray, int32_t resultsHandle);
-	int32_t (*UnityEnginePhysicsMethodRaycastAllUnityEngineRay)(UnityEngine::Ray& ray);
+	void (*ReleaseUnityEngineRay)(int32_t handle);
+	int32_t (*UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
+	int32_t (*BoxRay)(int32_t valHandle);
+	int32_t (*UnboxRay)(int32_t valHandle);
+	int32_t (*UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1)(int32_t rayHandle, int32_t resultsHandle);
+	int32_t (*UnityEnginePhysicsMethodRaycastAllUnityEngineRay)(int32_t rayHandle);
 	int32_t (*BoxColor)(UnityEngine::Color& val);
 	UnityEngine::Color (*UnboxColor)(int32_t valHandle);
 	int32_t (*BoxGradientColorKey)(UnityEngine::GradientColorKey& val);
@@ -136,8 +149,9 @@ namespace Plugin
 	void (*UnityEngineApplicationRemoveEventOnBeforeRender)(int32_t delHandle);
 	void (*UnityEngineSceneManagementSceneManagerAddEventSceneLoaded)(int32_t delHandle);
 	void (*UnityEngineSceneManagementSceneManagerRemoveEventSceneLoaded)(int32_t delHandle);
-	int32_t (*BoxScene)(UnityEngine::SceneManagement::Scene& val);
-	UnityEngine::SceneManagement::Scene (*UnboxScene)(int32_t valHandle);
+	void (*ReleaseUnityEngineSceneManagementScene)(int32_t handle);
+	int32_t (*BoxScene)(int32_t valHandle);
+	int32_t (*UnboxScene)(int32_t valHandle);
 	int32_t (*BoxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val);
 	UnityEngine::SceneManagement::LoadSceneMode (*UnboxLoadSceneMode)(int32_t valHandle);
 	int32_t (*SystemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle);
@@ -166,6 +180,26 @@ namespace Plugin
 	void (*SystemIOFileStreamMethodWriteByteSystemByte)(int32_t thisHandle, uint8_t value);
 	void (*ReleaseSystemIOBaseFileStream)(int32_t handle);
 	void (*SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode);
+	void (*ReleaseUnityEnginePlayablesPlayableHandle)(int32_t handle);
+	int32_t (*BoxPlayableHandle)(int32_t valHandle);
+	int32_t (*UnboxPlayableHandle)(int32_t valHandle);
+	void (*ReleaseUnityEnginePlayablesPlayableGraph)(int32_t handle);
+	int32_t (*BoxPlayableGraph)(int32_t valHandle);
+	int32_t (*UnboxPlayableGraph)(int32_t valHandle);
+	void (*ReleaseUnityEngineAnimationsAnimationMixerPlayable)(int32_t handle);
+	int32_t (*UnityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean)(int32_t graphHandle, int32_t inputCount, System::Boolean normalizeWeights);
+	int32_t (*BoxAnimationMixerPlayable)(int32_t valHandle);
+	int32_t (*UnboxAnimationMixerPlayable)(int32_t valHandle);
+	int32_t (*UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1)(int32_t eHandle, int32_t nameHandle, int32_t classesHandle);
+	int32_t (*UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString)(int32_t eHandle, int32_t nameHandle, int32_t classNameHandle);
+	int32_t (*BoxInteractionSourcePositionAccuracy)(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val);
+	UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy (*UnboxInteractionSourcePositionAccuracy)(int32_t valHandle);
+	int32_t (*BoxInteractionSourceNode)(UnityEngine::XR::WSA::Input::InteractionSourceNode val);
+	UnityEngine::XR::WSA::Input::InteractionSourceNode (*UnboxInteractionSourceNode)(int32_t valHandle);
+	void (*ReleaseUnityEngineXRWSAInputInteractionSourcePose)(int32_t handle);
+	System::Boolean (*UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node);
+	int32_t (*BoxInteractionSourcePose)(int32_t valHandle);
+	int32_t (*UnboxInteractionSourcePose)(int32_t valHandle);
 	int32_t (*BoxBoolean)(System::Boolean val);
 	System::Boolean (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
@@ -208,8 +242,8 @@ namespace Plugin
 	int32_t (*SystemStringArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*SystemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
 	int32_t (*UnityEngineUnityEngineResolutionArray1Constructor1)(int32_t length0);
-	UnityEngine::Resolution (*UnityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0);
-	int32_t (*UnityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item);
+	int32_t (*UnityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0);
+	int32_t (*UnityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
 	int32_t (*UnityEngineUnityEngineRaycastHitArray1Constructor1)(int32_t length0);
 	int32_t (*UnityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*UnityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle);
@@ -255,7 +289,7 @@ namespace Plugin
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle);
-	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1);
+	void (*UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, int32_t arg0Handle, UnityEngine::SceneManagement::LoadSceneMode arg1);
 	void (*ReleaseSystemComponentModelDesignComponentEventHandler)(int32_t handle, int32_t classHandle);
 	void (*SystemComponentModelDesignComponentEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*SystemComponentModelDesignComponentEventHandlerAdd)(int32_t thisHandle, int32_t delHandle);
@@ -371,6 +405,81 @@ namespace Plugin
 			if (numRemain == 0)
 			{
 				ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble(handle);
+			}
+		}
+	}
+	
+	int32_t RefCountsLenUnityEngineResolution;
+	int32_t* RefCountsUnityEngineResolution;
+	
+	void ReferenceManagedUnityEngineResolution(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineResolution);
+		if (handle != 0)
+		{
+			RefCountsUnityEngineResolution[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEngineResolution(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineResolution);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEngineResolution[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEngineResolution(handle);
+			}
+		}
+	}
+	
+	int32_t RefCountsLenUnityEngineRay;
+	int32_t* RefCountsUnityEngineRay;
+	
+	void ReferenceManagedUnityEngineRay(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineRay);
+		if (handle != 0)
+		{
+			RefCountsUnityEngineRay[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEngineRay(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineRay);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEngineRay[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEngineRay(handle);
+			}
+		}
+	}
+	
+	int32_t RefCountsLenUnityEngineSceneManagementScene;
+	int32_t* RefCountsUnityEngineSceneManagementScene;
+	
+	void ReferenceManagedUnityEngineSceneManagementScene(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineSceneManagementScene);
+		if (handle != 0)
+		{
+			RefCountsUnityEngineSceneManagementScene[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEngineSceneManagementScene(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineSceneManagementScene);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEngineSceneManagementScene[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEngineSceneManagementScene(handle);
 			}
 		}
 	}
@@ -575,6 +684,106 @@ namespace Plugin
 		*pRelease = (System::IO::BaseFileStream*)NextFreeSystemIOBaseFileStream;
 		NextFreeSystemIOBaseFileStream = pRelease;
 	}
+	int32_t RefCountsLenUnityEnginePlayablesPlayableHandle;
+	int32_t* RefCountsUnityEnginePlayablesPlayableHandle;
+	
+	void ReferenceManagedUnityEnginePlayablesPlayableHandle(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEnginePlayablesPlayableHandle);
+		if (handle != 0)
+		{
+			RefCountsUnityEnginePlayablesPlayableHandle[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEnginePlayablesPlayableHandle(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEnginePlayablesPlayableHandle);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEnginePlayablesPlayableHandle[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEnginePlayablesPlayableHandle(handle);
+			}
+		}
+	}
+	
+	int32_t RefCountsLenUnityEnginePlayablesPlayableGraph;
+	int32_t* RefCountsUnityEnginePlayablesPlayableGraph;
+	
+	void ReferenceManagedUnityEnginePlayablesPlayableGraph(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEnginePlayablesPlayableGraph);
+		if (handle != 0)
+		{
+			RefCountsUnityEnginePlayablesPlayableGraph[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEnginePlayablesPlayableGraph(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEnginePlayablesPlayableGraph);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEnginePlayablesPlayableGraph[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEnginePlayablesPlayableGraph(handle);
+			}
+		}
+	}
+	
+	int32_t RefCountsLenUnityEngineAnimationsAnimationMixerPlayable;
+	int32_t* RefCountsUnityEngineAnimationsAnimationMixerPlayable;
+	
+	void ReferenceManagedUnityEngineAnimationsAnimationMixerPlayable(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineAnimationsAnimationMixerPlayable);
+		if (handle != 0)
+		{
+			RefCountsUnityEngineAnimationsAnimationMixerPlayable[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEngineAnimationsAnimationMixerPlayable(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineAnimationsAnimationMixerPlayable);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEngineAnimationsAnimationMixerPlayable[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEngineAnimationsAnimationMixerPlayable(handle);
+			}
+		}
+	}
+	
+	int32_t RefCountsLenUnityEngineXRWSAInputInteractionSourcePose;
+	int32_t* RefCountsUnityEngineXRWSAInputInteractionSourcePose;
+	
+	void ReferenceManagedUnityEngineXRWSAInputInteractionSourcePose(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineXRWSAInputInteractionSourcePose);
+		if (handle != 0)
+		{
+			RefCountsUnityEngineXRWSAInputInteractionSourcePose[handle]++;
+		}
+	}
+	
+	void DereferenceManagedUnityEngineXRWSAInputInteractionSourcePose(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenUnityEngineXRWSAInputInteractionSourcePose);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsUnityEngineXRWSAInputInteractionSourcePose[handle];
+			if (numRemain == 0)
+			{
+				ReleaseUnityEngineXRWSAInputInteractionSourcePose(handle);
+			}
+		}
+	}
+	
 	int32_t SystemActionFreeListSize;
 	System::Action** SystemActionFreeList;
 	System::Action** NextFreeSystemAction;
@@ -1000,11 +1209,6 @@ namespace System
 		Handle = other.Handle;
 		other.Handle = 0;
 		return *this;
-	}
-	
-	String::String()
-		: Object(nullptr)
-	{
 	}
 	
 	String::String(const char* chars)
@@ -2393,6 +2597,46 @@ namespace System
 	Object::operator UnityEngine::Vector3()
 	{
 		UnityEngine::Vector3 returnVal(Plugin::UnboxVector3(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace UnityEngine
+{
+	Quaternion::Quaternion()
+	{
+	}
+}
+
+namespace System
+{
+	Object::Object(UnityEngine::Quaternion& val)
+	{
+		int32_t handle = Plugin::BoxQuaternion(val);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::Quaternion()
+	{
+		UnityEngine::Quaternion returnVal(Plugin::UnboxQuaternion(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3834,13 +4078,88 @@ namespace System
 
 namespace UnityEngine
 {
-	Resolution::Resolution()
+	Resolution::Resolution(decltype(nullptr) n)
+		: Resolution(Plugin::InternalUse::Only, 0)
 	{
+	}
+	
+	Resolution::Resolution(Plugin::InternalUse iu, int32_t handle)
+		: System::ValueType(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedUnityEngineResolution(Handle);
+		}
+	}
+	
+	Resolution::Resolution(const Resolution& other)
+		: Resolution(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	Resolution::Resolution(Resolution&& other)
+		: Resolution(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Resolution::~Resolution()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineResolution(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Resolution& Resolution::operator=(const Resolution& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineResolution(Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedUnityEngineResolution(Handle);
+		}
+		return *this;
+	}
+	
+	Resolution& Resolution::operator=(decltype(nullptr) other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineResolution(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Resolution& Resolution::operator=(Resolution&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineResolution(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Resolution::operator==(const Resolution& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Resolution::operator!=(const Resolution& other) const
+	{
+		return Handle != other.Handle;
 	}
 	
 	int32_t Resolution::GetWidth()
 	{
-		auto returnValue = Plugin::UnityEngineResolutionPropertyGetWidth(this);
+		auto returnValue = Plugin::UnityEngineResolutionPropertyGetWidth(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3853,7 +4172,7 @@ namespace UnityEngine
 	
 	void Resolution::SetWidth(int32_t value)
 	{
-		Plugin::UnityEngineResolutionPropertySetWidth(this, value);
+		Plugin::UnityEngineResolutionPropertySetWidth(Handle, value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3865,7 +4184,7 @@ namespace UnityEngine
 	
 	int32_t Resolution::GetHeight()
 	{
-		auto returnValue = Plugin::UnityEngineResolutionPropertyGetHeight(this);
+		auto returnValue = Plugin::UnityEngineResolutionPropertyGetHeight(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3878,7 +4197,7 @@ namespace UnityEngine
 	
 	void Resolution::SetHeight(int32_t value)
 	{
-		Plugin::UnityEngineResolutionPropertySetHeight(this, value);
+		Plugin::UnityEngineResolutionPropertySetHeight(Handle, value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3890,7 +4209,7 @@ namespace UnityEngine
 	
 	int32_t Resolution::GetRefreshRate()
 	{
-		auto returnValue = Plugin::UnityEngineResolutionPropertyGetRefreshRate(this);
+		auto returnValue = Plugin::UnityEngineResolutionPropertyGetRefreshRate(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3903,7 +4222,7 @@ namespace UnityEngine
 	
 	void Resolution::SetRefreshRate(int32_t value)
 	{
-		Plugin::UnityEngineResolutionPropertySetRefreshRate(this, value);
+		Plugin::UnityEngineResolutionPropertySetRefreshRate(Handle, value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3918,7 +4237,7 @@ namespace System
 {
 	Object::Object(UnityEngine::Resolution& val)
 	{
-		int32_t handle = Plugin::BoxResolution(val);
+		int32_t handle = Plugin::BoxResolution(val.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -3935,7 +4254,7 @@ namespace System
 	
 	Object::operator UnityEngine::Resolution()
 	{
-		UnityEngine::Resolution returnVal(Plugin::UnboxResolution(Handle));
+		UnityEngine::Resolution returnVal(Plugin::InternalUse::Only, Plugin::UnboxResolution(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4044,11 +4363,87 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Ray::Ray()
+	Ray::Ray(decltype(nullptr) n)
+		: Ray(Plugin::InternalUse::Only, 0)
 	{
 	}
 	
+	Ray::Ray(Plugin::InternalUse iu, int32_t handle)
+		: System::ValueType(iu, handle)
+	{
+		if (handle)
+		{
+			Plugin::ReferenceManagedUnityEngineRay(Handle);
+		}
+	}
+	
+	Ray::Ray(const Ray& other)
+		: Ray(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	Ray::Ray(Ray&& other)
+		: Ray(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Ray::~Ray()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineRay(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Ray& Ray::operator=(const Ray& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineRay(Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedUnityEngineRay(Handle);
+		}
+		return *this;
+	}
+	
+	Ray& Ray::operator=(decltype(nullptr) other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineRay(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Ray& Ray::operator=(Ray&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedUnityEngineRay(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Ray::operator==(const Ray& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Ray::operator!=(const Ray& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
 	Ray::Ray(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction)
+		 : System::ValueType(nullptr)
 	{
 		auto returnValue = Plugin::UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3(origin, direction);
 		if (Plugin::unhandledCsharpException)
@@ -4058,7 +4453,11 @@ namespace UnityEngine
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		*this = returnValue;
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedUnityEngineRay(Handle);
+		}
 	}
 }
 
@@ -4066,7 +4465,7 @@ namespace System
 {
 	Object::Object(UnityEngine::Ray& val)
 	{
-		int32_t handle = Plugin::BoxRay(val);
+		int32_t handle = Plugin::BoxRay(val.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4083,7 +4482,7 @@ namespace System
 	
 	Object::operator UnityEngine::Ray()
 	{
-		UnityEngine::Ray returnVal(Plugin::UnboxRay(Handle));
+		UnityEngine::Ray returnVal(Plugin::InternalUse::Only, Plugin::UnboxRay(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4178,7 +4577,7 @@ namespace UnityEngine
 	
 	int32_t Physics::RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<UnityEngine::RaycastHit>& results)
 	{
-		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit(ray, results.Handle);
+		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1(ray.Handle, results.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4191,7 +4590,7 @@ namespace UnityEngine
 	
 	System::Array1<UnityEngine::RaycastHit> Physics::RaycastAll(UnityEngine::Ray& ray)
 	{
-		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastAllUnityEngineRay(ray);
+		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastAllUnityEngineRay(ray.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4752,8 +5151,83 @@ namespace UnityEngine
 {
 	namespace SceneManagement
 	{
-		Scene::Scene()
+		Scene::Scene(decltype(nullptr) n)
+			: Scene(Plugin::InternalUse::Only, 0)
 		{
+		}
+		
+		Scene::Scene(Plugin::InternalUse iu, int32_t handle)
+			: System::ValueType(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedUnityEngineSceneManagementScene(Handle);
+			}
+		}
+		
+		Scene::Scene(const Scene& other)
+			: Scene(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		Scene::Scene(Scene&& other)
+			: Scene(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		Scene::~Scene()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineSceneManagementScene(Handle);
+				Handle = 0;
+			}
+		}
+		
+		Scene& Scene::operator=(const Scene& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineSceneManagementScene(Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedUnityEngineSceneManagementScene(Handle);
+			}
+			return *this;
+		}
+		
+		Scene& Scene::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineSceneManagementScene(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		Scene& Scene::operator=(Scene&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineSceneManagementScene(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool Scene::operator==(const Scene& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool Scene::operator!=(const Scene& other) const
+		{
+			return Handle != other.Handle;
 		}
 	}
 }
@@ -4762,7 +5236,7 @@ namespace System
 {
 	Object::Object(UnityEngine::SceneManagement::Scene& val)
 	{
-		int32_t handle = Plugin::BoxScene(val);
+		int32_t handle = Plugin::BoxScene(val.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -4779,7 +5253,7 @@ namespace System
 	
 	Object::operator UnityEngine::SceneManagement::Scene()
 	{
-		UnityEngine::SceneManagement::Scene returnVal(Plugin::UnboxScene(Handle));
+		UnityEngine::SceneManagement::Scene returnVal(Plugin::InternalUse::Only, Plugin::UnboxScene(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -8900,6 +9374,787 @@ namespace System
 	}
 }
 
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		PlayableHandle::PlayableHandle(decltype(nullptr) n)
+			: PlayableHandle(Plugin::InternalUse::Only, 0)
+		{
+		}
+		
+		PlayableHandle::PlayableHandle(Plugin::InternalUse iu, int32_t handle)
+			: System::ValueType(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedUnityEnginePlayablesPlayableHandle(Handle);
+			}
+		}
+		
+		PlayableHandle::PlayableHandle(const PlayableHandle& other)
+			: PlayableHandle(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		PlayableHandle::PlayableHandle(PlayableHandle&& other)
+			: PlayableHandle(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		PlayableHandle::~PlayableHandle()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableHandle(Handle);
+				Handle = 0;
+			}
+		}
+		
+		PlayableHandle& PlayableHandle::operator=(const PlayableHandle& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableHandle(Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedUnityEnginePlayablesPlayableHandle(Handle);
+			}
+			return *this;
+		}
+		
+		PlayableHandle& PlayableHandle::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableHandle(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		PlayableHandle& PlayableHandle::operator=(PlayableHandle&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableHandle(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool PlayableHandle::operator==(const PlayableHandle& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool PlayableHandle::operator!=(const PlayableHandle& other) const
+		{
+			return Handle != other.Handle;
+		}
+	}
+}
+
+namespace System
+{
+	Object::Object(UnityEngine::Playables::PlayableHandle& val)
+	{
+		int32_t handle = Plugin::BoxPlayableHandle(val.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::Playables::PlayableHandle()
+	{
+		UnityEngine::Playables::PlayableHandle returnVal(Plugin::InternalUse::Only, Plugin::UnboxPlayableHandle(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		PlayableGraph::PlayableGraph(decltype(nullptr) n)
+			: PlayableGraph(Plugin::InternalUse::Only, 0)
+		{
+		}
+		
+		PlayableGraph::PlayableGraph(Plugin::InternalUse iu, int32_t handle)
+			: System::ValueType(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedUnityEnginePlayablesPlayableGraph(Handle);
+			}
+		}
+		
+		PlayableGraph::PlayableGraph(const PlayableGraph& other)
+			: PlayableGraph(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		PlayableGraph::PlayableGraph(PlayableGraph&& other)
+			: PlayableGraph(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		PlayableGraph::~PlayableGraph()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableGraph(Handle);
+				Handle = 0;
+			}
+		}
+		
+		PlayableGraph& PlayableGraph::operator=(const PlayableGraph& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableGraph(Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedUnityEnginePlayablesPlayableGraph(Handle);
+			}
+			return *this;
+		}
+		
+		PlayableGraph& PlayableGraph::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableGraph(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		PlayableGraph& PlayableGraph::operator=(PlayableGraph&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEnginePlayablesPlayableGraph(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool PlayableGraph::operator==(const PlayableGraph& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool PlayableGraph::operator!=(const PlayableGraph& other) const
+		{
+			return Handle != other.Handle;
+		}
+	}
+}
+
+namespace System
+{
+	Object::Object(UnityEngine::Playables::PlayableGraph& val)
+	{
+		int32_t handle = Plugin::BoxPlayableGraph(val.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::Playables::PlayableGraph()
+	{
+		UnityEngine::Playables::PlayableGraph returnVal(Plugin::InternalUse::Only, Plugin::UnboxPlayableGraph(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Animations
+	{
+		AnimationMixerPlayable::AnimationMixerPlayable(decltype(nullptr) n)
+			: AnimationMixerPlayable(Plugin::InternalUse::Only, 0)
+		{
+		}
+		
+		AnimationMixerPlayable::AnimationMixerPlayable(Plugin::InternalUse iu, int32_t handle)
+			: System::ValueType(iu, handle)
+		{
+			if (handle)
+			{
+				Plugin::ReferenceManagedUnityEngineAnimationsAnimationMixerPlayable(Handle);
+			}
+		}
+		
+		AnimationMixerPlayable::AnimationMixerPlayable(const AnimationMixerPlayable& other)
+			: AnimationMixerPlayable(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		AnimationMixerPlayable::AnimationMixerPlayable(AnimationMixerPlayable&& other)
+			: AnimationMixerPlayable(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		AnimationMixerPlayable::~AnimationMixerPlayable()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineAnimationsAnimationMixerPlayable(Handle);
+				Handle = 0;
+			}
+		}
+		
+		AnimationMixerPlayable& AnimationMixerPlayable::operator=(const AnimationMixerPlayable& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineAnimationsAnimationMixerPlayable(Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedUnityEngineAnimationsAnimationMixerPlayable(Handle);
+			}
+			return *this;
+		}
+		
+		AnimationMixerPlayable& AnimationMixerPlayable::operator=(decltype(nullptr) other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineAnimationsAnimationMixerPlayable(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		AnimationMixerPlayable& AnimationMixerPlayable::operator=(AnimationMixerPlayable&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedUnityEngineAnimationsAnimationMixerPlayable(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool AnimationMixerPlayable::operator==(const AnimationMixerPlayable& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool AnimationMixerPlayable::operator!=(const AnimationMixerPlayable& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		UnityEngine::Animations::AnimationMixerPlayable AnimationMixerPlayable::Create(UnityEngine::Playables::PlayableGraph& graph, int32_t inputCount, System::Boolean normalizeWeights)
+		{
+			auto returnValue = Plugin::UnityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean(graph.Handle, inputCount, normalizeWeights);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			return UnityEngine::Animations::AnimationMixerPlayable(Plugin::InternalUse::Only, returnValue);
+		}
+	}
+}
+
+namespace System
+{
+	Object::Object(UnityEngine::Animations::AnimationMixerPlayable& val)
+	{
+		int32_t handle = Plugin::BoxAnimationMixerPlayable(val.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::Animations::AnimationMixerPlayable()
+	{
+		UnityEngine::Animations::AnimationMixerPlayable returnVal(Plugin::InternalUse::Only, Plugin::UnboxAnimationMixerPlayable(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			CallbackEventHandler::CallbackEventHandler(decltype(nullptr) n)
+				: CallbackEventHandler(Plugin::InternalUse::Only, 0)
+			{
+			}
+			
+			CallbackEventHandler::CallbackEventHandler(Plugin::InternalUse iu, int32_t handle)
+				: System::Object(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			CallbackEventHandler::CallbackEventHandler(const CallbackEventHandler& other)
+				: CallbackEventHandler(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			CallbackEventHandler::CallbackEventHandler(CallbackEventHandler&& other)
+				: CallbackEventHandler(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			CallbackEventHandler::~CallbackEventHandler()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			CallbackEventHandler& CallbackEventHandler::operator=(const CallbackEventHandler& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			CallbackEventHandler& CallbackEventHandler::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			CallbackEventHandler& CallbackEventHandler::operator=(CallbackEventHandler&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool CallbackEventHandler::operator==(const CallbackEventHandler& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool CallbackEventHandler::operator!=(const CallbackEventHandler& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			VisualElement::VisualElement(decltype(nullptr) n)
+				: VisualElement(Plugin::InternalUse::Only, 0)
+			{
+			}
+			
+			VisualElement::VisualElement(Plugin::InternalUse iu, int32_t handle)
+				: UnityEngine::Experimental::UIElements::CallbackEventHandler(iu, handle)
+			{
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			VisualElement::VisualElement(const VisualElement& other)
+				: VisualElement(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			VisualElement::VisualElement(VisualElement&& other)
+				: VisualElement(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			VisualElement::~VisualElement()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			VisualElement& VisualElement::operator=(const VisualElement& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			VisualElement& VisualElement::operator=(decltype(nullptr) other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			VisualElement& VisualElement::operator=(VisualElement&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool VisualElement::operator==(const VisualElement& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool VisualElement::operator!=(const VisualElement& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			UnityEngine::Experimental::UIElements::VisualElement UQueryExtensions::Q(UnityEngine::Experimental::UIElements::VisualElement& e, System::String& name, System::Array1<System::String>& classes)
+			{
+				auto returnValue = Plugin::UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1(e.Handle, name.Handle, classes.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return UnityEngine::Experimental::UIElements::VisualElement(Plugin::InternalUse::Only, returnValue);
+			}
+	
+			UnityEngine::Experimental::UIElements::VisualElement UQueryExtensions::Q(UnityEngine::Experimental::UIElements::VisualElement& e, System::String& name, System::String& className)
+			{
+				auto returnValue = Plugin::UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString(e.Handle, name.Handle, className.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return UnityEngine::Experimental::UIElements::VisualElement(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	Object::Object(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val)
+	{
+		int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(val);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy()
+	{
+		UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy returnVal(Plugin::UnboxInteractionSourcePositionAccuracy(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace System
+{
+	Object::Object(UnityEngine::XR::WSA::Input::InteractionSourceNode val)
+	{
+		int32_t handle = Plugin::BoxInteractionSourceNode(val);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::XR::WSA::Input::InteractionSourceNode()
+	{
+		UnityEngine::XR::WSA::Input::InteractionSourceNode returnVal(Plugin::UnboxInteractionSourceNode(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace XR
+	{
+		namespace WSA
+		{
+			namespace Input
+			{
+				InteractionSourcePose::InteractionSourcePose(decltype(nullptr) n)
+					: InteractionSourcePose(Plugin::InternalUse::Only, 0)
+				{
+				}
+				
+				InteractionSourcePose::InteractionSourcePose(Plugin::InternalUse iu, int32_t handle)
+					: System::ValueType(iu, handle)
+				{
+					if (handle)
+					{
+						Plugin::ReferenceManagedUnityEngineXRWSAInputInteractionSourcePose(Handle);
+					}
+				}
+				
+				InteractionSourcePose::InteractionSourcePose(const InteractionSourcePose& other)
+					: InteractionSourcePose(Plugin::InternalUse::Only, other.Handle)
+				{
+				}
+				
+				InteractionSourcePose::InteractionSourcePose(InteractionSourcePose&& other)
+					: InteractionSourcePose(Plugin::InternalUse::Only, other.Handle)
+				{
+					other.Handle = 0;
+				}
+				
+				InteractionSourcePose::~InteractionSourcePose()
+				{
+					if (Handle)
+					{
+						Plugin::DereferenceManagedUnityEngineXRWSAInputInteractionSourcePose(Handle);
+						Handle = 0;
+					}
+				}
+				
+				InteractionSourcePose& InteractionSourcePose::operator=(const InteractionSourcePose& other)
+				{
+					if (this->Handle)
+					{
+						Plugin::DereferenceManagedUnityEngineXRWSAInputInteractionSourcePose(Handle);
+					}
+					this->Handle = other.Handle;
+					if (this->Handle)
+					{
+						Plugin::ReferenceManagedUnityEngineXRWSAInputInteractionSourcePose(Handle);
+					}
+					return *this;
+				}
+				
+				InteractionSourcePose& InteractionSourcePose::operator=(decltype(nullptr) other)
+				{
+					if (Handle)
+					{
+						Plugin::DereferenceManagedUnityEngineXRWSAInputInteractionSourcePose(Handle);
+						Handle = 0;
+					}
+					return *this;
+				}
+				
+				InteractionSourcePose& InteractionSourcePose::operator=(InteractionSourcePose&& other)
+				{
+					if (Handle)
+					{
+						Plugin::DereferenceManagedUnityEngineXRWSAInputInteractionSourcePose(Handle);
+					}
+					Handle = other.Handle;
+					other.Handle = 0;
+					return *this;
+				}
+				
+				bool InteractionSourcePose::operator==(const InteractionSourcePose& other) const
+				{
+					return Handle == other.Handle;
+				}
+				
+				bool InteractionSourcePose::operator!=(const InteractionSourcePose& other) const
+				{
+					return Handle != other.Handle;
+				}
+				
+				System::Boolean InteractionSourcePose::TryGetRotation(UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node)
+				{
+					auto returnValue = Plugin::UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode(Handle, rotation, node);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					return returnValue;
+				}
+			}
+		}
+	}
+}
+
+namespace System
+{
+	Object::Object(UnityEngine::XR::WSA::Input::InteractionSourcePose& val)
+	{
+		int32_t handle = Plugin::BoxInteractionSourcePose(val.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			Handle = handle;
+		}
+	}
+	
+	Object::operator UnityEngine::XR::WSA::Input::InteractionSourcePose()
+	{
+		UnityEngine::XR::WSA::Input::InteractionSourcePose returnVal(Plugin::InternalUse::Only, Plugin::UnboxInteractionSourcePose(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
 namespace System
 {
 	Object::Object(System::Boolean val)
@@ -10427,7 +11682,7 @@ namespace Plugin
 	
 	void ArrayElementProxy1_1<UnityEngine::Resolution>::operator=(UnityEngine::Resolution item)
 	{
-		Plugin::UnityEngineResolutionArray1SetItem1(Handle, Index0, item);
+		Plugin::UnityEngineResolutionArray1SetItem1(Handle, Index0, item.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -10447,7 +11702,7 @@ namespace Plugin
 			ex->ThrowReferenceToThis();
 			delete ex;
 		}
-		return returnValue;
+		return UnityEngine::Resolution(Plugin::InternalUse::Only, returnValue);
 	}
 }
 
@@ -12788,10 +14043,11 @@ namespace UnityEngine
 		{
 		}
 		
-		DLLEXPORT void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke(int32_t cppHandle, UnityEngine::SceneManagement::Scene arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
+		DLLEXPORT void UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeNativeInvoke(int32_t cppHandle, int32_t arg0Handle, UnityEngine::SceneManagement::LoadSceneMode arg1)
 		{
 			try
 			{
+				auto arg0 = UnityEngine::SceneManagement::Scene(Plugin::InternalUse::Only, arg0Handle);
 				Plugin::GetUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(cppHandle)->operator()(arg0, arg1);
 			}
 			catch (System::Exception ex)
@@ -12808,7 +14064,7 @@ namespace UnityEngine
 		
 		void UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::Invoke(UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1)
 		{
-			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(Handle, arg0, arg1);
+			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke(Handle, arg0.Handle, arg1);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -13875,6 +15131,8 @@ DLLEXPORT void Init(
 	UnityEngine::Vector3 (*unityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a),
 	int32_t (*boxVector3)(UnityEngine::Vector3& val),
 	UnityEngine::Vector3 (*unboxVector3)(int32_t valHandle),
+	int32_t (*boxQuaternion)(UnityEngine::Quaternion& val),
+	UnityEngine::Quaternion (*unboxQuaternion)(int32_t valHandle),
 	float (*unityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column),
 	void (*unityEngineMatrix4x4PropertySetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column, float value),
 	int32_t (*boxMatrix4x4)(UnityEngine::Matrix4x4& val),
@@ -13910,20 +15168,22 @@ DLLEXPORT void Init(
 	int32_t (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue)(int32_t thisHandle),
 	void (*systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue)(int32_t thisHandle, int32_t valueHandle),
 	int32_t (*systemExceptionConstructorSystemString)(int32_t messageHandle),
-	int32_t (*unityEngineResolutionPropertyGetWidth)(UnityEngine::Resolution* thiz),
-	void (*unityEngineResolutionPropertySetWidth)(UnityEngine::Resolution* thiz, int32_t value),
-	int32_t (*unityEngineResolutionPropertyGetHeight)(UnityEngine::Resolution* thiz),
-	void (*unityEngineResolutionPropertySetHeight)(UnityEngine::Resolution* thiz, int32_t value),
-	int32_t (*unityEngineResolutionPropertyGetRefreshRate)(UnityEngine::Resolution* thiz),
-	void (*unityEngineResolutionPropertySetRefreshRate)(UnityEngine::Resolution* thiz, int32_t value),
-	int32_t (*boxResolution)(UnityEngine::Resolution& val),
-	UnityEngine::Resolution (*unboxResolution)(int32_t valHandle),
+	void (*releaseUnityEngineResolution)(int32_t handle),
+	int32_t (*unityEngineResolutionPropertyGetWidth)(int32_t thisHandle),
+	void (*unityEngineResolutionPropertySetWidth)(int32_t thisHandle, int32_t value),
+	int32_t (*unityEngineResolutionPropertyGetHeight)(int32_t thisHandle),
+	void (*unityEngineResolutionPropertySetHeight)(int32_t thisHandle, int32_t value),
+	int32_t (*unityEngineResolutionPropertyGetRefreshRate)(int32_t thisHandle),
+	void (*unityEngineResolutionPropertySetRefreshRate)(int32_t thisHandle, int32_t value),
+	int32_t (*boxResolution)(int32_t valHandle),
+	int32_t (*unboxResolution)(int32_t valHandle),
 	int32_t (*unityEngineScreenPropertyGetResolutions)(),
-	UnityEngine::Ray (*unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction),
-	int32_t (*boxRay)(UnityEngine::Ray& val),
-	UnityEngine::Ray (*unboxRay)(int32_t valHandle),
-	int32_t (*unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit)(UnityEngine::Ray& ray, int32_t resultsHandle),
-	int32_t (*unityEnginePhysicsMethodRaycastAllUnityEngineRay)(UnityEngine::Ray& ray),
+	void (*releaseUnityEngineRay)(int32_t handle),
+	int32_t (*unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction),
+	int32_t (*boxRay)(int32_t valHandle),
+	int32_t (*unboxRay)(int32_t valHandle),
+	int32_t (*unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1)(int32_t rayHandle, int32_t resultsHandle),
+	int32_t (*unityEnginePhysicsMethodRaycastAllUnityEngineRay)(int32_t rayHandle),
 	int32_t (*boxColor)(UnityEngine::Color& val),
 	UnityEngine::Color (*unboxColor)(int32_t valHandle),
 	int32_t (*boxGradientColorKey)(UnityEngine::GradientColorKey& val),
@@ -13938,8 +15198,9 @@ DLLEXPORT void Init(
 	void (*unityEngineApplicationRemoveEventOnBeforeRender)(int32_t delHandle),
 	void (*unityEngineSceneManagementSceneManagerAddEventSceneLoaded)(int32_t delHandle),
 	void (*unityEngineSceneManagementSceneManagerRemoveEventSceneLoaded)(int32_t delHandle),
-	int32_t (*boxScene)(UnityEngine::SceneManagement::Scene& val),
-	UnityEngine::SceneManagement::Scene (*unboxScene)(int32_t valHandle),
+	void (*releaseUnityEngineSceneManagementScene)(int32_t handle),
+	int32_t (*boxScene)(int32_t valHandle),
+	int32_t (*unboxScene)(int32_t valHandle),
 	int32_t (*boxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val),
 	UnityEngine::SceneManagement::LoadSceneMode (*unboxLoadSceneMode)(int32_t valHandle),
 	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
@@ -13968,6 +15229,26 @@ DLLEXPORT void Init(
 	void (*systemIOFileStreamMethodWriteByteSystemByte)(int32_t thisHandle, uint8_t value),
 	void (*releaseSystemIOBaseFileStream)(int32_t handle),
 	void (*systemIOBaseFileStreamConstructorSystemString_SystemIOFileMode)(int32_t cppHandle, int32_t* handle, int32_t pathHandle, System::IO::FileMode mode),
+	void (*releaseUnityEnginePlayablesPlayableHandle)(int32_t handle),
+	int32_t (*boxPlayableHandle)(int32_t valHandle),
+	int32_t (*unboxPlayableHandle)(int32_t valHandle),
+	void (*releaseUnityEnginePlayablesPlayableGraph)(int32_t handle),
+	int32_t (*boxPlayableGraph)(int32_t valHandle),
+	int32_t (*unboxPlayableGraph)(int32_t valHandle),
+	void (*releaseUnityEngineAnimationsAnimationMixerPlayable)(int32_t handle),
+	int32_t (*unityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean)(int32_t graphHandle, int32_t inputCount, System::Boolean normalizeWeights),
+	int32_t (*boxAnimationMixerPlayable)(int32_t valHandle),
+	int32_t (*unboxAnimationMixerPlayable)(int32_t valHandle),
+	int32_t (*unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1)(int32_t eHandle, int32_t nameHandle, int32_t classesHandle),
+	int32_t (*unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString)(int32_t eHandle, int32_t nameHandle, int32_t classNameHandle),
+	int32_t (*boxInteractionSourcePositionAccuracy)(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val),
+	UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy (*unboxInteractionSourcePositionAccuracy)(int32_t valHandle),
+	int32_t (*boxInteractionSourceNode)(UnityEngine::XR::WSA::Input::InteractionSourceNode val),
+	UnityEngine::XR::WSA::Input::InteractionSourceNode (*unboxInteractionSourceNode)(int32_t valHandle),
+	void (*releaseUnityEngineXRWSAInputInteractionSourcePose)(int32_t handle),
+	System::Boolean (*unityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node),
+	int32_t (*boxInteractionSourcePose)(int32_t valHandle),
+	int32_t (*unboxInteractionSourcePose)(int32_t valHandle),
 	int32_t (*boxBoolean)(System::Boolean val),
 	System::Boolean (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
@@ -14010,8 +15291,8 @@ DLLEXPORT void Init(
 	int32_t (*systemStringArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*systemStringArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
 	int32_t (*unityEngineUnityEngineResolutionArray1Constructor1)(int32_t length0),
-	UnityEngine::Resolution (*unityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0),
-	int32_t (*unityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, UnityEngine::Resolution& item),
+	int32_t (*unityEngineResolutionArray1GetItem1)(int32_t thisHandle, int32_t index0),
+	int32_t (*unityEngineResolutionArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
 	int32_t (*unityEngineUnityEngineRaycastHitArray1Constructor1)(int32_t length0),
 	int32_t (*unityEngineRaycastHitArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*unityEngineRaycastHitArray1SetItem1)(int32_t thisHandle, int32_t index0, int32_t itemHandle),
@@ -14057,7 +15338,7 @@ DLLEXPORT void Init(
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove)(int32_t thisHandle, int32_t delHandle),
-	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, UnityEngine::SceneManagement::Scene& arg0, UnityEngine::SceneManagement::LoadSceneMode arg1),
+	void (*unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke)(int32_t thisHandle, int32_t arg0Handle, UnityEngine::SceneManagement::LoadSceneMode arg1),
 	void (*releaseSystemComponentModelDesignComponentEventHandler)(int32_t handle, int32_t classHandle),
 	void (*systemComponentModelDesignComponentEventHandlerConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*systemComponentModelDesignComponentEventHandlerAdd)(int32_t thisHandle, int32_t delHandle),
@@ -14125,6 +15406,8 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3 = unityEngineVector3Methodop_UnaryNegationUnityEngineVector3;
 	Plugin::BoxVector3 = boxVector3;
 	Plugin::UnboxVector3 = unboxVector3;
+	Plugin::BoxQuaternion = boxQuaternion;
+	Plugin::UnboxQuaternion = unboxQuaternion;
 	Plugin::UnityEngineMatrix4x4PropertyGetItem = unityEngineMatrix4x4PropertyGetItem;
 	Plugin::UnityEngineMatrix4x4PropertySetItem = unityEngineMatrix4x4PropertySetItem;
 	Plugin::BoxMatrix4x4 = boxMatrix4x4;
@@ -14162,6 +15445,8 @@ DLLEXPORT void Init(
 	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldGetValue;
 	Plugin::SystemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue = systemRuntimeCompilerServicesStrongBoxSystemStringFieldSetValue;
 	Plugin::SystemExceptionConstructorSystemString = systemExceptionConstructorSystemString;
+	Plugin::ReleaseUnityEngineResolution = releaseUnityEngineResolution;
+	Plugin::RefCountsUnityEngineResolution = new int32_t[maxManagedObjects]();
 	Plugin::UnityEngineResolutionPropertyGetWidth = unityEngineResolutionPropertyGetWidth;
 	Plugin::UnityEngineResolutionPropertySetWidth = unityEngineResolutionPropertySetWidth;
 	Plugin::UnityEngineResolutionPropertyGetHeight = unityEngineResolutionPropertyGetHeight;
@@ -14171,10 +15456,12 @@ DLLEXPORT void Init(
 	Plugin::BoxResolution = boxResolution;
 	Plugin::UnboxResolution = unboxResolution;
 	Plugin::UnityEngineScreenPropertyGetResolutions = unityEngineScreenPropertyGetResolutions;
+	Plugin::ReleaseUnityEngineRay = releaseUnityEngineRay;
+	Plugin::RefCountsUnityEngineRay = new int32_t[maxManagedObjects]();
 	Plugin::UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3 = unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3;
 	Plugin::BoxRay = boxRay;
 	Plugin::UnboxRay = unboxRay;
-	Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit = unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHit;
+	Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1 = unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1;
 	Plugin::UnityEnginePhysicsMethodRaycastAllUnityEngineRay = unityEnginePhysicsMethodRaycastAllUnityEngineRay;
 	Plugin::BoxColor = boxColor;
 	Plugin::UnboxColor = unboxColor;
@@ -14190,6 +15477,8 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineApplicationRemoveEventOnBeforeRender = unityEngineApplicationRemoveEventOnBeforeRender;
 	Plugin::UnityEngineSceneManagementSceneManagerAddEventSceneLoaded = unityEngineSceneManagementSceneManagerAddEventSceneLoaded;
 	Plugin::UnityEngineSceneManagementSceneManagerRemoveEventSceneLoaded = unityEngineSceneManagementSceneManagerRemoveEventSceneLoaded;
+	Plugin::ReleaseUnityEngineSceneManagementScene = releaseUnityEngineSceneManagementScene;
+	Plugin::RefCountsUnityEngineSceneManagementScene = new int32_t[maxManagedObjects]();
 	Plugin::BoxScene = boxScene;
 	Plugin::UnboxScene = unboxScene;
 	Plugin::BoxLoadSceneMode = boxLoadSceneMode;
@@ -14284,6 +15573,30 @@ DLLEXPORT void Init(
 	NextFreeSystemIOBaseFileStream = SystemIOBaseFileStreamFreeList + 1;
 	Plugin::ReleaseSystemIOBaseFileStream = releaseSystemIOBaseFileStream;
 	Plugin::SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode = systemIOBaseFileStreamConstructorSystemString_SystemIOFileMode;
+	Plugin::ReleaseUnityEnginePlayablesPlayableHandle = releaseUnityEnginePlayablesPlayableHandle;
+	Plugin::RefCountsUnityEnginePlayablesPlayableHandle = new int32_t[maxManagedObjects]();
+	Plugin::BoxPlayableHandle = boxPlayableHandle;
+	Plugin::UnboxPlayableHandle = unboxPlayableHandle;
+	Plugin::ReleaseUnityEnginePlayablesPlayableGraph = releaseUnityEnginePlayablesPlayableGraph;
+	Plugin::RefCountsUnityEnginePlayablesPlayableGraph = new int32_t[maxManagedObjects]();
+	Plugin::BoxPlayableGraph = boxPlayableGraph;
+	Plugin::UnboxPlayableGraph = unboxPlayableGraph;
+	Plugin::ReleaseUnityEngineAnimationsAnimationMixerPlayable = releaseUnityEngineAnimationsAnimationMixerPlayable;
+	Plugin::RefCountsUnityEngineAnimationsAnimationMixerPlayable = new int32_t[maxManagedObjects]();
+	Plugin::UnityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean = unityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean;
+	Plugin::BoxAnimationMixerPlayable = boxAnimationMixerPlayable;
+	Plugin::UnboxAnimationMixerPlayable = unboxAnimationMixerPlayable;
+	Plugin::UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1 = unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1;
+	Plugin::UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString = unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString;
+	Plugin::BoxInteractionSourcePositionAccuracy = boxInteractionSourcePositionAccuracy;
+	Plugin::UnboxInteractionSourcePositionAccuracy = unboxInteractionSourcePositionAccuracy;
+	Plugin::BoxInteractionSourceNode = boxInteractionSourceNode;
+	Plugin::UnboxInteractionSourceNode = unboxInteractionSourceNode;
+	Plugin::ReleaseUnityEngineXRWSAInputInteractionSourcePose = releaseUnityEngineXRWSAInputInteractionSourcePose;
+	Plugin::RefCountsUnityEngineXRWSAInputInteractionSourcePose = new int32_t[maxManagedObjects]();
+	Plugin::UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode = unityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode;
+	Plugin::BoxInteractionSourcePose = boxInteractionSourcePose;
+	Plugin::UnboxInteractionSourcePose = unboxInteractionSourcePose;
 	Plugin::BoxBoolean = boxBoolean;
 	Plugin::UnboxBoolean = unboxBoolean;
 	Plugin::BoxSByte = boxSByte;
