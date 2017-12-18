@@ -11667,56 +11667,49 @@ namespace NativeScript
 						}
 						output.Append("Plugin::NullString");
 					}
-					else if (object.ReferenceEquals(param.DefaultValue, null))
+					else if (param.DefaultValue is bool)
 					{
-						output.Append("nullptr");
+						bool val = (bool)param.DefaultValue;
+						output.Append(val ? "true" : "false");
+					}
+					else if (param.DefaultValue is char)
+					{
+						char val = (char)param.DefaultValue;
+						output.Append('\'');
+						output.Append(val);
+						output.Append('\'');
+					}
+					else if ((param.DefaultValue is sbyte) ||
+						(param.DefaultValue is byte) ||
+						(param.DefaultValue is short) ||
+						(param.DefaultValue is ushort) ||
+						(param.DefaultValue is int) ||
+						(param.DefaultValue is uint) ||
+						(param.DefaultValue is long) ||
+						(param.DefaultValue is ulong))
+					{
+						output.Append(param.DefaultValue);
 					}
 					else
 					{
-						if ((param.DefaultValue is sbyte) ||
-							(param.DefaultValue is byte) ||
-							(param.DefaultValue is short) ||
-							(param.DefaultValue is ushort) ||
-							(param.DefaultValue is int) ||
-							(param.DefaultValue is uint) ||
-							(param.DefaultValue is long) ||
-							(param.DefaultValue is ulong))
+						Type type = param.DefaultValue.GetType();
+						if (type.IsEnum)
 						{
+							AppendCppTypeName(
+								type,
+								output);
+							output.Append("::");
 							output.Append(param.DefaultValue);
-						}
-						else if (param.DefaultValue is bool)
-						{
-							bool val = (bool)param.DefaultValue;
-							output.Append(val ? "true" : "false");
-						}
-						else if (param.DefaultValue is char)
-						{
-							char val = (char)param.DefaultValue;
-							output.Append('\'');
-							output.Append(val);
-							output.Append('\'');
 						}
 						else
 						{
-							Type type = param.DefaultValue.GetType();
-							if (type.IsEnum)
-							{
-								AppendCppTypeName(
-									type,
-									output);
-								output.Append("::");
-								output.Append(param.DefaultValue);
-							}
-							else
-							{
-								StringBuilder error = new StringBuilder();
-								error.Append("Default parameter type (");
-								AppendCsharpTypeName(
-									param.DefaultValue.GetType(),
-									error);
-								error.Append(") not supported");
-								throw new Exception(error.ToString());
-							}
+							StringBuilder error = new StringBuilder();
+							error.Append("Default parameter type (");
+							AppendCsharpTypeName(
+								param.DefaultValue.GetType(),
+								error);
+							error.Append(") not supported");
+							throw new Exception(error.ToString());
 						}
 					}
 				}
