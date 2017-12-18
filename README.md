@@ -102,7 +102,9 @@ C++ is the standard language for video games as well as many other fields. By pr
     * Delegates
     * Events
     * Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
-    * Implementing C# interfaces and deriving from C# classes with C++ classes
+    * Implementing C# interfaces with C++ classes
+    * Deriving from C# classes with C++ classes
+    * Default parameters
 
 # Performance
 
@@ -199,9 +201,9 @@ To configure the code generator, open `NativeScriptTypes.json` and notice the ex
 Note that the code generator does not support (yet):
 
 * `MonoBehaviour` contents (e.g. fields) except for "message" functions
-* `Array` methods (e.g. `IndexOf`)
-* `string` methods (e.g. `Substring`)
-* Default parameters
+* `Array`, `string`, and `object` methods (e.g. `GetHashCode`)
+* Non-null string default parameters and null non-string default parameters
+* Implicit `params` parameter (a.k.a. "var args") passing
 * `decimal`
 * C# pointers
 
