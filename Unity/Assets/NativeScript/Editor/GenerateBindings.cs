@@ -166,6 +166,10 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppTypeDeclarations =
 				new StringBuilder(InitialStringBuilderCapacity);
+			public readonly StringBuilder CppTemplateDeclarations =
+				new StringBuilder(InitialStringBuilderCapacity);
+			public readonly StringBuilder CppTemplateSpecializationDeclarations =
+				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppTypeDefinitions =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppMethodDefinitions =
@@ -542,7 +546,7 @@ namespace NativeScript
 										cppBaseTypeName,
 										type.Namespace,
 										genericArgTypes.Length,
-										builders.CppTypeDeclarations);
+										builders.CppTemplateDeclarations);
 								}
 							}
 						}
@@ -900,6 +904,57 @@ namespace NativeScript
 			}
 			errorBuilder.Append(")\" not found");
 			throw new Exception(errorBuilder.ToString());
+		}
+		
+		static Type[] GetDirectInterfaces(Type type)
+		{
+			Type[] allInterfaces = type.GetInterfaces();
+			List<Type> minimalInterfaces = new List<Type>();
+			foreach(Type iType in allInterfaces)
+			{
+				bool contains = false;
+				foreach (Type t in allInterfaces)
+				{
+					if (Array.IndexOf(t.GetInterfaces(), iType) >= 0)
+					{
+						contains = true;
+						break;
+					}
+				}
+				if (!contains)
+				{
+					minimalInterfaces.Add(iType);
+				}
+			}
+			minimalInterfaces.Sort((x, y) => x.Name.CompareTo(y.Name));
+			return minimalInterfaces.ToArray();
+		}
+		
+		static void AddCppCtorInitType(Type type, List<Type> types)
+		{
+			if (type.BaseType != null && type.BaseType != typeof(object))
+			{
+				AddCppCtorInitType(type.BaseType, types);
+			}
+			foreach (Type interfaceType in GetDirectInterfaces(type))
+			{
+				AddCppCtorInitType(interfaceType, types);
+			}
+			if (!types.Contains(type))
+			{
+				types.Add(type);
+			}
+		}
+		
+		static Type[] GetCppCtorInitTypes(Type type, bool includeSelf)
+		{
+			List<Type> types = new List<Type>();
+			AddCppCtorInitType(type, types);
+			if (!includeSelf)
+			{
+				types.RemoveAll(t => t == type);
+			}
+			return types.ToArray();
 		}
 		
 		static bool CheckParametersMatch(
@@ -1269,7 +1324,7 @@ namespace NativeScript
 							type.Name,
 							type.Namespace,
 							genericArgTypes.Length,
-							builders.CppTypeDeclarations);
+							builders.CppTemplateDeclarations);
 					}
 					
 					foreach (JsonGenericParams jsonGenericParams
@@ -1529,10 +1584,13 @@ namespace NativeScript
 				type.Name,
 				isStatic,
 				typeParams,
-				builders.CppTypeDeclarations);
+				typeParams != null ?
+					builders.CppTemplateSpecializationDeclarations :
+					builders.CppTypeDeclarations);
 			
 			// C++ type definition (beginning)
 			Type baseType = type.BaseType ?? typeof(object);
+			Type[] interfaceTypes = GetDirectInterfaces(type);
 			AppendCppTypeDefinitionBegin(
 				type.Name,
 				type.Namespace,
@@ -1541,11 +1599,15 @@ namespace NativeScript
 				baseType.Name,
 				baseType.Namespace,
 				baseType.GetGenericArguments(),
+				interfaceTypes,
 				isStatic,
 				indent,
 				builders.CppTypeDefinitions);
 			
 			// C++ method definition
+			Type[] cppCtorInterfaceTypes = GetCppCtorInitTypes(
+				type,
+				false);
 			int cppMethodDefinitionsIndent = AppendCppMethodDefinitionsBegin(
 				type.Name,
 				type.Namespace,
@@ -1554,6 +1616,7 @@ namespace NativeScript
 				baseType.Name,
 				baseType.Namespace,
 				baseType.GetGenericArguments(),
+				cppCtorInterfaceTypes,
 				isStatic,
 				(extraIndent, subject) => {},
 				(extraIndent, subject) => {},
@@ -1581,6 +1644,7 @@ namespace NativeScript
 						assemblies,
 						typeParams,
 						genericArgTypes,
+						cppCtorInterfaceTypes,
 						indent,
 						builders);
 				}
@@ -2185,6 +2249,7 @@ namespace NativeScript
 			Assembly[] assemblies,
 			Type[] enclosingTypeParams,
 			Type[] genericArgTypes,
+			Type[] interfaceTypes,
 			int indent,
 			StringBuilders builders)
 		{
@@ -2370,14 +2435,19 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			if (enclosingTypeKind != TypeKind.FullStruct)
 			{
-				AppendIndent(
-					indent + 1,
-					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(" : ");
-				AppendCppTypeName(
-					enclosingType.BaseType,
-					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("(nullptr)\n");
+				string separator = ": ";
+				foreach (Type interfaceType in interfaceTypes)
+				{
+					AppendIndent(
+						indent + 1,
+						builders.CppMethodDefinitions);
+					builders.CppMethodDefinitions.Append(separator);
+					AppendCppTypeName(
+						interfaceType,
+						builders.CppMethodDefinitions);
+					builders.CppMethodDefinitions.Append("(nullptr)\n");
+					separator = ", ";
+				}
 			}
 			AppendIndent(
 				indent,
@@ -3749,11 +3819,15 @@ namespace NativeScript
 				"MonoBehaviour",
 				"UnityEngine",
 				null,
+				null,
 				false,
 				cppIndent,
 				builders.CppTypeDefinitions);
 			
 			// C++ method definition
+			Type[] interfaceTypes = GetCppCtorInitTypes(
+				type,
+				false);
 			int cppMethodDefinitionsIndent = AppendCppMethodDefinitionsBegin(
 				type.Name,
 				type.Namespace,
@@ -3762,6 +3836,7 @@ namespace NativeScript
 				"MonoBehaviour",
 				"UnityEngine",
 				null,
+				interfaceTypes,
 				false,
 				(extraIndent, subject) => {},
 				(extraIndent, subject) => {},
@@ -4228,9 +4303,12 @@ namespace NativeScript
 					cppArrayTypeName,
 					false,
 					cppTypeParams,
-					builders.CppTypeDeclarations);
+					cppTypeParams != null ?
+						builders.CppTemplateSpecializationDeclarations :
+						builders.CppTypeDeclarations);
 				
 				// C++ type definition (beginning)
+				Type[] interfaceTypes = GetDirectInterfaces(arrayType);
 				AppendCppTypeDefinitionBegin(
 					cppArrayTypeName,
 					"System",
@@ -4239,11 +4317,15 @@ namespace NativeScript
 					"Array",
 					"System",
 					null,
+					interfaceTypes,
 					false,
 					indent,
 					builders.CppTypeDefinitions);
 				
 				// C++ method definitions (beginning)
+				Type[] cppCtorInitTypes = GetCppCtorInitTypes(
+					arrayType,
+					false);
 				int cppMethodDefinitionsIndent = AppendCppMethodDefinitionsBegin(
 					cppArrayTypeName,
 					"System",
@@ -4252,6 +4334,7 @@ namespace NativeScript
 					"Array",
 					"System",
 					null,
+					cppCtorInitTypes,
 					false,
 					(extraIndent, subject) => {
 						AppendIndent(
@@ -4332,6 +4415,7 @@ namespace NativeScript
 					cppArrayTypeName,
 					rank,
 					bindingArrayTypeName,
+					cppCtorInitTypes,
 					indent,
 					builders);
 				
@@ -4656,17 +4740,17 @@ namespace NativeScript
 			// C++ element proxy type declaration
 			int indent = AppendNamespaceBeginning(
 				"Plugin",
-				builders.CppTypeDeclarations);
-			AppendIndent(indent, builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append("template<> struct ");
+				builders.CppTemplateSpecializationDeclarations);
+			AppendIndent(indent, builders.CppTemplateSpecializationDeclarations);
+			builders.CppTemplateSpecializationDeclarations.Append("template<> struct ");
 			AppendTypeNameWithoutGenericSuffix(
 				cppElementProxyTypeName,
-				builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append(";\n");
+				builders.CppTemplateSpecializationDeclarations);
+			builders.CppTemplateSpecializationDeclarations.Append(";\n");
 			AppendNamespaceEnding(
 				indent,
-				builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append('\n');
+				builders.CppTemplateSpecializationDeclarations);
+			builders.CppTemplateSpecializationDeclarations.Append('\n');
 			
 			// C++ element proxy type definition
 			AppendNamespaceBeginning(
@@ -4903,6 +4987,7 @@ namespace NativeScript
 			string cppArrayTypeName,
 			int rank,
 			string csharpTypeName,
+			Type[] cppCtorInitTypes,
 			int indent,
 			StringBuilders builders)
 		{
@@ -5044,15 +5129,19 @@ namespace NativeScript
 				parameters,
 				indent,
 				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(" : ");
-			AppendCppTypeName(
-				"System",
-				"Array",
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("(nullptr)\n");
+			string separator = ": ";
+			foreach (Type interfaceType in cppCtorInitTypes)
+			{
+				AppendIndent(
+					indent + 1,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(separator);
+				AppendCppTypeName(
+					interfaceType,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("(nullptr)\n");
+				separator = ", ";
+			}
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
@@ -5702,7 +5791,7 @@ namespace NativeScript
 						cppTypeName,
 						type.Namespace,
 						genericArgTypes.Length,
-						builders.CppTypeDeclarations);
+						builders.CppTemplateDeclarations);
 				}
 				
 				foreach (JsonGenericParams jsonGenericParams
@@ -5813,7 +5902,9 @@ namespace NativeScript
 				cppTypeName,
 				false,
 				typeParams,
-				builders.CppTypeDeclarations);
+				typeParams != null ?
+					builders.CppTemplateSpecializationDeclarations :
+					builders.CppTypeDeclarations);
 			
 			ParameterInfo[] addRemoveParams = {
 				new ParameterInfo
@@ -5899,6 +5990,7 @@ namespace NativeScript
 				typeParams,
 				"Object",
 				"System",
+				null,
 				null,
 				false,
 				indent,
@@ -6087,6 +6179,7 @@ namespace NativeScript
 				typeof(object),
 				typeParams,
 				null,
+				new Type[0],
 				new ParameterInfo[0],
 				constructorParams,
 				true,
@@ -6101,6 +6194,7 @@ namespace NativeScript
 				"Object",
 				"System",
 				null,
+				new Type[0],
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6112,6 +6206,7 @@ namespace NativeScript
 				"Object",
 				"System",
 				null,
+				new Type[0],
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6122,6 +6217,7 @@ namespace NativeScript
 				"Object",
 				"System",
 				null,
+				new Type[0],
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6133,6 +6229,7 @@ namespace NativeScript
 				"Object",
 				"System",
 				null,
+				new Type[0],
 				true,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6550,13 +6647,35 @@ namespace NativeScript
 				constructorParams[i] = fullParams;
 			}
 			
+			// Determine what the C++ class should derive from
+			Type cppBaseClass;
+			Type[] cppBaseClassTypeParams;
+			Type[] cppCtorInitTypes = GetCppCtorInitTypes(
+				type,
+				true);
+			Type[] cppInterfaceTypes;
+			if (type.IsInterface)
+			{
+				cppBaseClass = typeof(object);
+				cppBaseClassTypeParams = null;
+				cppInterfaceTypes = new Type[] { type };
+			}
+			else
+			{
+				cppBaseClass = type;
+				cppBaseClassTypeParams = typeParams;
+				cppInterfaceTypes = new Type[0];
+			}
+			
 			// C++ type declaration
 			int indent = AppendCppTypeDeclaration(
 				type.Namespace,
 				cppBaseTypeName,
 				false,
 				typeParams,
-				builders.CppTypeDeclarations);
+				typeParams != null ?
+					builders.CppTemplateSpecializationDeclarations :
+					builders.CppTypeDeclarations);
 			
 			ParameterInfo[] releaseParams = {
 				new ParameterInfo
@@ -6590,9 +6709,10 @@ namespace NativeScript
 				type.Namespace,
 				TypeKind.Class,
 				typeParams,
-				type.Name,
-				type.Namespace,
-				typeParams,
+				cppBaseClass.Name,
+				cppBaseClass.Namespace,
+				cppBaseClassTypeParams,
+				cppInterfaceTypes,
 				false,
 				indent,
 				builders.CppTypeDefinitions);
@@ -6707,9 +6827,10 @@ namespace NativeScript
 					type.Namespace,
 					TypeKind.Class,
 					cppBaseTypeName,
-					type,
+					cppBaseClass,
 					typeParams,
 					typeParams,
+					cppCtorInitTypes,
 					cppConstructorParams[i],
 					constructorParams[i],
 					false,
@@ -6722,9 +6843,10 @@ namespace NativeScript
 				bindingTypeName,
 				cppBaseTypeName,
 				typeParams,
-				type.Name,
-				type.Namespace,
-				typeParams,
+				cppBaseClass.Name,
+				cppBaseClass.Namespace,
+				cppBaseClassTypeParams,
+				cppCtorInitTypes,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6733,9 +6855,10 @@ namespace NativeScript
 				bindingTypeName,
 				cppBaseTypeName,
 				typeParams,
-				type.Name,
-				type.Namespace,
-				typeParams,
+				cppBaseClass.Name,
+				cppBaseClass.Namespace,
+				cppBaseClassTypeParams,
+				cppCtorInitTypes,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6743,9 +6866,10 @@ namespace NativeScript
 			AppendCppBaseTypeMoveConstructor(
 				cppBaseTypeName,
 				typeParams,
-				type.Name,
-				type.Namespace,
-				typeParams,
+				cppBaseClass.Name,
+				cppBaseClass.Namespace,
+				cppBaseClassTypeParams,
+				cppCtorInitTypes,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -6754,9 +6878,10 @@ namespace NativeScript
 				bindingTypeName,
 				cppBaseTypeName,
 				typeParams,
-				type.Name,
-				type.Namespace,
-				typeParams,
+				cppBaseClass.Name,
+				cppBaseClass.Namespace,
+				cppBaseClassTypeParams,
+				cppCtorInitTypes,
 				false,
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
@@ -8813,6 +8938,7 @@ namespace NativeScript
 			string baseTypeName,
 			string baseTypeNamespace,
 			Type[] baseTypeParams,
+			Type[] interfaceTypes,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -8832,22 +8958,27 @@ namespace NativeScript
 				output);
 			output.Append(
 				"(Plugin::InternalUse iu, int32_t handle)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				output);
-			output.Append("\t: ");
-			AppendCppTypeName(
-				baseTypeNamespace,
-				baseTypeName,
-				output);
-			AppendCppTypeParameters(
-				baseTypeParams,
-				output);
-			output.Append("(iu, handle)\n");
+			string separator = ": ";
+			foreach (Type interfaceType in interfaceTypes)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(separator);
+				AppendCppTypeName(
+					interfaceType,
+					output);
+				output.Append("(nullptr)\n");
+				separator = ", ";
+			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
 			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append("Handle = handle;\n");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
@@ -8895,6 +9026,7 @@ namespace NativeScript
 			string baseTypeName,
 			string baseTypeNamespace,
 			Type[] baseTypeParams,
+			Type[] interfaceTypes,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -8920,22 +9052,28 @@ namespace NativeScript
 				typeParams,
 				output);
 			output.Append("&& other)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				output);
-			output.Append("\t: ");
-			AppendCppTypeName(
-				baseTypeNamespace,
-				baseTypeName,
-				output);
-			AppendCppTypeParameters(
-				baseTypeParams,
-				output);
-			output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
+			string separator = ": ";
+			foreach (Type interfaceType in interfaceTypes)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(separator);
+				AppendCppTypeName(
+					interfaceType,
+					output);
+				output.Append("(nullptr)\n");
+				separator = ", ";
+			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
 			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append(
+				"Handle = other.Handle;\n");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
@@ -8981,6 +9119,7 @@ namespace NativeScript
 			string baseTypeName,
 			string baseTypeNamespace,
 			Type[] baseTypeParams,
+			Type[] interfaceTypes,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -9006,22 +9145,28 @@ namespace NativeScript
 				typeParams,
 				output);
 			output.Append("& other)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				output);
-			output.Append("\t: ");
-			AppendCppTypeName(
-				baseTypeNamespace,
-				baseTypeName,
-				output);
-			AppendCppTypeParameters(
-				baseTypeParams,
-				output);
-			output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
+			string separator = ": ";
+			foreach (Type interfaceType in interfaceTypes)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(separator);
+				AppendCppTypeName(
+					interfaceType,
+					output);
+				output.Append("(nullptr)\n");
+				separator = ", ";
+			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
 			output.Append("{\n");
+			AppendIndent(
+				cppMethodDefinitionsIndent + 1,
+				output);
+			output.Append(
+				"Handle = other.Handle;\n");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
@@ -9070,6 +9215,7 @@ namespace NativeScript
 			string baseTypeName,
 			string baseTypeNamespace,
 			Type[] baseTypeParams,
+			Type[] interfaceTypes,
 			bool typeIsDelegate,
 			int cppMethodDefinitionsIndent,
 			StringBuilder output)
@@ -9088,18 +9234,19 @@ namespace NativeScript
 				cppTypeName,
 				output);
 			output.Append("(decltype(nullptr) n)\n");
-			AppendIndent(
-				cppMethodDefinitionsIndent,
-				output);
-			output.Append("\t: ");
-			AppendCppTypeName(
-				baseTypeNamespace,
-				baseTypeName,
-				output);
-			AppendCppTypeParameters(
-				baseTypeParams,
-				output);
-			output.Append("(Plugin::InternalUse::Only, 0)\n");
+			string separator = ": ";
+			foreach (Type interfaceType in interfaceTypes)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(separator);
+				AppendCppTypeName(
+					interfaceType,
+					output);
+				output.Append("(nullptr)\n");
+				separator = ", ";
+			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
@@ -9136,6 +9283,7 @@ namespace NativeScript
 			Type baseType,
 			Type[] typeParams,
 			Type[] baseTypeParams,
+			Type[] interfaceTypes,
 			ParameterInfo[] cppParameters,
 			ParameterInfo[] parameters,
 			bool typeIsDelegate,
@@ -9152,14 +9300,19 @@ namespace NativeScript
 				cppParameters,
 				cppMethodDefinitionsIndent,
 				output);
-			AppendIndent(
-				cppMethodDefinitionsIndent + 1,
-				output);
-			output.Append(" : ");
-			AppendCppTypeName(
-				baseType ?? typeof(object),
-				output);
-			output.Append("(nullptr)\n");
+			string separator = ": ";
+			foreach (Type interfaceType in interfaceTypes)
+			{
+				AppendIndent(
+					cppMethodDefinitionsIndent + 1,
+					output);
+				output.Append(separator);
+				AppendCppTypeName(
+					interfaceType,
+					output);
+				output.Append("(nullptr)\n");
+				separator = ", ";
+			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
@@ -9732,7 +9885,23 @@ namespace NativeScript
 				AppendIndent(
 					throwerIndent + 2,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(": ");
+				builders.CppMethodDefinitions.Append(": System::Runtime::InteropServices::_Exception(nullptr)\n");
+				AppendIndent(
+					throwerIndent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(", System::Runtime::Serialization::ISerializable(nullptr)\n");
+				AppendIndent(
+					throwerIndent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(", System::Exception(nullptr)\n");
+				AppendIndent(
+					throwerIndent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(", System::SystemException(nullptr)\n");
+				AppendIndent(
+					throwerIndent + 2,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(", ");
 				AppendCppTypeName(
 					exceptionType,
 					builders.CppMethodDefinitions);
@@ -10331,6 +10500,7 @@ namespace NativeScript
 			string baseTypeName,
 			string baseTypeNamespace,
 			Type[] baseTypeTypeParams,
+			Type[] interfaceTypes,
 			bool isStatic,
 			int indent,
 			StringBuilder output)
@@ -10359,22 +10529,46 @@ namespace NativeScript
 					typeName,
 					output);
 				AppendCppTypeParameters(typeParams, output);
-				if (baseTypeName != null)
+				switch (typeKind)
 				{
-					switch (typeKind)
-					{
-						case TypeKind.Class:
-						case TypeKind.ManagedStruct:
-							output.Append(" : ");
+					case TypeKind.Class:
+					case TypeKind.ManagedStruct:
+						// Only add the base type if it's not System.Object or
+						// there are no interfaces (since they always extend it)
+						string separator = " : virtual ";
+						if (
+							(baseTypeName != null &&
+								(baseTypeNamespace != "System" ||
+									baseTypeName != "Object")) ||
+							(interfaceTypes == null ||
+								interfaceTypes.Length == 0))
+						{
+							output.Append(separator);
+							separator = ", virtual ";
 							AppendCppTypeName(
-								baseTypeNamespace,
-								baseTypeName,
+								baseTypeNamespace ?? "System",
+								baseTypeName ?? "Object",
 								output);
 							AppendCppTypeParameters(
 								baseTypeTypeParams,
 								output);
-							break;
-					}
+						}
+						if (interfaceTypes != null)
+						{
+							foreach (Type interfaceType in interfaceTypes)
+							{
+								output.Append(separator);
+								separator = ", virtual ";
+								AppendCppTypeName(
+									interfaceType.Namespace,
+									interfaceType.Name,
+									output);
+								AppendCppTypeParameters(
+									interfaceType.GetGenericArguments(),
+									output);
+							}
+						}
+						break;
 				}
 			}
 			output.Append('\n');
@@ -10552,6 +10746,7 @@ namespace NativeScript
 			string baseTypeName,
 			string baseTypeNamespace,
 			Type[] baseTypeTypeParams,
+			Type[] interfaceTypes,
 			bool isStatic,
 			Action<int, string> extraDefault,
 			Action<int, string> extraCopy,
@@ -10584,12 +10779,19 @@ namespace NativeScript
 					enclosingTypeName,
 					output);
 				output.Append("(decltype(nullptr) n)\n");
-				AppendIndent(indent, output);
-				output.Append("\t: ");
-				AppendTypeNameWithoutGenericSuffix(
-					enclosingTypeName,
-					output);
-				output.Append("(Plugin::InternalUse::Only, 0)\n");
+				string separator = ": ";
+				foreach (Type interfaceType in interfaceTypes)
+				{
+					AppendIndent(
+						indent + 1,
+						output);
+					output.Append(separator);
+					AppendCppTypeName(
+						interfaceType,
+						output);
+					output.Append("(nullptr)\n");
+					separator = ", ";
+				}
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				extraDefault(indent + 1, "this->");
@@ -10611,18 +10813,23 @@ namespace NativeScript
 					enclosingTypeName,
 					output);
 				output.Append("(Plugin::InternalUse iu, int32_t handle)\n");
-				AppendIndent(indent, output);
-				output.Append("\t: ");
-				AppendCppTypeName(
-					baseTypeNamespace,
-					baseTypeName,
-					output);
-				AppendCppTypeParameters(
-					baseTypeTypeParams,
-					output);
-				output.Append("(iu, handle)\n");
+				separator = ": ";
+				foreach (Type interfaceType in interfaceTypes)
+				{
+					AppendIndent(
+						indent + 1,
+						output);
+					output.Append(separator);
+					AppendCppTypeName(
+						interfaceType,
+						output);
+					output.Append("(nullptr)\n");
+					separator = ", ";
+				}
 				AppendIndent(indent, output);
 				output.Append("{\n");
+				AppendIndent(indent + 1, output);
+				output.Append("Handle = handle;\n");
 				AppendIndent(indent + 1, output);
 				output.Append("if (handle)\n");
 				AppendIndent(indent + 1, output);
@@ -10664,8 +10871,8 @@ namespace NativeScript
 					enclosingTypeParams,
 					output);
 				output.Append("& other)\n");
-				AppendIndent(indent, output);
-				output.Append("\t: ");
+				AppendIndent(indent + 1, output);
+				output.Append(": ");
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
 					output);
@@ -12424,6 +12631,8 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CsharpGetDelegateCalls);
 			RemoveTrailingChars(builders.CppFunctionPointers);
 			RemoveTrailingChars(builders.CppTypeDeclarations);
+			RemoveTrailingChars(builders.CppTemplateDeclarations);
+			RemoveTrailingChars(builders.CppTemplateSpecializationDeclarations);
 			RemoveTrailingChars(builders.CppTypeDefinitions);
 			RemoveTrailingChars(builders.CppMethodDefinitions);
 			RemoveTrailingChars(builders.CppInitParams);
@@ -12527,6 +12736,16 @@ namespace NativeScript
 				"/*BEGIN TYPE DECLARATIONS*/\n",
 				"\n/*END TYPE DECLARATIONS*/",
 				builders.CppTypeDeclarations.ToString());
+			cppHeaderContents = InjectIntoString(
+				cppHeaderContents,
+				"/*BEGIN TEMPLATE DECLARATIONS*/\n",
+				"\n/*END TEMPLATE DECLARATIONS*/",
+				builders.CppTemplateDeclarations.ToString());
+			cppHeaderContents = InjectIntoString(
+				cppHeaderContents,
+				"/*BEGIN TEMPLATE SPECIALIZATION DECLARATIONS*/\n",
+				"\n/*END TEMPLATE SPECIALIZATION DECLARATIONS*/",
+				builders.CppTemplateSpecializationDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
 				"/*BEGIN TYPE DEFINITIONS*/\n",

@@ -4,25 +4,45 @@
 	],
 	"Types": [
 		{
-			"Name": "System.Diagnostics.Stopwatch",
+			"Name": " System.IDisposable"
+		},
+		{
+			"Name": "UnityEngine.Vector3",
 			"Constructors": [
 				{
-					"ParamTypes": []
+					"ParamTypes": [
+						"System.Single",
+						"System.Single",
+						"System.Single"
+					]
 				}
 			],
 			"Methods": [
 				{
-					"Name": "Start",
-					"ParamTypes": []
+					"Name": "Set",
+					"ParamTypes": [
+						"System.Single",
+						"System.Single",
+						"System.Single"
+					]
 				},
 				{
-					"Name": "Reset",
-					"ParamTypes": []
+					"Name": "x+y",
+					"ParamTypes": [
+						"UnityEngine.Vector3",
+						"UnityEngine.Vector3"
+					]
+				},
+				{
+					"Name": "-x",
+					"ParamTypes": [
+						"UnityEngine.Vector3"
+					]
 				}
 			],
 			"Properties": [
 				{
-					"Name": "ElapsedMilliseconds",
+					"Name": "magnitude",
 					"Get": {}
 				}
 			]
@@ -49,6 +69,266 @@
 					"ParamTypes": [
 						"UnityEngine.Object"
 					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Component",
+			"Properties": [
+				{
+					"Name": "transform",
+					"Get": {}
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Transform",
+			"Properties": [
+				{
+					"Name": "position",
+					"Get": {},
+					"Set": {
+						"Exceptions": [
+							"System.NullReferenceException"
+						]
+					}
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Color"
+		},
+		{
+			"Name": "UnityEngine.GradientColorKey"
+		},
+		{
+			"Name": "UnityEngine.Resolution",
+			"Properties": [
+				{
+					"Name": "width",
+					"Get": {},
+					"Set": {}
+				},
+				{
+					"Name": "height",
+					"Get": {},
+					"Set": {}
+				},
+				{
+					"Name": "refreshRate",
+					"Get": {},
+					"Set": {}
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.RaycastHit",
+			"MaxSimultaneous": 1000,
+			"Properties": [
+				{
+					"Name": "point",
+					"Get": {}
+				},
+				{
+					"Name": "transform",
+					"Get": {}
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.IEnumerable`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.ICollection`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.IList`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Runtime.Serialization.ISerializable"
+		},
+		{
+			"Name": "System.Runtime.InteropServices._Exception"
+		},
+		{
+			"Name": "System.IAppDomainSetup"
+		},
+		{
+			"Name": "System.Collections.IComparer"
+		},
+		{
+			"Name": "System.Collections.IEqualityComparer"
+		},
+		{
+			"Name": "System.Collections.Generic.IEqualityComparer`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Playables.PlayableGraph"
+		},
+		{
+			"Name": "UnityEngine.Playables.IPlayable"
+		},
+		{
+			"Name": "System.IEquatable`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"UnityEngine.Animations.AnimationMixerPlayable"
+					]
+				}
+			]
+		},
+		{
+			"Name": "UnityEngine.Animations.AnimationMixerPlayable",
+			"Methods": [
+				{
+					"Name": "Create",
+					"ParamTypes": [
+						"UnityEngine.Playables.PlayableGraph",
+						"System.Int32",
+						"System.Boolean"
+					]
+				}
+			]
+		},
+		{
+			"Name": " System.Runtime.CompilerServices.IStrongBox"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.IEventHandler"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.IStyle"
+		},
+		{
+			"Name": "System.Diagnostics.Stopwatch",
+			"Constructors": [
+				{
+					"ParamTypes": []
+				}
+			],
+			"Methods": [
+				{
+					"Name": "Start",
+					"ParamTypes": []
+				},
+				{
+					"Name": "Reset",
+					"ParamTypes": []
+				}
+			],
+			"Properties": [
+				{
+					"Name": "ElapsedMilliseconds",
+					"Get": {}
 				}
 			]
 		},
@@ -95,29 +375,6 @@
 				{
 					"Name": "transform",
 					"Get": {
-						"Exceptions": [
-							"System.NullReferenceException"
-						]
-					}
-				}
-			]
-		},
-		{
-			"Name": "UnityEngine.Component",
-			"Properties": [
-				{
-					"Name": "transform",
-					"Get": {}
-				}
-			]
-		},
-		{
-			"Name": "UnityEngine.Transform",
-			"Properties": [
-				{
-					"Name": "position",
-					"Get": {},
-					"Set": {
 						"Exceptions": [
 							"System.NullReferenceException"
 						]
@@ -210,47 +467,6 @@
 			]
 		},
 		{
-			"Name": "UnityEngine.Vector3",
-			"Constructors": [
-				{
-					"ParamTypes": [
-						"System.Single",
-						"System.Single",
-						"System.Single"
-					]
-				}
-			],
-			"Methods": [
-				{
-					"Name": "Set",
-					"ParamTypes": [
-						"System.Single",
-						"System.Single",
-						"System.Single"
-					]
-				},
-				{
-					"Name": "x+y",
-					"ParamTypes": [
-						"UnityEngine.Vector3",
-						"UnityEngine.Vector3"
-					]
-				},
-				{
-					"Name": "-x",
-					"ParamTypes": [
-						"UnityEngine.Vector3"
-					]
-				}
-			],
-			"Properties": [
-				{
-					"Name": "magnitude",
-					"Get": {}
-				}
-			]
-		},
-		{
 			"Name": "UnityEngine.Quaternion"
 		},
 		{
@@ -271,20 +487,6 @@
 							"System.Single"
 						]
 					}
-				}
-			]
-		},
-		{
-			"Name": "UnityEngine.RaycastHit",
-			"MaxSimultaneous": 1000,
-			"Properties": [
-				{
-					"Name": "point",
-					"Get": {}
-				},
-				{
-					"Name": "transform",
-					"Get": {}
 				}
 			]
 		},
@@ -445,26 +647,6 @@
 			"Name": "System.NullReferenceException"
 		},
 		{
-			"Name": "UnityEngine.Resolution",
-			"Properties": [
-				{
-					"Name": "width",
-					"Get": {},
-					"Set": {}
-				},
-				{
-					"Name": "height",
-					"Get": {},
-					"Set": {}
-				},
-				{
-					"Name": "refreshRate",
-					"Get": {},
-					"Set": {}
-				}
-			]
-		},
-		{
 			"Name": "UnityEngine.Screen",
 			"Properties": [
 				{
@@ -501,12 +683,6 @@
 					]
 				}
 			]
-		},
-		{
-			"Name": "UnityEngine.Color"
-		},
-		{
-			"Name": "UnityEngine.GradientColorKey"
 		},
 		{
 			"Name": "UnityEngine.Gradient",
@@ -650,18 +826,6 @@
 			]
 		},
 		{
-			"Name": "System.Collections.ICollection",
-			"BaseTypes": [
-				{}
-			]
-		},
-		{
-			"Name": "System.Collections.IList",
-			"BaseTypes": [
-				{}
-			]
-		},
-		{
 			"Name": "System.Collections.Queue",
 			"Properties": [
 				{
@@ -729,22 +893,6 @@
 		},
 		{
 			"Name": "UnityEngine.Playables.PlayableHandle"
-		},
-		{
-			"Name": "UnityEngine.Playables.PlayableGraph"
-		},
-		{
-			"Name": "UnityEngine.Animations.AnimationMixerPlayable",
-			"Methods": [
-				{
-					"Name": "Create",
-					"ParamTypes": [
-						"UnityEngine.Playables.PlayableGraph",
-						"System.Int32",
-						"System.Boolean"
-					]
-				}
-			]
 		},
 		{
 			"Name": "UnityEngine.Experimental.UIElements.CallbackEventHandler"

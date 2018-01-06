@@ -207,23 +207,198 @@ namespace System
 	using Double = double;
 }
 
+/*BEGIN TEMPLATE DECLARATIONS*/
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct IEnumerable;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct ICollection;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct IList;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct IEqualityComparer;
+		}
+	}
+}
+
+namespace System
+{
+	template<typename TT0> struct IEquatable;
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0, typename TT1> struct KeyValuePair;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct List;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct LinkedListNode;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace CompilerServices
+		{
+			template<typename TT0> struct StrongBox;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			template<typename TT0> struct Collection;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			template<typename TT0, typename TT1> struct KeyedCollection;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct IComparer;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct BaseIComparer;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<typename TT0> struct BaseIComparer;
+		}
+	}
+}
+
+namespace System
+{
+	template<typename TT0> struct Action1;
+}
+
+namespace System
+{
+	template<typename TT0, typename TT1> struct Action2;
+}
+
+namespace System
+{
+	template<typename TT0, typename TT1, typename TT2> struct Func3;
+}
+
+namespace System
+{
+	template<typename TT0, typename TT1, typename TT2> struct Func3;
+}
+
+namespace UnityEngine
+{
+	namespace Events
+	{
+		template<typename TT0, typename TT1> struct UnityAction2;
+	}
+}
+/*END TEMPLATE DECLARATIONS*/
+
 /*BEGIN TYPE DECLARATIONS*/
 namespace System
 {
-	namespace Diagnostics
-	{
-		struct Stopwatch;
-	}
+	struct IDisposable;
+}
+
+namespace UnityEngine
+{
+	struct Vector3;
 }
 
 namespace UnityEngine
 {
 	struct Object;
-}
-
-namespace UnityEngine
-{
-	struct GameObject;
 }
 
 namespace UnityEngine
@@ -234,6 +409,139 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	struct Transform;
+}
+
+namespace UnityEngine
+{
+	struct Color;
+}
+
+namespace UnityEngine
+{
+	struct GradientColorKey;
+}
+
+namespace UnityEngine
+{
+	struct Resolution;
+}
+
+namespace UnityEngine
+{
+	struct RaycastHit;
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace Serialization
+		{
+			struct ISerializable;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace InteropServices
+		{
+			struct _Exception;
+		}
+	}
+}
+
+namespace System
+{
+	struct IAppDomainSetup;
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct IComparer;
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct IEqualityComparer;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct PlayableGraph;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct IPlayable;
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Animations
+	{
+		struct AnimationMixerPlayable;
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace CompilerServices
+		{
+			struct IStrongBox;
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct IEventHandler;
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct IStyle;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Diagnostics
+	{
+		struct Stopwatch;
+	}
+}
+
+namespace UnityEngine
+{
+	struct GameObject;
 }
 
 namespace UnityEngine
@@ -281,11 +589,6 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Vector3;
-}
-
-namespace UnityEngine
-{
 	struct Quaternion;
 }
 
@@ -296,160 +599,12 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct RaycastHit;
-}
-
-namespace UnityEngine
-{
 	enum struct QueryTriggerInteraction : int32_t
 	{
 		UseGlobal = 0,
 		Ignore = 1,
 		Collide = 2
 	};
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<typename TT0, typename TT1> struct KeyValuePair;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct KeyValuePair<System::String, double>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<typename TT0> struct List;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct List<System::String>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct List<int32_t>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<typename TT0> struct LinkedListNode;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct LinkedListNode<System::String>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Runtime
-	{
-		namespace CompilerServices
-		{
-			template<typename TT0> struct StrongBox;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Runtime
-	{
-		namespace CompilerServices
-		{
-			template<> struct StrongBox<System::String>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			template<typename TT0> struct Collection;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			template<> struct Collection<int32_t>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			template<typename TT0, typename TT1> struct KeyedCollection;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			template<> struct KeyedCollection<System::String, int32_t>;
-		}
-	}
 }
 
 namespace System
@@ -469,11 +624,6 @@ namespace System
 
 namespace UnityEngine
 {
-	struct Resolution;
-}
-
-namespace UnityEngine
-{
 	struct Screen;
 }
 
@@ -485,16 +635,6 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	struct Physics;
-}
-
-namespace UnityEngine
-{
-	struct Color;
-}
-
-namespace UnityEngine
-{
-	struct GradientColorKey;
 }
 
 namespace UnityEngine
@@ -654,121 +794,12 @@ namespace System
 
 namespace System
 {
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<typename TT0> struct IComparer;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct IComparer<int32_t>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct IComparer<System::String>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<typename TT0> struct BaseIComparer;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<typename TT0> struct BaseIComparer;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct BaseIComparer<int32_t>;
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			template<> struct BaseIComparer<System::String>;
-		}
-	}
-}
-
-namespace System
-{
 	struct StringComparer;
 }
 
 namespace System
 {
 	struct BaseStringComparer;
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct ICollection;
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct BaseICollection;
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct IList;
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct BaseIList;
-	}
 }
 
 namespace System
@@ -830,22 +861,6 @@ namespace UnityEngine
 	namespace Playables
 	{
 		struct PlayableHandle;
-	}
-}
-
-namespace UnityEngine
-{
-	namespace Playables
-	{
-		struct PlayableGraph;
-	}
-}
-
-namespace UnityEngine
-{
-	namespace Animations
-	{
-		struct AnimationMixerPlayable;
 	}
 }
 
@@ -951,6 +966,416 @@ namespace MyGame
 	}
 }
 
+namespace System
+{
+	struct Action;
+}
+
+namespace System
+{
+	struct AppDomainInitializer;
+}
+
+namespace UnityEngine
+{
+	namespace Events
+	{
+		struct UnityAction;
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentEventHandler;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangingEventHandler;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentChangedEventHandler;
+		}
+	}
+}
+
+namespace System
+{
+	namespace ComponentModel
+	{
+		namespace Design
+		{
+			struct ComponentRenameEventHandler;
+		}
+	}
+}
+/*END TYPE DECLARATIONS*/
+
+/*BEGIN TEMPLATE SPECIALIZATION DECLARATIONS*/
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<float>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<UnityEngine::RaycastHit>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<UnityEngine::GradientColorKey>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<UnityEngine::Resolution>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<float>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<UnityEngine::RaycastHit>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<UnityEngine::GradientColorKey>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<UnityEngine::Resolution>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<float>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<UnityEngine::RaycastHit>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<UnityEngine::GradientColorKey>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<UnityEngine::Resolution>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEqualityComparer<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEqualityComparer<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	template<> struct IEquatable<UnityEngine::Animations::AnimationMixerPlayable>;
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct KeyValuePair<System::String, double>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct List<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct List<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct LinkedListNode<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace CompilerServices
+		{
+			template<> struct StrongBox<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			template<> struct Collection<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			template<> struct KeyedCollection<System::String, int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IComparer<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IComparer<System::String>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct BaseIComparer<int32_t>;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct BaseIComparer<System::String>;
+		}
+	}
+}
+
 namespace Plugin
 {
 	template<> struct ArrayElementProxy1_1<int32_t>;
@@ -1048,37 +1473,12 @@ namespace System
 
 namespace System
 {
-	struct Action;
-}
-
-namespace System
-{
-	template<typename TT0> struct Action1;
-}
-
-namespace System
-{
 	template<> struct Action1<float>;
 }
 
 namespace System
 {
-	template<typename TT0, typename TT1> struct Action2;
-}
-
-namespace System
-{
 	template<> struct Action2<float, float>;
-}
-
-namespace System
-{
-	template<typename TT0, typename TT1, typename TT2> struct Func3;
-}
-
-namespace System
-{
-	template<typename TT0, typename TT1, typename TT2> struct Func3;
 }
 
 namespace System
@@ -1091,27 +1491,6 @@ namespace System
 	template<> struct Func3<int16_t, int32_t, System::String>;
 }
 
-namespace System
-{
-	struct AppDomainInitializer;
-}
-
-namespace UnityEngine
-{
-	namespace Events
-	{
-		struct UnityAction;
-	}
-}
-
-namespace UnityEngine
-{
-	namespace Events
-	{
-		template<typename TT0, typename TT1> struct UnityAction2;
-	}
-}
-
 namespace UnityEngine
 {
 	namespace Events
@@ -1119,51 +1498,7 @@ namespace UnityEngine
 		template<> struct UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>;
 	}
 }
-
-namespace System
-{
-	namespace ComponentModel
-	{
-		namespace Design
-		{
-			struct ComponentEventHandler;
-		}
-	}
-}
-
-namespace System
-{
-	namespace ComponentModel
-	{
-		namespace Design
-		{
-			struct ComponentChangingEventHandler;
-		}
-	}
-}
-
-namespace System
-{
-	namespace ComponentModel
-	{
-		namespace Design
-		{
-			struct ComponentChangedEventHandler;
-		}
-	}
-}
-
-namespace System
-{
-	namespace ComponentModel
-	{
-		namespace Design
-		{
-			struct ComponentRenameEventHandler;
-		}
-	}
-}
-/*END TYPE DECLARATIONS*/
+/*END TEMPLATE SPECIALIZATION DECLARATIONS*/
 
 ////////////////////////////////////////////////////////////////
 // C# type definitions
@@ -1174,6 +1509,7 @@ namespace System
 	struct Object
 	{
 		int32_t Handle;
+		Object();
 		Object(Plugin::InternalUse iu, int32_t handle);
 		Object(decltype(nullptr) n);
 		virtual ~Object() = default;
@@ -1184,24 +1520,28 @@ namespace System
 		/*BEGIN BOXING METHOD DECLARATIONS*/
 		Object(UnityEngine::Vector3& val);
 		explicit operator UnityEngine::Vector3();
-		Object(UnityEngine::Quaternion& val);
-		explicit operator UnityEngine::Quaternion();
-		Object(UnityEngine::Matrix4x4& val);
-		explicit operator UnityEngine::Matrix4x4();
-		Object(UnityEngine::RaycastHit& val);
-		explicit operator UnityEngine::RaycastHit();
-		Object(UnityEngine::QueryTriggerInteraction val);
-		explicit operator UnityEngine::QueryTriggerInteraction();
-		Object(System::Collections::Generic::KeyValuePair<System::String, double>& val);
-		explicit operator System::Collections::Generic::KeyValuePair<System::String, double>();
-		Object(UnityEngine::Resolution& val);
-		explicit operator UnityEngine::Resolution();
-		Object(UnityEngine::Ray& val);
-		explicit operator UnityEngine::Ray();
 		Object(UnityEngine::Color& val);
 		explicit operator UnityEngine::Color();
 		Object(UnityEngine::GradientColorKey& val);
 		explicit operator UnityEngine::GradientColorKey();
+		Object(UnityEngine::Resolution& val);
+		explicit operator UnityEngine::Resolution();
+		Object(UnityEngine::RaycastHit& val);
+		explicit operator UnityEngine::RaycastHit();
+		Object(UnityEngine::Playables::PlayableGraph& val);
+		explicit operator UnityEngine::Playables::PlayableGraph();
+		Object(UnityEngine::Animations::AnimationMixerPlayable& val);
+		explicit operator UnityEngine::Animations::AnimationMixerPlayable();
+		Object(UnityEngine::Quaternion& val);
+		explicit operator UnityEngine::Quaternion();
+		Object(UnityEngine::Matrix4x4& val);
+		explicit operator UnityEngine::Matrix4x4();
+		Object(UnityEngine::QueryTriggerInteraction val);
+		explicit operator UnityEngine::QueryTriggerInteraction();
+		Object(System::Collections::Generic::KeyValuePair<System::String, double>& val);
+		explicit operator System::Collections::Generic::KeyValuePair<System::String, double>();
+		Object(UnityEngine::Ray& val);
+		explicit operator UnityEngine::Ray();
 		Object(UnityEngine::SceneManagement::Scene& val);
 		explicit operator UnityEngine::SceneManagement::Scene();
 		Object(UnityEngine::SceneManagement::LoadSceneMode val);
@@ -1212,10 +1552,6 @@ namespace System
 		explicit operator System::IO::FileMode();
 		Object(UnityEngine::Playables::PlayableHandle& val);
 		explicit operator UnityEngine::Playables::PlayableHandle();
-		Object(UnityEngine::Playables::PlayableGraph& val);
-		explicit operator UnityEngine::Playables::PlayableGraph();
-		Object(UnityEngine::Animations::AnimationMixerPlayable& val);
-		explicit operator UnityEngine::Animations::AnimationMixerPlayable();
 		Object(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val);
 		explicit operator UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy();
 		Object(UnityEngine::XR::WSA::Input::InteractionSourceNode val);
@@ -1249,14 +1585,13 @@ namespace System
 		/*END BOXING METHOD DECLARATIONS*/
 	};
 	
-	struct ValueType
+	struct ValueType : virtual Object
 	{
-		int32_t Handle;
 		ValueType(Plugin::InternalUse iu, int32_t handle);
 		ValueType(decltype(nullptr) n);
 	};
 	
-	struct String : Object
+	struct String : virtual Object
 	{
 		String(Plugin::InternalUse iu, int32_t handle);
 		String(decltype(nullptr) n);
@@ -1269,7 +1604,34 @@ namespace System
 		String(const char* chars);
 	};
 	
-	struct Array : Object
+	struct ICloneable : virtual Object
+	{
+		ICloneable(Plugin::InternalUse iu, int32_t handle);
+		ICloneable(decltype(nullptr) n);
+	};
+	
+	namespace Collections
+	{
+		struct IEnumerable : virtual Object
+		{
+			IEnumerable(Plugin::InternalUse iu, int32_t handle);
+			IEnumerable(decltype(nullptr) n);
+		};
+		
+		struct ICollection : virtual IEnumerable
+		{
+			ICollection(Plugin::InternalUse iu, int32_t handle);
+			ICollection(decltype(nullptr) n);
+		};
+		
+		struct IList : virtual ICollection, virtual IEnumerable
+		{
+			IList(Plugin::InternalUse iu, int32_t handle);
+			IList(decltype(nullptr) n);
+		};
+	}
+	
+	struct Array : virtual ICloneable, virtual Collections::IList
 	{
 		Array(Plugin::InternalUse iu, int32_t handle);
 		Array(decltype(nullptr) n);
@@ -1290,9 +1652,875 @@ namespace Plugin
 /*BEGIN TYPE DEFINITIONS*/
 namespace System
 {
+	struct IDisposable : virtual System::Object
+	{
+		IDisposable(decltype(nullptr) n);
+		IDisposable(Plugin::InternalUse iu, int32_t handle);
+		IDisposable(const IDisposable& other);
+		IDisposable(IDisposable&& other);
+		virtual ~IDisposable();
+		IDisposable& operator=(const IDisposable& other);
+		IDisposable& operator=(decltype(nullptr) other);
+		IDisposable& operator=(IDisposable&& other);
+		bool operator==(const IDisposable& other) const;
+		bool operator!=(const IDisposable& other) const;
+	};
+}
+
+namespace UnityEngine
+{
+	struct Vector3
+	{
+		Vector3();
+		Vector3(float x, float y, float z);
+		float GetMagnitude();
+		float x;
+		float y;
+		float z;
+		void Set(float newX, float newY, float newZ);
+		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
+		UnityEngine::Vector3 operator-();
+	};
+}
+
+namespace UnityEngine
+{
+	struct Object : virtual System::Object
+	{
+		Object(decltype(nullptr) n);
+		Object(Plugin::InternalUse iu, int32_t handle);
+		Object(const Object& other);
+		Object(Object&& other);
+		virtual ~Object();
+		Object& operator=(const Object& other);
+		Object& operator=(decltype(nullptr) other);
+		Object& operator=(Object&& other);
+		bool operator==(const Object& other) const;
+		bool operator!=(const Object& other) const;
+		System::String GetName();
+		void SetName(System::String& value);
+		System::Boolean operator==(UnityEngine::Object& x);
+		operator System::Boolean();
+	};
+}
+
+namespace UnityEngine
+{
+	struct Component : virtual UnityEngine::Object
+	{
+		Component(decltype(nullptr) n);
+		Component(Plugin::InternalUse iu, int32_t handle);
+		Component(const Component& other);
+		Component(Component&& other);
+		virtual ~Component();
+		Component& operator=(const Component& other);
+		Component& operator=(decltype(nullptr) other);
+		Component& operator=(Component&& other);
+		bool operator==(const Component& other) const;
+		bool operator!=(const Component& other) const;
+		UnityEngine::Transform GetTransform();
+	};
+}
+
+namespace UnityEngine
+{
+	struct Transform : virtual UnityEngine::Component, virtual System::Collections::IEnumerable
+	{
+		Transform(decltype(nullptr) n);
+		Transform(Plugin::InternalUse iu, int32_t handle);
+		Transform(const Transform& other);
+		Transform(Transform&& other);
+		virtual ~Transform();
+		Transform& operator=(const Transform& other);
+		Transform& operator=(decltype(nullptr) other);
+		Transform& operator=(Transform&& other);
+		bool operator==(const Transform& other) const;
+		bool operator!=(const Transform& other) const;
+		UnityEngine::Vector3 GetPosition();
+		void SetPosition(UnityEngine::Vector3& value);
+	};
+}
+
+namespace UnityEngine
+{
+	struct Color
+	{
+		Color();
+		float r;
+		float g;
+		float b;
+		float a;
+	};
+}
+
+namespace UnityEngine
+{
+	struct GradientColorKey
+	{
+		GradientColorKey();
+		UnityEngine::Color color;
+		float time;
+	};
+}
+
+namespace UnityEngine
+{
+	struct Resolution : virtual System::ValueType
+	{
+		Resolution(decltype(nullptr) n);
+		Resolution(Plugin::InternalUse iu, int32_t handle);
+		Resolution(const Resolution& other);
+		Resolution(Resolution&& other);
+		virtual ~Resolution();
+		Resolution& operator=(const Resolution& other);
+		Resolution& operator=(decltype(nullptr) other);
+		Resolution& operator=(Resolution&& other);
+		bool operator==(const Resolution& other) const;
+		bool operator!=(const Resolution& other) const;
+		int32_t GetWidth();
+		void SetWidth(int32_t value);
+		int32_t GetHeight();
+		void SetHeight(int32_t value);
+		int32_t GetRefreshRate();
+		void SetRefreshRate(int32_t value);
+	};
+}
+
+namespace UnityEngine
+{
+	struct RaycastHit : virtual System::ValueType
+	{
+		RaycastHit(decltype(nullptr) n);
+		RaycastHit(Plugin::InternalUse iu, int32_t handle);
+		RaycastHit(const RaycastHit& other);
+		RaycastHit(RaycastHit&& other);
+		virtual ~RaycastHit();
+		RaycastHit& operator=(const RaycastHit& other);
+		RaycastHit& operator=(decltype(nullptr) other);
+		RaycastHit& operator=(RaycastHit&& other);
+		bool operator==(const RaycastHit& other) const;
+		bool operator!=(const RaycastHit& other) const;
+		UnityEngine::Vector3 GetPoint();
+		void SetPoint(UnityEngine::Vector3& value);
+		UnityEngine::Transform GetTransform();
+	};
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<System::String> : virtual System::Collections::IEnumerable
+			{
+				IEnumerable<System::String>(decltype(nullptr) n);
+				IEnumerable<System::String>(Plugin::InternalUse iu, int32_t handle);
+				IEnumerable<System::String>(const IEnumerable<System::String>& other);
+				IEnumerable<System::String>(IEnumerable<System::String>&& other);
+				virtual ~IEnumerable<System::String>();
+				IEnumerable<System::String>& operator=(const IEnumerable<System::String>& other);
+				IEnumerable<System::String>& operator=(decltype(nullptr) other);
+				IEnumerable<System::String>& operator=(IEnumerable<System::String>&& other);
+				bool operator==(const IEnumerable<System::String>& other) const;
+				bool operator!=(const IEnumerable<System::String>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<int32_t> : virtual System::Collections::IEnumerable
+			{
+				IEnumerable<int32_t>(decltype(nullptr) n);
+				IEnumerable<int32_t>(Plugin::InternalUse iu, int32_t handle);
+				IEnumerable<int32_t>(const IEnumerable<int32_t>& other);
+				IEnumerable<int32_t>(IEnumerable<int32_t>&& other);
+				virtual ~IEnumerable<int32_t>();
+				IEnumerable<int32_t>& operator=(const IEnumerable<int32_t>& other);
+				IEnumerable<int32_t>& operator=(decltype(nullptr) other);
+				IEnumerable<int32_t>& operator=(IEnumerable<int32_t>&& other);
+				bool operator==(const IEnumerable<int32_t>& other) const;
+				bool operator!=(const IEnumerable<int32_t>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<float> : virtual System::Collections::IEnumerable
+			{
+				IEnumerable<float>(decltype(nullptr) n);
+				IEnumerable<float>(Plugin::InternalUse iu, int32_t handle);
+				IEnumerable<float>(const IEnumerable<float>& other);
+				IEnumerable<float>(IEnumerable<float>&& other);
+				virtual ~IEnumerable<float>();
+				IEnumerable<float>& operator=(const IEnumerable<float>& other);
+				IEnumerable<float>& operator=(decltype(nullptr) other);
+				IEnumerable<float>& operator=(IEnumerable<float>&& other);
+				bool operator==(const IEnumerable<float>& other) const;
+				bool operator!=(const IEnumerable<float>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<UnityEngine::RaycastHit> : virtual System::Collections::IEnumerable
+			{
+				IEnumerable<UnityEngine::RaycastHit>(decltype(nullptr) n);
+				IEnumerable<UnityEngine::RaycastHit>(Plugin::InternalUse iu, int32_t handle);
+				IEnumerable<UnityEngine::RaycastHit>(const IEnumerable<UnityEngine::RaycastHit>& other);
+				IEnumerable<UnityEngine::RaycastHit>(IEnumerable<UnityEngine::RaycastHit>&& other);
+				virtual ~IEnumerable<UnityEngine::RaycastHit>();
+				IEnumerable<UnityEngine::RaycastHit>& operator=(const IEnumerable<UnityEngine::RaycastHit>& other);
+				IEnumerable<UnityEngine::RaycastHit>& operator=(decltype(nullptr) other);
+				IEnumerable<UnityEngine::RaycastHit>& operator=(IEnumerable<UnityEngine::RaycastHit>&& other);
+				bool operator==(const IEnumerable<UnityEngine::RaycastHit>& other) const;
+				bool operator!=(const IEnumerable<UnityEngine::RaycastHit>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<UnityEngine::GradientColorKey> : virtual System::Collections::IEnumerable
+			{
+				IEnumerable<UnityEngine::GradientColorKey>(decltype(nullptr) n);
+				IEnumerable<UnityEngine::GradientColorKey>(Plugin::InternalUse iu, int32_t handle);
+				IEnumerable<UnityEngine::GradientColorKey>(const IEnumerable<UnityEngine::GradientColorKey>& other);
+				IEnumerable<UnityEngine::GradientColorKey>(IEnumerable<UnityEngine::GradientColorKey>&& other);
+				virtual ~IEnumerable<UnityEngine::GradientColorKey>();
+				IEnumerable<UnityEngine::GradientColorKey>& operator=(const IEnumerable<UnityEngine::GradientColorKey>& other);
+				IEnumerable<UnityEngine::GradientColorKey>& operator=(decltype(nullptr) other);
+				IEnumerable<UnityEngine::GradientColorKey>& operator=(IEnumerable<UnityEngine::GradientColorKey>&& other);
+				bool operator==(const IEnumerable<UnityEngine::GradientColorKey>& other) const;
+				bool operator!=(const IEnumerable<UnityEngine::GradientColorKey>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEnumerable<UnityEngine::Resolution> : virtual System::Collections::IEnumerable
+			{
+				IEnumerable<UnityEngine::Resolution>(decltype(nullptr) n);
+				IEnumerable<UnityEngine::Resolution>(Plugin::InternalUse iu, int32_t handle);
+				IEnumerable<UnityEngine::Resolution>(const IEnumerable<UnityEngine::Resolution>& other);
+				IEnumerable<UnityEngine::Resolution>(IEnumerable<UnityEngine::Resolution>&& other);
+				virtual ~IEnumerable<UnityEngine::Resolution>();
+				IEnumerable<UnityEngine::Resolution>& operator=(const IEnumerable<UnityEngine::Resolution>& other);
+				IEnumerable<UnityEngine::Resolution>& operator=(decltype(nullptr) other);
+				IEnumerable<UnityEngine::Resolution>& operator=(IEnumerable<UnityEngine::Resolution>&& other);
+				bool operator==(const IEnumerable<UnityEngine::Resolution>& other) const;
+				bool operator!=(const IEnumerable<UnityEngine::Resolution>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<System::String> : virtual System::Collections::Generic::IEnumerable<System::String>
+			{
+				ICollection<System::String>(decltype(nullptr) n);
+				ICollection<System::String>(Plugin::InternalUse iu, int32_t handle);
+				ICollection<System::String>(const ICollection<System::String>& other);
+				ICollection<System::String>(ICollection<System::String>&& other);
+				virtual ~ICollection<System::String>();
+				ICollection<System::String>& operator=(const ICollection<System::String>& other);
+				ICollection<System::String>& operator=(decltype(nullptr) other);
+				ICollection<System::String>& operator=(ICollection<System::String>&& other);
+				bool operator==(const ICollection<System::String>& other) const;
+				bool operator!=(const ICollection<System::String>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<int32_t> : virtual System::Collections::Generic::IEnumerable<int32_t>
+			{
+				ICollection<int32_t>(decltype(nullptr) n);
+				ICollection<int32_t>(Plugin::InternalUse iu, int32_t handle);
+				ICollection<int32_t>(const ICollection<int32_t>& other);
+				ICollection<int32_t>(ICollection<int32_t>&& other);
+				virtual ~ICollection<int32_t>();
+				ICollection<int32_t>& operator=(const ICollection<int32_t>& other);
+				ICollection<int32_t>& operator=(decltype(nullptr) other);
+				ICollection<int32_t>& operator=(ICollection<int32_t>&& other);
+				bool operator==(const ICollection<int32_t>& other) const;
+				bool operator!=(const ICollection<int32_t>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<float> : virtual System::Collections::Generic::IEnumerable<float>
+			{
+				ICollection<float>(decltype(nullptr) n);
+				ICollection<float>(Plugin::InternalUse iu, int32_t handle);
+				ICollection<float>(const ICollection<float>& other);
+				ICollection<float>(ICollection<float>&& other);
+				virtual ~ICollection<float>();
+				ICollection<float>& operator=(const ICollection<float>& other);
+				ICollection<float>& operator=(decltype(nullptr) other);
+				ICollection<float>& operator=(ICollection<float>&& other);
+				bool operator==(const ICollection<float>& other) const;
+				bool operator!=(const ICollection<float>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<UnityEngine::RaycastHit> : virtual System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>
+			{
+				ICollection<UnityEngine::RaycastHit>(decltype(nullptr) n);
+				ICollection<UnityEngine::RaycastHit>(Plugin::InternalUse iu, int32_t handle);
+				ICollection<UnityEngine::RaycastHit>(const ICollection<UnityEngine::RaycastHit>& other);
+				ICollection<UnityEngine::RaycastHit>(ICollection<UnityEngine::RaycastHit>&& other);
+				virtual ~ICollection<UnityEngine::RaycastHit>();
+				ICollection<UnityEngine::RaycastHit>& operator=(const ICollection<UnityEngine::RaycastHit>& other);
+				ICollection<UnityEngine::RaycastHit>& operator=(decltype(nullptr) other);
+				ICollection<UnityEngine::RaycastHit>& operator=(ICollection<UnityEngine::RaycastHit>&& other);
+				bool operator==(const ICollection<UnityEngine::RaycastHit>& other) const;
+				bool operator!=(const ICollection<UnityEngine::RaycastHit>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<UnityEngine::GradientColorKey> : virtual System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>
+			{
+				ICollection<UnityEngine::GradientColorKey>(decltype(nullptr) n);
+				ICollection<UnityEngine::GradientColorKey>(Plugin::InternalUse iu, int32_t handle);
+				ICollection<UnityEngine::GradientColorKey>(const ICollection<UnityEngine::GradientColorKey>& other);
+				ICollection<UnityEngine::GradientColorKey>(ICollection<UnityEngine::GradientColorKey>&& other);
+				virtual ~ICollection<UnityEngine::GradientColorKey>();
+				ICollection<UnityEngine::GradientColorKey>& operator=(const ICollection<UnityEngine::GradientColorKey>& other);
+				ICollection<UnityEngine::GradientColorKey>& operator=(decltype(nullptr) other);
+				ICollection<UnityEngine::GradientColorKey>& operator=(ICollection<UnityEngine::GradientColorKey>&& other);
+				bool operator==(const ICollection<UnityEngine::GradientColorKey>& other) const;
+				bool operator!=(const ICollection<UnityEngine::GradientColorKey>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct ICollection<UnityEngine::Resolution> : virtual System::Collections::Generic::IEnumerable<UnityEngine::Resolution>
+			{
+				ICollection<UnityEngine::Resolution>(decltype(nullptr) n);
+				ICollection<UnityEngine::Resolution>(Plugin::InternalUse iu, int32_t handle);
+				ICollection<UnityEngine::Resolution>(const ICollection<UnityEngine::Resolution>& other);
+				ICollection<UnityEngine::Resolution>(ICollection<UnityEngine::Resolution>&& other);
+				virtual ~ICollection<UnityEngine::Resolution>();
+				ICollection<UnityEngine::Resolution>& operator=(const ICollection<UnityEngine::Resolution>& other);
+				ICollection<UnityEngine::Resolution>& operator=(decltype(nullptr) other);
+				ICollection<UnityEngine::Resolution>& operator=(ICollection<UnityEngine::Resolution>&& other);
+				bool operator==(const ICollection<UnityEngine::Resolution>& other) const;
+				bool operator!=(const ICollection<UnityEngine::Resolution>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<System::String> : virtual System::Collections::Generic::ICollection<System::String>
+			{
+				IList<System::String>(decltype(nullptr) n);
+				IList<System::String>(Plugin::InternalUse iu, int32_t handle);
+				IList<System::String>(const IList<System::String>& other);
+				IList<System::String>(IList<System::String>&& other);
+				virtual ~IList<System::String>();
+				IList<System::String>& operator=(const IList<System::String>& other);
+				IList<System::String>& operator=(decltype(nullptr) other);
+				IList<System::String>& operator=(IList<System::String>&& other);
+				bool operator==(const IList<System::String>& other) const;
+				bool operator!=(const IList<System::String>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<int32_t> : virtual System::Collections::Generic::ICollection<int32_t>
+			{
+				IList<int32_t>(decltype(nullptr) n);
+				IList<int32_t>(Plugin::InternalUse iu, int32_t handle);
+				IList<int32_t>(const IList<int32_t>& other);
+				IList<int32_t>(IList<int32_t>&& other);
+				virtual ~IList<int32_t>();
+				IList<int32_t>& operator=(const IList<int32_t>& other);
+				IList<int32_t>& operator=(decltype(nullptr) other);
+				IList<int32_t>& operator=(IList<int32_t>&& other);
+				bool operator==(const IList<int32_t>& other) const;
+				bool operator!=(const IList<int32_t>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<float> : virtual System::Collections::Generic::ICollection<float>
+			{
+				IList<float>(decltype(nullptr) n);
+				IList<float>(Plugin::InternalUse iu, int32_t handle);
+				IList<float>(const IList<float>& other);
+				IList<float>(IList<float>&& other);
+				virtual ~IList<float>();
+				IList<float>& operator=(const IList<float>& other);
+				IList<float>& operator=(decltype(nullptr) other);
+				IList<float>& operator=(IList<float>&& other);
+				bool operator==(const IList<float>& other) const;
+				bool operator!=(const IList<float>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<UnityEngine::RaycastHit> : virtual System::Collections::Generic::ICollection<UnityEngine::RaycastHit>
+			{
+				IList<UnityEngine::RaycastHit>(decltype(nullptr) n);
+				IList<UnityEngine::RaycastHit>(Plugin::InternalUse iu, int32_t handle);
+				IList<UnityEngine::RaycastHit>(const IList<UnityEngine::RaycastHit>& other);
+				IList<UnityEngine::RaycastHit>(IList<UnityEngine::RaycastHit>&& other);
+				virtual ~IList<UnityEngine::RaycastHit>();
+				IList<UnityEngine::RaycastHit>& operator=(const IList<UnityEngine::RaycastHit>& other);
+				IList<UnityEngine::RaycastHit>& operator=(decltype(nullptr) other);
+				IList<UnityEngine::RaycastHit>& operator=(IList<UnityEngine::RaycastHit>&& other);
+				bool operator==(const IList<UnityEngine::RaycastHit>& other) const;
+				bool operator!=(const IList<UnityEngine::RaycastHit>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<UnityEngine::GradientColorKey> : virtual System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>
+			{
+				IList<UnityEngine::GradientColorKey>(decltype(nullptr) n);
+				IList<UnityEngine::GradientColorKey>(Plugin::InternalUse iu, int32_t handle);
+				IList<UnityEngine::GradientColorKey>(const IList<UnityEngine::GradientColorKey>& other);
+				IList<UnityEngine::GradientColorKey>(IList<UnityEngine::GradientColorKey>&& other);
+				virtual ~IList<UnityEngine::GradientColorKey>();
+				IList<UnityEngine::GradientColorKey>& operator=(const IList<UnityEngine::GradientColorKey>& other);
+				IList<UnityEngine::GradientColorKey>& operator=(decltype(nullptr) other);
+				IList<UnityEngine::GradientColorKey>& operator=(IList<UnityEngine::GradientColorKey>&& other);
+				bool operator==(const IList<UnityEngine::GradientColorKey>& other) const;
+				bool operator!=(const IList<UnityEngine::GradientColorKey>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IList<UnityEngine::Resolution> : virtual System::Collections::Generic::ICollection<UnityEngine::Resolution>
+			{
+				IList<UnityEngine::Resolution>(decltype(nullptr) n);
+				IList<UnityEngine::Resolution>(Plugin::InternalUse iu, int32_t handle);
+				IList<UnityEngine::Resolution>(const IList<UnityEngine::Resolution>& other);
+				IList<UnityEngine::Resolution>(IList<UnityEngine::Resolution>&& other);
+				virtual ~IList<UnityEngine::Resolution>();
+				IList<UnityEngine::Resolution>& operator=(const IList<UnityEngine::Resolution>& other);
+				IList<UnityEngine::Resolution>& operator=(decltype(nullptr) other);
+				IList<UnityEngine::Resolution>& operator=(IList<UnityEngine::Resolution>&& other);
+				bool operator==(const IList<UnityEngine::Resolution>& other) const;
+				bool operator!=(const IList<UnityEngine::Resolution>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace Serialization
+		{
+			struct ISerializable : virtual System::Object
+			{
+				ISerializable(decltype(nullptr) n);
+				ISerializable(Plugin::InternalUse iu, int32_t handle);
+				ISerializable(const ISerializable& other);
+				ISerializable(ISerializable&& other);
+				virtual ~ISerializable();
+				ISerializable& operator=(const ISerializable& other);
+				ISerializable& operator=(decltype(nullptr) other);
+				ISerializable& operator=(ISerializable&& other);
+				bool operator==(const ISerializable& other) const;
+				bool operator!=(const ISerializable& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace InteropServices
+		{
+			struct _Exception : virtual System::Object
+			{
+				_Exception(decltype(nullptr) n);
+				_Exception(Plugin::InternalUse iu, int32_t handle);
+				_Exception(const _Exception& other);
+				_Exception(_Exception&& other);
+				virtual ~_Exception();
+				_Exception& operator=(const _Exception& other);
+				_Exception& operator=(decltype(nullptr) other);
+				_Exception& operator=(_Exception&& other);
+				bool operator==(const _Exception& other) const;
+				bool operator!=(const _Exception& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	struct IAppDomainSetup : virtual System::Object
+	{
+		IAppDomainSetup(decltype(nullptr) n);
+		IAppDomainSetup(Plugin::InternalUse iu, int32_t handle);
+		IAppDomainSetup(const IAppDomainSetup& other);
+		IAppDomainSetup(IAppDomainSetup&& other);
+		virtual ~IAppDomainSetup();
+		IAppDomainSetup& operator=(const IAppDomainSetup& other);
+		IAppDomainSetup& operator=(decltype(nullptr) other);
+		IAppDomainSetup& operator=(IAppDomainSetup&& other);
+		bool operator==(const IAppDomainSetup& other) const;
+		bool operator!=(const IAppDomainSetup& other) const;
+	};
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct IComparer : virtual System::Object
+		{
+			IComparer(decltype(nullptr) n);
+			IComparer(Plugin::InternalUse iu, int32_t handle);
+			IComparer(const IComparer& other);
+			IComparer(IComparer&& other);
+			virtual ~IComparer();
+			IComparer& operator=(const IComparer& other);
+			IComparer& operator=(decltype(nullptr) other);
+			IComparer& operator=(IComparer&& other);
+			bool operator==(const IComparer& other) const;
+			bool operator!=(const IComparer& other) const;
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		struct IEqualityComparer : virtual System::Object
+		{
+			IEqualityComparer(decltype(nullptr) n);
+			IEqualityComparer(Plugin::InternalUse iu, int32_t handle);
+			IEqualityComparer(const IEqualityComparer& other);
+			IEqualityComparer(IEqualityComparer&& other);
+			virtual ~IEqualityComparer();
+			IEqualityComparer& operator=(const IEqualityComparer& other);
+			IEqualityComparer& operator=(decltype(nullptr) other);
+			IEqualityComparer& operator=(IEqualityComparer&& other);
+			bool operator==(const IEqualityComparer& other) const;
+			bool operator!=(const IEqualityComparer& other) const;
+		};
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEqualityComparer<System::String> : virtual System::Object
+			{
+				IEqualityComparer<System::String>(decltype(nullptr) n);
+				IEqualityComparer<System::String>(Plugin::InternalUse iu, int32_t handle);
+				IEqualityComparer<System::String>(const IEqualityComparer<System::String>& other);
+				IEqualityComparer<System::String>(IEqualityComparer<System::String>&& other);
+				virtual ~IEqualityComparer<System::String>();
+				IEqualityComparer<System::String>& operator=(const IEqualityComparer<System::String>& other);
+				IEqualityComparer<System::String>& operator=(decltype(nullptr) other);
+				IEqualityComparer<System::String>& operator=(IEqualityComparer<System::String>&& other);
+				bool operator==(const IEqualityComparer<System::String>& other) const;
+				bool operator!=(const IEqualityComparer<System::String>& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			template<> struct IEqualityComparer<int32_t> : virtual System::Object
+			{
+				IEqualityComparer<int32_t>(decltype(nullptr) n);
+				IEqualityComparer<int32_t>(Plugin::InternalUse iu, int32_t handle);
+				IEqualityComparer<int32_t>(const IEqualityComparer<int32_t>& other);
+				IEqualityComparer<int32_t>(IEqualityComparer<int32_t>&& other);
+				virtual ~IEqualityComparer<int32_t>();
+				IEqualityComparer<int32_t>& operator=(const IEqualityComparer<int32_t>& other);
+				IEqualityComparer<int32_t>& operator=(decltype(nullptr) other);
+				IEqualityComparer<int32_t>& operator=(IEqualityComparer<int32_t>&& other);
+				bool operator==(const IEqualityComparer<int32_t>& other) const;
+				bool operator!=(const IEqualityComparer<int32_t>& other) const;
+			};
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct PlayableGraph : virtual System::ValueType
+		{
+			PlayableGraph(decltype(nullptr) n);
+			PlayableGraph(Plugin::InternalUse iu, int32_t handle);
+			PlayableGraph(const PlayableGraph& other);
+			PlayableGraph(PlayableGraph&& other);
+			virtual ~PlayableGraph();
+			PlayableGraph& operator=(const PlayableGraph& other);
+			PlayableGraph& operator=(decltype(nullptr) other);
+			PlayableGraph& operator=(PlayableGraph&& other);
+			bool operator==(const PlayableGraph& other) const;
+			bool operator!=(const PlayableGraph& other) const;
+		};
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Playables
+	{
+		struct IPlayable : virtual System::Object
+		{
+			IPlayable(decltype(nullptr) n);
+			IPlayable(Plugin::InternalUse iu, int32_t handle);
+			IPlayable(const IPlayable& other);
+			IPlayable(IPlayable&& other);
+			virtual ~IPlayable();
+			IPlayable& operator=(const IPlayable& other);
+			IPlayable& operator=(decltype(nullptr) other);
+			IPlayable& operator=(IPlayable&& other);
+			bool operator==(const IPlayable& other) const;
+			bool operator!=(const IPlayable& other) const;
+		};
+	}
+}
+
+namespace System
+{
+	template<> struct IEquatable<UnityEngine::Animations::AnimationMixerPlayable> : virtual System::Object
+	{
+		IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(decltype(nullptr) n);
+		IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(Plugin::InternalUse iu, int32_t handle);
+		IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(const IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& other);
+		IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(IEquatable<UnityEngine::Animations::AnimationMixerPlayable>&& other);
+		virtual ~IEquatable<UnityEngine::Animations::AnimationMixerPlayable>();
+		IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& operator=(const IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& other);
+		IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& operator=(decltype(nullptr) other);
+		IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& operator=(IEquatable<UnityEngine::Animations::AnimationMixerPlayable>&& other);
+		bool operator==(const IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& other) const;
+		bool operator!=(const IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& other) const;
+	};
+}
+
+namespace UnityEngine
+{
+	namespace Animations
+	{
+		struct AnimationMixerPlayable : virtual System::ValueType, virtual System::IEquatable<UnityEngine::Animations::AnimationMixerPlayable>, virtual UnityEngine::Playables::IPlayable
+		{
+			AnimationMixerPlayable(decltype(nullptr) n);
+			AnimationMixerPlayable(Plugin::InternalUse iu, int32_t handle);
+			AnimationMixerPlayable(const AnimationMixerPlayable& other);
+			AnimationMixerPlayable(AnimationMixerPlayable&& other);
+			virtual ~AnimationMixerPlayable();
+			AnimationMixerPlayable& operator=(const AnimationMixerPlayable& other);
+			AnimationMixerPlayable& operator=(decltype(nullptr) other);
+			AnimationMixerPlayable& operator=(AnimationMixerPlayable&& other);
+			bool operator==(const AnimationMixerPlayable& other) const;
+			bool operator!=(const AnimationMixerPlayable& other) const;
+			static UnityEngine::Animations::AnimationMixerPlayable Create(UnityEngine::Playables::PlayableGraph& graph, int32_t inputCount = 0, System::Boolean normalizeWeights = false);
+		};
+	}
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace CompilerServices
+		{
+			struct IStrongBox : virtual System::Object
+			{
+				IStrongBox(decltype(nullptr) n);
+				IStrongBox(Plugin::InternalUse iu, int32_t handle);
+				IStrongBox(const IStrongBox& other);
+				IStrongBox(IStrongBox&& other);
+				virtual ~IStrongBox();
+				IStrongBox& operator=(const IStrongBox& other);
+				IStrongBox& operator=(decltype(nullptr) other);
+				IStrongBox& operator=(IStrongBox&& other);
+				bool operator==(const IStrongBox& other) const;
+				bool operator!=(const IStrongBox& other) const;
+			};
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct IEventHandler : virtual System::Object
+			{
+				IEventHandler(decltype(nullptr) n);
+				IEventHandler(Plugin::InternalUse iu, int32_t handle);
+				IEventHandler(const IEventHandler& other);
+				IEventHandler(IEventHandler&& other);
+				virtual ~IEventHandler();
+				IEventHandler& operator=(const IEventHandler& other);
+				IEventHandler& operator=(decltype(nullptr) other);
+				IEventHandler& operator=(IEventHandler&& other);
+				bool operator==(const IEventHandler& other) const;
+				bool operator!=(const IEventHandler& other) const;
+			};
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			struct IStyle : virtual System::Object
+			{
+				IStyle(decltype(nullptr) n);
+				IStyle(Plugin::InternalUse iu, int32_t handle);
+				IStyle(const IStyle& other);
+				IStyle(IStyle&& other);
+				virtual ~IStyle();
+				IStyle& operator=(const IStyle& other);
+				IStyle& operator=(decltype(nullptr) other);
+				IStyle& operator=(IStyle&& other);
+				bool operator==(const IStyle& other) const;
+				bool operator!=(const IStyle& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
 	namespace Diagnostics
 	{
-		struct Stopwatch : System::Object
+		struct Stopwatch : virtual System::Object
 		{
 			Stopwatch(decltype(nullptr) n);
 			Stopwatch(Plugin::InternalUse iu, int32_t handle);
@@ -1314,28 +2542,7 @@ namespace System
 
 namespace UnityEngine
 {
-	struct Object : System::Object
-	{
-		Object(decltype(nullptr) n);
-		Object(Plugin::InternalUse iu, int32_t handle);
-		Object(const Object& other);
-		Object(Object&& other);
-		virtual ~Object();
-		Object& operator=(const Object& other);
-		Object& operator=(decltype(nullptr) other);
-		Object& operator=(Object&& other);
-		bool operator==(const Object& other) const;
-		bool operator!=(const Object& other) const;
-		System::String GetName();
-		void SetName(System::String& value);
-		System::Boolean operator==(UnityEngine::Object& x);
-		operator System::Boolean();
-	};
-}
-
-namespace UnityEngine
-{
-	struct GameObject : UnityEngine::Object
+	struct GameObject : virtual UnityEngine::Object
 	{
 		GameObject(decltype(nullptr) n);
 		GameObject(Plugin::InternalUse iu, int32_t handle);
@@ -1357,44 +2564,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Component : UnityEngine::Object
-	{
-		Component(decltype(nullptr) n);
-		Component(Plugin::InternalUse iu, int32_t handle);
-		Component(const Component& other);
-		Component(Component&& other);
-		virtual ~Component();
-		Component& operator=(const Component& other);
-		Component& operator=(decltype(nullptr) other);
-		Component& operator=(Component&& other);
-		bool operator==(const Component& other) const;
-		bool operator!=(const Component& other) const;
-		UnityEngine::Transform GetTransform();
-	};
-}
-
-namespace UnityEngine
-{
-	struct Transform : UnityEngine::Component
-	{
-		Transform(decltype(nullptr) n);
-		Transform(Plugin::InternalUse iu, int32_t handle);
-		Transform(const Transform& other);
-		Transform(Transform&& other);
-		virtual ~Transform();
-		Transform& operator=(const Transform& other);
-		Transform& operator=(decltype(nullptr) other);
-		Transform& operator=(Transform&& other);
-		bool operator==(const Transform& other) const;
-		bool operator!=(const Transform& other) const;
-		UnityEngine::Vector3 GetPosition();
-		void SetPosition(UnityEngine::Vector3& value);
-	};
-}
-
-namespace UnityEngine
-{
-	struct Debug : System::Object
+	struct Debug : virtual System::Object
 	{
 		Debug(decltype(nullptr) n);
 		Debug(Plugin::InternalUse iu, int32_t handle);
@@ -1425,7 +2595,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Collision : System::Object
+	struct Collision : virtual System::Object
 	{
 		Collision(decltype(nullptr) n);
 		Collision(Plugin::InternalUse iu, int32_t handle);
@@ -1442,7 +2612,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Behaviour : UnityEngine::Component
+	struct Behaviour : virtual UnityEngine::Component
 	{
 		Behaviour(decltype(nullptr) n);
 		Behaviour(Plugin::InternalUse iu, int32_t handle);
@@ -1459,7 +2629,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct MonoBehaviour : UnityEngine::Behaviour
+	struct MonoBehaviour : virtual UnityEngine::Behaviour
 	{
 		MonoBehaviour(decltype(nullptr) n);
 		MonoBehaviour(Plugin::InternalUse iu, int32_t handle);
@@ -1477,7 +2647,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct AudioSettings : System::Object
+	struct AudioSettings : virtual System::Object
 	{
 		AudioSettings(decltype(nullptr) n);
 		AudioSettings(Plugin::InternalUse iu, int32_t handle);
@@ -1497,7 +2667,7 @@ namespace UnityEngine
 {
 	namespace Networking
 	{
-		struct NetworkTransport : System::Object
+		struct NetworkTransport : virtual System::Object
 		{
 			NetworkTransport(decltype(nullptr) n);
 			NetworkTransport(Plugin::InternalUse iu, int32_t handle);
@@ -1513,22 +2683,6 @@ namespace UnityEngine
 			static void Init();
 		};
 	}
-}
-
-namespace UnityEngine
-{
-	struct Vector3
-	{
-		Vector3();
-		Vector3(float x, float y, float z);
-		float GetMagnitude();
-		float x;
-		float y;
-		float z;
-		void Set(float newX, float newY, float newZ);
-		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
-		UnityEngine::Vector3 operator-();
-	};
 }
 
 namespace UnityEngine
@@ -1569,33 +2723,13 @@ namespace UnityEngine
 	};
 }
 
-namespace UnityEngine
-{
-	struct RaycastHit : System::ValueType
-	{
-		RaycastHit(decltype(nullptr) n);
-		RaycastHit(Plugin::InternalUse iu, int32_t handle);
-		RaycastHit(const RaycastHit& other);
-		RaycastHit(RaycastHit&& other);
-		virtual ~RaycastHit();
-		RaycastHit& operator=(const RaycastHit& other);
-		RaycastHit& operator=(decltype(nullptr) other);
-		RaycastHit& operator=(RaycastHit&& other);
-		bool operator==(const RaycastHit& other) const;
-		bool operator!=(const RaycastHit& other) const;
-		UnityEngine::Vector3 GetPoint();
-		void SetPoint(UnityEngine::Vector3& value);
-		UnityEngine::Transform GetTransform();
-	};
-}
-
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			template<> struct KeyValuePair<System::String, double> : System::ValueType
+			template<> struct KeyValuePair<System::String, double> : virtual System::ValueType
 			{
 				KeyValuePair<System::String, double>(decltype(nullptr) n);
 				KeyValuePair<System::String, double>(Plugin::InternalUse iu, int32_t handle);
@@ -1621,7 +2755,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<> struct List<System::String> : System::Object
+			template<> struct List<System::String> : virtual System::Collections::IList, virtual System::Collections::Generic::IList<System::String>
 			{
 				List<System::String>(decltype(nullptr) n);
 				List<System::String>(Plugin::InternalUse iu, int32_t handle);
@@ -1649,7 +2783,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<> struct List<int32_t> : System::Object
+			template<> struct List<int32_t> : virtual System::Collections::IList, virtual System::Collections::Generic::IList<int32_t>
 			{
 				List<int32_t>(decltype(nullptr) n);
 				List<int32_t>(Plugin::InternalUse iu, int32_t handle);
@@ -1677,7 +2811,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<> struct LinkedListNode<System::String> : System::Object
+			template<> struct LinkedListNode<System::String> : virtual System::Object
 			{
 				LinkedListNode<System::String>(decltype(nullptr) n);
 				LinkedListNode<System::String>(Plugin::InternalUse iu, int32_t handle);
@@ -1703,7 +2837,7 @@ namespace System
 	{
 		namespace CompilerServices
 		{
-			template<> struct StrongBox<System::String> : System::Object
+			template<> struct StrongBox<System::String> : virtual System::Runtime::CompilerServices::IStrongBox
 			{
 				StrongBox<System::String>(decltype(nullptr) n);
 				StrongBox<System::String>(Plugin::InternalUse iu, int32_t handle);
@@ -1729,7 +2863,7 @@ namespace System
 	{
 		namespace ObjectModel
 		{
-			template<> struct Collection<int32_t> : System::Object
+			template<> struct Collection<int32_t> : virtual System::Collections::IList, virtual System::Collections::Generic::IList<int32_t>
 			{
 				Collection<int32_t>(decltype(nullptr) n);
 				Collection<int32_t>(Plugin::InternalUse iu, int32_t handle);
@@ -1752,7 +2886,7 @@ namespace System
 	{
 		namespace ObjectModel
 		{
-			template<> struct KeyedCollection<System::String, int32_t> : System::Collections::ObjectModel::Collection<int32_t>
+			template<> struct KeyedCollection<System::String, int32_t> : virtual System::Collections::ObjectModel::Collection<int32_t>, virtual System::Collections::IList, virtual System::Collections::Generic::IList<int32_t>
 			{
 				KeyedCollection<System::String, int32_t>(decltype(nullptr) n);
 				KeyedCollection<System::String, int32_t>(Plugin::InternalUse iu, int32_t handle);
@@ -1771,7 +2905,7 @@ namespace System
 
 namespace System
 {
-	struct Exception : System::Object
+	struct Exception : virtual System::Runtime::InteropServices::_Exception, virtual System::Runtime::Serialization::ISerializable
 	{
 		Exception(decltype(nullptr) n);
 		Exception(Plugin::InternalUse iu, int32_t handle);
@@ -1789,7 +2923,7 @@ namespace System
 
 namespace System
 {
-	struct SystemException : System::Exception
+	struct SystemException : virtual System::Exception, virtual System::Runtime::InteropServices::_Exception, virtual System::Runtime::Serialization::ISerializable
 	{
 		SystemException(decltype(nullptr) n);
 		SystemException(Plugin::InternalUse iu, int32_t handle);
@@ -1806,7 +2940,7 @@ namespace System
 
 namespace System
 {
-	struct NullReferenceException : System::SystemException
+	struct NullReferenceException : virtual System::SystemException, virtual System::Runtime::InteropServices::_Exception, virtual System::Runtime::Serialization::ISerializable
 	{
 		NullReferenceException(decltype(nullptr) n);
 		NullReferenceException(Plugin::InternalUse iu, int32_t handle);
@@ -1823,30 +2957,7 @@ namespace System
 
 namespace UnityEngine
 {
-	struct Resolution : System::ValueType
-	{
-		Resolution(decltype(nullptr) n);
-		Resolution(Plugin::InternalUse iu, int32_t handle);
-		Resolution(const Resolution& other);
-		Resolution(Resolution&& other);
-		virtual ~Resolution();
-		Resolution& operator=(const Resolution& other);
-		Resolution& operator=(decltype(nullptr) other);
-		Resolution& operator=(Resolution&& other);
-		bool operator==(const Resolution& other) const;
-		bool operator!=(const Resolution& other) const;
-		int32_t GetWidth();
-		void SetWidth(int32_t value);
-		int32_t GetHeight();
-		void SetHeight(int32_t value);
-		int32_t GetRefreshRate();
-		void SetRefreshRate(int32_t value);
-	};
-}
-
-namespace UnityEngine
-{
-	struct Screen : System::Object
+	struct Screen : virtual System::Object
 	{
 		Screen(decltype(nullptr) n);
 		Screen(Plugin::InternalUse iu, int32_t handle);
@@ -1864,7 +2975,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Ray : System::ValueType
+	struct Ray : virtual System::ValueType
 	{
 		Ray(decltype(nullptr) n);
 		Ray(Plugin::InternalUse iu, int32_t handle);
@@ -1882,7 +2993,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Physics : System::Object
+	struct Physics : virtual System::Object
 	{
 		Physics(decltype(nullptr) n);
 		Physics(Plugin::InternalUse iu, int32_t handle);
@@ -1901,29 +3012,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	struct Color
-	{
-		Color();
-		float r;
-		float g;
-		float b;
-		float a;
-	};
-}
-
-namespace UnityEngine
-{
-	struct GradientColorKey
-	{
-		GradientColorKey();
-		UnityEngine::Color color;
-		float time;
-	};
-}
-
-namespace UnityEngine
-{
-	struct Gradient : System::Object
+	struct Gradient : virtual System::Object
 	{
 		Gradient(decltype(nullptr) n);
 		Gradient(Plugin::InternalUse iu, int32_t handle);
@@ -1943,7 +3032,7 @@ namespace UnityEngine
 
 namespace System
 {
-	struct AppDomainSetup : System::Object
+	struct AppDomainSetup : virtual System::IAppDomainSetup
 	{
 		AppDomainSetup(decltype(nullptr) n);
 		AppDomainSetup(Plugin::InternalUse iu, int32_t handle);
@@ -1963,7 +3052,7 @@ namespace System
 
 namespace UnityEngine
 {
-	struct Application : System::Object
+	struct Application : virtual System::Object
 	{
 		Application(decltype(nullptr) n);
 		Application(Plugin::InternalUse iu, int32_t handle);
@@ -1984,7 +3073,7 @@ namespace UnityEngine
 {
 	namespace SceneManagement
 	{
-		struct SceneManager : System::Object
+		struct SceneManager : virtual System::Object
 		{
 			SceneManager(decltype(nullptr) n);
 			SceneManager(Plugin::InternalUse iu, int32_t handle);
@@ -2006,7 +3095,7 @@ namespace UnityEngine
 {
 	namespace SceneManagement
 	{
-		struct Scene : System::ValueType
+		struct Scene : virtual System::ValueType
 		{
 			Scene(decltype(nullptr) n);
 			Scene(Plugin::InternalUse iu, int32_t handle);
@@ -2026,7 +3115,7 @@ namespace System
 {
 	namespace Collections
 	{
-		struct IEnumerator : System::Object
+		struct IEnumerator : virtual System::Object
 		{
 			IEnumerator(decltype(nullptr) n);
 			IEnumerator(Plugin::InternalUse iu, int32_t handle);
@@ -2046,7 +3135,7 @@ namespace System
 
 namespace System
 {
-	struct EventArgs : System::Object
+	struct EventArgs : virtual System::Object
 	{
 		EventArgs(decltype(nullptr) n);
 		EventArgs(Plugin::InternalUse iu, int32_t handle);
@@ -2067,7 +3156,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentEventArgs : System::EventArgs
+			struct ComponentEventArgs : virtual System::EventArgs
 			{
 				ComponentEventArgs(decltype(nullptr) n);
 				ComponentEventArgs(Plugin::InternalUse iu, int32_t handle);
@@ -2090,7 +3179,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentChangingEventArgs : System::EventArgs
+			struct ComponentChangingEventArgs : virtual System::EventArgs
 			{
 				ComponentChangingEventArgs(decltype(nullptr) n);
 				ComponentChangingEventArgs(Plugin::InternalUse iu, int32_t handle);
@@ -2113,7 +3202,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentChangedEventArgs : System::EventArgs
+			struct ComponentChangedEventArgs : virtual System::EventArgs
 			{
 				ComponentChangedEventArgs(decltype(nullptr) n);
 				ComponentChangedEventArgs(Plugin::InternalUse iu, int32_t handle);
@@ -2136,7 +3225,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentRenameEventArgs : System::EventArgs
+			struct ComponentRenameEventArgs : virtual System::EventArgs
 			{
 				ComponentRenameEventArgs(decltype(nullptr) n);
 				ComponentRenameEventArgs(Plugin::InternalUse iu, int32_t handle);
@@ -2157,7 +3246,7 @@ namespace System
 {
 	namespace ComponentModel
 	{
-		struct MemberDescriptor : System::Object
+		struct MemberDescriptor : virtual System::Object
 		{
 			MemberDescriptor(decltype(nullptr) n);
 			MemberDescriptor(Plugin::InternalUse iu, int32_t handle);
@@ -2175,7 +3264,7 @@ namespace System
 
 namespace UnityEngine
 {
-	struct Time : System::Object
+	struct Time : virtual System::Object
 	{
 		Time(decltype(nullptr) n);
 		Time(Plugin::InternalUse iu, int32_t handle);
@@ -2193,7 +3282,7 @@ namespace UnityEngine
 
 namespace System
 {
-	struct MarshalByRefObject : System::Object
+	struct MarshalByRefObject : virtual System::Object
 	{
 		MarshalByRefObject(decltype(nullptr) n);
 		MarshalByRefObject(Plugin::InternalUse iu, int32_t handle);
@@ -2212,7 +3301,7 @@ namespace System
 {
 	namespace IO
 	{
-		struct Stream : System::MarshalByRefObject
+		struct Stream : virtual System::MarshalByRefObject, virtual System::IDisposable
 		{
 			Stream(decltype(nullptr) n);
 			Stream(Plugin::InternalUse iu, int32_t handle);
@@ -2234,7 +3323,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<> struct IComparer<int32_t> : System::Object
+			template<> struct IComparer<int32_t> : virtual System::Object
 			{
 				IComparer<int32_t>(decltype(nullptr) n);
 				IComparer<int32_t>(Plugin::InternalUse iu, int32_t handle);
@@ -2257,7 +3346,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<> struct IComparer<System::String> : System::Object
+			template<> struct IComparer<System::String> : virtual System::Object
 			{
 				IComparer<System::String>(decltype(nullptr) n);
 				IComparer<System::String>(Plugin::InternalUse iu, int32_t handle);
@@ -2280,7 +3369,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<> struct BaseIComparer<int32_t> : System::Collections::Generic::IComparer<int32_t>
+			template<> struct BaseIComparer<int32_t> : virtual System::Collections::Generic::IComparer<int32_t>
 			{
 				BaseIComparer<int32_t>(decltype(nullptr) n);
 				BaseIComparer<int32_t>(Plugin::InternalUse iu, int32_t handle);
@@ -2306,7 +3395,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			template<> struct BaseIComparer<System::String> : System::Collections::Generic::IComparer<System::String>
+			template<> struct BaseIComparer<System::String> : virtual System::Collections::Generic::IComparer<System::String>
 			{
 				BaseIComparer<System::String>(decltype(nullptr) n);
 				BaseIComparer<System::String>(Plugin::InternalUse iu, int32_t handle);
@@ -2328,7 +3417,7 @@ namespace System
 
 namespace System
 {
-	struct StringComparer : System::Object
+	struct StringComparer : virtual System::Collections::IComparer, virtual System::Collections::Generic::IComparer<System::String>, virtual System::Collections::IEqualityComparer, virtual System::Collections::Generic::IEqualityComparer<System::String>
 	{
 		StringComparer(decltype(nullptr) n);
 		StringComparer(Plugin::InternalUse iu, int32_t handle);
@@ -2345,7 +3434,7 @@ namespace System
 
 namespace System
 {
-	struct BaseStringComparer : System::StringComparer
+	struct BaseStringComparer : virtual System::StringComparer
 	{
 		BaseStringComparer(decltype(nullptr) n);
 		BaseStringComparer(Plugin::InternalUse iu, int32_t handle);
@@ -2369,112 +3458,7 @@ namespace System
 {
 	namespace Collections
 	{
-		struct ICollection : System::Object
-		{
-			ICollection(decltype(nullptr) n);
-			ICollection(Plugin::InternalUse iu, int32_t handle);
-			ICollection(const ICollection& other);
-			ICollection(ICollection&& other);
-			virtual ~ICollection();
-			ICollection& operator=(const ICollection& other);
-			ICollection& operator=(decltype(nullptr) other);
-			ICollection& operator=(ICollection&& other);
-			bool operator==(const ICollection& other) const;
-			bool operator!=(const ICollection& other) const;
-		};
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct BaseICollection : System::Collections::ICollection
-		{
-			BaseICollection(decltype(nullptr) n);
-			BaseICollection(Plugin::InternalUse iu, int32_t handle);
-			BaseICollection(const BaseICollection& other);
-			BaseICollection(BaseICollection&& other);
-			virtual ~BaseICollection();
-			BaseICollection& operator=(const BaseICollection& other);
-			BaseICollection& operator=(decltype(nullptr) other);
-			BaseICollection& operator=(BaseICollection&& other);
-			bool operator==(const BaseICollection& other) const;
-			bool operator!=(const BaseICollection& other) const;
-			int32_t CppHandle;
-			BaseICollection();
-			virtual void CopyTo(System::Array& array, int32_t index);
-			virtual System::Collections::IEnumerator GetEnumerator();
-			virtual int32_t GetCount();
-			virtual System::Boolean GetIsSynchronized();
-			virtual System::Object GetSyncRoot();
-		};
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct IList : System::Object
-		{
-			IList(decltype(nullptr) n);
-			IList(Plugin::InternalUse iu, int32_t handle);
-			IList(const IList& other);
-			IList(IList&& other);
-			virtual ~IList();
-			IList& operator=(const IList& other);
-			IList& operator=(decltype(nullptr) other);
-			IList& operator=(IList&& other);
-			bool operator==(const IList& other) const;
-			bool operator!=(const IList& other) const;
-		};
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct BaseIList : System::Collections::IList
-		{
-			BaseIList(decltype(nullptr) n);
-			BaseIList(Plugin::InternalUse iu, int32_t handle);
-			BaseIList(const BaseIList& other);
-			BaseIList(BaseIList&& other);
-			virtual ~BaseIList();
-			BaseIList& operator=(const BaseIList& other);
-			BaseIList& operator=(decltype(nullptr) other);
-			BaseIList& operator=(BaseIList&& other);
-			bool operator==(const BaseIList& other) const;
-			bool operator!=(const BaseIList& other) const;
-			int32_t CppHandle;
-			BaseIList();
-			virtual int32_t Add(System::Object& value);
-			virtual void Clear();
-			virtual System::Boolean Contains(System::Object& value);
-			virtual int32_t IndexOf(System::Object& value);
-			virtual void Insert(int32_t index, System::Object& value);
-			virtual void Remove(System::Object& value);
-			virtual void RemoveAt(int32_t index);
-			virtual System::Collections::IEnumerator GetEnumerator();
-			virtual void CopyTo(System::Array& array, int32_t index);
-			virtual System::Boolean GetIsFixedSize();
-			virtual System::Boolean GetIsReadOnly();
-			virtual System::Object GetItem(int32_t index);
-			virtual void SetItem(int32_t index, System::Object& value);
-			virtual int32_t GetCount();
-			virtual System::Boolean GetIsSynchronized();
-			virtual System::Object GetSyncRoot();
-		};
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		struct Queue : System::Object
+		struct Queue : virtual System::ICloneable, virtual System::Collections::ICollection
 		{
 			Queue(decltype(nullptr) n);
 			Queue(Plugin::InternalUse iu, int32_t handle);
@@ -2495,7 +3479,7 @@ namespace System
 {
 	namespace Collections
 	{
-		struct BaseQueue : System::Collections::Queue
+		struct BaseQueue : virtual System::Collections::Queue
 		{
 			BaseQueue(decltype(nullptr) n);
 			BaseQueue(Plugin::InternalUse iu, int32_t handle);
@@ -2520,7 +3504,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct IComponentChangeService : System::Object
+			struct IComponentChangeService : virtual System::Object
 			{
 				IComponentChangeService(decltype(nullptr) n);
 				IComponentChangeService(Plugin::InternalUse iu, int32_t handle);
@@ -2543,7 +3527,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct BaseIComponentChangeService : System::ComponentModel::Design::IComponentChangeService
+			struct BaseIComponentChangeService : virtual System::ComponentModel::Design::IComponentChangeService
 			{
 				BaseIComponentChangeService(decltype(nullptr) n);
 				BaseIComponentChangeService(Plugin::InternalUse iu, int32_t handle);
@@ -2582,7 +3566,7 @@ namespace System
 {
 	namespace IO
 	{
-		struct FileStream : System::IO::Stream
+		struct FileStream : virtual System::IO::Stream, virtual System::IDisposable
 		{
 			FileStream(decltype(nullptr) n);
 			FileStream(Plugin::InternalUse iu, int32_t handle);
@@ -2604,7 +3588,7 @@ namespace System
 {
 	namespace IO
 	{
-		struct BaseFileStream : System::IO::FileStream
+		struct BaseFileStream : virtual System::IO::FileStream
 		{
 			BaseFileStream(decltype(nullptr) n);
 			BaseFileStream(Plugin::InternalUse iu, int32_t handle);
@@ -2627,7 +3611,7 @@ namespace UnityEngine
 {
 	namespace Playables
 	{
-		struct PlayableHandle : System::ValueType
+		struct PlayableHandle : virtual System::ValueType
 		{
 			PlayableHandle(decltype(nullptr) n);
 			PlayableHandle(Plugin::InternalUse iu, int32_t handle);
@@ -2645,52 +3629,11 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	namespace Playables
-	{
-		struct PlayableGraph : System::ValueType
-		{
-			PlayableGraph(decltype(nullptr) n);
-			PlayableGraph(Plugin::InternalUse iu, int32_t handle);
-			PlayableGraph(const PlayableGraph& other);
-			PlayableGraph(PlayableGraph&& other);
-			virtual ~PlayableGraph();
-			PlayableGraph& operator=(const PlayableGraph& other);
-			PlayableGraph& operator=(decltype(nullptr) other);
-			PlayableGraph& operator=(PlayableGraph&& other);
-			bool operator==(const PlayableGraph& other) const;
-			bool operator!=(const PlayableGraph& other) const;
-		};
-	}
-}
-
-namespace UnityEngine
-{
-	namespace Animations
-	{
-		struct AnimationMixerPlayable : System::ValueType
-		{
-			AnimationMixerPlayable(decltype(nullptr) n);
-			AnimationMixerPlayable(Plugin::InternalUse iu, int32_t handle);
-			AnimationMixerPlayable(const AnimationMixerPlayable& other);
-			AnimationMixerPlayable(AnimationMixerPlayable&& other);
-			virtual ~AnimationMixerPlayable();
-			AnimationMixerPlayable& operator=(const AnimationMixerPlayable& other);
-			AnimationMixerPlayable& operator=(decltype(nullptr) other);
-			AnimationMixerPlayable& operator=(AnimationMixerPlayable&& other);
-			bool operator==(const AnimationMixerPlayable& other) const;
-			bool operator!=(const AnimationMixerPlayable& other) const;
-			static UnityEngine::Animations::AnimationMixerPlayable Create(UnityEngine::Playables::PlayableGraph& graph, int32_t inputCount = 0, System::Boolean normalizeWeights = false);
-		};
-	}
-}
-
-namespace UnityEngine
-{
 	namespace Experimental
 	{
 		namespace UIElements
 		{
-			struct CallbackEventHandler : System::Object
+			struct CallbackEventHandler : virtual UnityEngine::Experimental::UIElements::IEventHandler
 			{
 				CallbackEventHandler(decltype(nullptr) n);
 				CallbackEventHandler(Plugin::InternalUse iu, int32_t handle);
@@ -2713,7 +3656,7 @@ namespace UnityEngine
 	{
 		namespace UIElements
 		{
-			struct VisualElement : UnityEngine::Experimental::UIElements::CallbackEventHandler
+			struct VisualElement : virtual UnityEngine::Experimental::UIElements::CallbackEventHandler, virtual UnityEngine::Experimental::UIElements::IEventHandler, virtual UnityEngine::Experimental::UIElements::IStyle
 			{
 				VisualElement(decltype(nullptr) n);
 				VisualElement(Plugin::InternalUse iu, int32_t handle);
@@ -2753,7 +3696,7 @@ namespace UnityEngine
 		{
 			namespace Input
 			{
-				struct InteractionSourcePose : System::ValueType
+				struct InteractionSourcePose : virtual System::ValueType
 				{
 					InteractionSourcePose(decltype(nullptr) n);
 					InteractionSourcePose(Plugin::InternalUse iu, int32_t handle);
@@ -2776,7 +3719,7 @@ namespace MyGame
 {
 	namespace MonoBehaviours
 	{
-		struct TestScript : UnityEngine::MonoBehaviour
+		struct TestScript : virtual UnityEngine::MonoBehaviour
 		{
 			TestScript(decltype(nullptr) n);
 			TestScript(Plugin::InternalUse iu, int32_t handle);
@@ -2800,7 +3743,7 @@ namespace MyGame
 {
 	namespace MonoBehaviours
 	{
-		struct AnotherScript : UnityEngine::MonoBehaviour
+		struct AnotherScript : virtual UnityEngine::MonoBehaviour
 		{
 			AnotherScript(decltype(nullptr) n);
 			AnotherScript(Plugin::InternalUse iu, int32_t handle);
@@ -2832,7 +3775,7 @@ namespace Plugin
 
 namespace System
 {
-	template<> struct Array1<int32_t> : System::Array
+	template<> struct Array1<int32_t> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList, virtual System::Collections::Generic::IList<int32_t>
 	{
 		Array1<int32_t>(decltype(nullptr) n);
 		Array1<int32_t>(Plugin::InternalUse iu, int32_t handle);
@@ -2927,7 +3870,7 @@ namespace Plugin
 
 namespace System
 {
-	template<> struct Array1<float> : System::Array
+	template<> struct Array1<float> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList, virtual System::Collections::Generic::IList<float>
 	{
 		Array1<float>(decltype(nullptr) n);
 		Array1<float>(Plugin::InternalUse iu, int32_t handle);
@@ -2949,7 +3892,7 @@ namespace System
 
 namespace System
 {
-	template<> struct Array2<float> : System::Array
+	template<> struct Array2<float> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList
 	{
 		Array2<float>(decltype(nullptr) n);
 		Array2<float>(Plugin::InternalUse iu, int32_t handle);
@@ -2973,7 +3916,7 @@ namespace System
 
 namespace System
 {
-	template<> struct Array3<float> : System::Array
+	template<> struct Array3<float> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList
 	{
 		Array3<float>(decltype(nullptr) n);
 		Array3<float>(Plugin::InternalUse iu, int32_t handle);
@@ -3009,7 +3952,7 @@ namespace Plugin
 
 namespace System
 {
-	template<> struct Array1<System::String> : System::Array
+	template<> struct Array1<System::String> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList, virtual System::Collections::Generic::IList<System::String>
 	{
 		Array1<System::String>(decltype(nullptr) n);
 		Array1<System::String>(Plugin::InternalUse iu, int32_t handle);
@@ -3043,7 +3986,7 @@ namespace Plugin
 
 namespace System
 {
-	template<> struct Array1<UnityEngine::Resolution> : System::Array
+	template<> struct Array1<UnityEngine::Resolution> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList, virtual System::Collections::Generic::IList<UnityEngine::Resolution>
 	{
 		Array1<UnityEngine::Resolution>(decltype(nullptr) n);
 		Array1<UnityEngine::Resolution>(Plugin::InternalUse iu, int32_t handle);
@@ -3077,7 +4020,7 @@ namespace Plugin
 
 namespace System
 {
-	template<> struct Array1<UnityEngine::RaycastHit> : System::Array
+	template<> struct Array1<UnityEngine::RaycastHit> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList, virtual System::Collections::Generic::IList<UnityEngine::RaycastHit>
 	{
 		Array1<UnityEngine::RaycastHit>(decltype(nullptr) n);
 		Array1<UnityEngine::RaycastHit>(Plugin::InternalUse iu, int32_t handle);
@@ -3111,7 +4054,7 @@ namespace Plugin
 
 namespace System
 {
-	template<> struct Array1<UnityEngine::GradientColorKey> : System::Array
+	template<> struct Array1<UnityEngine::GradientColorKey> : virtual System::Array, virtual System::ICloneable, virtual System::Collections::IList, virtual System::Collections::Generic::IList<UnityEngine::GradientColorKey>
 	{
 		Array1<UnityEngine::GradientColorKey>(decltype(nullptr) n);
 		Array1<UnityEngine::GradientColorKey>(Plugin::InternalUse iu, int32_t handle);
@@ -3133,7 +4076,7 @@ namespace System
 
 namespace System
 {
-	struct Action : System::Object
+	struct Action : virtual System::Object
 	{
 		Action(decltype(nullptr) n);
 		Action(Plugin::InternalUse iu, int32_t handle);
@@ -3157,7 +4100,7 @@ namespace System
 
 namespace System
 {
-	template<> struct Action1<float> : System::Object
+	template<> struct Action1<float> : virtual System::Object
 	{
 		Action1<float>(decltype(nullptr) n);
 		Action1<float>(Plugin::InternalUse iu, int32_t handle);
@@ -3181,7 +4124,7 @@ namespace System
 
 namespace System
 {
-	template<> struct Action2<float, float> : System::Object
+	template<> struct Action2<float, float> : virtual System::Object
 	{
 		Action2<float, float>(decltype(nullptr) n);
 		Action2<float, float>(Plugin::InternalUse iu, int32_t handle);
@@ -3205,7 +4148,7 @@ namespace System
 
 namespace System
 {
-	template<> struct Func3<int32_t, float, double> : System::Object
+	template<> struct Func3<int32_t, float, double> : virtual System::Object
 	{
 		Func3<int32_t, float, double>(decltype(nullptr) n);
 		Func3<int32_t, float, double>(Plugin::InternalUse iu, int32_t handle);
@@ -3229,7 +4172,7 @@ namespace System
 
 namespace System
 {
-	template<> struct Func3<int16_t, int32_t, System::String> : System::Object
+	template<> struct Func3<int16_t, int32_t, System::String> : virtual System::Object
 	{
 		Func3<int16_t, int32_t, System::String>(decltype(nullptr) n);
 		Func3<int16_t, int32_t, System::String>(Plugin::InternalUse iu, int32_t handle);
@@ -3253,7 +4196,7 @@ namespace System
 
 namespace System
 {
-	struct AppDomainInitializer : System::Object
+	struct AppDomainInitializer : virtual System::Object
 	{
 		AppDomainInitializer(decltype(nullptr) n);
 		AppDomainInitializer(Plugin::InternalUse iu, int32_t handle);
@@ -3279,7 +4222,7 @@ namespace UnityEngine
 {
 	namespace Events
 	{
-		struct UnityAction : System::Object
+		struct UnityAction : virtual System::Object
 		{
 			UnityAction(decltype(nullptr) n);
 			UnityAction(Plugin::InternalUse iu, int32_t handle);
@@ -3306,7 +4249,7 @@ namespace UnityEngine
 {
 	namespace Events
 	{
-		template<> struct UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode> : System::Object
+		template<> struct UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode> : virtual System::Object
 		{
 			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>(decltype(nullptr) n);
 			UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>(Plugin::InternalUse iu, int32_t handle);
@@ -3335,7 +4278,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentEventHandler : System::Object
+			struct ComponentEventHandler : virtual System::Object
 			{
 				ComponentEventHandler(decltype(nullptr) n);
 				ComponentEventHandler(Plugin::InternalUse iu, int32_t handle);
@@ -3365,7 +4308,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentChangingEventHandler : System::Object
+			struct ComponentChangingEventHandler : virtual System::Object
 			{
 				ComponentChangingEventHandler(decltype(nullptr) n);
 				ComponentChangingEventHandler(Plugin::InternalUse iu, int32_t handle);
@@ -3395,7 +4338,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentChangedEventHandler : System::Object
+			struct ComponentChangedEventHandler : virtual System::Object
 			{
 				ComponentChangedEventHandler(decltype(nullptr) n);
 				ComponentChangedEventHandler(Plugin::InternalUse iu, int32_t handle);
@@ -3425,7 +4368,7 @@ namespace System
 	{
 		namespace Design
 		{
-			struct ComponentRenameEventHandler : System::Object
+			struct ComponentRenameEventHandler : virtual System::Object
 			{
 				ComponentRenameEventHandler(decltype(nullptr) n);
 				ComponentRenameEventHandler(Plugin::InternalUse iu, int32_t handle);
