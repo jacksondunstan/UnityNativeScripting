@@ -13,5 +13,5 @@ public static class NativeScriptConstants
 	/// <summary>
 	/// Path within the Unity project to the exposed types JSON file
 	/// </summary>
-	public const string ExposedTypesJsonPath = "NativeScriptTypes.json";
+	public const string JSON_CONFIG_PATH = "NativeScriptTypes.json";
 }

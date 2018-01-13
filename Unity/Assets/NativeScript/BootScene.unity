@@ -139,7 +139,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b5575a60b7c04c7a87ff4e161573c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxManagedObjects: 1024
+  MemorySize: 16777216
+  AutoReload: 1
+  AutoReloadPollTime: 1
 --- !u!4 &643357610
 Transform:
   m_ObjectHideFlags: 0

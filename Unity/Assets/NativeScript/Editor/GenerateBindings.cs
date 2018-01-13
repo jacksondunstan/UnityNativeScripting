@@ -131,6 +131,8 @@ namespace NativeScript
 		[Serializable]
 		class JsonDocument
 		{
+			public int MaxSimultaneousObjects;
+			public int DefaultMaxSimultaneous;
 			public string[] Assemblies;
 			public JsonType[] Types;
 			public JsonMonoBehaviour[] MonoBehaviours;
@@ -146,7 +148,7 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CsharpDelegateTypes =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public readonly StringBuilder CsharpStructStoreInitCalls =
+			public readonly StringBuilder CsharpStoreInitCalls =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CsharpInitCall =
 				new StringBuilder(InitialStringBuilderCapacity);
@@ -177,6 +179,8 @@ namespace NativeScript
 			public readonly StringBuilder CppInitParams =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppInitBody =
+				new StringBuilder(InitialStringBuilderCapacity);
+			public readonly StringBuilder CppInitBodyFirstBoot =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppMonoBehaviourMessages =
 				new StringBuilder(InitialStringBuilderCapacity);
@@ -263,6 +267,9 @@ namespace NativeScript
 				ParameterTypes = parameterTypes;
 			}
 		}
+		
+		const int DEFAULT_MAX_SIMULTANEOUS = 1000;
+		const int DEFAULT_MAX_SIMULTANEOUS_OBJECTS = 1000;
 		
 		static readonly MessageInfo[] messageInfos = new[] {
 			new MessageInfo("Awake"),
@@ -382,7 +389,6 @@ namespace NativeScript
 		// Restore unused field types
 		#pragma warning restore CS0649
 		
-		[MenuItem("NativeScript/Generate Bindings #%g")]
 		public static void Generate()
 		{
 			EditorPrefs.DeleteKey(PostCompileWorkPref);
@@ -518,22 +524,47 @@ namespace NativeScript
 			Assembly[] assemblies = GetAssemblies(doc.Assemblies);
 			StringBuilders builders = new StringBuilders();
 			
+			// Count the number of ref-counts in C++
+			// Start with 1 for Object
+			int defaultMaxSimultaneous = doc.DefaultMaxSimultaneous != 0
+				? doc.DefaultMaxSimultaneous
+				: DEFAULT_MAX_SIMULTANEOUS;
+			int totalMaxSimultaneous = defaultMaxSimultaneous;
+			
+			// Init param for max managed Objects
+			int maxSimultaneousObjects = doc.MaxSimultaneousObjects != 0
+				? doc.MaxSimultaneousObjects
+				: DEFAULT_MAX_SIMULTANEOUS_OBJECTS;
+			builders.CppInitParams.Append("\tint32_t maxManagedObjects,\n");
+			builders.CsharpInitParams.Append("\t\t\tint maxManagedObjects,\n");
+			builders.CsharpInitCall.Append("\t\t\t\t");
+			builders.CsharpInitCall.Append(maxSimultaneousObjects);
+			builders.CsharpInitCall.Append(",\n");
+			
+			// C# ObjectStore Init call
+			builders.CsharpStoreInitCalls.Append(
+				"\t\t\tNativeScript.Bindings.ObjectStore.Init(");
+			builders.CsharpStoreInitCalls.Append(defaultMaxSimultaneous);
+			builders.CsharpStoreInitCalls.Append(");\n");
+			
 			// Generate types
 			if (doc.Types != null)
 			{
 				foreach (JsonType jsonType in doc.Types)
 				{
-					AppendType(
+					Type type = GetType(jsonType.Name, assemblies);
+					TypeKind typeKind = GetTypeKind(type);
+					totalMaxSimultaneous += AppendType(
 						jsonType,
+						type,
+						typeKind,
 						assemblies,
+						defaultMaxSimultaneous,
 						builders);
 					
 					if (jsonType.BaseTypes != null)
 					{
 						// C++ template declaration if necessary
-						Type type = GetType(
-							jsonType.Name,
-							assemblies);
 						Type[] genericArgTypes = type.GetGenericArguments();
 						string cppBaseTypeName = "Base" + type.Name;
 						if (!IsStatic(type))
@@ -560,12 +591,13 @@ namespace NativeScript
 								cppBaseTypeName,
 								jsonBaseType,
 								assemblies,
+								defaultMaxSimultaneous,
 								builders);
 						}
 					}
 				}
 			}
-
+			
 			// Generate boxing and unboxing for primitive types
 			foreach (Type type in PRIMITIVE_TYPES)
 			{
@@ -607,6 +639,7 @@ namespace NativeScript
 					AppendDelegate(
 						del,
 						assemblies,
+						defaultMaxSimultaneous,
 						builders);
 				}
 			}
@@ -642,7 +675,7 @@ namespace NativeScript
 		{
 			string jsonPath = Path.Combine(
 				Application.dataPath,
-				NativeScriptConstants.ExposedTypesJsonPath);
+				NativeScriptConstants.JSON_CONFIG_PATH);
 			string json = File.ReadAllText(jsonPath);
 			return JsonUtility.FromJson<JsonDocument>(json);
 		}
@@ -1295,13 +1328,14 @@ namespace NativeScript
 			}
 		}
 		
-		static void AppendType(
+		static int AppendType(
 			JsonType jsonType,
+			Type type,
+			TypeKind typeKind,
 			Assembly[] assemblies,
+			int defaultMaxSimultaneous,
 			StringBuilders builders)
 		{
-			Type type = GetType(jsonType.Name, assemblies);
-			TypeKind typeKind = GetTypeKind(type);
 			if (typeKind == TypeKind.Enum)
 			{
 				AppendEnum(
@@ -1312,9 +1346,11 @@ namespace NativeScript
 					typeKind,
 					null,
 					builders);
+				return 0;
 			}
 			else
 			{
+				int totalMaxSimultaneous = 0;
 				Type[] genericArgTypes = type.GetGenericArguments();
 				if (jsonType.GenericParams != null)
 				{
@@ -1334,15 +1370,17 @@ namespace NativeScript
 							jsonGenericParams.Types,
 							assemblies);
 						Type genericType = type.MakeGenericType(typeParams);
-						int? maxSimultaneous = jsonGenericParams.MaxSimultaneous != 0
+						int maxSimultaneous = jsonGenericParams.MaxSimultaneous != 0
 							? jsonGenericParams.MaxSimultaneous
 							: jsonType.MaxSimultaneous != 0
 								? jsonType.MaxSimultaneous
-								: default(int?);
+								: defaultMaxSimultaneous;
+						totalMaxSimultaneous += maxSimultaneous;
 						AppendType(
 							jsonType,
 							genericArgTypes,
 							genericType,
+							typeKind,
 							typeParams,
 							maxSimultaneous,
 							assemblies,
@@ -1359,13 +1397,15 @@ namespace NativeScript
 				}
 				else
 				{
-					int? maxSimultaneous = jsonType.MaxSimultaneous != 0
+					int maxSimultaneous = jsonType.MaxSimultaneous != 0
 						? jsonType.MaxSimultaneous
-						: default(int?);
+						: defaultMaxSimultaneous;
+					totalMaxSimultaneous += maxSimultaneous;
 					AppendType(
 						jsonType,
 						genericArgTypes,
 						type,
+						typeKind,
 						null,
 						maxSimultaneous,
 						assemblies,
@@ -1379,6 +1419,7 @@ namespace NativeScript
 							builders);
 					}
 				}
+				return totalMaxSimultaneous;
 			}
 		}
 		
@@ -1386,35 +1427,24 @@ namespace NativeScript
 			JsonType jsonType,
 			Type[] genericArgTypes,
 			Type type,
+			TypeKind typeKind,
 			Type[] typeParams,
-			int? maxSimultaneous,
+			int maxSimultaneous,
 			Assembly[] assemblies,
 			StringBuilders builders)
 		{
 			bool isStatic = IsStatic(type);
-			TypeKind typeKind = GetTypeKind(type);
 			if (!isStatic && typeKind == TypeKind.ManagedStruct)
 			{
 				// C# StructStore Init call
-				builders.CsharpStructStoreInitCalls.Append(
+				builders.CsharpStoreInitCalls.Append(
 					"\t\t\tNativeScript.Bindings.StructStore<");
 				AppendCsharpTypeName(
 					type,
-					builders.CsharpStructStoreInitCalls);
-				builders.CsharpStructStoreInitCalls.Append(
-					">.Init(");
-				if (maxSimultaneous.HasValue)
-				{
-					builders.CsharpStructStoreInitCalls.Append(
-						maxSimultaneous.Value);
-				}
-				else
-				{
-					builders.CsharpStructStoreInitCalls.Append(
-						"maxManagedObjects");
-				}
-				builders.CsharpStructStoreInitCalls.Append(
-					");\n");
+					builders.CsharpStoreInitCalls);
+				builders.CsharpStoreInitCalls.Append(">.Init(");
+				builders.CsharpStoreInitCalls.Append(maxSimultaneous);
+				builders.CsharpStoreInitCalls.Append(");\n");
 				
 				// Build function name suffix
 				builders.TempStrBuilder.Length = 0;
@@ -1525,16 +1555,15 @@ namespace NativeScript
 				// C++ init body for handle array length
 				builders.CppInitBody.Append("\tPlugin::RefCounts");
 				builders.CppInitBody.Append(funcNameSuffix);
-				builders.CppInitBody.Append(" = new int32_t[");
-				if (maxSimultaneous.HasValue)
-				{
-					builders.CppInitBody.Append(maxSimultaneous.Value);
-				}
-				else
-				{
-					builders.CppInitBody.Append("maxManagedObjects");
-				}
-				builders.CppInitBody.Append("]();\n");
+				builders.CppInitBody.Append(" = (int32_t*)curMemory;\n");
+				builders.CppInitBody.Append("\tcurMemory += ");
+				builders.CppInitBody.Append(maxSimultaneous);
+				builders.CppInitBody.Append(" * sizeof(int32_t);\n");
+				builders.CppInitBody.Append("\tPlugin::RefCountsLen");
+				builders.CppInitBody.Append(funcNameSuffix);
+				builders.CppInitBody.Append(" = ");
+				builders.CppInitBody.Append(maxSimultaneous);
+				builders.CppInitBody.Append(";\n");
 				
 				// C++ ref count state and functions
 				builders.CppGlobalStateAndFunctions.Append("\tint32_t RefCountsLen");
@@ -1751,11 +1780,12 @@ namespace NativeScript
 			string cppBaseTypeName,
 			JsonBaseType jsonBaseType,
 			Assembly[] assemblies,
+			int defaultMaxSimultaneous,
 			StringBuilders builders)
 		{
-			int? maxSimultaneous = jsonBaseType.MaxSimultaneous != 0
+			int maxSimultaneous = jsonBaseType.MaxSimultaneous != 0
 				? jsonBaseType.MaxSimultaneous
-				: default(int?);
+				: defaultMaxSimultaneous;
 			if (jsonBaseType.GenericTypes != null)
 			{
 				Type[] typeParams = GetTypes(
@@ -5766,6 +5796,7 @@ namespace NativeScript
 		static void AppendDelegate(
 			JsonDelegate jsonDelegate,
 			Assembly[] assemblies,
+			int defaultMaxSimultaneous,
 			StringBuilders builders)
 		{
 			Type type = GetType(
@@ -5812,11 +5843,11 @@ namespace NativeScript
 					string cppTypeName = builders.TempStrBuilder.ToString();
 					
 					// Max simultaneous handles of this type
-					int? maxSimultaneous = jsonGenericParams.MaxSimultaneous != 0
+					int maxSimultaneous = jsonGenericParams.MaxSimultaneous != 0
 						? jsonGenericParams.MaxSimultaneous
 						: jsonDelegate.MaxSimultaneous != 0
 							? jsonDelegate.MaxSimultaneous
-							: default(int?);
+							: defaultMaxSimultaneous;
 					
 					AppendDelegate(
 						genericType,
@@ -5828,9 +5859,9 @@ namespace NativeScript
 			}
 			else
 			{
-				int? maxSimultaneous = jsonDelegate.MaxSimultaneous != 0
+				int maxSimultaneous = jsonDelegate.MaxSimultaneous != 0
 					? jsonDelegate.MaxSimultaneous
-					: default(int?);
+					: defaultMaxSimultaneous;
 				AppendDelegate(
 					type,
 					type.Name,
@@ -5844,7 +5875,7 @@ namespace NativeScript
 			Type type,
 			string cppTypeName,
 			Type[] typeParams,
-			int? maxSimultaneous,
+			int maxSimultaneous,
 			StringBuilders builders)
 		{
 			builders.TempStrBuilder.Length = 0;
@@ -5980,7 +6011,8 @@ namespace NativeScript
 				cppTypeName,
 				maxSimultaneous,
 				bindingTypeName,
-				builders.CppInitBody);
+				builders.CppInitBody,
+				builders.CppInitBodyFirstBoot);
 
 			// C++ type definition (begin)
 			AppendCppTypeDefinitionBegin(
@@ -6527,7 +6559,7 @@ namespace NativeScript
 			JsonBaseType jsonBaseType,
 			string cppBaseTypeName,
 			Type[] typeParams,
-			int? maxSimultaneous,
+			int maxSimultaneous,
 			Assembly[] assemblies,
 			StringBuilders builders)
 		{
@@ -6701,7 +6733,8 @@ namespace NativeScript
 				cppBaseTypeName,
 				maxSimultaneous,
 				bindingTypeName,
-				builders.CppInitBody);
+				builders.CppInitBody,
+				builders.CppInitBodyFirstBoot);
 
 			// C++ type definition (begin)
 			AppendCppTypeDefinitionBegin(
@@ -9412,25 +9445,20 @@ namespace NativeScript
 			Type type,
 			Type[] typeParams,
 			string cppTypeName,
-			int? maxSimultaneous,
+			int maxSimultaneous,
 			string typeName,
-			StringBuilder output)
+			StringBuilder output,
+			StringBuilder outputFirstBoot)
 		{
-			output.Append('\t');
+			output.Append("\tPlugin::");
 			output.Append(typeName);
 			output.Append("FreeListSize = ");
-			if (maxSimultaneous.HasValue)
-			{
-				output.Append(maxSimultaneous);
-			}
-			else
-			{
-				output.Append("maxManagedObjects");
-			}
+			output.Append(maxSimultaneous);
 			output.Append(";\n");
-			output.Append("\t");
+			
+			output.Append("\tPlugin::");
 			output.Append(typeName);
-			output.Append("FreeList = new ");
+			output.Append("FreeList = (");
 			AppendCppTypeName(
 				type.Namespace,
 				cppTypeName,
@@ -9438,16 +9466,11 @@ namespace NativeScript
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append("*[");
-			output.Append(typeName);
-			output.Append("FreeListSize];\n");
-			output.Append("\tfor (int32_t i = 0, end = ");
-			output.Append(typeName);
-			output.Append("FreeListSize - 1; i < end; ++i)\n");
-			output.Append("\t{\n");
-			output.Append("\t	");
-			output.Append(typeName);
-			output.Append("FreeList[i] = (");
+			output.Append("**)curMemory;\n");
+			
+			output.Append("\tcurMemory += ");
+			output.Append(maxSimultaneous);
+			output.Append(" * sizeof(");
 			AppendCppTypeName(
 				type.Namespace,
 				cppTypeName,
@@ -9455,20 +9478,42 @@ namespace NativeScript
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append("*)(");
-			output.Append(typeName);
-			output.Append("FreeList + i + 1);\n");
-			output.Append("\t}\n");
-			output.Append('\t');
-			output.Append(typeName);
-			output.Append("FreeList[");
-			output.Append(typeName);
-			output.Append("FreeListSize - 1] = nullptr;\n");
-			output.Append("\tNextFree");
-			output.Append(typeName);
-			output.Append(" = ");
-			output.Append(typeName);
-			output.Append("FreeList + 1;\n");
+			output.Append("*);\n");
+			
+			output.Append("\t\n");
+			
+			outputFirstBoot.Append("\t\tfor (int32_t i = 0, end = Plugin::");
+			outputFirstBoot.Append(typeName);
+			outputFirstBoot.Append("FreeListSize - 1; i < end; ++i)\n");
+			outputFirstBoot.Append("\t\t{\n");
+			outputFirstBoot.Append("\t\t\tPlugin::");
+			outputFirstBoot.Append(typeName);
+			outputFirstBoot.Append("FreeList[i] = (");
+			AppendCppTypeName(
+				type.Namespace,
+				cppTypeName,
+				outputFirstBoot);
+			AppendCppTypeParameters(
+				typeParams,
+				outputFirstBoot);
+			outputFirstBoot.Append("*)(Plugin::");
+			outputFirstBoot.Append(typeName);
+			outputFirstBoot.Append("FreeList + i + 1);\n");
+			outputFirstBoot.Append("\t\t}\n");
+			
+			outputFirstBoot.Append("\t\tPlugin::");
+			outputFirstBoot.Append(typeName);
+			outputFirstBoot.Append("FreeList[Plugin::");
+			outputFirstBoot.Append(typeName);
+			outputFirstBoot.Append("FreeListSize - 1] = nullptr;\n");
+			
+			outputFirstBoot.Append("\t\tPlugin::NextFree");
+			outputFirstBoot.Append(typeName);
+			outputFirstBoot.Append(" = Plugin::");
+			outputFirstBoot.Append(typeName);
+			outputFirstBoot.Append("FreeList + 1;\n");
+			
+			outputFirstBoot.Append("\t\t\n");
 		}
 
 		static void AppendCppFreeListStateAndFunctions(
@@ -12621,13 +12666,14 @@ namespace NativeScript
 		{
 			RemoveTrailingChars(builders.CsharpInitParams);
 			RemoveTrailingChars(builders.CsharpDelegateTypes);
-			RemoveTrailingChars(builders.CsharpStructStoreInitCalls);
+			RemoveTrailingChars(builders.CsharpStoreInitCalls);
 			RemoveTrailingChars(builders.CsharpInitCall);
 			RemoveTrailingChars(builders.CsharpBaseTypes);
 			RemoveTrailingChars(builders.CsharpFunctions);
 			RemoveTrailingChars(builders.CsharpMonoBehaviours);
 			RemoveTrailingChars(builders.CsharpDelegates);
 			RemoveTrailingChars(builders.CsharpImports);
+			RemoveTrailingChars(builders.CsharpGetDelegateCalls);
 			RemoveTrailingChars(builders.CsharpGetDelegateCalls);
 			RemoveTrailingChars(builders.CppFunctionPointers);
 			RemoveTrailingChars(builders.CppTypeDeclarations);
@@ -12637,10 +12683,10 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CppMethodDefinitions);
 			RemoveTrailingChars(builders.CppInitParams);
 			RemoveTrailingChars(builders.CppInitBody);
+			RemoveTrailingChars(builders.CppInitBodyFirstBoot);
 			RemoveTrailingChars(builders.CppMonoBehaviourMessages);
 			RemoveTrailingChars(builders.CppGlobalStateAndFunctions);
 			RemoveTrailingChars(builders.CppBoxingMethodDeclarations);
-			RemoveTrailingChars(builders.CppStringDefaultParams);
 		}
 		
 		// Remove trailing chars (e.g. commas) for last elements
@@ -12688,9 +12734,9 @@ namespace NativeScript
 				builders.CsharpDelegateTypes.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN STRUCTSTORE INIT CALLS*/\n",
-				"\n\t\t\t/*END STRUCTSTORE INIT CALLS*/",
-				builders.CsharpStructStoreInitCalls.ToString());
+				"/*BEGIN STORE INIT CALLS*/\n",
+				"\n\t\t\t/*END STORE INIT CALLS*/",
+				builders.CsharpStoreInitCalls.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
 				"/*BEGIN INIT CALL*/\n",
@@ -12766,6 +12812,11 @@ namespace NativeScript
 				"/*BEGIN INIT BODY*/\n",
 				"\n\t/*END INIT BODY*/",
 				builders.CppInitBody.ToString());
+			cppSourceContents = InjectIntoString(
+				cppSourceContents,
+				"/*BEGIN INIT BODY FIRST BOOT*/\n",
+				"\n\t\t/*END INIT BODY FIRST BOOT*/",
+				builders.CppInitBodyFirstBoot.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
 				"/*BEGIN MONOBEHAVIOUR MESSAGES*/\n",

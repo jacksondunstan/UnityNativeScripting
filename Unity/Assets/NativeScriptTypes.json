@@ -500,7 +500,8 @@
 					"Types": [
 						"System.String",
 						"System.Double"
-					]
+					],
+					"MaxSimultaneous": 20
 				}
 			],
 			"Constructors": [
@@ -657,6 +658,7 @@
 		},
 		{
 			"Name": "UnityEngine.Ray",
+			"MaxSimultaneous": 10,
 			"Constructors": [
 				{
 					"ParamTypes": [

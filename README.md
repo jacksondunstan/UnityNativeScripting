@@ -73,7 +73,7 @@ C++ is the standard language for video games as well as many other fields. By pr
 	Vector3 position(1.0f, 2.0f, 3.0f);
 	transform.SetPosition(position);
 
-* No need to reload the Unity editor when changing C++
+* Hot reloading: change C++ without restarting the game
 * Handle `MonoBehaviour` messages in C++
 
 >
@@ -111,6 +111,8 @@ C++ is the standard language for video games as well as many other fields. By pr
 Almost all projects will see a net performance win by reducing garbage collection, eliminating IL2CPP overhead, and access to compiler intrinsics and assembly. Calls from C++ into C# incur only a minor performance penalty. In the rare case that almost all of your code is calls to .NET APIs then you may experience a net performance loss.
 
 [Testing and benchmarks article](https://jacksondunstan.com/articles/3952)
+
+[Optimizations article](https://jacksondunstan.com/articles/4311)
 
 # Project Structure
 

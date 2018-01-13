@@ -21,6 +21,9 @@
 // For malloc(), etc.
 #include <stdlib.h>
 
+// For memset(), etc.
+#include <string.h>
+
 // Macro to put before functions that need to be exposed to C#
 #ifdef _WIN32
 	#define DLLEXPORT extern "C" __declspec(dllexport)
@@ -17153,20 +17156,32 @@ DLLEXPORT void SetCsharpExceptionSystemNullReferenceException(int32_t handle)
 ////////////////////////////////////////////////////////////////
 
 // Called when the plugin is initialized
-extern void PluginMain();
+extern void PluginMain(
+	void* memory,
+	int32_t memorySize,
+	bool isFirstBoot);
 
 ////////////////////////////////////////////////////////////////
 // C++ functions for C# to call
 ////////////////////////////////////////////////////////////////
 
+enum class InitMode : uint8_t
+{
+	FirstBoot,
+	Reload
+};
+
 // Init the plugin
 DLLEXPORT void Init(
-	int32_t maxManagedObjects,
+	uint8_t* memory,
+	int32_t memorySize,
+	InitMode initMode,
 	void (*releaseObject)(int32_t handle),
 	int32_t (*stringNew)(const char* chars),
 	void (*setException)(int32_t handle),
 	int32_t (*arrayGetLength)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
+	int32_t maxManagedObjects,
 	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
 	float (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
 	void (*unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ),
@@ -17426,11 +17441,12 @@ DLLEXPORT void Init(
 	void (*systemComponentModelDesignComponentRenameEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle)
 	/*END INIT PARAMS*/)
 {
-	using namespace Plugin;
+	uint8_t* curMemory = memory;
 	
 	// Init managed object ref counting
 	Plugin::RefCountsLenClass = maxManagedObjects;
-	Plugin::RefCountsClass = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsClass = (int32_t*)curMemory;
+	curMemory += maxManagedObjects * sizeof(int32_t);
 	
 	// Init pointers to C# functions
 	Plugin::StringNew = stringNew;
@@ -17457,7 +17473,9 @@ DLLEXPORT void Init(
 	Plugin::BoxGradientColorKey = boxGradientColorKey;
 	Plugin::UnboxGradientColorKey = unboxGradientColorKey;
 	Plugin::ReleaseUnityEngineResolution = releaseUnityEngineResolution;
-	Plugin::RefCountsUnityEngineResolution = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsUnityEngineResolution = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEngineResolution = 1000;
 	Plugin::UnityEngineResolutionPropertyGetWidth = unityEngineResolutionPropertyGetWidth;
 	Plugin::UnityEngineResolutionPropertySetWidth = unityEngineResolutionPropertySetWidth;
 	Plugin::UnityEngineResolutionPropertyGetHeight = unityEngineResolutionPropertyGetHeight;
@@ -17467,18 +17485,24 @@ DLLEXPORT void Init(
 	Plugin::BoxResolution = boxResolution;
 	Plugin::UnboxResolution = unboxResolution;
 	Plugin::ReleaseUnityEngineRaycastHit = releaseUnityEngineRaycastHit;
-	Plugin::RefCountsUnityEngineRaycastHit = new int32_t[1000]();
+	Plugin::RefCountsUnityEngineRaycastHit = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEngineRaycastHit = 1000;
 	Plugin::UnityEngineRaycastHitPropertyGetPoint = unityEngineRaycastHitPropertyGetPoint;
 	Plugin::UnityEngineRaycastHitPropertySetPoint = unityEngineRaycastHitPropertySetPoint;
 	Plugin::UnityEngineRaycastHitPropertyGetTransform = unityEngineRaycastHitPropertyGetTransform;
 	Plugin::BoxRaycastHit = boxRaycastHit;
 	Plugin::UnboxRaycastHit = unboxRaycastHit;
 	Plugin::ReleaseUnityEnginePlayablesPlayableGraph = releaseUnityEnginePlayablesPlayableGraph;
-	Plugin::RefCountsUnityEnginePlayablesPlayableGraph = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsUnityEnginePlayablesPlayableGraph = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEnginePlayablesPlayableGraph = 1000;
 	Plugin::BoxPlayableGraph = boxPlayableGraph;
 	Plugin::UnboxPlayableGraph = unboxPlayableGraph;
 	Plugin::ReleaseUnityEngineAnimationsAnimationMixerPlayable = releaseUnityEngineAnimationsAnimationMixerPlayable;
-	Plugin::RefCountsUnityEngineAnimationsAnimationMixerPlayable = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsUnityEngineAnimationsAnimationMixerPlayable = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEngineAnimationsAnimationMixerPlayable = 1000;
 	Plugin::UnityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean = unityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean;
 	Plugin::BoxAnimationMixerPlayable = boxAnimationMixerPlayable;
 	Plugin::UnboxAnimationMixerPlayable = unboxAnimationMixerPlayable;
@@ -17510,7 +17534,9 @@ DLLEXPORT void Init(
 	Plugin::BoxQueryTriggerInteraction = boxQueryTriggerInteraction;
 	Plugin::UnboxQueryTriggerInteraction = unboxQueryTriggerInteraction;
 	Plugin::ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = releaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble;
-	Plugin::RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = (int32_t*)curMemory;
+	curMemory += 20 * sizeof(int32_t);
+	Plugin::RefCountsLenSystemCollectionsGenericKeyValuePairSystemString_SystemDouble = 20;
 	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble = systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble;
 	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey;
 	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue;
@@ -17535,7 +17561,9 @@ DLLEXPORT void Init(
 	Plugin::SystemExceptionConstructorSystemString = systemExceptionConstructorSystemString;
 	Plugin::UnityEngineScreenPropertyGetResolutions = unityEngineScreenPropertyGetResolutions;
 	Plugin::ReleaseUnityEngineRay = releaseUnityEngineRay;
-	Plugin::RefCountsUnityEngineRay = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsUnityEngineRay = (int32_t*)curMemory;
+	curMemory += 10 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEngineRay = 10;
 	Plugin::UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3 = unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3;
 	Plugin::BoxRay = boxRay;
 	Plugin::UnboxRay = unboxRay;
@@ -17552,7 +17580,9 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineSceneManagementSceneManagerAddEventSceneLoaded = unityEngineSceneManagementSceneManagerAddEventSceneLoaded;
 	Plugin::UnityEngineSceneManagementSceneManagerRemoveEventSceneLoaded = unityEngineSceneManagementSceneManagerRemoveEventSceneLoaded;
 	Plugin::ReleaseUnityEngineSceneManagementScene = releaseUnityEngineSceneManagementScene;
-	Plugin::RefCountsUnityEngineSceneManagementScene = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsUnityEngineSceneManagementScene = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEngineSceneManagementScene = 1000;
 	Plugin::BoxScene = boxScene;
 	Plugin::UnboxScene = unboxScene;
 	Plugin::BoxLoadSceneMode = boxLoadSceneMode;
@@ -17564,71 +17594,49 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineTimePropertyGetDeltaTime = unityEngineTimePropertyGetDeltaTime;
 	Plugin::BoxFileMode = boxFileMode;
 	Plugin::UnboxFileMode = unboxFileMode;
-	SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize = maxManagedObjects;
-	SystemCollectionsGenericBaseIComparerSystemInt32FreeList = new System::Collections::Generic::BaseIComparer<int32_t>*[SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1; i < end; ++i)
-	{
-		SystemCollectionsGenericBaseIComparerSystemInt32FreeList[i] = (System::Collections::Generic::BaseIComparer<int32_t>*)(SystemCollectionsGenericBaseIComparerSystemInt32FreeList + i + 1);
-	}
-	SystemCollectionsGenericBaseIComparerSystemInt32FreeList[SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = SystemCollectionsGenericBaseIComparerSystemInt32FreeList + 1;
+	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize = 1000;
+	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList = (System::Collections::Generic::BaseIComparer<int32_t>**)curMemory;
+	curMemory += 1000 * sizeof(System::Collections::Generic::BaseIComparer<int32_t>*);
+	
 	Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemInt32 = releaseSystemCollectionsGenericBaseIComparerSystemInt32;
 	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32Constructor = systemCollectionsGenericBaseIComparerSystemInt32Constructor;
-	SystemCollectionsGenericBaseIComparerSystemStringFreeListSize = maxManagedObjects;
-	SystemCollectionsGenericBaseIComparerSystemStringFreeList = new System::Collections::Generic::BaseIComparer<System::String>*[SystemCollectionsGenericBaseIComparerSystemStringFreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsGenericBaseIComparerSystemStringFreeListSize - 1; i < end; ++i)
-	{
-		SystemCollectionsGenericBaseIComparerSystemStringFreeList[i] = (System::Collections::Generic::BaseIComparer<System::String>*)(SystemCollectionsGenericBaseIComparerSystemStringFreeList + i + 1);
-	}
-	SystemCollectionsGenericBaseIComparerSystemStringFreeList[SystemCollectionsGenericBaseIComparerSystemStringFreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsGenericBaseIComparerSystemString = SystemCollectionsGenericBaseIComparerSystemStringFreeList + 1;
+	Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeListSize = 1000;
+	Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeList = (System::Collections::Generic::BaseIComparer<System::String>**)curMemory;
+	curMemory += 1000 * sizeof(System::Collections::Generic::BaseIComparer<System::String>*);
+	
 	Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemString = releaseSystemCollectionsGenericBaseIComparerSystemString;
 	Plugin::SystemCollectionsGenericBaseIComparerSystemStringConstructor = systemCollectionsGenericBaseIComparerSystemStringConstructor;
-	SystemBaseStringComparerFreeListSize = maxManagedObjects;
-	SystemBaseStringComparerFreeList = new System::BaseStringComparer*[SystemBaseStringComparerFreeListSize];
-	for (int32_t i = 0, end = SystemBaseStringComparerFreeListSize - 1; i < end; ++i)
-	{
-		SystemBaseStringComparerFreeList[i] = (System::BaseStringComparer*)(SystemBaseStringComparerFreeList + i + 1);
-	}
-	SystemBaseStringComparerFreeList[SystemBaseStringComparerFreeListSize - 1] = nullptr;
-	NextFreeSystemBaseStringComparer = SystemBaseStringComparerFreeList + 1;
+	Plugin::SystemBaseStringComparerFreeListSize = 1000;
+	Plugin::SystemBaseStringComparerFreeList = (System::BaseStringComparer**)curMemory;
+	curMemory += 1000 * sizeof(System::BaseStringComparer*);
+	
 	Plugin::ReleaseSystemBaseStringComparer = releaseSystemBaseStringComparer;
 	Plugin::SystemBaseStringComparerConstructor = systemBaseStringComparerConstructor;
 	Plugin::SystemCollectionsQueuePropertyGetCount = systemCollectionsQueuePropertyGetCount;
-	SystemCollectionsBaseQueueFreeListSize = maxManagedObjects;
-	SystemCollectionsBaseQueueFreeList = new System::Collections::BaseQueue*[SystemCollectionsBaseQueueFreeListSize];
-	for (int32_t i = 0, end = SystemCollectionsBaseQueueFreeListSize - 1; i < end; ++i)
-	{
-		SystemCollectionsBaseQueueFreeList[i] = (System::Collections::BaseQueue*)(SystemCollectionsBaseQueueFreeList + i + 1);
-	}
-	SystemCollectionsBaseQueueFreeList[SystemCollectionsBaseQueueFreeListSize - 1] = nullptr;
-	NextFreeSystemCollectionsBaseQueue = SystemCollectionsBaseQueueFreeList + 1;
+	Plugin::SystemCollectionsBaseQueueFreeListSize = 1000;
+	Plugin::SystemCollectionsBaseQueueFreeList = (System::Collections::BaseQueue**)curMemory;
+	curMemory += 1000 * sizeof(System::Collections::BaseQueue*);
+	
 	Plugin::ReleaseSystemCollectionsBaseQueue = releaseSystemCollectionsBaseQueue;
 	Plugin::SystemCollectionsBaseQueueConstructor = systemCollectionsBaseQueueConstructor;
-	SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize = maxManagedObjects;
-	SystemComponentModelDesignBaseIComponentChangeServiceFreeList = new System::ComponentModel::Design::BaseIComponentChangeService*[SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize];
-	for (int32_t i = 0, end = SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize - 1; i < end; ++i)
-	{
-		SystemComponentModelDesignBaseIComponentChangeServiceFreeList[i] = (System::ComponentModel::Design::BaseIComponentChangeService*)(SystemComponentModelDesignBaseIComponentChangeServiceFreeList + i + 1);
-	}
-	SystemComponentModelDesignBaseIComponentChangeServiceFreeList[SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize - 1] = nullptr;
-	NextFreeSystemComponentModelDesignBaseIComponentChangeService = SystemComponentModelDesignBaseIComponentChangeServiceFreeList + 1;
+	Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize = 1000;
+	Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeList = (System::ComponentModel::Design::BaseIComponentChangeService**)curMemory;
+	curMemory += 1000 * sizeof(System::ComponentModel::Design::BaseIComponentChangeService*);
+	
 	Plugin::ReleaseSystemComponentModelDesignBaseIComponentChangeService = releaseSystemComponentModelDesignBaseIComponentChangeService;
 	Plugin::SystemComponentModelDesignBaseIComponentChangeServiceConstructor = systemComponentModelDesignBaseIComponentChangeServiceConstructor;
 	Plugin::SystemIOFileStreamConstructorSystemString_SystemIOFileMode = systemIOFileStreamConstructorSystemString_SystemIOFileMode;
 	Plugin::SystemIOFileStreamMethodWriteByteSystemByte = systemIOFileStreamMethodWriteByteSystemByte;
-	SystemIOBaseFileStreamFreeListSize = maxManagedObjects;
-	SystemIOBaseFileStreamFreeList = new System::IO::BaseFileStream*[SystemIOBaseFileStreamFreeListSize];
-	for (int32_t i = 0, end = SystemIOBaseFileStreamFreeListSize - 1; i < end; ++i)
-	{
-		SystemIOBaseFileStreamFreeList[i] = (System::IO::BaseFileStream*)(SystemIOBaseFileStreamFreeList + i + 1);
-	}
-	SystemIOBaseFileStreamFreeList[SystemIOBaseFileStreamFreeListSize - 1] = nullptr;
-	NextFreeSystemIOBaseFileStream = SystemIOBaseFileStreamFreeList + 1;
+	Plugin::SystemIOBaseFileStreamFreeListSize = 1000;
+	Plugin::SystemIOBaseFileStreamFreeList = (System::IO::BaseFileStream**)curMemory;
+	curMemory += 1000 * sizeof(System::IO::BaseFileStream*);
+	
 	Plugin::ReleaseSystemIOBaseFileStream = releaseSystemIOBaseFileStream;
 	Plugin::SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode = systemIOBaseFileStreamConstructorSystemString_SystemIOFileMode;
 	Plugin::ReleaseUnityEnginePlayablesPlayableHandle = releaseUnityEnginePlayablesPlayableHandle;
-	Plugin::RefCountsUnityEnginePlayablesPlayableHandle = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsUnityEnginePlayablesPlayableHandle = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEnginePlayablesPlayableHandle = 1000;
 	Plugin::BoxPlayableHandle = boxPlayableHandle;
 	Plugin::UnboxPlayableHandle = unboxPlayableHandle;
 	Plugin::UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1 = unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1;
@@ -17638,7 +17646,9 @@ DLLEXPORT void Init(
 	Plugin::BoxInteractionSourceNode = boxInteractionSourceNode;
 	Plugin::UnboxInteractionSourceNode = unboxInteractionSourceNode;
 	Plugin::ReleaseUnityEngineXRWSAInputInteractionSourcePose = releaseUnityEngineXRWSAInputInteractionSourcePose;
-	Plugin::RefCountsUnityEngineXRWSAInputInteractionSourcePose = new int32_t[maxManagedObjects]();
+	Plugin::RefCountsUnityEngineXRWSAInputInteractionSourcePose = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenUnityEngineXRWSAInputInteractionSourcePose = 1000;
 	Plugin::UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode = unityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode;
 	Plugin::BoxInteractionSourcePose = boxInteractionSourcePose;
 	Plugin::UnboxInteractionSourcePose = unboxInteractionSourcePose;
@@ -17692,157 +17702,109 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineUnityEngineGradientColorKeyArray1Constructor1 = unityEngineUnityEngineGradientColorKeyArray1Constructor1;
 	Plugin::UnityEngineGradientColorKeyArray1GetItem1 = unityEngineGradientColorKeyArray1GetItem1;
 	Plugin::UnityEngineGradientColorKeyArray1SetItem1 = unityEngineGradientColorKeyArray1SetItem1;
-	SystemActionFreeListSize = maxManagedObjects;
-	SystemActionFreeList = new System::Action*[SystemActionFreeListSize];
-	for (int32_t i = 0, end = SystemActionFreeListSize - 1; i < end; ++i)
-	{
-		SystemActionFreeList[i] = (System::Action*)(SystemActionFreeList + i + 1);
-	}
-	SystemActionFreeList[SystemActionFreeListSize - 1] = nullptr;
-	NextFreeSystemAction = SystemActionFreeList + 1;
+	Plugin::SystemActionFreeListSize = 1000;
+	Plugin::SystemActionFreeList = (System::Action**)curMemory;
+	curMemory += 1000 * sizeof(System::Action*);
+	
 	Plugin::ReleaseSystemAction = releaseSystemAction;
 	Plugin::SystemActionConstructor = systemActionConstructor;
 	Plugin::SystemActionAdd = systemActionAdd;
 	Plugin::SystemActionRemove = systemActionRemove;
 	Plugin::SystemActionInvoke = systemActionInvoke;
-	SystemActionSystemSingleFreeListSize = maxManagedObjects;
-	SystemActionSystemSingleFreeList = new System::Action1<float>*[SystemActionSystemSingleFreeListSize];
-	for (int32_t i = 0, end = SystemActionSystemSingleFreeListSize - 1; i < end; ++i)
-	{
-		SystemActionSystemSingleFreeList[i] = (System::Action1<float>*)(SystemActionSystemSingleFreeList + i + 1);
-	}
-	SystemActionSystemSingleFreeList[SystemActionSystemSingleFreeListSize - 1] = nullptr;
-	NextFreeSystemActionSystemSingle = SystemActionSystemSingleFreeList + 1;
+	Plugin::SystemActionSystemSingleFreeListSize = 1000;
+	Plugin::SystemActionSystemSingleFreeList = (System::Action1<float>**)curMemory;
+	curMemory += 1000 * sizeof(System::Action1<float>*);
+	
 	Plugin::ReleaseSystemActionSystemSingle = releaseSystemActionSystemSingle;
 	Plugin::SystemActionSystemSingleConstructor = systemActionSystemSingleConstructor;
 	Plugin::SystemActionSystemSingleAdd = systemActionSystemSingleAdd;
 	Plugin::SystemActionSystemSingleRemove = systemActionSystemSingleRemove;
 	Plugin::SystemActionSystemSingleInvoke = systemActionSystemSingleInvoke;
-	SystemActionSystemSingle_SystemSingleFreeListSize = 100;
-	SystemActionSystemSingle_SystemSingleFreeList = new System::Action2<float, float>*[SystemActionSystemSingle_SystemSingleFreeListSize];
-	for (int32_t i = 0, end = SystemActionSystemSingle_SystemSingleFreeListSize - 1; i < end; ++i)
-	{
-		SystemActionSystemSingle_SystemSingleFreeList[i] = (System::Action2<float, float>*)(SystemActionSystemSingle_SystemSingleFreeList + i + 1);
-	}
-	SystemActionSystemSingle_SystemSingleFreeList[SystemActionSystemSingle_SystemSingleFreeListSize - 1] = nullptr;
-	NextFreeSystemActionSystemSingle_SystemSingle = SystemActionSystemSingle_SystemSingleFreeList + 1;
+	Plugin::SystemActionSystemSingle_SystemSingleFreeListSize = 100;
+	Plugin::SystemActionSystemSingle_SystemSingleFreeList = (System::Action2<float, float>**)curMemory;
+	curMemory += 100 * sizeof(System::Action2<float, float>*);
+	
 	Plugin::ReleaseSystemActionSystemSingle_SystemSingle = releaseSystemActionSystemSingle_SystemSingle;
 	Plugin::SystemActionSystemSingle_SystemSingleConstructor = systemActionSystemSingle_SystemSingleConstructor;
 	Plugin::SystemActionSystemSingle_SystemSingleAdd = systemActionSystemSingle_SystemSingleAdd;
 	Plugin::SystemActionSystemSingle_SystemSingleRemove = systemActionSystemSingle_SystemSingleRemove;
 	Plugin::SystemActionSystemSingle_SystemSingleInvoke = systemActionSystemSingle_SystemSingleInvoke;
-	SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize = 50;
-	SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList = new System::Func3<int32_t, float, double>*[SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize];
-	for (int32_t i = 0, end = SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize - 1; i < end; ++i)
-	{
-		SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[i] = (System::Func3<int32_t, float, double>*)(SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + i + 1);
-	}
-	SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize - 1] = nullptr;
-	NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble = SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + 1;
+	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize = 50;
+	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList = (System::Func3<int32_t, float, double>**)curMemory;
+	curMemory += 50 * sizeof(System::Func3<int32_t, float, double>*);
+	
 	Plugin::ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble = releaseSystemFuncSystemInt32_SystemSingle_SystemDouble;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor = systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd = systemFuncSystemInt32_SystemSingle_SystemDoubleAdd;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove = systemFuncSystemInt32_SystemSingle_SystemDoubleRemove;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke = systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke;
-	SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize = 25;
-	SystemFuncSystemInt16_SystemInt32_SystemStringFreeList = new System::Func3<int16_t, int32_t, System::String>*[SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize];
-	for (int32_t i = 0, end = SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize - 1; i < end; ++i)
-	{
-		SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[i] = (System::Func3<int16_t, int32_t, System::String>*)(SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + i + 1);
-	}
-	SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize - 1] = nullptr;
-	NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + 1;
+	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize = 25;
+	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList = (System::Func3<int16_t, int32_t, System::String>**)curMemory;
+	curMemory += 25 * sizeof(System::Func3<int16_t, int32_t, System::String>*);
+	
 	Plugin::ReleaseSystemFuncSystemInt16_SystemInt32_SystemString = releaseSystemFuncSystemInt16_SystemInt32_SystemString;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor = systemFuncSystemInt16_SystemInt32_SystemStringConstructor;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd = systemFuncSystemInt16_SystemInt32_SystemStringAdd;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringRemove = systemFuncSystemInt16_SystemInt32_SystemStringRemove;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringInvoke = systemFuncSystemInt16_SystemInt32_SystemStringInvoke;
-	SystemAppDomainInitializerFreeListSize = maxManagedObjects;
-	SystemAppDomainInitializerFreeList = new System::AppDomainInitializer*[SystemAppDomainInitializerFreeListSize];
-	for (int32_t i = 0, end = SystemAppDomainInitializerFreeListSize - 1; i < end; ++i)
-	{
-		SystemAppDomainInitializerFreeList[i] = (System::AppDomainInitializer*)(SystemAppDomainInitializerFreeList + i + 1);
-	}
-	SystemAppDomainInitializerFreeList[SystemAppDomainInitializerFreeListSize - 1] = nullptr;
-	NextFreeSystemAppDomainInitializer = SystemAppDomainInitializerFreeList + 1;
+	Plugin::SystemAppDomainInitializerFreeListSize = 1000;
+	Plugin::SystemAppDomainInitializerFreeList = (System::AppDomainInitializer**)curMemory;
+	curMemory += 1000 * sizeof(System::AppDomainInitializer*);
+	
 	Plugin::ReleaseSystemAppDomainInitializer = releaseSystemAppDomainInitializer;
 	Plugin::SystemAppDomainInitializerConstructor = systemAppDomainInitializerConstructor;
 	Plugin::SystemAppDomainInitializerAdd = systemAppDomainInitializerAdd;
 	Plugin::SystemAppDomainInitializerRemove = systemAppDomainInitializerRemove;
 	Plugin::SystemAppDomainInitializerInvoke = systemAppDomainInitializerInvoke;
-	UnityEngineEventsUnityActionFreeListSize = maxManagedObjects;
-	UnityEngineEventsUnityActionFreeList = new UnityEngine::Events::UnityAction*[UnityEngineEventsUnityActionFreeListSize];
-	for (int32_t i = 0, end = UnityEngineEventsUnityActionFreeListSize - 1; i < end; ++i)
-	{
-		UnityEngineEventsUnityActionFreeList[i] = (UnityEngine::Events::UnityAction*)(UnityEngineEventsUnityActionFreeList + i + 1);
-	}
-	UnityEngineEventsUnityActionFreeList[UnityEngineEventsUnityActionFreeListSize - 1] = nullptr;
-	NextFreeUnityEngineEventsUnityAction = UnityEngineEventsUnityActionFreeList + 1;
+	Plugin::UnityEngineEventsUnityActionFreeListSize = 1000;
+	Plugin::UnityEngineEventsUnityActionFreeList = (UnityEngine::Events::UnityAction**)curMemory;
+	curMemory += 1000 * sizeof(UnityEngine::Events::UnityAction*);
+	
 	Plugin::ReleaseUnityEngineEventsUnityAction = releaseUnityEngineEventsUnityAction;
 	Plugin::UnityEngineEventsUnityActionConstructor = unityEngineEventsUnityActionConstructor;
 	Plugin::UnityEngineEventsUnityActionAdd = unityEngineEventsUnityActionAdd;
 	Plugin::UnityEngineEventsUnityActionRemove = unityEngineEventsUnityActionRemove;
 	Plugin::UnityEngineEventsUnityActionInvoke = unityEngineEventsUnityActionInvoke;
-	UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize = 10;
-	UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList = new UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>*[UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize];
-	for (int32_t i = 0, end = UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize - 1; i < end; ++i)
-	{
-		UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList[i] = (UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>*)(UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList + i + 1);
-	}
-	UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList[UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize - 1] = nullptr;
-	NextFreeUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode = UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList + 1;
+	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize = 10;
+	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList = (UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>**)curMemory;
+	curMemory += 10 * sizeof(UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>*);
+	
 	Plugin::ReleaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode = releaseUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeAdd;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeRemove;
 	Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke = unityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeInvoke;
-	SystemComponentModelDesignComponentEventHandlerFreeListSize = maxManagedObjects;
-	SystemComponentModelDesignComponentEventHandlerFreeList = new System::ComponentModel::Design::ComponentEventHandler*[SystemComponentModelDesignComponentEventHandlerFreeListSize];
-	for (int32_t i = 0, end = SystemComponentModelDesignComponentEventHandlerFreeListSize - 1; i < end; ++i)
-	{
-		SystemComponentModelDesignComponentEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentEventHandler*)(SystemComponentModelDesignComponentEventHandlerFreeList + i + 1);
-	}
-	SystemComponentModelDesignComponentEventHandlerFreeList[SystemComponentModelDesignComponentEventHandlerFreeListSize - 1] = nullptr;
-	NextFreeSystemComponentModelDesignComponentEventHandler = SystemComponentModelDesignComponentEventHandlerFreeList + 1;
+	Plugin::SystemComponentModelDesignComponentEventHandlerFreeListSize = 1000;
+	Plugin::SystemComponentModelDesignComponentEventHandlerFreeList = (System::ComponentModel::Design::ComponentEventHandler**)curMemory;
+	curMemory += 1000 * sizeof(System::ComponentModel::Design::ComponentEventHandler*);
+	
 	Plugin::ReleaseSystemComponentModelDesignComponentEventHandler = releaseSystemComponentModelDesignComponentEventHandler;
 	Plugin::SystemComponentModelDesignComponentEventHandlerConstructor = systemComponentModelDesignComponentEventHandlerConstructor;
 	Plugin::SystemComponentModelDesignComponentEventHandlerAdd = systemComponentModelDesignComponentEventHandlerAdd;
 	Plugin::SystemComponentModelDesignComponentEventHandlerRemove = systemComponentModelDesignComponentEventHandlerRemove;
 	Plugin::SystemComponentModelDesignComponentEventHandlerInvoke = systemComponentModelDesignComponentEventHandlerInvoke;
-	SystemComponentModelDesignComponentChangingEventHandlerFreeListSize = maxManagedObjects;
-	SystemComponentModelDesignComponentChangingEventHandlerFreeList = new System::ComponentModel::Design::ComponentChangingEventHandler*[SystemComponentModelDesignComponentChangingEventHandlerFreeListSize];
-	for (int32_t i = 0, end = SystemComponentModelDesignComponentChangingEventHandlerFreeListSize - 1; i < end; ++i)
-	{
-		SystemComponentModelDesignComponentChangingEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentChangingEventHandler*)(SystemComponentModelDesignComponentChangingEventHandlerFreeList + i + 1);
-	}
-	SystemComponentModelDesignComponentChangingEventHandlerFreeList[SystemComponentModelDesignComponentChangingEventHandlerFreeListSize - 1] = nullptr;
-	NextFreeSystemComponentModelDesignComponentChangingEventHandler = SystemComponentModelDesignComponentChangingEventHandlerFreeList + 1;
+	Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeListSize = 1000;
+	Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeList = (System::ComponentModel::Design::ComponentChangingEventHandler**)curMemory;
+	curMemory += 1000 * sizeof(System::ComponentModel::Design::ComponentChangingEventHandler*);
+	
 	Plugin::ReleaseSystemComponentModelDesignComponentChangingEventHandler = releaseSystemComponentModelDesignComponentChangingEventHandler;
 	Plugin::SystemComponentModelDesignComponentChangingEventHandlerConstructor = systemComponentModelDesignComponentChangingEventHandlerConstructor;
 	Plugin::SystemComponentModelDesignComponentChangingEventHandlerAdd = systemComponentModelDesignComponentChangingEventHandlerAdd;
 	Plugin::SystemComponentModelDesignComponentChangingEventHandlerRemove = systemComponentModelDesignComponentChangingEventHandlerRemove;
 	Plugin::SystemComponentModelDesignComponentChangingEventHandlerInvoke = systemComponentModelDesignComponentChangingEventHandlerInvoke;
-	SystemComponentModelDesignComponentChangedEventHandlerFreeListSize = maxManagedObjects;
-	SystemComponentModelDesignComponentChangedEventHandlerFreeList = new System::ComponentModel::Design::ComponentChangedEventHandler*[SystemComponentModelDesignComponentChangedEventHandlerFreeListSize];
-	for (int32_t i = 0, end = SystemComponentModelDesignComponentChangedEventHandlerFreeListSize - 1; i < end; ++i)
-	{
-		SystemComponentModelDesignComponentChangedEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentChangedEventHandler*)(SystemComponentModelDesignComponentChangedEventHandlerFreeList + i + 1);
-	}
-	SystemComponentModelDesignComponentChangedEventHandlerFreeList[SystemComponentModelDesignComponentChangedEventHandlerFreeListSize - 1] = nullptr;
-	NextFreeSystemComponentModelDesignComponentChangedEventHandler = SystemComponentModelDesignComponentChangedEventHandlerFreeList + 1;
+	Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeListSize = 1000;
+	Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeList = (System::ComponentModel::Design::ComponentChangedEventHandler**)curMemory;
+	curMemory += 1000 * sizeof(System::ComponentModel::Design::ComponentChangedEventHandler*);
+	
 	Plugin::ReleaseSystemComponentModelDesignComponentChangedEventHandler = releaseSystemComponentModelDesignComponentChangedEventHandler;
 	Plugin::SystemComponentModelDesignComponentChangedEventHandlerConstructor = systemComponentModelDesignComponentChangedEventHandlerConstructor;
 	Plugin::SystemComponentModelDesignComponentChangedEventHandlerAdd = systemComponentModelDesignComponentChangedEventHandlerAdd;
 	Plugin::SystemComponentModelDesignComponentChangedEventHandlerRemove = systemComponentModelDesignComponentChangedEventHandlerRemove;
 	Plugin::SystemComponentModelDesignComponentChangedEventHandlerInvoke = systemComponentModelDesignComponentChangedEventHandlerInvoke;
-	SystemComponentModelDesignComponentRenameEventHandlerFreeListSize = maxManagedObjects;
-	SystemComponentModelDesignComponentRenameEventHandlerFreeList = new System::ComponentModel::Design::ComponentRenameEventHandler*[SystemComponentModelDesignComponentRenameEventHandlerFreeListSize];
-	for (int32_t i = 0, end = SystemComponentModelDesignComponentRenameEventHandlerFreeListSize - 1; i < end; ++i)
-	{
-		SystemComponentModelDesignComponentRenameEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentRenameEventHandler*)(SystemComponentModelDesignComponentRenameEventHandlerFreeList + i + 1);
-	}
-	SystemComponentModelDesignComponentRenameEventHandlerFreeList[SystemComponentModelDesignComponentRenameEventHandlerFreeListSize - 1] = nullptr;
-	NextFreeSystemComponentModelDesignComponentRenameEventHandler = SystemComponentModelDesignComponentRenameEventHandlerFreeList + 1;
+	Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeListSize = 1000;
+	Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeList = (System::ComponentModel::Design::ComponentRenameEventHandler**)curMemory;
+	curMemory += 1000 * sizeof(System::ComponentModel::Design::ComponentRenameEventHandler*);
+	
 	Plugin::ReleaseSystemComponentModelDesignComponentRenameEventHandler = releaseSystemComponentModelDesignComponentRenameEventHandler;
 	Plugin::SystemComponentModelDesignComponentRenameEventHandlerConstructor = systemComponentModelDesignComponentRenameEventHandlerConstructor;
 	Plugin::SystemComponentModelDesignComponentRenameEventHandlerAdd = systemComponentModelDesignComponentRenameEventHandlerAdd;
@@ -17850,9 +17812,155 @@ DLLEXPORT void Init(
 	Plugin::SystemComponentModelDesignComponentRenameEventHandlerInvoke = systemComponentModelDesignComponentRenameEventHandlerInvoke;
 	/*END INIT BODY*/
 	
+	// Make sure there was enough memory
+	int32_t usedMemory = curMemory - (uint8_t*)memory;
+	if (usedMemory > memorySize)
+	{
+		System::String msg = "Plugin memory size is too low";
+		System::Exception ex(msg);
+		Plugin::SetException(ex.Handle);
+		return;
+	}
+	
+	if (initMode == InitMode::FirstBoot)
+	{
+		memset(memory, 0, memorySize);
+		
+		/*BEGIN INIT BODY FIRST BOOT*/
+		for (int32_t i = 0, end = Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList[i] = (System::Collections::Generic::BaseIComparer<int32_t>*)(Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList + i + 1);
+		}
+		Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList[Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeList[i] = (System::Collections::Generic::BaseIComparer<System::String>*)(Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeList + i + 1);
+		}
+		Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeList[Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemCollectionsGenericBaseIComparerSystemString = Plugin::SystemCollectionsGenericBaseIComparerSystemStringFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemBaseStringComparerFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemBaseStringComparerFreeList[i] = (System::BaseStringComparer*)(Plugin::SystemBaseStringComparerFreeList + i + 1);
+		}
+		Plugin::SystemBaseStringComparerFreeList[Plugin::SystemBaseStringComparerFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemBaseStringComparer = Plugin::SystemBaseStringComparerFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemCollectionsBaseQueueFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemCollectionsBaseQueueFreeList[i] = (System::Collections::BaseQueue*)(Plugin::SystemCollectionsBaseQueueFreeList + i + 1);
+		}
+		Plugin::SystemCollectionsBaseQueueFreeList[Plugin::SystemCollectionsBaseQueueFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemCollectionsBaseQueue = Plugin::SystemCollectionsBaseQueueFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeList[i] = (System::ComponentModel::Design::BaseIComponentChangeService*)(Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeList + i + 1);
+		}
+		Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeList[Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemComponentModelDesignBaseIComponentChangeService = Plugin::SystemComponentModelDesignBaseIComponentChangeServiceFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemIOBaseFileStreamFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemIOBaseFileStreamFreeList[i] = (System::IO::BaseFileStream*)(Plugin::SystemIOBaseFileStreamFreeList + i + 1);
+		}
+		Plugin::SystemIOBaseFileStreamFreeList[Plugin::SystemIOBaseFileStreamFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemIOBaseFileStream = Plugin::SystemIOBaseFileStreamFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemActionFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemActionFreeList[i] = (System::Action*)(Plugin::SystemActionFreeList + i + 1);
+		}
+		Plugin::SystemActionFreeList[Plugin::SystemActionFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemAction = Plugin::SystemActionFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemActionSystemSingleFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemActionSystemSingleFreeList[i] = (System::Action1<float>*)(Plugin::SystemActionSystemSingleFreeList + i + 1);
+		}
+		Plugin::SystemActionSystemSingleFreeList[Plugin::SystemActionSystemSingleFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemActionSystemSingle = Plugin::SystemActionSystemSingleFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemActionSystemSingle_SystemSingleFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemActionSystemSingle_SystemSingleFreeList[i] = (System::Action2<float, float>*)(Plugin::SystemActionSystemSingle_SystemSingleFreeList + i + 1);
+		}
+		Plugin::SystemActionSystemSingle_SystemSingleFreeList[Plugin::SystemActionSystemSingle_SystemSingleFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemActionSystemSingle_SystemSingle = Plugin::SystemActionSystemSingle_SystemSingleFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[i] = (System::Func3<int32_t, float, double>*)(Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + i + 1);
+		}
+		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble = Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[i] = (System::Func3<int16_t, int32_t, System::String>*)(Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + i + 1);
+		}
+		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemAppDomainInitializerFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemAppDomainInitializerFreeList[i] = (System::AppDomainInitializer*)(Plugin::SystemAppDomainInitializerFreeList + i + 1);
+		}
+		Plugin::SystemAppDomainInitializerFreeList[Plugin::SystemAppDomainInitializerFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemAppDomainInitializer = Plugin::SystemAppDomainInitializerFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::UnityEngineEventsUnityActionFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::UnityEngineEventsUnityActionFreeList[i] = (UnityEngine::Events::UnityAction*)(Plugin::UnityEngineEventsUnityActionFreeList + i + 1);
+		}
+		Plugin::UnityEngineEventsUnityActionFreeList[Plugin::UnityEngineEventsUnityActionFreeListSize - 1] = nullptr;
+		Plugin::NextFreeUnityEngineEventsUnityAction = Plugin::UnityEngineEventsUnityActionFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList[i] = (UnityEngine::Events::UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>*)(Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList + i + 1);
+		}
+		Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList[Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeListSize - 1] = nullptr;
+		Plugin::NextFreeUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode = Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemComponentModelDesignComponentEventHandlerFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemComponentModelDesignComponentEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentEventHandler*)(Plugin::SystemComponentModelDesignComponentEventHandlerFreeList + i + 1);
+		}
+		Plugin::SystemComponentModelDesignComponentEventHandlerFreeList[Plugin::SystemComponentModelDesignComponentEventHandlerFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemComponentModelDesignComponentEventHandler = Plugin::SystemComponentModelDesignComponentEventHandlerFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentChangingEventHandler*)(Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeList + i + 1);
+		}
+		Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeList[Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemComponentModelDesignComponentChangingEventHandler = Plugin::SystemComponentModelDesignComponentChangingEventHandlerFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentChangedEventHandler*)(Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeList + i + 1);
+		}
+		Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeList[Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemComponentModelDesignComponentChangedEventHandler = Plugin::SystemComponentModelDesignComponentChangedEventHandlerFreeList + 1;
+		
+		for (int32_t i = 0, end = Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeListSize - 1; i < end; ++i)
+		{
+			Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeList[i] = (System::ComponentModel::Design::ComponentRenameEventHandler*)(Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeList + i + 1);
+		}
+		Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeList[Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeListSize - 1] = nullptr;
+		Plugin::NextFreeSystemComponentModelDesignComponentRenameEventHandler = Plugin::SystemComponentModelDesignComponentRenameEventHandlerFreeList + 1;
+		/*END INIT BODY FIRST BOOT*/
+	}
+	
 	try
 	{
-		PluginMain();
+		PluginMain(
+			curMemory,
+			memorySize - usedMemory,
+			initMode == InitMode::FirstBoot);
 	}
 	catch (System::Exception ex)
 	{

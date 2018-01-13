@@ -1,6 +1,7 @@
 using AOT;
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -251,30 +252,68 @@ namespace NativeScript
 			}
 		}
 		
+		/// <summary>
+		/// A reusable version of UnityEngine.WaitForSecondsRealtime to avoid
+		/// GC allocs
+		/// </summary>
+		class ReusableWaitForSecondsRealtime : CustomYieldInstruction
+		{
+			private float waitTime;
+			
+			public float WaitTime
+			{
+				set
+				{
+					waitTime = Time.realtimeSinceStartup + value;
+				}
+			}
+
+			public override bool keepWaiting
+			{
+				get
+				{
+					return Time.realtimeSinceStartup < waitTime;
+				}
+			}
+
+			public ReusableWaitForSecondsRealtime(float time)
+			{
+				WaitTime = time;
+			}
+		}
+		
 		// Name of the plugin when using [DllImport]
-		const string PluginName = "NativeScript";
+		const string PLUGIN_NAME = "NativeScript";
 		
 		// Path to load the plugin from when running inside the editor
 #if UNITY_EDITOR_OSX
-		const string PluginPath = "/Plugins/Editor/NativeScript.bundle/Contents/MacOS/NativeScript";
+		const string PLUGIN_PATH = "/Plugins/Editor/NativeScript.bundle/Contents/MacOS/NativeScript";
 #elif UNITY_EDITOR_LINUX
-		const string PluginPath = "/Plugins/Editor/libNativeScript.so";
+		const string PLUGIN_PATH = "/Plugins/Editor/libNativeScript.so";
 #elif UNITY_EDITOR_WIN
-		const string PluginPath = "/Plugins/Editor/NativeScript.dll";
+		const string PLUGIN_PATH = "/Plugins/Editor/NativeScript.dll";
 #endif
-
+		
+		enum InitMode : byte
+		{
+			FirstBoot,
+			Reload
+		}
+		
 #if UNITY_EDITOR
 		// Handle to the C++ DLL
 		static IntPtr libraryHandle;
 
 		delegate void InitDelegate(
-			int maxManagedObjects,
+			IntPtr memory,
+			int memorySize,
+			InitMode initMode,
 			IntPtr releaseObject,
 			IntPtr stringNew,
 			IntPtr setException,
 			IntPtr arrayGetLength,
 			/*BEGIN INIT PARAMS*/
-			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
+			int maxManagedObjects,			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
@@ -754,13 +793,15 @@ namespace NativeScript
 #else
 		[DllImport(PluginName)]
 		static extern void Init(
-			int maxManagedObjects,
+			IntPtr memory,
+			int memorySize,
+			initMode initMode,
 			IntPtr releaseObject,
 			IntPtr stringNew,
 			IntPtr setException,
 			IntPtr arrayGetLength,
 			/*BEGIN INIT PARAMS*/
-			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
+			int maxManagedObjects,			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
@@ -1416,38 +1457,95 @@ namespace NativeScript
 		delegate void SystemComponentModelDesignComponentRenameEventHandlerRemoveDelegate(int thisHandle, int delHandle);
 		/*END DELEGATE TYPES*/
 		
+		private static readonly string pluginPath = Application.dataPath + PLUGIN_PATH;
 		public static Exception UnhandledCppException;
 		public static SetCsharpExceptionDelegate SetCsharpException;
+		private static IntPtr memory;
+		private static int memorySize;
 		
 		/// <summary>
 		/// Open the C++ plugin and call its PluginMain()
 		/// </summary>
 		/// 
-		/// <param name="maxManagedObjects">
-		/// Maximum number of simultaneous managed objects that the C++ plugin
-		/// uses.
+		/// <param name="memorySize">
+		/// Number of bytes of memory to make available to the C++ plugin
 		/// </param>
-		public static void Open(
-			int maxManagedObjects)
+		public static void Open(int memorySize)
 		{
-			ObjectStore.Init(maxManagedObjects);
-			/*BEGIN STRUCTSTORE INIT CALLS*/
-			NativeScript.Bindings.StructStore<UnityEngine.Resolution>.Init(maxManagedObjects);
+			/*BEGIN STORE INIT CALLS*/
+			NativeScript.Bindings.ObjectStore.Init(1000);
+			NativeScript.Bindings.StructStore<UnityEngine.Resolution>.Init(1000);
 			NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Init(1000);
-			NativeScript.Bindings.StructStore<UnityEngine.Playables.PlayableGraph>.Init(maxManagedObjects);
-			NativeScript.Bindings.StructStore<UnityEngine.Animations.AnimationMixerPlayable>.Init(maxManagedObjects);
-			NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Init(maxManagedObjects);
-			NativeScript.Bindings.StructStore<UnityEngine.Ray>.Init(maxManagedObjects);
-			NativeScript.Bindings.StructStore<UnityEngine.SceneManagement.Scene>.Init(maxManagedObjects);
-			NativeScript.Bindings.StructStore<UnityEngine.Playables.PlayableHandle>.Init(maxManagedObjects);
-			NativeScript.Bindings.StructStore<UnityEngine.XR.WSA.Input.InteractionSourcePose>.Init(maxManagedObjects);
-			/*END STRUCTSTORE INIT CALLS*/
+			NativeScript.Bindings.StructStore<UnityEngine.Playables.PlayableGraph>.Init(1000);
+			NativeScript.Bindings.StructStore<UnityEngine.Animations.AnimationMixerPlayable>.Init(1000);
+			NativeScript.Bindings.StructStore<System.Collections.Generic.KeyValuePair<string, double>>.Init(20);
+			NativeScript.Bindings.StructStore<UnityEngine.Ray>.Init(10);
+			NativeScript.Bindings.StructStore<UnityEngine.SceneManagement.Scene>.Init(1000);
+			NativeScript.Bindings.StructStore<UnityEngine.Playables.PlayableHandle>.Init(1000);
+			NativeScript.Bindings.StructStore<UnityEngine.XR.WSA.Input.InteractionSourcePose>.Init(1000);
+			/*END STORE INIT CALLS*/
 			
+			Bindings.memorySize = memorySize;
+			memory = Marshal.AllocHGlobal(memorySize);
+			OpenPlugin(InitMode.FirstBoot);
+		}
+		
+		// Reloading requires dynamic loading of the C++ plugin, which is only
+		// available in the editor
 #if UNITY_EDITOR
-
+		/// <summary>
+		/// Reload the C++ plugin. Its memory is intact and false is passed for
+		/// the isFirstBoot parameter of PluginMain().
+		/// </summary>
+		public static void Reload()
+		{
+			ClosePlugin();
+			OpenPlugin(InitMode.Reload);
+		}
+		
+		/// <summary>
+		/// Poll the plugin for changes and reload if any are found.
+		/// </summary>
+		/// 
+		/// <param name="pollTime">
+		/// Number of seconds between polls.
+		/// </param>
+		/// 
+		/// <returns>
+		/// Enumerator for this iterator function. Can be passed to
+		/// MonoBehaviour.StartCoroutine for easy usage.
+		/// </returns>
+		public static IEnumerator AutoReload(float pollTime)
+		{
+			// Get the original time
+			long lastWriteTime = File.GetLastWriteTime(pluginPath).Ticks;
+			
+			ReusableWaitForSecondsRealtime poll
+				= new ReusableWaitForSecondsRealtime(pollTime);
+			do
+			{
+				// Poll. Reload if the last write time changed.
+				long cur = File.GetLastWriteTime(pluginPath).Ticks;
+				if (cur != lastWriteTime)
+				{
+					Debug.Log("reloading at " + DateTime.Now);
+					lastWriteTime = cur;
+					Reload();
+				}
+				
+				// Wait to poll again
+				poll.WaitTime = pollTime;
+				yield return poll;
+			}
+			while (true);
+		}
+#endif
+		
+		private static void OpenPlugin(InitMode initMode)
+		{
+#if UNITY_EDITOR
 			// Open native library
-			libraryHandle = OpenLibrary(
-				Application.dataPath + PluginPath);
+			libraryHandle = OpenLibrary(pluginPath);
 			InitDelegate Init = GetDelegate<InitDelegate>(
 				libraryHandle,
 				"Init");
@@ -1498,17 +1596,18 @@ namespace NativeScript
 			SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke = GetDelegate<SystemComponentModelDesignComponentRenameEventHandlerNativeInvokeDelegate>(libraryHandle, "SystemComponentModelDesignComponentRenameEventHandlerNativeInvoke");
 			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegate>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
 			/*END MONOBEHAVIOUR GETDELEGATE CALLS*/
-
 #endif
-			
 			// Init C++ library
 			Init(
-				maxManagedObjects,
+				memory,
+				memorySize,
+				initMode,
 				Marshal.GetFunctionPointerForDelegate(new ReleaseObjectDelegate(ReleaseObject)),
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
 				Marshal.GetFunctionPointerForDelegate(new SetExceptionDelegate(SetException)),
 				Marshal.GetFunctionPointerForDelegate(new ArrayGetLengthDelegate(ArrayGetLength)),
 				/*BEGIN INIT CALL*/
+				1000,
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3PropertyGetMagnitudeDelegate(UnityEngineVector3PropertyGetMagnitude)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)),
@@ -1780,6 +1879,13 @@ namespace NativeScript
 		/// Close the C++ plugin
 		/// </summary>
 		public static void Close()
+		{
+			ClosePlugin();
+			Marshal.FreeHGlobal(memory);
+			memory = IntPtr.Zero;
+		}
+		
+		private static void ClosePlugin()
 		{
 #if UNITY_EDITOR
 			CloseLibrary(libraryHandle);
