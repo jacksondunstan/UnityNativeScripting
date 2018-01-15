@@ -1771,6 +1771,38 @@ namespace NativeScript
 			AppendCppMethodDefinitionsEnd(
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
+			
+			// Generate iterator if this type implements IEnumerable<T>
+			Type[] allInterfaces = type.GetInterfaces();
+			foreach (Type interfaceType in allInterfaces)
+			{
+				if (interfaceType.IsGenericType
+					&& interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+				{
+					builders.TempStrBuilder.Length = 0;
+					AppendNamespace(
+						type.Namespace,
+						string.Empty,
+						builders.TempStrBuilder);
+					AppendTypeNameWithoutGenericSuffix(
+						type.Name,
+						builders.TempStrBuilder);
+					AppendTypeNames(
+						typeParams,
+						builders.TempStrBuilder);
+					string bindingEnumerableTypeName = builders.TempStrBuilder.ToString();
+					
+					Type elementType = interfaceType.GetGenericArguments()[0];
+					AppendGenericEnumerableIterator(
+						type,
+						typeof(IEnumerator<>).MakeGenericType(elementType),
+						elementType,
+						bindingEnumerableTypeName,
+						builders.CppTypeDefinitions,
+						builders.CppMethodDefinitions);
+					break;
+				}
+			}
 		}
 		
 		static void AppendBaseType(
@@ -2543,7 +2575,7 @@ namespace NativeScript
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
+			builders.CppMethodDefinitions.Append('\n');
 
 			// C++ init params
 			AppendCppInitParam(
@@ -4526,7 +4558,363 @@ namespace NativeScript
 				AppendCppMethodDefinitionsEnd(
 					cppMethodDefinitionsIndent,
 					builders.CppMethodDefinitions);
+				
+				if (rank == 1)
+				{
+					AppendArrayIterator(
+						elementType,
+						cppGenericArrayTypeName,
+						bindingArrayTypeName,
+						builders.CppTypeDefinitions,
+						builders.CppMethodDefinitions);
+				}
 			}
+		}
+		
+		static void AppendArrayIterator(
+			Type elementType,
+			string cppGenericArrayTypeName,
+			string bindingArrayTypeName,
+			StringBuilder cppTypeDefinitions,
+			StringBuilder cppMethodDefinitions)
+		{
+			// Iterator type definition
+			cppTypeDefinitions.Append("namespace Plugin\n");
+			cppTypeDefinitions.Append("{\n");
+			cppTypeDefinitions.Append("\tstruct ");
+			cppTypeDefinitions.Append(bindingArrayTypeName);
+			cppTypeDefinitions.Append("Iterator\n");
+			cppTypeDefinitions.Append("\t{\n");
+			cppTypeDefinitions.Append("\t\tSystem::");
+			cppTypeDefinitions.Append(cppGenericArrayTypeName);
+			cppTypeDefinitions.Append("& array;\n");
+			cppTypeDefinitions.Append("\t\tint index;\n");
+			cppTypeDefinitions.Append("\t\t");
+			cppTypeDefinitions.Append(bindingArrayTypeName);
+			cppTypeDefinitions.Append("Iterator(System::");
+			cppTypeDefinitions.Append(cppGenericArrayTypeName);
+			cppTypeDefinitions.Append("& array, int32_t index);\n");
+			cppTypeDefinitions.Append("\t\t");
+			cppTypeDefinitions.Append(bindingArrayTypeName);
+			cppTypeDefinitions.Append("Iterator& operator++();\n");
+			cppTypeDefinitions.Append("\t\tbool operator!=(const ");
+			cppTypeDefinitions.Append(bindingArrayTypeName);
+			cppTypeDefinitions.Append("Iterator& other);\n");
+			cppTypeDefinitions.Append("\t\t");
+			AppendCppTypeName(
+				elementType,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append(" operator*();\n");
+			cppTypeDefinitions.Append("\t};\n");
+			cppTypeDefinitions.Append("}\n");
+			cppTypeDefinitions.Append('\n');
+			
+			// begin() and end() declarations
+			cppTypeDefinitions.Append("namespace System\n");
+			cppTypeDefinitions.Append("{\n");
+			cppTypeDefinitions.Append("\tPlugin::");
+			cppTypeDefinitions.Append(bindingArrayTypeName);
+			cppTypeDefinitions.Append("Iterator begin(System::");
+			cppTypeDefinitions.Append(cppGenericArrayTypeName);
+			cppTypeDefinitions.Append("& array);\n");
+			cppTypeDefinitions.Append("\tPlugin::");
+			cppTypeDefinitions.Append(bindingArrayTypeName);
+			cppTypeDefinitions.Append("Iterator end(System::");
+			cppTypeDefinitions.Append(cppGenericArrayTypeName);
+			cppTypeDefinitions.Append("& array);\n");
+			cppTypeDefinitions.Append("}\n");
+			cppTypeDefinitions.Append('\n');
+			
+			// Iterator method definitions
+			cppMethodDefinitions.Append("namespace Plugin\n");
+			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.Append('\t');
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator(System::");
+			cppMethodDefinitions.Append(cppGenericArrayTypeName);
+			cppMethodDefinitions.Append("& array, int32_t index)\n");
+			cppMethodDefinitions.Append("\t\t: array(array)\n");
+			cppMethodDefinitions.Append("\t\t, index(index)\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append('\t');
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator& ");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append("operator++()\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\tindex++;\n");
+			cppMethodDefinitions.Append("\t\treturn *this;\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append("\tbool ");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append("operator!=(const ");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator& other)\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\treturn index != other.index;\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append('\t');
+			AppendCppTypeName(
+				elementType,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append(' ');
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append("operator*()\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\treturn array[index];\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("}\n");
+			cppMethodDefinitions.Append('\n');
+			
+			// begin() and end() definitions
+			cppMethodDefinitions.Append("namespace System\n");
+			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.Append("\tPlugin::");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator begin(System::");
+			cppMethodDefinitions.Append(cppGenericArrayTypeName);
+			cppMethodDefinitions.Append("& array)\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\treturn Plugin::");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator(array, 0);\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append("\tPlugin::");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator end(System::");
+			cppMethodDefinitions.Append(cppGenericArrayTypeName);
+			cppMethodDefinitions.Append("& array)\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\treturn Plugin::");
+			cppMethodDefinitions.Append(bindingArrayTypeName);
+			cppMethodDefinitions.Append("Iterator(array, array.GetLength() - 1);\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("}\n");
+			cppMethodDefinitions.Append('\n');
+		}
+		
+		static void AppendGenericEnumerableIterator(
+			Type enumerableType,
+			Type enumeratorType,
+			Type elementType,
+			string bindingEnumerableTypeName,
+			StringBuilder cppTypeDefinitions,
+			StringBuilder cppMethodDefinitions)
+		{
+			// Iterator type definition
+			cppTypeDefinitions.Append("namespace Plugin\n");
+			cppTypeDefinitions.Append("{\n");
+			cppTypeDefinitions.Append("\tstruct ");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator\n");
+			cppTypeDefinitions.Append("\t{\n");
+			cppTypeDefinitions.Append("\t\t");
+			AppendCppTypeName(
+				enumeratorType,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append(" enumerator;\n");
+			cppTypeDefinitions.Append("\t\tbool hasMore;\n");
+			cppTypeDefinitions.Append("\t\t");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator(decltype(nullptr));\n");
+			cppTypeDefinitions.Append("\t\t");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator(");
+			AppendCppTypeName(
+				enumerableType,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append("& enumerable);\n");
+			cppTypeDefinitions.Append("\t\t~");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator();\n");
+			cppTypeDefinitions.Append("\t\t");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator& operator++();\n");
+			cppTypeDefinitions.Append("\t\tbool operator!=(const ");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator& other);\n");
+			cppTypeDefinitions.Append("\t\t");
+			AppendCppTypeName(
+				elementType,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append(" operator*();\n");
+			cppTypeDefinitions.Append("\t};\n");
+			cppTypeDefinitions.Append("}\n");
+			cppTypeDefinitions.Append('\n');
+			
+			// begin() and end() declarations
+			int indent = AppendNamespaceBeginning(
+				enumerableType.Namespace,
+				cppTypeDefinitions);
+			AppendIndent(
+				indent,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append("Plugin::");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator begin(");
+			AppendCppTypeName(
+				enumerableType,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append("& enumerable);\n");
+			AppendIndent(
+				indent,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append("Plugin::");
+			cppTypeDefinitions.Append(bindingEnumerableTypeName);
+			cppTypeDefinitions.Append("Iterator end(");
+			AppendCppTypeName(
+				enumerableType,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append("& enumerable);\n");
+			AppendNamespaceEnding(
+				indent,
+				cppTypeDefinitions);
+			cppTypeDefinitions.Append('\n');
+			
+			// Iterator method definitions
+			cppMethodDefinitions.Append("namespace Plugin\n");
+			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.Append('\t');
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator(decltype(nullptr))\n");
+			cppMethodDefinitions.Append("\t\t: enumerator(nullptr)\n");
+			cppMethodDefinitions.Append("\t\t, hasMore(false)\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append('\t');
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator(");
+			AppendCppTypeName(
+				enumerableType,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("& enumerable)\n");
+			cppMethodDefinitions.Append("\t\t: enumerator(enumerable.GetEnumerator())\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\thasMore = enumerator.MoveNext();\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append('\t');
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator::~");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator()\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\tif (enumerator != nullptr)\n");
+			cppMethodDefinitions.Append("\t\t{\n");
+			cppMethodDefinitions.Append("\t\t\tenumerator.Dispose();\n");
+			cppMethodDefinitions.Append("\t\t}\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append('\t');
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator& ");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append("operator++()\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\thasMore = enumerator.MoveNext();\n");
+			cppMethodDefinitions.Append("\t\treturn *this;\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append("\tbool ");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append("operator!=(const ");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator& other)\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\treturn hasMore;\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.Append('\t');
+			AppendCppTypeName(
+				elementType,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append(' ');
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator::");
+			cppMethodDefinitions.Append("operator*()\n");
+			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.Append("\t\treturn enumerator.GetCurrent();\n");
+			cppMethodDefinitions.Append("\t}\n");
+			cppMethodDefinitions.Append("}\n");
+			cppMethodDefinitions.Append('\n');
+			
+			// begin() and end() definitions
+			indent = AppendNamespaceBeginning(
+				enumerableType.Namespace,
+				cppMethodDefinitions);
+			AppendIndent(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("Plugin::");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator begin(");
+			AppendCppTypeName(
+				enumerableType,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("& enumerable)\n");
+			AppendIndent(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("return Plugin::");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator(enumerable);\n");
+			AppendIndent(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append('\n');
+			AppendIndent(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("Plugin::");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator end(");
+			AppendCppTypeName(
+				enumerableType,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("& enumerable)\n");
+			AppendIndent(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("return Plugin::");
+			cppMethodDefinitions.Append(bindingEnumerableTypeName);
+			cppMethodDefinitions.Append("Iterator(nullptr);\n");
+			AppendIndent(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append("}\n");
+			AppendNamespaceEnding(
+				indent,
+				cppMethodDefinitions);
+			cppMethodDefinitions.Append('\n');
 		}
 		
 		static void AppendCppArrayIndexOperatorMethodDefinition(
@@ -5261,7 +5649,7 @@ namespace NativeScript
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
+			builders.CppMethodDefinitions.Append('\n');
 		}
 		
 		static void AppendArrayCppGetLengthFunction(
@@ -6342,7 +6730,7 @@ namespace NativeScript
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
+			builders.CppMethodDefinitions.Append('\n');
 			
 			// C++ remove
 			AppendCppMethodDefinitionBegin(
@@ -6374,7 +6762,7 @@ namespace NativeScript
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("\n");
+			builders.CppMethodDefinitions.Append('\n');
 			
 			// C# GetDelegate call
 			AppendCsharpGetDelegateCall(
@@ -6387,7 +6775,7 @@ namespace NativeScript
 			// C# class (beginning)
 			builders.CsharpBaseTypes.Append("\t\tclass ");
 			builders.CsharpBaseTypes.Append(bindingTypeName);
-			builders.CsharpBaseTypes.Append("\n");
+			builders.CsharpBaseTypes.Append('\n');
 			builders.CsharpBaseTypes.Append("\t\t{\n");
 			
 			// C# class fields
@@ -6975,7 +7363,7 @@ namespace NativeScript
 					type,
 					builders.CsharpBaseTypes);
 			}
-			builders.CsharpBaseTypes.Append("\n");
+			builders.CsharpBaseTypes.Append('\n');
 			builders.CsharpBaseTypes.Append("\t\t{\n");
 			
 			// C# class fields
@@ -8074,7 +8462,7 @@ namespace NativeScript
 			AppendCsharpTypeName(
 				invokeMethod.ReturnType,
 				output);
-			output.Append(" ");
+			output.Append(' ');
 			output.Append(funcName);
 			output.Append("(");
 			AppendCsharpParams(
@@ -8442,7 +8830,7 @@ namespace NativeScript
 			AppendIndent(
 				indent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeInequalityOperator(
@@ -8670,7 +9058,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeAssignmentOperatorNullptr(
@@ -8698,7 +9086,7 @@ namespace NativeScript
 				typeParams,
 				output);
 			output.Append(
-				"::operator=(decltype(nullptr) other)\n");
+				"::operator=(decltype(nullptr))\n");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
@@ -8786,7 +9174,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeAssignmentOperatorSameType(
@@ -8853,7 +9241,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeDestructor(
@@ -8961,7 +9349,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeHandleConstructor(
@@ -9050,7 +9438,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 		
 		static void AppendCppBaseTypeMoveConstructor(
@@ -9142,7 +9530,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeCopyConstructor(
@@ -9238,7 +9626,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeNullptrConstructor(
@@ -9266,7 +9654,7 @@ namespace NativeScript
 			AppendTypeNameWithoutGenericSuffix(
 				cppTypeName,
 				output);
-			output.Append("(decltype(nullptr) n)\n");
+			output.Append("(decltype(nullptr))\n");
 			string separator = ": ";
 			foreach (Type interfaceType in interfaceTypes)
 			{
@@ -9304,7 +9692,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("\n");
+			output.Append('\n');
 		}
 
 		static void AppendCppBaseTypeConstructor(
@@ -9962,7 +10350,7 @@ namespace NativeScript
 				AppendIndent(
 					throwerIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("\n");
+				builders.CppMethodDefinitions.Append('\n');
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
@@ -10635,7 +11023,7 @@ namespace NativeScript
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("(decltype(nullptr) n);\n");
+						output.Append("(decltype(nullptr));\n");
 						
 						// Constructor from handle
 						AppendIndent(indent + 1, output);
@@ -10718,7 +11106,7 @@ namespace NativeScript
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("& operator=(decltype(nullptr) other);\n");
+						output.Append("& operator=(decltype(nullptr));\n");
 						
 						// Move assignment operator to same type
 						AppendIndent(indent + 1, output);
@@ -10823,7 +11211,7 @@ namespace NativeScript
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
 					output);
-				output.Append("(decltype(nullptr) n)\n");
+				output.Append("(decltype(nullptr))\n");
 				string separator = ": ";
 				foreach (Type interfaceType in interfaceTypes)
 				{
@@ -10843,7 +11231,7 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
-				output.Append("\n");
+				output.Append('\n');
 				
 				// Handle constructor
 				AppendIndent(indent, output);
@@ -10894,7 +11282,7 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
-				output.Append("\n");
+				output.Append('\n');
 				
 				// Copy constructor
 				AppendIndent(indent, output);
@@ -10928,7 +11316,7 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
-				output.Append("\n");
+				output.Append('\n');
 				
 				// Move constructor
 				AppendIndent(indent, output);
@@ -10965,7 +11353,7 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
-				output.Append("\n");
+				output.Append('\n');
 				
 				// Destructor
 				AppendIndent(indent, output);
@@ -11005,7 +11393,7 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
-				output.Append("\n");
+				output.Append('\n');
 				
 				// Assignment operator to same type
 				AppendIndent(indent, output);
@@ -11047,7 +11435,7 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
-				output.Append("\n");
+				output.Append('\n');
 				
 				// Assignment operator to nullptr
 				AppendIndent(indent, output);
@@ -11064,7 +11452,7 @@ namespace NativeScript
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("::operator=(decltype(nullptr) other)\n");
+				output.Append("::operator=(decltype(nullptr))\n");
 				AppendIndent(indent, output);
 				output.Append("{\n");
 				AppendIndent(indent + 1, output);
@@ -11089,7 +11477,7 @@ namespace NativeScript
 				AppendIndent(indent, output);
 				output.Append("}\n");
 				AppendIndent(indent, output);
-				output.Append("\n");
+				output.Append('\n');
 				
 				// Move assignment operator to same type
 				AppendIndent(indent, output);
@@ -12277,7 +12665,17 @@ namespace NativeScript
 			StringBuilder output)
 		{
 			// Return type
-			if (IsFullValueType(returnType))
+			if (returnType == typeof(bool))
+			{
+				// C linkage requires us to use primitive types
+				output.Append("int32_t");
+			}
+			else if (returnType == typeof(char))
+			{
+				// C linkage requires us to use primitive types
+				output.Append("int16_t");
+			}
+			else if (IsFullValueType(returnType))
 			{
 				AppendCppTypeName(returnType, output);
 			}

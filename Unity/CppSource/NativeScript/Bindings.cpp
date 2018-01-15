@@ -41,6 +41,44 @@ namespace Plugin
 }
 
 ////////////////////////////////////////////////////////////////
+// Support for using IEnumerable with range for loops
+////////////////////////////////////////////////////////////////
+
+namespace Plugin
+{
+	// End iterators are dummies full of null
+	EnumerableIterator::EnumerableIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	// Begin iterators keep track of an IEnumerator
+	EnumerableIterator::EnumerableIterator(
+		System::Collections::IEnumerable& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	EnumerableIterator& EnumerableIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool EnumerableIterator::operator!=(const EnumerableIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Object EnumerableIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+////////////////////////////////////////////////////////////////
 // C# functions for C++ to call
 ////////////////////////////////////////////////////////////////
 
@@ -50,8 +88,10 @@ namespace Plugin
 	int32_t (*StringNew)(const char* chars);
 	void (*SetException)(int32_t handle);
 	int32_t (*ArrayGetLength)(int32_t handle);
+	int32_t (*EnumerableGetEnumerator)(int32_t handle);
 	
 	/*BEGIN FUNCTION POINTERS*/
+	void (*SystemIDisposableMethodDispose)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
 	float (*UnityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz);
 	void (*UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ);
@@ -61,11 +101,12 @@ namespace Plugin
 	UnityEngine::Vector3 (*UnboxVector3)(int32_t valHandle);
 	int32_t (*UnityEngineObjectPropertyGetName)(int32_t thisHandle);
 	void (*UnityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle);
-	System::Boolean (*UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject)(int32_t xHandle, int32_t yHandle);
-	System::Boolean (*UnityEngineObjectMethodop_ImplicitUnityEngineObject)(int32_t existsHandle);
+	int32_t (*UnityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject)(int32_t xHandle, int32_t yHandle);
+	int32_t (*UnityEngineObjectMethodop_ImplicitUnityEngineObject)(int32_t existsHandle);
 	int32_t (*UnityEngineComponentPropertyGetTransform)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineTransformPropertyGetPosition)(int32_t thisHandle);
 	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value);
+	void (*UnityEngineTransformMethodSetParentUnityEngineTransform)(int32_t thisHandle, int32_t parentHandle);
 	int32_t (*BoxColor)(UnityEngine::Color& val);
 	UnityEngine::Color (*UnboxColor)(int32_t valHandle);
 	int32_t (*BoxGradientColorKey)(UnityEngine::GradientColorKey& val);
@@ -85,6 +126,20 @@ namespace Plugin
 	int32_t (*UnityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle);
 	int32_t (*BoxRaycastHit)(int32_t valHandle);
 	int32_t (*UnboxRaycastHit)(int32_t valHandle);
+	int32_t (*SystemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent)(int32_t thisHandle);
+	float (*SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent)(int32_t thisHandle);
+	UnityEngine::GradientColorKey (*SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator)(int32_t thisHandle);
 	void (*ReleaseUnityEnginePlayablesPlayableGraph)(int32_t handle);
 	int32_t (*BoxPlayableGraph)(int32_t valHandle);
 	int32_t (*UnboxPlayableGraph)(int32_t valHandle);
@@ -103,7 +158,7 @@ namespace Plugin
 	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript)(int32_t thisHandle);
 	int32_t (*UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type);
 	void (*UnityEngineDebugMethodLogSystemObject)(int32_t messageHandle);
-	System::Boolean (*UnityEngineAssertionsAssertFieldGetRaiseExceptions)();
+	int32_t (*UnityEngineAssertionsAssertFieldGetRaiseExceptions)();
 	void (*UnityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value);
 	void (*UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle);
 	void (*UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle);
@@ -164,8 +219,6 @@ namespace Plugin
 	int32_t (*UnboxScene)(int32_t valHandle);
 	int32_t (*BoxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val);
 	UnityEngine::SceneManagement::LoadSceneMode (*UnboxLoadSceneMode)(int32_t valHandle);
-	int32_t (*SystemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle);
-	System::Boolean (*SystemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle);
 	int32_t (*BoxPrimitiveType)(UnityEngine::PrimitiveType val);
 	UnityEngine::PrimitiveType (*UnboxPrimitiveType)(int32_t valHandle);
 	float (*UnityEngineTimePropertyGetDeltaTime)();
@@ -196,11 +249,11 @@ namespace Plugin
 	int32_t (*BoxInteractionSourceNode)(UnityEngine::XR::WSA::Input::InteractionSourceNode val);
 	UnityEngine::XR::WSA::Input::InteractionSourceNode (*UnboxInteractionSourceNode)(int32_t valHandle);
 	void (*ReleaseUnityEngineXRWSAInputInteractionSourcePose)(int32_t handle);
-	System::Boolean (*UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node);
+	int32_t (*UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node);
 	int32_t (*BoxInteractionSourcePose)(int32_t valHandle);
 	int32_t (*UnboxInteractionSourcePose)(int32_t valHandle);
 	int32_t (*BoxBoolean)(System::Boolean val);
-	System::Boolean (*UnboxBoolean)(int32_t valHandle);
+	int32_t (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
 	int8_t (*UnboxSByte)(int32_t valHandle);
 	int32_t (*BoxByte)(uint8_t val);
@@ -218,7 +271,7 @@ namespace Plugin
 	int32_t (*BoxUInt64)(uint64_t val);
 	uint64_t (*UnboxUInt64)(int32_t valHandle);
 	int32_t (*BoxChar)(System::Char val);
-	System::Char (*UnboxChar)(int32_t valHandle);
+	int16_t (*UnboxChar)(int32_t valHandle);
 	int32_t (*BoxSingle)(float val);
 	float (*UnboxSingle)(int32_t valHandle);
 	int32_t (*BoxDouble)(double val);
@@ -1059,17 +1112,17 @@ namespace System
 	{
 	}
 	
-	Object::Object(decltype(nullptr) n)
+	Object::Object(decltype(nullptr))
 		: Handle(0)
 	{
 	}
 	
-	bool Object::operator==(decltype(nullptr) other) const
+	bool Object::operator==(decltype(nullptr)) const
 	{
 		return Handle == 0;
 	}
 	
-	bool Object::operator!=(decltype(nullptr) other) const
+	bool Object::operator!=(decltype(nullptr)) const
 	{
 		return Handle != 0;
 	}
@@ -1084,12 +1137,12 @@ namespace System
 	{
 	}
 	
-	ValueType::ValueType(decltype(nullptr) n)
+	ValueType::ValueType(decltype(nullptr))
 		: Object(nullptr)
 	{
 	}
 	
-	String::String(decltype(nullptr) n)
+	String::String(decltype(nullptr))
 		: Object(Plugin::InternalUse::Only, 0)
 	{
 	}
@@ -1144,7 +1197,7 @@ namespace System
 		return *this;
 	}
 	
-	String& String::operator=(decltype(nullptr) other)
+	String& String::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -1175,7 +1228,7 @@ namespace System
 	{
 	}
 	
-	ICloneable::ICloneable(decltype(nullptr) n)
+	ICloneable::ICloneable(decltype(nullptr))
 		: Object(nullptr)
 	{
 	}
@@ -1187,9 +1240,28 @@ namespace System
 		{
 		}
 		
-		IEnumerable::IEnumerable(decltype(nullptr) n)
+		IEnumerable::IEnumerable(decltype(nullptr))
 			: Object(nullptr)
 		{
+		}
+		
+		IEnumerator IEnumerable::GetEnumerator()
+		{
+			return IEnumerator(
+				Plugin::InternalUse::Only,
+				Plugin::EnumerableGetEnumerator(Handle));
+		}
+		
+		Plugin::EnumerableIterator begin(
+			System::Collections::IEnumerable& enumerable)
+		{
+			return Plugin::EnumerableIterator(enumerable);
+		}
+		
+		Plugin::EnumerableIterator end(
+			System::Collections::IEnumerable& enumerable)
+		{
+			return Plugin::EnumerableIterator(nullptr);
 		}
 		
 		ICollection::ICollection(Plugin::InternalUse iu, int32_t handle)
@@ -1198,7 +1270,7 @@ namespace System
 		{
 		}
 		
-		ICollection::ICollection(decltype(nullptr) n)
+		ICollection::ICollection(decltype(nullptr))
 			: Object(nullptr)
 			, IEnumerable(nullptr)
 		{
@@ -1211,7 +1283,7 @@ namespace System
 		{
 		}
 		
-		IList::IList(decltype(nullptr) n)
+		IList::IList(decltype(nullptr))
 			: Object(nullptr)
 			, IEnumerable(nullptr)
 			, ICollection(nullptr)
@@ -1228,7 +1300,7 @@ namespace System
 	{
 	}
 	
-	Array::Array(decltype(nullptr) n)
+	Array::Array(decltype(nullptr))
 		: Object(nullptr)
 		, ICloneable(nullptr)
 		, Collections::IEnumerable(nullptr)
@@ -1251,7 +1323,7 @@ namespace System
 /*BEGIN METHOD DEFINITIONS*/
 namespace System
 {
-	IDisposable::IDisposable(decltype(nullptr) n)
+	IDisposable::IDisposable(decltype(nullptr))
 	{
 	}
 	
@@ -1298,7 +1370,7 @@ namespace System
 		return *this;
 	}
 	
-	IDisposable& IDisposable::operator=(decltype(nullptr) other)
+	IDisposable& IDisposable::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -1327,6 +1399,18 @@ namespace System
 	bool IDisposable::operator!=(const IDisposable& other) const
 	{
 		return Handle != other.Handle;
+	}
+	
+	void IDisposable::Dispose()
+	{
+		Plugin::SystemIDisposableMethodDispose(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
 	}
 }
 
@@ -1436,7 +1520,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Object::Object(decltype(nullptr) n)
+	Object::Object(decltype(nullptr))
 	{
 	}
 	
@@ -1483,7 +1567,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Object& Object::operator=(decltype(nullptr) other)
+	Object& Object::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -1568,7 +1652,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Component::Component(decltype(nullptr) n)
+	Component::Component(decltype(nullptr))
 		: UnityEngine::Object(nullptr)
 	{
 	}
@@ -1617,7 +1701,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Component& Component::operator=(decltype(nullptr) other)
+	Component& Component::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -1664,7 +1748,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Transform::Transform(decltype(nullptr) n)
+	Transform::Transform(decltype(nullptr))
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, System::Collections::IEnumerable(nullptr)
@@ -1717,7 +1801,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Transform& Transform::operator=(decltype(nullptr) other)
+	Transform& Transform::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -1764,6 +1848,18 @@ namespace UnityEngine
 	void Transform::SetPosition(UnityEngine::Vector3& value)
 	{
 		Plugin::UnityEngineTransformPropertySetPosition(Handle, value);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+	}
+	
+	void Transform::SetParent(UnityEngine::Transform& parent)
+	{
+		Plugin::UnityEngineTransformMethodSetParentUnityEngineTransform(Handle, parent.Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -1856,7 +1952,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Resolution::Resolution(decltype(nullptr) n)
+	Resolution::Resolution(decltype(nullptr))
 		: System::ValueType(nullptr)
 	{
 	}
@@ -1905,7 +2001,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Resolution& Resolution::operator=(decltype(nullptr) other)
+	Resolution& Resolution::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -2047,7 +2143,7 @@ namespace System
 
 namespace UnityEngine
 {
-	RaycastHit::RaycastHit(decltype(nullptr) n)
+	RaycastHit::RaycastHit(decltype(nullptr))
 		: System::ValueType(nullptr)
 	{
 	}
@@ -2096,7 +2192,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	RaycastHit& RaycastHit::operator=(decltype(nullptr) other)
+	RaycastHit& RaycastHit::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -2203,9 +2299,743 @@ namespace System
 {
 	namespace Collections
 	{
+		IEnumerator::IEnumerator(decltype(nullptr))
+		{
+		}
+		
+		IEnumerator::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+		{
+			Handle = handle;
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+			}
+		}
+		
+		IEnumerator::IEnumerator(const IEnumerator& other)
+			: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+		{
+		}
+		
+		IEnumerator::IEnumerator(IEnumerator&& other)
+			: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+		{
+			other.Handle = 0;
+		}
+		
+		IEnumerator::~IEnumerator()
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+		}
+		
+		IEnumerator& IEnumerator::operator=(const IEnumerator& other)
+		{
+			if (this->Handle)
+			{
+				Plugin::DereferenceManagedClass(this->Handle);
+			}
+			this->Handle = other.Handle;
+			if (this->Handle)
+			{
+				Plugin::ReferenceManagedClass(this->Handle);
+			}
+			return *this;
+		}
+		
+		IEnumerator& IEnumerator::operator=(decltype(nullptr))
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+				Handle = 0;
+			}
+			return *this;
+		}
+		
+		IEnumerator& IEnumerator::operator=(IEnumerator&& other)
+		{
+			if (Handle)
+			{
+				Plugin::DereferenceManagedClass(Handle);
+			}
+			Handle = other.Handle;
+			other.Handle = 0;
+			return *this;
+		}
+		
+		bool IEnumerator::operator==(const IEnumerator& other) const
+		{
+			return Handle == other.Handle;
+		}
+		
+		bool IEnumerator::operator!=(const IEnumerator& other) const
+		{
+			return Handle != other.Handle;
+		}
+		
+		System::Object IEnumerator::GetCurrent()
+		{
+			auto returnValue = Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			return System::Object(Plugin::InternalUse::Only, returnValue);
+		}
+		
+		System::Boolean IEnumerator::MoveNext()
+		{
+			auto returnValue = Plugin::SystemCollectionsIEnumeratorMethodMoveNext(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			return returnValue;
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
 		namespace Generic
 		{
-			IEnumerable<System::String>::IEnumerable(decltype(nullptr) n)
+			IEnumerator<System::String>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<System::String>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<System::String>::IEnumerator(const IEnumerator<System::String>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<System::String>::IEnumerator(IEnumerator<System::String>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<System::String>::~IEnumerator<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<System::String>& IEnumerator<System::String>::operator=(const IEnumerator<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::String>& IEnumerator<System::String>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::String>& IEnumerator<System::String>::operator=(IEnumerator<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<System::String>::operator==(const IEnumerator<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<System::String>::operator!=(const IEnumerator<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::String IEnumerator<System::String>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::String(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<int32_t>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<int32_t>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<int32_t>::IEnumerator(const IEnumerator<int32_t>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<int32_t>::IEnumerator(IEnumerator<int32_t>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<int32_t>::~IEnumerator<int32_t>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<int32_t>& IEnumerator<int32_t>::operator=(const IEnumerator<int32_t>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<int32_t>& IEnumerator<int32_t>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<int32_t>& IEnumerator<int32_t>::operator=(IEnumerator<int32_t>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<int32_t>::operator==(const IEnumerator<int32_t>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<int32_t>::operator!=(const IEnumerator<int32_t>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			int32_t IEnumerator<int32_t>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<float>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<float>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<float>::IEnumerator(const IEnumerator<float>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<float>::IEnumerator(IEnumerator<float>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<float>::~IEnumerator<float>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<float>& IEnumerator<float>::operator=(const IEnumerator<float>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<float>& IEnumerator<float>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<float>& IEnumerator<float>::operator=(IEnumerator<float>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<float>::operator==(const IEnumerator<float>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<float>::operator!=(const IEnumerator<float>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			float IEnumerator<float>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(const IEnumerator<UnityEngine::RaycastHit>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(IEnumerator<UnityEngine::RaycastHit>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::~IEnumerator<UnityEngine::RaycastHit>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(const IEnumerator<UnityEngine::RaycastHit>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(IEnumerator<UnityEngine::RaycastHit>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<UnityEngine::RaycastHit>::operator==(const IEnumerator<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<UnityEngine::RaycastHit>::operator!=(const IEnumerator<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			UnityEngine::RaycastHit IEnumerator<UnityEngine::RaycastHit>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return UnityEngine::RaycastHit(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(const IEnumerator<UnityEngine::GradientColorKey>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(IEnumerator<UnityEngine::GradientColorKey>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::~IEnumerator<UnityEngine::GradientColorKey>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(const IEnumerator<UnityEngine::GradientColorKey>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(IEnumerator<UnityEngine::GradientColorKey>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<UnityEngine::GradientColorKey>::operator==(const IEnumerator<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<UnityEngine::GradientColorKey>::operator!=(const IEnumerator<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			UnityEngine::GradientColorKey IEnumerator<UnityEngine::GradientColorKey>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(const IEnumerator<UnityEngine::Resolution>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(IEnumerator<UnityEngine::Resolution>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::~IEnumerator<UnityEngine::Resolution>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(const IEnumerator<UnityEngine::Resolution>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(IEnumerator<UnityEngine::Resolution>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<UnityEngine::Resolution>::operator==(const IEnumerator<UnityEngine::Resolution>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<UnityEngine::Resolution>::operator!=(const IEnumerator<UnityEngine::Resolution>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			UnityEngine::Resolution IEnumerator<UnityEngine::Resolution>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return UnityEngine::Resolution(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<System::String>::IEnumerable(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 			{
 			}
@@ -2254,7 +3084,7 @@ namespace System
 				return *this;
 			}
 			
-			IEnumerable<System::String>& IEnumerable<System::String>::operator=(decltype(nullptr) other)
+			IEnumerable<System::String>& IEnumerable<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2284,6 +3114,19 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+			
+			System::Collections::Generic::IEnumerator<System::String> IEnumerable<System::String>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<System::String>(Plugin::InternalUse::Only, returnValue);
+			}
 		}
 	}
 }
@@ -2294,7 +3137,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEnumerable<int32_t>::IEnumerable(decltype(nullptr) n)
+			IEnumerable<int32_t>::IEnumerable(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 			{
 			}
@@ -2343,7 +3186,7 @@ namespace System
 				return *this;
 			}
 			
-			IEnumerable<int32_t>& IEnumerable<int32_t>::operator=(decltype(nullptr) other)
+			IEnumerable<int32_t>& IEnumerable<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2373,6 +3216,19 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+			
+			System::Collections::Generic::IEnumerator<int32_t> IEnumerable<int32_t>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<int32_t>(Plugin::InternalUse::Only, returnValue);
+			}
 		}
 	}
 }
@@ -2383,7 +3239,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEnumerable<float>::IEnumerable(decltype(nullptr) n)
+			IEnumerable<float>::IEnumerable(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 			{
 			}
@@ -2432,7 +3288,7 @@ namespace System
 				return *this;
 			}
 			
-			IEnumerable<float>& IEnumerable<float>::operator=(decltype(nullptr) other)
+			IEnumerable<float>& IEnumerable<float>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2462,6 +3318,19 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+			
+			System::Collections::Generic::IEnumerator<float> IEnumerable<float>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<float>(Plugin::InternalUse::Only, returnValue);
+			}
 		}
 	}
 }
@@ -2472,7 +3341,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(decltype(nullptr) n)
+			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 			{
 			}
@@ -2521,7 +3390,7 @@ namespace System
 				return *this;
 			}
 			
-			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(decltype(nullptr) other)
+			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2551,6 +3420,19 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+			
+			System::Collections::Generic::IEnumerator<UnityEngine::RaycastHit> IEnumerable<UnityEngine::RaycastHit>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<UnityEngine::RaycastHit>(Plugin::InternalUse::Only, returnValue);
+			}
 		}
 	}
 }
@@ -2561,7 +3443,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(decltype(nullptr) n)
+			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 			{
 			}
@@ -2610,7 +3492,7 @@ namespace System
 				return *this;
 			}
 			
-			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(decltype(nullptr) other)
+			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2640,6 +3522,19 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+			
+			System::Collections::Generic::IEnumerator<UnityEngine::GradientColorKey> IEnumerable<UnityEngine::GradientColorKey>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<UnityEngine::GradientColorKey>(Plugin::InternalUse::Only, returnValue);
+			}
 		}
 	}
 }
@@ -2650,7 +3545,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEnumerable<UnityEngine::Resolution>::IEnumerable(decltype(nullptr) n)
+			IEnumerable<UnityEngine::Resolution>::IEnumerable(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 			{
 			}
@@ -2699,7 +3594,7 @@ namespace System
 				return *this;
 			}
 			
-			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(decltype(nullptr) other)
+			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2729,6 +3624,19 @@ namespace System
 			{
 				return Handle != other.Handle;
 			}
+			
+			System::Collections::Generic::IEnumerator<UnityEngine::Resolution> IEnumerable<UnityEngine::Resolution>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<UnityEngine::Resolution>(Plugin::InternalUse::Only, returnValue);
+			}
 		}
 	}
 }
@@ -2739,7 +3647,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			ICollection<System::String>::ICollection(decltype(nullptr) n)
+			ICollection<System::String>::ICollection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
 			{
@@ -2790,7 +3698,7 @@ namespace System
 				return *this;
 			}
 			
-			ICollection<System::String>& ICollection<System::String>::operator=(decltype(nullptr) other)
+			ICollection<System::String>& ICollection<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2824,13 +3732,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionSystemStringIterator::SystemCollectionsGenericICollectionSystemStringIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionSystemStringIterator::SystemCollectionsGenericICollectionSystemStringIterator(System::Collections::Generic::ICollection<System::String>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionSystemStringIterator::~SystemCollectionsGenericICollectionSystemStringIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionSystemStringIterator& SystemCollectionsGenericICollectionSystemStringIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionSystemStringIterator::operator!=(const SystemCollectionsGenericICollectionSystemStringIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::String SystemCollectionsGenericICollectionSystemStringIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			ICollection<int32_t>::ICollection(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericICollectionSystemStringIterator begin(System::Collections::Generic::ICollection<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemStringIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionSystemStringIterator end(System::Collections::Generic::ICollection<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemStringIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<int32_t>::ICollection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
 			{
@@ -2881,7 +3847,7 @@ namespace System
 				return *this;
 			}
 			
-			ICollection<int32_t>& ICollection<int32_t>::operator=(decltype(nullptr) other)
+			ICollection<int32_t>& ICollection<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -2915,13 +3881,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionSystemInt32Iterator::SystemCollectionsGenericICollectionSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionSystemInt32Iterator::SystemCollectionsGenericICollectionSystemInt32Iterator(System::Collections::Generic::ICollection<int32_t>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionSystemInt32Iterator::~SystemCollectionsGenericICollectionSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionSystemInt32Iterator& SystemCollectionsGenericICollectionSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionSystemInt32Iterator::operator!=(const SystemCollectionsGenericICollectionSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	int32_t SystemCollectionsGenericICollectionSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			ICollection<float>::ICollection(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator begin(System::Collections::Generic::ICollection<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator end(System::Collections::Generic::ICollection<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<float>::ICollection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<float>(nullptr)
 			{
@@ -2972,7 +3996,7 @@ namespace System
 				return *this;
 			}
 			
-			ICollection<float>& ICollection<float>::operator=(decltype(nullptr) other)
+			ICollection<float>& ICollection<float>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3006,13 +4030,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionSystemSingleIterator::SystemCollectionsGenericICollectionSystemSingleIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionSystemSingleIterator::SystemCollectionsGenericICollectionSystemSingleIterator(System::Collections::Generic::ICollection<float>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionSystemSingleIterator::~SystemCollectionsGenericICollectionSystemSingleIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionSystemSingleIterator& SystemCollectionsGenericICollectionSystemSingleIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionSystemSingleIterator::operator!=(const SystemCollectionsGenericICollectionSystemSingleIterator& other)
+	{
+		return hasMore;
+	}
+	
+	float SystemCollectionsGenericICollectionSystemSingleIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			ICollection<UnityEngine::RaycastHit>::ICollection(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericICollectionSystemSingleIterator begin(System::Collections::Generic::ICollection<float>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemSingleIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionSystemSingleIterator end(System::Collections::Generic::ICollection<float>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemSingleIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<UnityEngine::RaycastHit>::ICollection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
 			{
@@ -3063,7 +4145,7 @@ namespace System
 				return *this;
 			}
 			
-			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(decltype(nullptr) other)
+			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3097,13 +4179,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::~SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator& SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::RaycastHit SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			ICollection<UnityEngine::GradientColorKey>::ICollection(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator begin(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator end(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<UnityEngine::GradientColorKey>::ICollection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
 			{
@@ -3154,7 +4294,7 @@ namespace System
 				return *this;
 			}
 			
-			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(decltype(nullptr) other)
+			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3188,13 +4328,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::~SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator& SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::GradientColorKey SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			ICollection<UnityEngine::Resolution>::ICollection(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator begin(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator end(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<UnityEngine::Resolution>::ICollection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
 			{
@@ -3245,7 +4443,7 @@ namespace System
 				return *this;
 			}
 			
-			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(decltype(nullptr) other)
+			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3279,13 +4477,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::~SystemCollectionsGenericICollectionUnityEngineResolutionIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator& SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineResolutionIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::Resolution SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			IList<System::String>::IList(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator begin(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator end(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<System::String>::IList(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
 				, System::Collections::Generic::ICollection<System::String>(nullptr)
@@ -3338,7 +4594,7 @@ namespace System
 				return *this;
 			}
 			
-			IList<System::String>& IList<System::String>::operator=(decltype(nullptr) other)
+			IList<System::String>& IList<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3372,13 +4628,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericIListSystemStringIterator::SystemCollectionsGenericIListSystemStringIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListSystemStringIterator::SystemCollectionsGenericIListSystemStringIterator(System::Collections::Generic::IList<System::String>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListSystemStringIterator::~SystemCollectionsGenericIListSystemStringIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListSystemStringIterator& SystemCollectionsGenericIListSystemStringIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListSystemStringIterator::operator!=(const SystemCollectionsGenericIListSystemStringIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::String SystemCollectionsGenericIListSystemStringIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			IList<int32_t>::IList(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericIListSystemStringIterator begin(System::Collections::Generic::IList<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemStringIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListSystemStringIterator end(System::Collections::Generic::IList<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemStringIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<int32_t>::IList(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
 				, System::Collections::Generic::ICollection<int32_t>(nullptr)
@@ -3431,7 +4745,7 @@ namespace System
 				return *this;
 			}
 			
-			IList<int32_t>& IList<int32_t>::operator=(decltype(nullptr) other)
+			IList<int32_t>& IList<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3465,13 +4779,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericIListSystemInt32Iterator::SystemCollectionsGenericIListSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListSystemInt32Iterator::SystemCollectionsGenericIListSystemInt32Iterator(System::Collections::Generic::IList<int32_t>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListSystemInt32Iterator::~SystemCollectionsGenericIListSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListSystemInt32Iterator& SystemCollectionsGenericIListSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListSystemInt32Iterator::operator!=(const SystemCollectionsGenericIListSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	int32_t SystemCollectionsGenericIListSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			IList<float>::IList(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericIListSystemInt32Iterator begin(System::Collections::Generic::IList<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListSystemInt32Iterator end(System::Collections::Generic::IList<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<float>::IList(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<float>(nullptr)
 				, System::Collections::Generic::ICollection<float>(nullptr)
@@ -3524,7 +4896,7 @@ namespace System
 				return *this;
 			}
 			
-			IList<float>& IList<float>::operator=(decltype(nullptr) other)
+			IList<float>& IList<float>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3558,13 +4930,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericIListSystemSingleIterator::SystemCollectionsGenericIListSystemSingleIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListSystemSingleIterator::SystemCollectionsGenericIListSystemSingleIterator(System::Collections::Generic::IList<float>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListSystemSingleIterator::~SystemCollectionsGenericIListSystemSingleIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListSystemSingleIterator& SystemCollectionsGenericIListSystemSingleIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListSystemSingleIterator::operator!=(const SystemCollectionsGenericIListSystemSingleIterator& other)
+	{
+		return hasMore;
+	}
+	
+	float SystemCollectionsGenericIListSystemSingleIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			IList<UnityEngine::RaycastHit>::IList(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericIListSystemSingleIterator begin(System::Collections::Generic::IList<float>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemSingleIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListSystemSingleIterator end(System::Collections::Generic::IList<float>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemSingleIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<UnityEngine::RaycastHit>::IList(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
 				, System::Collections::Generic::ICollection<UnityEngine::RaycastHit>(nullptr)
@@ -3617,7 +5047,7 @@ namespace System
 				return *this;
 			}
 			
-			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(decltype(nullptr) other)
+			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3651,13 +5081,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::~SystemCollectionsGenericIListUnityEngineRaycastHitIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator& SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator!=(const SystemCollectionsGenericIListUnityEngineRaycastHitIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::RaycastHit SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			IList<UnityEngine::GradientColorKey>::IList(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator begin(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator end(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<UnityEngine::GradientColorKey>::IList(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
 				, System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>(nullptr)
@@ -3710,7 +5198,7 @@ namespace System
 				return *this;
 			}
 			
-			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(decltype(nullptr) other)
+			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3744,13 +5232,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::~SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator& SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator!=(const SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::GradientColorKey SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			IList<UnityEngine::Resolution>::IList(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator begin(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator end(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<UnityEngine::Resolution>::IList(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
 				, System::Collections::Generic::ICollection<UnityEngine::Resolution>(nullptr)
@@ -3803,7 +5349,7 @@ namespace System
 				return *this;
 			}
 			
-			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(decltype(nullptr) other)
+			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3837,13 +5383,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericIListUnityEngineResolutionIterator::SystemCollectionsGenericIListUnityEngineResolutionIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListUnityEngineResolutionIterator::SystemCollectionsGenericIListUnityEngineResolutionIterator(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListUnityEngineResolutionIterator::~SystemCollectionsGenericIListUnityEngineResolutionIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListUnityEngineResolutionIterator& SystemCollectionsGenericIListUnityEngineResolutionIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListUnityEngineResolutionIterator::operator!=(const SystemCollectionsGenericIListUnityEngineResolutionIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::Resolution SystemCollectionsGenericIListUnityEngineResolutionIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator begin(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator end(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator(nullptr);
+			}
+		}
+	}
+}
+
 namespace System
 {
 	namespace Runtime
 	{
 		namespace Serialization
 		{
-			ISerializable::ISerializable(decltype(nullptr) n)
+			ISerializable::ISerializable(decltype(nullptr))
 			{
 			}
 			
@@ -3890,7 +5494,7 @@ namespace System
 				return *this;
 			}
 			
-			ISerializable& ISerializable::operator=(decltype(nullptr) other)
+			ISerializable& ISerializable::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -3930,7 +5534,7 @@ namespace System
 	{
 		namespace InteropServices
 		{
-			_Exception::_Exception(decltype(nullptr) n)
+			_Exception::_Exception(decltype(nullptr))
 			{
 			}
 			
@@ -3977,7 +5581,7 @@ namespace System
 				return *this;
 			}
 			
-			_Exception& _Exception::operator=(decltype(nullptr) other)
+			_Exception& _Exception::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -4013,7 +5617,7 @@ namespace System
 
 namespace System
 {
-	IAppDomainSetup::IAppDomainSetup(decltype(nullptr) n)
+	IAppDomainSetup::IAppDomainSetup(decltype(nullptr))
 	{
 	}
 	
@@ -4060,7 +5664,7 @@ namespace System
 		return *this;
 	}
 	
-	IAppDomainSetup& IAppDomainSetup::operator=(decltype(nullptr) other)
+	IAppDomainSetup& IAppDomainSetup::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -4096,7 +5700,7 @@ namespace System
 {
 	namespace Collections
 	{
-		IComparer::IComparer(decltype(nullptr) n)
+		IComparer::IComparer(decltype(nullptr))
 		{
 		}
 		
@@ -4143,7 +5747,7 @@ namespace System
 			return *this;
 		}
 		
-		IComparer& IComparer::operator=(decltype(nullptr) other)
+		IComparer& IComparer::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -4180,7 +5784,7 @@ namespace System
 {
 	namespace Collections
 	{
-		IEqualityComparer::IEqualityComparer(decltype(nullptr) n)
+		IEqualityComparer::IEqualityComparer(decltype(nullptr))
 		{
 		}
 		
@@ -4227,7 +5831,7 @@ namespace System
 			return *this;
 		}
 		
-		IEqualityComparer& IEqualityComparer::operator=(decltype(nullptr) other)
+		IEqualityComparer& IEqualityComparer::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -4266,7 +5870,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEqualityComparer<System::String>::IEqualityComparer(decltype(nullptr) n)
+			IEqualityComparer<System::String>::IEqualityComparer(decltype(nullptr))
 			{
 			}
 			
@@ -4313,7 +5917,7 @@ namespace System
 				return *this;
 			}
 			
-			IEqualityComparer<System::String>& IEqualityComparer<System::String>::operator=(decltype(nullptr) other)
+			IEqualityComparer<System::String>& IEqualityComparer<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -4353,7 +5957,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEqualityComparer<int32_t>::IEqualityComparer(decltype(nullptr) n)
+			IEqualityComparer<int32_t>::IEqualityComparer(decltype(nullptr))
 			{
 			}
 			
@@ -4400,7 +6004,7 @@ namespace System
 				return *this;
 			}
 			
-			IEqualityComparer<int32_t>& IEqualityComparer<int32_t>::operator=(decltype(nullptr) other)
+			IEqualityComparer<int32_t>& IEqualityComparer<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -4438,7 +6042,7 @@ namespace UnityEngine
 {
 	namespace Playables
 	{
-		PlayableGraph::PlayableGraph(decltype(nullptr) n)
+		PlayableGraph::PlayableGraph(decltype(nullptr))
 			: System::ValueType(nullptr)
 		{
 		}
@@ -4487,7 +6091,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		PlayableGraph& PlayableGraph::operator=(decltype(nullptr) other)
+		PlayableGraph& PlayableGraph::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -4557,7 +6161,7 @@ namespace UnityEngine
 {
 	namespace Playables
 	{
-		IPlayable::IPlayable(decltype(nullptr) n)
+		IPlayable::IPlayable(decltype(nullptr))
 		{
 		}
 		
@@ -4604,7 +6208,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		IPlayable& IPlayable::operator=(decltype(nullptr) other)
+		IPlayable& IPlayable::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -4639,7 +6243,7 @@ namespace UnityEngine
 
 namespace System
 {
-	IEquatable<UnityEngine::Animations::AnimationMixerPlayable>::IEquatable(decltype(nullptr) n)
+	IEquatable<UnityEngine::Animations::AnimationMixerPlayable>::IEquatable(decltype(nullptr))
 	{
 	}
 	
@@ -4686,7 +6290,7 @@ namespace System
 		return *this;
 	}
 	
-	IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& IEquatable<UnityEngine::Animations::AnimationMixerPlayable>::operator=(decltype(nullptr) other)
+	IEquatable<UnityEngine::Animations::AnimationMixerPlayable>& IEquatable<UnityEngine::Animations::AnimationMixerPlayable>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -4722,7 +6326,7 @@ namespace UnityEngine
 {
 	namespace Animations
 	{
-		AnimationMixerPlayable::AnimationMixerPlayable(decltype(nullptr) n)
+		AnimationMixerPlayable::AnimationMixerPlayable(decltype(nullptr))
 			: System::ValueType(nullptr)
 			, System::IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(nullptr)
 			, UnityEngine::Playables::IPlayable(nullptr)
@@ -4775,7 +6379,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		AnimationMixerPlayable& AnimationMixerPlayable::operator=(decltype(nullptr) other)
+		AnimationMixerPlayable& AnimationMixerPlayable::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -4860,7 +6464,7 @@ namespace System
 	{
 		namespace CompilerServices
 		{
-			IStrongBox::IStrongBox(decltype(nullptr) n)
+			IStrongBox::IStrongBox(decltype(nullptr))
 			{
 			}
 			
@@ -4907,7 +6511,7 @@ namespace System
 				return *this;
 			}
 			
-			IStrongBox& IStrongBox::operator=(decltype(nullptr) other)
+			IStrongBox& IStrongBox::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -4947,7 +6551,7 @@ namespace UnityEngine
 	{
 		namespace UIElements
 		{
-			IEventHandler::IEventHandler(decltype(nullptr) n)
+			IEventHandler::IEventHandler(decltype(nullptr))
 			{
 			}
 			
@@ -4994,7 +6598,7 @@ namespace UnityEngine
 				return *this;
 			}
 			
-			IEventHandler& IEventHandler::operator=(decltype(nullptr) other)
+			IEventHandler& IEventHandler::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -5034,7 +6638,7 @@ namespace UnityEngine
 	{
 		namespace UIElements
 		{
-			IStyle::IStyle(decltype(nullptr) n)
+			IStyle::IStyle(decltype(nullptr))
 			{
 			}
 			
@@ -5081,7 +6685,7 @@ namespace UnityEngine
 				return *this;
 			}
 			
-			IStyle& IStyle::operator=(decltype(nullptr) other)
+			IStyle& IStyle::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -5119,7 +6723,7 @@ namespace System
 {
 	namespace Diagnostics
 	{
-		Stopwatch::Stopwatch(decltype(nullptr) n)
+		Stopwatch::Stopwatch(decltype(nullptr))
 		{
 		}
 		
@@ -5166,7 +6770,7 @@ namespace System
 			return *this;
 		}
 		
-		Stopwatch& Stopwatch::operator=(decltype(nullptr) other)
+		Stopwatch& Stopwatch::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -5255,7 +6859,7 @@ namespace System
 
 namespace UnityEngine
 {
-	GameObject::GameObject(decltype(nullptr) n)
+	GameObject::GameObject(decltype(nullptr))
 		: UnityEngine::Object(nullptr)
 	{
 	}
@@ -5304,7 +6908,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	GameObject& GameObject::operator=(decltype(nullptr) other)
+	GameObject& GameObject::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -5426,7 +7030,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Debug::Debug(decltype(nullptr) n)
+	Debug::Debug(decltype(nullptr))
 	{
 	}
 	
@@ -5473,7 +7077,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Debug& Debug::operator=(decltype(nullptr) other)
+	Debug& Debug::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -5574,7 +7178,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Collision::Collision(decltype(nullptr) n)
+	Collision::Collision(decltype(nullptr))
 	{
 	}
 	
@@ -5621,7 +7225,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Collision& Collision::operator=(decltype(nullptr) other)
+	Collision& Collision::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -5655,7 +7259,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Behaviour::Behaviour(decltype(nullptr) n)
+	Behaviour::Behaviour(decltype(nullptr))
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 	{
@@ -5706,7 +7310,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Behaviour& Behaviour::operator=(decltype(nullptr) other)
+	Behaviour& Behaviour::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -5740,7 +7344,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	MonoBehaviour::MonoBehaviour(decltype(nullptr) n)
+	MonoBehaviour::MonoBehaviour(decltype(nullptr))
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, UnityEngine::Behaviour(nullptr)
@@ -5793,7 +7397,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	MonoBehaviour& MonoBehaviour::operator=(decltype(nullptr) other)
+	MonoBehaviour& MonoBehaviour::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -5840,7 +7444,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	AudioSettings::AudioSettings(decltype(nullptr) n)
+	AudioSettings::AudioSettings(decltype(nullptr))
 	{
 	}
 	
@@ -5887,7 +7491,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	AudioSettings& AudioSettings::operator=(decltype(nullptr) other)
+	AudioSettings& AudioSettings::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -5935,7 +7539,7 @@ namespace UnityEngine
 {
 	namespace Networking
 	{
-		NetworkTransport::NetworkTransport(decltype(nullptr) n)
+		NetworkTransport::NetworkTransport(decltype(nullptr))
 		{
 		}
 		
@@ -5982,7 +7586,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		NetworkTransport& NetworkTransport::operator=(decltype(nullptr) other)
+		NetworkTransport& NetworkTransport::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -6193,7 +7797,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			KeyValuePair<System::String, double>::KeyValuePair(decltype(nullptr) n)
+			KeyValuePair<System::String, double>::KeyValuePair(decltype(nullptr))
 				: System::ValueType(nullptr)
 			{
 			}
@@ -6242,7 +7846,7 @@ namespace System
 				return *this;
 			}
 			
-			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(decltype(nullptr) other)
+			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -6359,7 +7963,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			List<System::String>::List(decltype(nullptr) n)
+			List<System::String>::List(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::ICollection(nullptr)
 				, System::Collections::IList(nullptr)
@@ -6418,7 +8022,7 @@ namespace System
 				return *this;
 			}
 			
-			List<System::String>& List<System::String>::operator=(decltype(nullptr) other)
+			List<System::String>& List<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -6524,13 +8128,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericListSystemStringIterator::SystemCollectionsGenericListSystemStringIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericListSystemStringIterator::SystemCollectionsGenericListSystemStringIterator(System::Collections::Generic::List<System::String>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericListSystemStringIterator::~SystemCollectionsGenericListSystemStringIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericListSystemStringIterator& SystemCollectionsGenericListSystemStringIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericListSystemStringIterator::operator!=(const SystemCollectionsGenericListSystemStringIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::String SystemCollectionsGenericListSystemStringIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			List<int32_t>::List(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericListSystemStringIterator begin(System::Collections::Generic::List<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemStringIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericListSystemStringIterator end(System::Collections::Generic::List<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemStringIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			List<int32_t>::List(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::ICollection(nullptr)
 				, System::Collections::IList(nullptr)
@@ -6589,7 +8251,7 @@ namespace System
 				return *this;
 			}
 			
-			List<int32_t>& List<int32_t>::operator=(decltype(nullptr) other)
+			List<int32_t>& List<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -6695,13 +8357,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsGenericListSystemInt32Iterator::SystemCollectionsGenericListSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericListSystemInt32Iterator::SystemCollectionsGenericListSystemInt32Iterator(System::Collections::Generic::List<int32_t>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericListSystemInt32Iterator::~SystemCollectionsGenericListSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericListSystemInt32Iterator& SystemCollectionsGenericListSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericListSystemInt32Iterator::operator!=(const SystemCollectionsGenericListSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	int32_t SystemCollectionsGenericListSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace Generic
 		{
-			LinkedListNode<System::String>::LinkedListNode(decltype(nullptr) n)
+			Plugin::SystemCollectionsGenericListSystemInt32Iterator begin(System::Collections::Generic::List<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericListSystemInt32Iterator end(System::Collections::Generic::List<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			LinkedListNode<System::String>::LinkedListNode(decltype(nullptr))
 			{
 			}
 			
@@ -6748,7 +8468,7 @@ namespace System
 				return *this;
 			}
 			
-			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(decltype(nullptr) other)
+			LinkedListNode<System::String>& LinkedListNode<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -6830,7 +8550,7 @@ namespace System
 	{
 		namespace CompilerServices
 		{
-			StrongBox<System::String>::StrongBox(decltype(nullptr) n)
+			StrongBox<System::String>::StrongBox(decltype(nullptr))
 				: System::Runtime::CompilerServices::IStrongBox(nullptr)
 			{
 			}
@@ -6879,7 +8599,7 @@ namespace System
 				return *this;
 			}
 			
-			StrongBox<System::String>& StrongBox<System::String>::operator=(decltype(nullptr) other)
+			StrongBox<System::String>& StrongBox<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -6962,7 +8682,7 @@ namespace System
 	{
 		namespace ObjectModel
 		{
-			Collection<int32_t>::Collection(decltype(nullptr) n)
+			Collection<int32_t>::Collection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::ICollection(nullptr)
 				, System::Collections::IList(nullptr)
@@ -7021,7 +8741,7 @@ namespace System
 				return *this;
 			}
 			
-			Collection<int32_t>& Collection<int32_t>::operator=(decltype(nullptr) other)
+			Collection<int32_t>& Collection<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -7055,13 +8775,71 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator::SystemCollectionsObjectModelCollectionSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator::SystemCollectionsObjectModelCollectionSystemInt32Iterator(System::Collections::ObjectModel::Collection<int32_t>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator::~SystemCollectionsObjectModelCollectionSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator& SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator!=(const SystemCollectionsObjectModelCollectionSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	int32_t SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
 	namespace Collections
 	{
 		namespace ObjectModel
 		{
-			KeyedCollection<System::String, int32_t>::KeyedCollection(decltype(nullptr) n)
+			Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator begin(System::Collections::ObjectModel::Collection<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator end(System::Collections::ObjectModel::Collection<int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			KeyedCollection<System::String, int32_t>::KeyedCollection(decltype(nullptr))
 				: System::Collections::IEnumerable(nullptr)
 				, System::Collections::ICollection(nullptr)
 				, System::Collections::IList(nullptr)
@@ -7122,7 +8900,7 @@ namespace System
 				return *this;
 			}
 			
-			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(decltype(nullptr) other)
+			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -7156,9 +8934,67 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(System::Collections::ObjectModel::KeyedCollection<System::String, int32_t>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::~SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator& SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator!=(const SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	int32_t SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
 namespace System
 {
-	Exception::Exception(decltype(nullptr) n)
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator begin(System::Collections::ObjectModel::KeyedCollection<System::String, int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator end(System::Collections::ObjectModel::KeyedCollection<System::String, int32_t>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	Exception::Exception(decltype(nullptr))
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 	{
@@ -7209,7 +9045,7 @@ namespace System
 		return *this;
 	}
 	
-	Exception& Exception::operator=(decltype(nullptr) other)
+	Exception& Exception::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -7262,7 +9098,7 @@ namespace System
 
 namespace System
 {
-	SystemException::SystemException(decltype(nullptr) n)
+	SystemException::SystemException(decltype(nullptr))
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 		, System::Exception(nullptr)
@@ -7315,7 +9151,7 @@ namespace System
 		return *this;
 	}
 	
-	SystemException& SystemException::operator=(decltype(nullptr) other)
+	SystemException& SystemException::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -7349,7 +9185,7 @@ namespace System
 
 namespace System
 {
-	NullReferenceException::NullReferenceException(decltype(nullptr) n)
+	NullReferenceException::NullReferenceException(decltype(nullptr))
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 		, System::Exception(nullptr)
@@ -7404,7 +9240,7 @@ namespace System
 		return *this;
 	}
 	
-	NullReferenceException& NullReferenceException::operator=(decltype(nullptr) other)
+	NullReferenceException& NullReferenceException::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -7438,7 +9274,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Screen::Screen(decltype(nullptr) n)
+	Screen::Screen(decltype(nullptr))
 	{
 	}
 	
@@ -7485,7 +9321,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Screen& Screen::operator=(decltype(nullptr) other)
+	Screen& Screen::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -7532,7 +9368,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Ray::Ray(decltype(nullptr) n)
+	Ray::Ray(decltype(nullptr))
 		: System::ValueType(nullptr)
 	{
 	}
@@ -7581,7 +9417,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Ray& Ray::operator=(decltype(nullptr) other)
+	Ray& Ray::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -7666,7 +9502,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Physics::Physics(decltype(nullptr) n)
+	Physics::Physics(decltype(nullptr))
 	{
 	}
 	
@@ -7713,7 +9549,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Physics& Physics::operator=(decltype(nullptr) other)
+	Physics& Physics::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -7773,7 +9609,7 @@ namespace UnityEngine
 
 namespace UnityEngine
 {
-	Gradient::Gradient(decltype(nullptr) n)
+	Gradient::Gradient(decltype(nullptr))
 	{
 	}
 	
@@ -7820,7 +9656,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Gradient& Gradient::operator=(decltype(nullptr) other)
+	Gradient& Gradient::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -7896,7 +9732,7 @@ namespace UnityEngine
 
 namespace System
 {
-	AppDomainSetup::AppDomainSetup(decltype(nullptr) n)
+	AppDomainSetup::AppDomainSetup(decltype(nullptr))
 		: System::IAppDomainSetup(nullptr)
 	{
 	}
@@ -7945,7 +9781,7 @@ namespace System
 		return *this;
 	}
 	
-	AppDomainSetup& AppDomainSetup::operator=(decltype(nullptr) other)
+	AppDomainSetup& AppDomainSetup::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -8022,7 +9858,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Application::Application(decltype(nullptr) n)
+	Application::Application(decltype(nullptr))
 	{
 	}
 	
@@ -8069,7 +9905,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Application& Application::operator=(decltype(nullptr) other)
+	Application& Application::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -8129,7 +9965,7 @@ namespace UnityEngine
 {
 	namespace SceneManagement
 	{
-		SceneManager::SceneManager(decltype(nullptr) n)
+		SceneManager::SceneManager(decltype(nullptr))
 		{
 		}
 		
@@ -8176,7 +10012,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		SceneManager& SceneManager::operator=(decltype(nullptr) other)
+		SceneManager& SceneManager::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -8237,7 +10073,7 @@ namespace UnityEngine
 {
 	namespace SceneManagement
 	{
-		Scene::Scene(decltype(nullptr) n)
+		Scene::Scene(decltype(nullptr))
 			: System::ValueType(nullptr)
 		{
 		}
@@ -8286,7 +10122,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		Scene& Scene::operator=(decltype(nullptr) other)
+		Scene& Scene::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -8387,117 +10223,7 @@ namespace System
 
 namespace System
 {
-	namespace Collections
-	{
-		IEnumerator::IEnumerator(decltype(nullptr) n)
-		{
-		}
-		
-		IEnumerator::IEnumerator(Plugin::InternalUse iu, int32_t handle)
-		{
-			Handle = handle;
-			if (handle)
-			{
-				Plugin::ReferenceManagedClass(handle);
-			}
-		}
-		
-		IEnumerator::IEnumerator(const IEnumerator& other)
-			: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-		{
-		}
-		
-		IEnumerator::IEnumerator(IEnumerator&& other)
-			: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-		{
-			other.Handle = 0;
-		}
-		
-		IEnumerator::~IEnumerator()
-		{
-			if (Handle)
-			{
-				Plugin::DereferenceManagedClass(Handle);
-				Handle = 0;
-			}
-		}
-		
-		IEnumerator& IEnumerator::operator=(const IEnumerator& other)
-		{
-			if (this->Handle)
-			{
-				Plugin::DereferenceManagedClass(this->Handle);
-			}
-			this->Handle = other.Handle;
-			if (this->Handle)
-			{
-				Plugin::ReferenceManagedClass(this->Handle);
-			}
-			return *this;
-		}
-		
-		IEnumerator& IEnumerator::operator=(decltype(nullptr) other)
-		{
-			if (Handle)
-			{
-				Plugin::DereferenceManagedClass(Handle);
-				Handle = 0;
-			}
-			return *this;
-		}
-		
-		IEnumerator& IEnumerator::operator=(IEnumerator&& other)
-		{
-			if (Handle)
-			{
-				Plugin::DereferenceManagedClass(Handle);
-			}
-			Handle = other.Handle;
-			other.Handle = 0;
-			return *this;
-		}
-		
-		bool IEnumerator::operator==(const IEnumerator& other) const
-		{
-			return Handle == other.Handle;
-		}
-		
-		bool IEnumerator::operator!=(const IEnumerator& other) const
-		{
-			return Handle != other.Handle;
-		}
-		
-		System::Object IEnumerator::GetCurrent()
-		{
-			auto returnValue = Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent(Handle);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-			return System::Object(Plugin::InternalUse::Only, returnValue);
-		}
-		
-		System::Boolean IEnumerator::MoveNext()
-		{
-			auto returnValue = Plugin::SystemCollectionsIEnumeratorMethodMoveNext(Handle);
-			if (Plugin::unhandledCsharpException)
-			{
-				System::Exception* ex = Plugin::unhandledCsharpException;
-				Plugin::unhandledCsharpException = nullptr;
-				ex->ThrowReferenceToThis();
-				delete ex;
-			}
-			return returnValue;
-		}
-	}
-}
-
-namespace System
-{
-	EventArgs::EventArgs(decltype(nullptr) n)
+	EventArgs::EventArgs(decltype(nullptr))
 	{
 	}
 	
@@ -8544,7 +10270,7 @@ namespace System
 		return *this;
 	}
 	
-	EventArgs& EventArgs::operator=(decltype(nullptr) other)
+	EventArgs& EventArgs::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -8582,7 +10308,7 @@ namespace System
 	{
 		namespace Design
 		{
-			ComponentEventArgs::ComponentEventArgs(decltype(nullptr) n)
+			ComponentEventArgs::ComponentEventArgs(decltype(nullptr))
 				: System::EventArgs(nullptr)
 			{
 			}
@@ -8631,7 +10357,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentEventArgs& ComponentEventArgs::operator=(decltype(nullptr) other)
+			ComponentEventArgs& ComponentEventArgs::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -8671,7 +10397,7 @@ namespace System
 	{
 		namespace Design
 		{
-			ComponentChangingEventArgs::ComponentChangingEventArgs(decltype(nullptr) n)
+			ComponentChangingEventArgs::ComponentChangingEventArgs(decltype(nullptr))
 				: System::EventArgs(nullptr)
 			{
 			}
@@ -8720,7 +10446,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentChangingEventArgs& ComponentChangingEventArgs::operator=(decltype(nullptr) other)
+			ComponentChangingEventArgs& ComponentChangingEventArgs::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -8760,7 +10486,7 @@ namespace System
 	{
 		namespace Design
 		{
-			ComponentChangedEventArgs::ComponentChangedEventArgs(decltype(nullptr) n)
+			ComponentChangedEventArgs::ComponentChangedEventArgs(decltype(nullptr))
 				: System::EventArgs(nullptr)
 			{
 			}
@@ -8809,7 +10535,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentChangedEventArgs& ComponentChangedEventArgs::operator=(decltype(nullptr) other)
+			ComponentChangedEventArgs& ComponentChangedEventArgs::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -8849,7 +10575,7 @@ namespace System
 	{
 		namespace Design
 		{
-			ComponentRenameEventArgs::ComponentRenameEventArgs(decltype(nullptr) n)
+			ComponentRenameEventArgs::ComponentRenameEventArgs(decltype(nullptr))
 				: System::EventArgs(nullptr)
 			{
 			}
@@ -8898,7 +10624,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentRenameEventArgs& ComponentRenameEventArgs::operator=(decltype(nullptr) other)
+			ComponentRenameEventArgs& ComponentRenameEventArgs::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -8936,7 +10662,7 @@ namespace System
 {
 	namespace ComponentModel
 	{
-		MemberDescriptor::MemberDescriptor(decltype(nullptr) n)
+		MemberDescriptor::MemberDescriptor(decltype(nullptr))
 		{
 		}
 		
@@ -8983,7 +10709,7 @@ namespace System
 			return *this;
 		}
 		
-		MemberDescriptor& MemberDescriptor::operator=(decltype(nullptr) other)
+		MemberDescriptor& MemberDescriptor::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -9051,7 +10777,7 @@ namespace System
 
 namespace UnityEngine
 {
-	Time::Time(decltype(nullptr) n)
+	Time::Time(decltype(nullptr))
 	{
 	}
 	
@@ -9098,7 +10824,7 @@ namespace UnityEngine
 		return *this;
 	}
 	
-	Time& Time::operator=(decltype(nullptr) other)
+	Time& Time::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -9178,7 +10904,7 @@ namespace System
 
 namespace System
 {
-	MarshalByRefObject::MarshalByRefObject(decltype(nullptr) n)
+	MarshalByRefObject::MarshalByRefObject(decltype(nullptr))
 	{
 	}
 	
@@ -9225,7 +10951,7 @@ namespace System
 		return *this;
 	}
 	
-	MarshalByRefObject& MarshalByRefObject::operator=(decltype(nullptr) other)
+	MarshalByRefObject& MarshalByRefObject::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -9261,7 +10987,7 @@ namespace System
 {
 	namespace IO
 	{
-		Stream::Stream(decltype(nullptr) n)
+		Stream::Stream(decltype(nullptr))
 			: System::MarshalByRefObject(nullptr)
 			, System::IDisposable(nullptr)
 		{
@@ -9312,7 +11038,7 @@ namespace System
 			return *this;
 		}
 		
-		Stream& Stream::operator=(decltype(nullptr) other)
+		Stream& Stream::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -9351,7 +11077,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IComparer<int32_t>::IComparer(decltype(nullptr) n)
+			IComparer<int32_t>::IComparer(decltype(nullptr))
 			{
 			}
 			
@@ -9398,7 +11124,7 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<int32_t>& IComparer<int32_t>::operator=(decltype(nullptr) other)
+			IComparer<int32_t>& IComparer<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -9438,7 +11164,7 @@ namespace System
 	{
 		namespace Generic
 		{
-			IComparer<System::String>::IComparer(decltype(nullptr) n)
+			IComparer<System::String>::IComparer(decltype(nullptr))
 			{
 			}
 			
@@ -9485,7 +11211,7 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<System::String>& IComparer<System::String>::operator=(decltype(nullptr) other)
+			IComparer<System::String>& IComparer<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -9557,7 +11283,7 @@ namespace System
 				}
 			}
 			
-			BaseIComparer<int32_t>::BaseIComparer(decltype(nullptr) n)
+			BaseIComparer<int32_t>::BaseIComparer(decltype(nullptr))
 				: System::Collections::Generic::IComparer<int32_t>(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
@@ -9630,7 +11356,7 @@ namespace System
 				return *this;
 			}
 			
-			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(decltype(nullptr) other)
+			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -9753,7 +11479,7 @@ namespace System
 				}
 			}
 			
-			BaseIComparer<System::String>::BaseIComparer(decltype(nullptr) n)
+			BaseIComparer<System::String>::BaseIComparer(decltype(nullptr))
 				: System::Collections::Generic::IComparer<System::String>(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemString(this);
@@ -9826,7 +11552,7 @@ namespace System
 				return *this;
 			}
 			
-			BaseIComparer<System::String>& BaseIComparer<System::String>::operator=(decltype(nullptr) other)
+			BaseIComparer<System::String>& BaseIComparer<System::String>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -9915,7 +11641,7 @@ namespace System
 
 namespace System
 {
-	StringComparer::StringComparer(decltype(nullptr) n)
+	StringComparer::StringComparer(decltype(nullptr))
 		: System::Collections::IComparer(nullptr)
 		, System::Collections::Generic::IComparer<System::String>(nullptr)
 		, System::Collections::IEqualityComparer(nullptr)
@@ -9970,7 +11696,7 @@ namespace System
 		return *this;
 	}
 	
-	StringComparer& StringComparer::operator=(decltype(nullptr) other)
+	StringComparer& StringComparer::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -10040,7 +11766,7 @@ namespace System
 		}
 	}
 	
-	BaseStringComparer::BaseStringComparer(decltype(nullptr) n)
+	BaseStringComparer::BaseStringComparer(decltype(nullptr))
 		: System::Collections::IComparer(nullptr)
 		, System::Collections::Generic::IComparer<System::String>(nullptr)
 		, System::Collections::IEqualityComparer(nullptr)
@@ -10129,7 +11855,7 @@ namespace System
 		return *this;
 	}
 	
-	BaseStringComparer& BaseStringComparer::operator=(decltype(nullptr) other)
+	BaseStringComparer& BaseStringComparer::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -10271,7 +11997,7 @@ namespace System
 {
 	namespace Collections
 	{
-		Queue::Queue(decltype(nullptr) n)
+		Queue::Queue(decltype(nullptr))
 			: System::ICloneable(nullptr)
 			, System::Collections::IEnumerable(nullptr)
 			, System::Collections::ICollection(nullptr)
@@ -10324,7 +12050,7 @@ namespace System
 			return *this;
 		}
 		
-		Queue& Queue::operator=(decltype(nullptr) other)
+		Queue& Queue::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -10409,7 +12135,7 @@ namespace System
 			}
 		}
 		
-		BaseQueue::BaseQueue(decltype(nullptr) n)
+		BaseQueue::BaseQueue(decltype(nullptr))
 			: System::ICloneable(nullptr)
 			, System::Collections::IEnumerable(nullptr)
 			, System::Collections::ICollection(nullptr)
@@ -10494,7 +12220,7 @@ namespace System
 			return *this;
 		}
 		
-		BaseQueue& BaseQueue::operator=(decltype(nullptr) other)
+		BaseQueue& BaseQueue::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -10584,7 +12310,7 @@ namespace System
 	{
 		namespace Design
 		{
-			IComponentChangeService::IComponentChangeService(decltype(nullptr) n)
+			IComponentChangeService::IComponentChangeService(decltype(nullptr))
 			{
 			}
 			
@@ -10631,7 +12357,7 @@ namespace System
 				return *this;
 			}
 			
-			IComponentChangeService& IComponentChangeService::operator=(decltype(nullptr) other)
+			IComponentChangeService& IComponentChangeService::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -10703,7 +12429,7 @@ namespace System
 				}
 			}
 			
-			BaseIComponentChangeService::BaseIComponentChangeService(decltype(nullptr) n)
+			BaseIComponentChangeService::BaseIComponentChangeService(decltype(nullptr))
 				: System::ComponentModel::Design::IComponentChangeService(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignBaseIComponentChangeService(this);
@@ -10776,7 +12502,7 @@ namespace System
 				return *this;
 			}
 			
-			BaseIComponentChangeService& BaseIComponentChangeService::operator=(decltype(nullptr) other)
+			BaseIComponentChangeService& BaseIComponentChangeService::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -11212,7 +12938,7 @@ namespace System
 {
 	namespace IO
 	{
-		FileStream::FileStream(decltype(nullptr) n)
+		FileStream::FileStream(decltype(nullptr))
 			: System::MarshalByRefObject(nullptr)
 			, System::IDisposable(nullptr)
 			, System::IO::Stream(nullptr)
@@ -11265,7 +12991,7 @@ namespace System
 			return *this;
 		}
 		
-		FileStream& FileStream::operator=(decltype(nullptr) other)
+		FileStream& FileStream::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -11369,7 +13095,7 @@ namespace System
 			}
 		}
 		
-		BaseFileStream::BaseFileStream(decltype(nullptr) n)
+		BaseFileStream::BaseFileStream(decltype(nullptr))
 			: System::MarshalByRefObject(nullptr)
 			, System::IDisposable(nullptr)
 			, System::IO::Stream(nullptr)
@@ -11454,7 +13180,7 @@ namespace System
 			return *this;
 		}
 		
-		BaseFileStream& BaseFileStream::operator=(decltype(nullptr) other)
+		BaseFileStream& BaseFileStream::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -11539,7 +13265,7 @@ namespace UnityEngine
 {
 	namespace Playables
 	{
-		PlayableHandle::PlayableHandle(decltype(nullptr) n)
+		PlayableHandle::PlayableHandle(decltype(nullptr))
 			: System::ValueType(nullptr)
 		{
 		}
@@ -11588,7 +13314,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		PlayableHandle& PlayableHandle::operator=(decltype(nullptr) other)
+		PlayableHandle& PlayableHandle::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -11660,7 +13386,7 @@ namespace UnityEngine
 	{
 		namespace UIElements
 		{
-			CallbackEventHandler::CallbackEventHandler(decltype(nullptr) n)
+			CallbackEventHandler::CallbackEventHandler(decltype(nullptr))
 				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
 			{
 			}
@@ -11709,7 +13435,7 @@ namespace UnityEngine
 				return *this;
 			}
 			
-			CallbackEventHandler& CallbackEventHandler::operator=(decltype(nullptr) other)
+			CallbackEventHandler& CallbackEventHandler::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -11749,7 +13475,7 @@ namespace UnityEngine
 	{
 		namespace UIElements
 		{
-			VisualElement::VisualElement(decltype(nullptr) n)
+			VisualElement::VisualElement(decltype(nullptr))
 				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
 				, UnityEngine::Experimental::UIElements::CallbackEventHandler(nullptr)
 				, UnityEngine::Experimental::UIElements::IStyle(nullptr)
@@ -11802,7 +13528,7 @@ namespace UnityEngine
 				return *this;
 			}
 			
-			VisualElement& VisualElement::operator=(decltype(nullptr) other)
+			VisualElement& VisualElement::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -11945,7 +13671,7 @@ namespace UnityEngine
 		{
 			namespace Input
 			{
-				InteractionSourcePose::InteractionSourcePose(decltype(nullptr) n)
+				InteractionSourcePose::InteractionSourcePose(decltype(nullptr))
 					: System::ValueType(nullptr)
 				{
 				}
@@ -11994,7 +13720,7 @@ namespace UnityEngine
 					return *this;
 				}
 				
-				InteractionSourcePose& InteractionSourcePose::operator=(decltype(nullptr) other)
+				InteractionSourcePose& InteractionSourcePose::operator=(decltype(nullptr))
 				{
 					if (Handle)
 					{
@@ -12475,7 +14201,7 @@ namespace MyGame
 {
 	namespace MonoBehaviours
 	{
-		TestScript::TestScript(decltype(nullptr) n)
+		TestScript::TestScript(decltype(nullptr))
 			: UnityEngine::Object(nullptr)
 			, UnityEngine::Component(nullptr)
 			, UnityEngine::Behaviour(nullptr)
@@ -12530,7 +14256,7 @@ namespace MyGame
 			return *this;
 		}
 		
-		TestScript& TestScript::operator=(decltype(nullptr) other)
+		TestScript& TestScript::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -12567,7 +14293,7 @@ namespace MyGame
 {
 	namespace MonoBehaviours
 	{
-		AnotherScript::AnotherScript(decltype(nullptr) n)
+		AnotherScript::AnotherScript(decltype(nullptr))
 			: UnityEngine::Object(nullptr)
 			, UnityEngine::Component(nullptr)
 			, UnityEngine::Behaviour(nullptr)
@@ -12622,7 +14348,7 @@ namespace MyGame
 			return *this;
 		}
 		
-		AnotherScript& AnotherScript::operator=(decltype(nullptr) other)
+		AnotherScript& AnotherScript::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -12691,7 +14417,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<int32_t>::Array1(decltype(nullptr) n)
+	Array1<int32_t>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -12760,7 +14486,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<int32_t>& Array1<int32_t>::operator=(decltype(nullptr) other)
+	Array1<int32_t>& Array1<int32_t>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -12838,6 +14564,44 @@ namespace System
 	Plugin::ArrayElementProxy1_1<int32_t> System::Array1<int32_t>::operator[](int32_t index)
 	{
 		return Plugin::ArrayElementProxy1_1<int32_t>(Plugin::InternalUse::Only, Handle, index);
+	}
+}
+
+namespace Plugin
+{
+	SystemInt32Array1Iterator::SystemInt32Array1Iterator(System::Array1<int32_t>& array, int32_t index)
+		: array(array)
+		, index(index)
+	{
+	}
+	
+	SystemInt32Array1Iterator& SystemInt32Array1Iterator::operator++()
+	{
+		index++;
+		return *this;
+	}
+	
+	bool SystemInt32Array1Iterator::operator!=(const SystemInt32Array1Iterator& other)
+	{
+		return index != other.index;
+	}
+	
+	int32_t SystemInt32Array1Iterator::operator*()
+	{
+		return array[index];
+	}
+}
+
+namespace System
+{
+	Plugin::SystemInt32Array1Iterator begin(System::Array1<int32_t>& array)
+	{
+		return Plugin::SystemInt32Array1Iterator(array, 0);
+	}
+	
+	Plugin::SystemInt32Array1Iterator end(System::Array1<int32_t>& array)
+	{
+		return Plugin::SystemInt32Array1Iterator(array, array.GetLength() - 1);
 	}
 }
 
@@ -12991,7 +14755,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<float>::Array1(decltype(nullptr) n)
+	Array1<float>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -13060,7 +14824,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<float>& Array1<float>::operator=(decltype(nullptr) other)
+	Array1<float>& Array1<float>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -13141,9 +14905,47 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	SystemSingleArray1Iterator::SystemSingleArray1Iterator(System::Array1<float>& array, int32_t index)
+		: array(array)
+		, index(index)
+	{
+	}
+	
+	SystemSingleArray1Iterator& SystemSingleArray1Iterator::operator++()
+	{
+		index++;
+		return *this;
+	}
+	
+	bool SystemSingleArray1Iterator::operator!=(const SystemSingleArray1Iterator& other)
+	{
+		return index != other.index;
+	}
+	
+	float SystemSingleArray1Iterator::operator*()
+	{
+		return array[index];
+	}
+}
+
 namespace System
 {
-	Array2<float>::Array2(decltype(nullptr) n)
+	Plugin::SystemSingleArray1Iterator begin(System::Array1<float>& array)
+	{
+		return Plugin::SystemSingleArray1Iterator(array, 0);
+	}
+	
+	Plugin::SystemSingleArray1Iterator end(System::Array1<float>& array)
+	{
+		return Plugin::SystemSingleArray1Iterator(array, array.GetLength() - 1);
+	}
+}
+
+namespace System
+{
+	Array2<float>::Array2(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -13218,7 +15020,7 @@ namespace System
 		return *this;
 	}
 	
-	Array2<float>& Array2<float>::operator=(decltype(nullptr) other)
+	Array2<float>& Array2<float>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -13324,7 +15126,7 @@ namespace System
 
 namespace System
 {
-	Array3<float>::Array3(decltype(nullptr) n)
+	Array3<float>::Array3(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -13405,7 +15207,7 @@ namespace System
 		return *this;
 	}
 	
-	Array3<float>& Array3<float>::operator=(decltype(nullptr) other)
+	Array3<float>& Array3<float>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -13548,7 +15350,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<System::String>::Array1(decltype(nullptr) n)
+	Array1<System::String>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -13617,7 +15419,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<System::String>& Array1<System::String>::operator=(decltype(nullptr) other)
+	Array1<System::String>& Array1<System::String>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -13700,6 +15502,44 @@ namespace System
 
 namespace Plugin
 {
+	SystemStringArray1Iterator::SystemStringArray1Iterator(System::Array1<System::String>& array, int32_t index)
+		: array(array)
+		, index(index)
+	{
+	}
+	
+	SystemStringArray1Iterator& SystemStringArray1Iterator::operator++()
+	{
+		index++;
+		return *this;
+	}
+	
+	bool SystemStringArray1Iterator::operator!=(const SystemStringArray1Iterator& other)
+	{
+		return index != other.index;
+	}
+	
+	System::String SystemStringArray1Iterator::operator*()
+	{
+		return array[index];
+	}
+}
+
+namespace System
+{
+	Plugin::SystemStringArray1Iterator begin(System::Array1<System::String>& array)
+	{
+		return Plugin::SystemStringArray1Iterator(array, 0);
+	}
+	
+	Plugin::SystemStringArray1Iterator end(System::Array1<System::String>& array)
+	{
+		return Plugin::SystemStringArray1Iterator(array, array.GetLength() - 1);
+	}
+}
+
+namespace Plugin
+{
 	ArrayElementProxy1_1<UnityEngine::Resolution>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
@@ -13734,7 +15574,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<UnityEngine::Resolution>::Array1(decltype(nullptr) n)
+	Array1<UnityEngine::Resolution>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -13803,7 +15643,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<UnityEngine::Resolution>& Array1<UnityEngine::Resolution>::operator=(decltype(nullptr) other)
+	Array1<UnityEngine::Resolution>& Array1<UnityEngine::Resolution>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -13886,6 +15726,44 @@ namespace System
 
 namespace Plugin
 {
+	UnityEngineResolutionArray1Iterator::UnityEngineResolutionArray1Iterator(System::Array1<UnityEngine::Resolution>& array, int32_t index)
+		: array(array)
+		, index(index)
+	{
+	}
+	
+	UnityEngineResolutionArray1Iterator& UnityEngineResolutionArray1Iterator::operator++()
+	{
+		index++;
+		return *this;
+	}
+	
+	bool UnityEngineResolutionArray1Iterator::operator!=(const UnityEngineResolutionArray1Iterator& other)
+	{
+		return index != other.index;
+	}
+	
+	UnityEngine::Resolution UnityEngineResolutionArray1Iterator::operator*()
+	{
+		return array[index];
+	}
+}
+
+namespace System
+{
+	Plugin::UnityEngineResolutionArray1Iterator begin(System::Array1<UnityEngine::Resolution>& array)
+	{
+		return Plugin::UnityEngineResolutionArray1Iterator(array, 0);
+	}
+	
+	Plugin::UnityEngineResolutionArray1Iterator end(System::Array1<UnityEngine::Resolution>& array)
+	{
+		return Plugin::UnityEngineResolutionArray1Iterator(array, array.GetLength() - 1);
+	}
+}
+
+namespace Plugin
+{
 	ArrayElementProxy1_1<UnityEngine::RaycastHit>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
@@ -13920,7 +15798,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<UnityEngine::RaycastHit>::Array1(decltype(nullptr) n)
+	Array1<UnityEngine::RaycastHit>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -13989,7 +15867,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<UnityEngine::RaycastHit>& Array1<UnityEngine::RaycastHit>::operator=(decltype(nullptr) other)
+	Array1<UnityEngine::RaycastHit>& Array1<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -14072,6 +15950,44 @@ namespace System
 
 namespace Plugin
 {
+	UnityEngineRaycastHitArray1Iterator::UnityEngineRaycastHitArray1Iterator(System::Array1<UnityEngine::RaycastHit>& array, int32_t index)
+		: array(array)
+		, index(index)
+	{
+	}
+	
+	UnityEngineRaycastHitArray1Iterator& UnityEngineRaycastHitArray1Iterator::operator++()
+	{
+		index++;
+		return *this;
+	}
+	
+	bool UnityEngineRaycastHitArray1Iterator::operator!=(const UnityEngineRaycastHitArray1Iterator& other)
+	{
+		return index != other.index;
+	}
+	
+	UnityEngine::RaycastHit UnityEngineRaycastHitArray1Iterator::operator*()
+	{
+		return array[index];
+	}
+}
+
+namespace System
+{
+	Plugin::UnityEngineRaycastHitArray1Iterator begin(System::Array1<UnityEngine::RaycastHit>& array)
+	{
+		return Plugin::UnityEngineRaycastHitArray1Iterator(array, 0);
+	}
+	
+	Plugin::UnityEngineRaycastHitArray1Iterator end(System::Array1<UnityEngine::RaycastHit>& array)
+	{
+		return Plugin::UnityEngineRaycastHitArray1Iterator(array, array.GetLength() - 1);
+	}
+}
+
+namespace Plugin
+{
 	ArrayElementProxy1_1<UnityEngine::GradientColorKey>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
@@ -14106,7 +16022,7 @@ namespace Plugin
 
 namespace System
 {
-	Array1<UnityEngine::GradientColorKey>::Array1(decltype(nullptr) n)
+	Array1<UnityEngine::GradientColorKey>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -14175,7 +16091,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<UnityEngine::GradientColorKey>& Array1<UnityEngine::GradientColorKey>::operator=(decltype(nullptr) other)
+	Array1<UnityEngine::GradientColorKey>& Array1<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -14256,6 +16172,44 @@ namespace System
 	}
 }
 
+namespace Plugin
+{
+	UnityEngineGradientColorKeyArray1Iterator::UnityEngineGradientColorKeyArray1Iterator(System::Array1<UnityEngine::GradientColorKey>& array, int32_t index)
+		: array(array)
+		, index(index)
+	{
+	}
+	
+	UnityEngineGradientColorKeyArray1Iterator& UnityEngineGradientColorKeyArray1Iterator::operator++()
+	{
+		index++;
+		return *this;
+	}
+	
+	bool UnityEngineGradientColorKeyArray1Iterator::operator!=(const UnityEngineGradientColorKeyArray1Iterator& other)
+	{
+		return index != other.index;
+	}
+	
+	UnityEngine::GradientColorKey UnityEngineGradientColorKeyArray1Iterator::operator*()
+	{
+		return array[index];
+	}
+}
+
+namespace System
+{
+	Plugin::UnityEngineGradientColorKeyArray1Iterator begin(System::Array1<UnityEngine::GradientColorKey>& array)
+	{
+		return Plugin::UnityEngineGradientColorKeyArray1Iterator(array, 0);
+	}
+	
+	Plugin::UnityEngineGradientColorKeyArray1Iterator end(System::Array1<UnityEngine::GradientColorKey>& array)
+	{
+		return Plugin::UnityEngineGradientColorKeyArray1Iterator(array, array.GetLength() - 1);
+	}
+}
+
 namespace System
 {
 	Action::Action()
@@ -14291,7 +16245,7 @@ namespace System
 		}
 	}
 	
-	Action::Action(decltype(nullptr) n)
+	Action::Action(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemAction(this);
 		ClassHandle = 0;
@@ -14368,7 +16322,7 @@ namespace System
 		return *this;
 	}
 	
-	Action& Action::operator=(decltype(nullptr) other)
+	Action& Action::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -14526,7 +16480,7 @@ namespace System
 		}
 	}
 	
-	Action1<float>::Action1(decltype(nullptr) n)
+	Action1<float>::Action1(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
 		ClassHandle = 0;
@@ -14603,7 +16557,7 @@ namespace System
 		return *this;
 	}
 	
-	Action1<float>& Action1<float>::operator=(decltype(nullptr) other)
+	Action1<float>& Action1<float>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -14761,7 +16715,7 @@ namespace System
 		}
 	}
 	
-	Action2<float, float>::Action2(decltype(nullptr) n)
+	Action2<float, float>::Action2(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
 		ClassHandle = 0;
@@ -14838,7 +16792,7 @@ namespace System
 		return *this;
 	}
 	
-	Action2<float, float>& Action2<float, float>::operator=(decltype(nullptr) other)
+	Action2<float, float>& Action2<float, float>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -14996,7 +16950,7 @@ namespace System
 		}
 	}
 	
-	Func3<int32_t, float, double>::Func3(decltype(nullptr) n)
+	Func3<int32_t, float, double>::Func3(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
 		ClassHandle = 0;
@@ -15073,7 +17027,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int32_t, float, double>& Func3<int32_t, float, double>::operator=(decltype(nullptr) other)
+	Func3<int32_t, float, double>& Func3<int32_t, float, double>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -15235,7 +17189,7 @@ namespace System
 		}
 	}
 	
-	Func3<int16_t, int32_t, System::String>::Func3(decltype(nullptr) n)
+	Func3<int16_t, int32_t, System::String>::Func3(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
 		ClassHandle = 0;
@@ -15312,7 +17266,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int16_t, int32_t, System::String>& Func3<int16_t, int32_t, System::String>::operator=(decltype(nullptr) other)
+	Func3<int16_t, int32_t, System::String>& Func3<int16_t, int32_t, System::String>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -15474,7 +17428,7 @@ namespace System
 		}
 	}
 	
-	AppDomainInitializer::AppDomainInitializer(decltype(nullptr) n)
+	AppDomainInitializer::AppDomainInitializer(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemAppDomainInitializer(this);
 		ClassHandle = 0;
@@ -15551,7 +17505,7 @@ namespace System
 		return *this;
 	}
 	
-	AppDomainInitializer& AppDomainInitializer::operator=(decltype(nullptr) other)
+	AppDomainInitializer& AppDomainInitializer::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -15712,7 +17666,7 @@ namespace UnityEngine
 			}
 		}
 		
-		UnityAction::UnityAction(decltype(nullptr) n)
+		UnityAction::UnityAction(decltype(nullptr))
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityAction(this);
 			ClassHandle = 0;
@@ -15789,7 +17743,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		UnityAction& UnityAction::operator=(decltype(nullptr) other)
+		UnityAction& UnityAction::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -15950,7 +17904,7 @@ namespace UnityEngine
 			}
 		}
 		
-		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::UnityAction2(decltype(nullptr) n)
+		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::UnityAction2(decltype(nullptr))
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(this);
 			ClassHandle = 0;
@@ -16027,7 +17981,7 @@ namespace UnityEngine
 			return *this;
 		}
 		
-		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator=(decltype(nullptr) other)
+		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>& UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::operator=(decltype(nullptr))
 		{
 			if (Handle)
 			{
@@ -16191,7 +18145,7 @@ namespace System
 				}
 			}
 			
-			ComponentEventHandler::ComponentEventHandler(decltype(nullptr) n)
+			ComponentEventHandler::ComponentEventHandler(decltype(nullptr))
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
 				ClassHandle = 0;
@@ -16268,7 +18222,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentEventHandler& ComponentEventHandler::operator=(decltype(nullptr) other)
+			ComponentEventHandler& ComponentEventHandler::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -16434,7 +18388,7 @@ namespace System
 				}
 			}
 			
-			ComponentChangingEventHandler::ComponentChangingEventHandler(decltype(nullptr) n)
+			ComponentChangingEventHandler::ComponentChangingEventHandler(decltype(nullptr))
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
 				ClassHandle = 0;
@@ -16511,7 +18465,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentChangingEventHandler& ComponentChangingEventHandler::operator=(decltype(nullptr) other)
+			ComponentChangingEventHandler& ComponentChangingEventHandler::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -16677,7 +18631,7 @@ namespace System
 				}
 			}
 			
-			ComponentChangedEventHandler::ComponentChangedEventHandler(decltype(nullptr) n)
+			ComponentChangedEventHandler::ComponentChangedEventHandler(decltype(nullptr))
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
 				ClassHandle = 0;
@@ -16754,7 +18708,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentChangedEventHandler& ComponentChangedEventHandler::operator=(decltype(nullptr) other)
+			ComponentChangedEventHandler& ComponentChangedEventHandler::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -16920,7 +18874,7 @@ namespace System
 				}
 			}
 			
-			ComponentRenameEventHandler::ComponentRenameEventHandler(decltype(nullptr) n)
+			ComponentRenameEventHandler::ComponentRenameEventHandler(decltype(nullptr))
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
 				ClassHandle = 0;
@@ -16997,7 +18951,7 @@ namespace System
 				return *this;
 			}
 			
-			ComponentRenameEventHandler& ComponentRenameEventHandler::operator=(decltype(nullptr) other)
+			ComponentRenameEventHandler& ComponentRenameEventHandler::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -17180,8 +19134,10 @@ DLLEXPORT void Init(
 	int32_t (*stringNew)(const char* chars),
 	void (*setException)(int32_t handle),
 	int32_t (*arrayGetLength)(int32_t handle),
+	int32_t (*enumerableGetEnumerator)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
 	int32_t maxManagedObjects,
+	void (*systemIDisposableMethodDispose)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
 	float (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
 	void (*unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ),
@@ -17191,11 +19147,12 @@ DLLEXPORT void Init(
 	UnityEngine::Vector3 (*unboxVector3)(int32_t valHandle),
 	int32_t (*unityEngineObjectPropertyGetName)(int32_t thisHandle),
 	void (*unityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
-	System::Boolean (*unityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject)(int32_t xHandle, int32_t yHandle),
-	System::Boolean (*unityEngineObjectMethodop_ImplicitUnityEngineObject)(int32_t existsHandle),
+	int32_t (*unityEngineObjectMethodop_EqualityUnityEngineObject_UnityEngineObject)(int32_t xHandle, int32_t yHandle),
+	int32_t (*unityEngineObjectMethodop_ImplicitUnityEngineObject)(int32_t existsHandle),
 	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
 	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value),
+	void (*unityEngineTransformMethodSetParentUnityEngineTransform)(int32_t thisHandle, int32_t parentHandle),
 	int32_t (*boxColor)(UnityEngine::Color& val),
 	UnityEngine::Color (*unboxColor)(int32_t valHandle),
 	int32_t (*boxGradientColorKey)(UnityEngine::GradientColorKey& val),
@@ -17215,6 +19172,20 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineRaycastHitPropertyGetTransform)(int32_t thisHandle),
 	int32_t (*boxRaycastHit)(int32_t valHandle),
 	int32_t (*unboxRaycastHit)(int32_t valHandle),
+	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent)(int32_t thisHandle),
+	float (*systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent)(int32_t thisHandle),
+	UnityEngine::GradientColorKey (*systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator)(int32_t thisHandle),
 	void (*releaseUnityEnginePlayablesPlayableGraph)(int32_t handle),
 	int32_t (*boxPlayableGraph)(int32_t valHandle),
 	int32_t (*unboxPlayableGraph)(int32_t valHandle),
@@ -17233,7 +19204,7 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGameObjectMethodAddComponentMyGameMonoBehavioursAnotherScript)(int32_t thisHandle),
 	int32_t (*unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type),
 	void (*unityEngineDebugMethodLogSystemObject)(int32_t messageHandle),
-	System::Boolean (*unityEngineAssertionsAssertFieldGetRaiseExceptions)(),
+	int32_t (*unityEngineAssertionsAssertFieldGetRaiseExceptions)(),
 	void (*unityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value),
 	void (*unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle),
 	void (*unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle),
@@ -17294,8 +19265,6 @@ DLLEXPORT void Init(
 	int32_t (*unboxScene)(int32_t valHandle),
 	int32_t (*boxLoadSceneMode)(UnityEngine::SceneManagement::LoadSceneMode val),
 	UnityEngine::SceneManagement::LoadSceneMode (*unboxLoadSceneMode)(int32_t valHandle),
-	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
-	System::Boolean (*systemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle),
 	int32_t (*boxPrimitiveType)(UnityEngine::PrimitiveType val),
 	UnityEngine::PrimitiveType (*unboxPrimitiveType)(int32_t valHandle),
 	float (*unityEngineTimePropertyGetDeltaTime)(),
@@ -17326,11 +19295,11 @@ DLLEXPORT void Init(
 	int32_t (*boxInteractionSourceNode)(UnityEngine::XR::WSA::Input::InteractionSourceNode val),
 	UnityEngine::XR::WSA::Input::InteractionSourceNode (*unboxInteractionSourceNode)(int32_t valHandle),
 	void (*releaseUnityEngineXRWSAInputInteractionSourcePose)(int32_t handle),
-	System::Boolean (*unityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node),
+	int32_t (*unityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node),
 	int32_t (*boxInteractionSourcePose)(int32_t valHandle),
 	int32_t (*unboxInteractionSourcePose)(int32_t valHandle),
 	int32_t (*boxBoolean)(System::Boolean val),
-	System::Boolean (*unboxBoolean)(int32_t valHandle),
+	int32_t (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
 	int8_t (*unboxSByte)(int32_t valHandle),
 	int32_t (*boxByte)(uint8_t val),
@@ -17348,7 +19317,7 @@ DLLEXPORT void Init(
 	int32_t (*boxUInt64)(uint64_t val),
 	uint64_t (*unboxUInt64)(int32_t valHandle),
 	int32_t (*boxChar)(System::Char val),
-	System::Char (*unboxChar)(int32_t valHandle),
+	int16_t (*unboxChar)(int32_t valHandle),
 	int32_t (*boxSingle)(float val),
 	float (*unboxSingle)(int32_t valHandle),
 	int32_t (*boxDouble)(double val),
@@ -17453,7 +19422,9 @@ DLLEXPORT void Init(
 	Plugin::ReleaseObject = releaseObject;
 	Plugin::SetException = setException;
 	Plugin::ArrayGetLength = arrayGetLength;
+	Plugin::EnumerableGetEnumerator = enumerableGetEnumerator;
 	/*BEGIN INIT BODY*/
+	Plugin::SystemIDisposableMethodDispose = systemIDisposableMethodDispose;
 	Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
 	Plugin::UnityEngineVector3PropertyGetMagnitude = unityEngineVector3PropertyGetMagnitude;
 	Plugin::UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle = unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle;
@@ -17468,6 +19439,7 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineComponentPropertyGetTransform = unityEngineComponentPropertyGetTransform;
 	Plugin::UnityEngineTransformPropertyGetPosition = unityEngineTransformPropertyGetPosition;
 	Plugin::UnityEngineTransformPropertySetPosition = unityEngineTransformPropertySetPosition;
+	Plugin::UnityEngineTransformMethodSetParentUnityEngineTransform = unityEngineTransformMethodSetParentUnityEngineTransform;
 	Plugin::BoxColor = boxColor;
 	Plugin::UnboxColor = unboxColor;
 	Plugin::BoxGradientColorKey = boxGradientColorKey;
@@ -17493,6 +19465,20 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineRaycastHitPropertyGetTransform = unityEngineRaycastHitPropertyGetTransform;
 	Plugin::BoxRaycastHit = boxRaycastHit;
 	Plugin::UnboxRaycastHit = unboxRaycastHit;
+	Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent = systemCollectionsIEnumeratorPropertyGetCurrent;
+	Plugin::SystemCollectionsIEnumeratorMethodMoveNext = systemCollectionsIEnumeratorMethodMoveNext;
+	Plugin::SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator = systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator = systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator = systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator;
 	Plugin::ReleaseUnityEnginePlayablesPlayableGraph = releaseUnityEnginePlayablesPlayableGraph;
 	Plugin::RefCountsUnityEnginePlayablesPlayableGraph = (int32_t*)curMemory;
 	curMemory += 1000 * sizeof(int32_t);
@@ -17587,8 +19573,6 @@ DLLEXPORT void Init(
 	Plugin::UnboxScene = unboxScene;
 	Plugin::BoxLoadSceneMode = boxLoadSceneMode;
 	Plugin::UnboxLoadSceneMode = unboxLoadSceneMode;
-	Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent = systemCollectionsIEnumeratorPropertyGetCurrent;
-	Plugin::SystemCollectionsIEnumeratorMethodMoveNext = systemCollectionsIEnumeratorMethodMoveNext;
 	Plugin::BoxPrimitiveType = boxPrimitiveType;
 	Plugin::UnboxPrimitiveType = unboxPrimitiveType;
 	Plugin::UnityEngineTimePropertyGetDeltaTime = unityEngineTimePropertyGetDeltaTime;

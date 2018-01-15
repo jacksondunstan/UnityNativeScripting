@@ -303,7 +303,7 @@ namespace NativeScript
 #if UNITY_EDITOR
 		// Handle to the C++ DLL
 		static IntPtr libraryHandle;
-
+		
 		delegate void InitDelegate(
 			IntPtr memory,
 			int memorySize,
@@ -312,8 +312,11 @@ namespace NativeScript
 			IntPtr stringNew,
 			IntPtr setException,
 			IntPtr arrayGetLength,
+			IntPtr enumerableGetEnumerator,
 			/*BEGIN INIT PARAMS*/
-			int maxManagedObjects,			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
+			int maxManagedObjects,
+			IntPtr systemIDisposableMethodDispose,
+			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
@@ -327,6 +330,7 @@ namespace NativeScript
 			IntPtr unityEngineComponentPropertyGetTransform,
 			IntPtr unityEngineTransformPropertyGetPosition,
 			IntPtr unityEngineTransformPropertySetPosition,
+			IntPtr unityEngineTransformMethodSetParentUnityEngineTransform,
 			IntPtr boxColor,
 			IntPtr unboxColor,
 			IntPtr boxGradientColorKey,
@@ -346,6 +350,20 @@ namespace NativeScript
 			IntPtr unityEngineRaycastHitPropertyGetTransform,
 			IntPtr boxRaycastHit,
 			IntPtr unboxRaycastHit,
+			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
+			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
+			IntPtr systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator,
 			IntPtr releaseUnityEnginePlayablesPlayableGraph,
 			IntPtr boxPlayableGraph,
 			IntPtr unboxPlayableGraph,
@@ -425,8 +443,6 @@ namespace NativeScript
 			IntPtr unboxScene,
 			IntPtr boxLoadSceneMode,
 			IntPtr unboxLoadSceneMode,
-			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
-			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
 			IntPtr boxPrimitiveType,
 			IntPtr unboxPrimitiveType,
 			IntPtr unityEngineTimePropertyGetDeltaTime,
@@ -800,8 +816,11 @@ namespace NativeScript
 			IntPtr stringNew,
 			IntPtr setException,
 			IntPtr arrayGetLength,
+			IntPtr enumerableGetEnumerator,
 			/*BEGIN INIT PARAMS*/
-			int maxManagedObjects,			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
+			int maxManagedObjects,
+			IntPtr systemIDisposableMethodDispose,
+			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3PropertyGetMagnitude,
 			IntPtr unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
@@ -815,6 +834,7 @@ namespace NativeScript
 			IntPtr unityEngineComponentPropertyGetTransform,
 			IntPtr unityEngineTransformPropertyGetPosition,
 			IntPtr unityEngineTransformPropertySetPosition,
+			IntPtr unityEngineTransformMethodSetParentUnityEngineTransform,
 			IntPtr boxColor,
 			IntPtr unboxColor,
 			IntPtr boxGradientColorKey,
@@ -834,6 +854,20 @@ namespace NativeScript
 			IntPtr unityEngineRaycastHitPropertyGetTransform,
 			IntPtr boxRaycastHit,
 			IntPtr unboxRaycastHit,
+			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
+			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
+			IntPtr systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent,
+			IntPtr systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator,
+			IntPtr systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator,
 			IntPtr releaseUnityEnginePlayablesPlayableGraph,
 			IntPtr boxPlayableGraph,
 			IntPtr unboxPlayableGraph,
@@ -913,8 +947,6 @@ namespace NativeScript
 			IntPtr unboxScene,
 			IntPtr boxLoadSceneMode,
 			IntPtr unboxLoadSceneMode,
-			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
-			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
 			IntPtr boxPrimitiveType,
 			IntPtr unboxPrimitiveType,
 			IntPtr unityEngineTimePropertyGetDeltaTime,
@@ -1196,8 +1228,10 @@ namespace NativeScript
 		delegate int StringNewDelegate(string chars);
 		delegate void SetExceptionDelegate(int handle);
 		delegate int ArrayGetLengthDelegate(int handle);
+		delegate int EnumerableGetEnumeratorDelegate(int handle);
 		
 		/*BEGIN DELEGATE TYPES*/
+		delegate void SystemIDisposableMethodDisposeDelegate(int thisHandle);
 		delegate UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(float x, float y, float z);
 		delegate float UnityEngineVector3PropertyGetMagnitudeDelegate(ref UnityEngine.Vector3 thiz);
 		delegate void UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(ref UnityEngine.Vector3 thiz, float newX, float newY, float newZ);
@@ -1212,6 +1246,7 @@ namespace NativeScript
 		delegate int UnityEngineComponentPropertyGetTransformDelegate(int thisHandle);
 		delegate UnityEngine.Vector3 UnityEngineTransformPropertyGetPositionDelegate(int thisHandle);
 		delegate void UnityEngineTransformPropertySetPositionDelegate(int thisHandle, ref UnityEngine.Vector3 value);
+		delegate void UnityEngineTransformMethodSetParentUnityEngineTransformDelegate(int thisHandle, int parentHandle);
 		delegate int BoxColorDelegate(ref UnityEngine.Color val);
 		delegate UnityEngine.Color UnboxColorDelegate(int valHandle);
 		delegate int BoxGradientColorKeyDelegate(ref UnityEngine.GradientColorKey val);
@@ -1231,6 +1266,20 @@ namespace NativeScript
 		delegate int UnityEngineRaycastHitPropertyGetTransformDelegate(int thisHandle);
 		delegate int BoxRaycastHitDelegate(int valHandle);
 		delegate int UnboxRaycastHitDelegate(int valHandle);
+		delegate int SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(int thisHandle);
+		delegate bool SystemCollectionsIEnumeratorMethodMoveNextDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrentDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrentDelegate(int thisHandle);
+		delegate float SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrentDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrentDelegate(int thisHandle);
+		delegate UnityEngine.GradientColorKey SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrentDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrentDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumeratorDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumeratorDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumeratorDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumeratorDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumeratorDelegate(int thisHandle);
+		delegate int SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumeratorDelegate(int thisHandle);
 		delegate void ReleaseUnityEnginePlayablesPlayableGraphDelegate(int handle);
 		delegate int BoxPlayableGraphDelegate(int valHandle);
 		delegate int UnboxPlayableGraphDelegate(int valHandle);
@@ -1310,8 +1359,6 @@ namespace NativeScript
 		delegate int UnboxSceneDelegate(int valHandle);
 		delegate int BoxLoadSceneModeDelegate(UnityEngine.SceneManagement.LoadSceneMode val);
 		delegate UnityEngine.SceneManagement.LoadSceneMode UnboxLoadSceneModeDelegate(int valHandle);
-		delegate int SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(int thisHandle);
-		delegate bool SystemCollectionsIEnumeratorMethodMoveNextDelegate(int thisHandle);
 		delegate int BoxPrimitiveTypeDelegate(UnityEngine.PrimitiveType val);
 		delegate UnityEngine.PrimitiveType UnboxPrimitiveTypeDelegate(int valHandle);
 		delegate float UnityEngineTimePropertyGetDeltaTimeDelegate();
@@ -1606,8 +1653,10 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
 				Marshal.GetFunctionPointerForDelegate(new SetExceptionDelegate(SetException)),
 				Marshal.GetFunctionPointerForDelegate(new ArrayGetLengthDelegate(ArrayGetLength)),
+				Marshal.GetFunctionPointerForDelegate(new EnumerableGetEnumeratorDelegate(EnumerableGetEnumerator)),
 				/*BEGIN INIT CALL*/
 				1000,
+				Marshal.GetFunctionPointerForDelegate(new SystemIDisposableMethodDisposeDelegate(SystemIDisposableMethodDispose)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3PropertyGetMagnitudeDelegate(UnityEngineVector3PropertyGetMagnitude)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)),
@@ -1622,6 +1671,7 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineComponentPropertyGetTransformDelegate(UnityEngineComponentPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertyGetPositionDelegate(UnityEngineTransformPropertyGetPosition)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertySetPositionDelegate(UnityEngineTransformPropertySetPosition)),
+				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformMethodSetParentUnityEngineTransformDelegate(UnityEngineTransformMethodSetParentUnityEngineTransform)),
 				Marshal.GetFunctionPointerForDelegate(new BoxColorDelegate(BoxColor)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxColorDelegate(UnboxColor)),
 				Marshal.GetFunctionPointerForDelegate(new BoxGradientColorKeyDelegate(BoxGradientColorKey)),
@@ -1641,6 +1691,20 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineRaycastHitPropertyGetTransformDelegate(UnityEngineRaycastHitPropertyGetTransform)),
 				Marshal.GetFunctionPointerForDelegate(new BoxRaycastHitDelegate(BoxRaycastHit)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxRaycastHitDelegate(UnboxRaycastHit)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(SystemCollectionsIEnumeratorPropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorMethodMoveNextDelegate(SystemCollectionsIEnumeratorMethodMoveNext)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrentDelegate(SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrentDelegate(SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrentDelegate(SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrentDelegate(SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrentDelegate(SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrentDelegate(SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumeratorDelegate(SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumeratorDelegate(SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumeratorDelegate(SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumeratorDelegate(SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumeratorDelegate(SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator)),
+				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumeratorDelegate(SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator)),
 				Marshal.GetFunctionPointerForDelegate(new ReleaseUnityEnginePlayablesPlayableGraphDelegate(ReleaseUnityEnginePlayablesPlayableGraph)),
 				Marshal.GetFunctionPointerForDelegate(new BoxPlayableGraphDelegate(BoxPlayableGraph)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxPlayableGraphDelegate(UnboxPlayableGraph)),
@@ -1720,8 +1784,6 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new UnboxSceneDelegate(UnboxScene)),
 				Marshal.GetFunctionPointerForDelegate(new BoxLoadSceneModeDelegate(BoxLoadSceneMode)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxLoadSceneModeDelegate(UnboxLoadSceneMode)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(SystemCollectionsIEnumeratorPropertyGetCurrent)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorMethodMoveNextDelegate(SystemCollectionsIEnumeratorMethodMoveNext)),
 				Marshal.GetFunctionPointerForDelegate(new BoxPrimitiveTypeDelegate(BoxPrimitiveType)),
 				Marshal.GetFunctionPointerForDelegate(new UnboxPrimitiveTypeDelegate(UnboxPrimitiveType)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineTimePropertyGetDeltaTimeDelegate(UnityEngineTimePropertyGetDeltaTime)),
@@ -1925,6 +1987,12 @@ namespace NativeScript
 		static int ArrayGetLength(int handle)
 		{
 			return ((Array)ObjectStore.Get(handle)).Length;
+		}
+		
+		[MonoPInvokeCallback(typeof(EnumerableGetEnumeratorDelegate))]
+		static int EnumerableGetEnumerator(int handle)
+		{
+			return ObjectStore.Store(((IEnumerable)ObjectStore.Get(handle)).GetEnumerator());
 		}
 		
 		/*BEGIN BASE TYPES*/
@@ -2753,6 +2821,26 @@ namespace NativeScript
 		/*END BASE TYPES*/
 		
 		/*BEGIN FUNCTIONS*/
+		[MonoPInvokeCallback(typeof(SystemIDisposableMethodDisposeDelegate))]
+		static void SystemIDisposableMethodDispose(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.IDisposable)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				thiz.Dispose();
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate))]
 		static UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(float x, float y, float z)
 		{
@@ -3049,6 +3137,27 @@ namespace NativeScript
 			{
 				var thiz = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(thisHandle);
 				thiz.position = value;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnityEngineTransformMethodSetParentUnityEngineTransformDelegate))]
+		static void UnityEngineTransformMethodSetParentUnityEngineTransform(int thisHandle, int parentHandle)
+		{
+			try
+			{
+				var thiz = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var parent = (UnityEngine.Transform)NativeScript.Bindings.ObjectStore.Get(parentHandle);
+				thiz.SetParent(parent);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -3472,6 +3581,328 @@ namespace NativeScript
 				var val = NativeScript.Bindings.ObjectStore.Get(valHandle);
 				var returnValue = NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Store((UnityEngine.RaycastHit)val);
 				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorPropertyGetCurrentDelegate))]
+		static int SystemCollectionsIEnumeratorPropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorMethodMoveNextDelegate))]
+		static bool SystemCollectionsIEnumeratorMethodMoveNext(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.MoveNext();
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(bool);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrentDelegate))]
+		static int SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerator<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrentDelegate))]
+		static int SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerator<int>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrentDelegate))]
+		static float SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerator<float>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(float);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(float);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrentDelegate))]
+		static int SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerator<UnityEngine.RaycastHit>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return NativeScript.Bindings.StructStore<UnityEngine.RaycastHit>.Store(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrentDelegate))]
+		static UnityEngine.GradientColorKey SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerator<UnityEngine.GradientColorKey>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.GradientColorKey);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(UnityEngine.GradientColorKey);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrentDelegate))]
+		static int SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerator<UnityEngine.Resolution>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.Current;
+				return NativeScript.Bindings.StructStore<UnityEngine.Resolution>.Store(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumeratorDelegate))]
+		static int SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerable<string>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.GetEnumerator();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumeratorDelegate))]
+		static int SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerable<int>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.GetEnumerator();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumeratorDelegate))]
+		static int SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerable<float>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.GetEnumerator();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumeratorDelegate))]
+		static int SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerable<UnityEngine.RaycastHit>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.GetEnumerator();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumeratorDelegate))]
+		static int SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerable<UnityEngine.GradientColorKey>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.GetEnumerator();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumeratorDelegate))]
+		static int SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator(int thisHandle)
+		{
+			try
+			{
+				var thiz = (System.Collections.Generic.IEnumerable<UnityEngine.Resolution>)NativeScript.Bindings.ObjectStore.Get(thisHandle);
+				var returnValue = thiz.GetEnumerator();
+				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
 			}
 			catch (System.NullReferenceException ex)
 			{
@@ -5228,52 +5659,6 @@ namespace NativeScript
 				UnityEngine.Debug.LogException(ex);
 				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
 				return default(UnityEngine.SceneManagement.LoadSceneMode);
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorPropertyGetCurrentDelegate))]
-		static int SystemCollectionsIEnumeratorPropertyGetCurrent(int thisHandle)
-		{
-			try
-			{
-				var thiz = (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				var returnValue = thiz.Current;
-				return NativeScript.Bindings.ObjectStore.GetHandle(returnValue);
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(int);
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(int);
-			}
-		}
-		
-		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorMethodMoveNextDelegate))]
-		static bool SystemCollectionsIEnumeratorMethodMoveNext(int thisHandle)
-		{
-			try
-			{
-				var thiz = (System.Collections.IEnumerator)NativeScript.Bindings.ObjectStore.Get(thisHandle);
-				var returnValue = thiz.MoveNext();
-				return returnValue;
-			}
-			catch (System.NullReferenceException ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(bool);
-			}
-			catch (System.Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
-				return default(bool);
 			}
 		}
 		

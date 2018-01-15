@@ -4,7 +4,13 @@
 	],
 	"Types": [
 		{
-			"Name": " System.IDisposable"
+			"Name": " System.IDisposable",
+			"Methods": [
+				{
+					"Name": "Dispose",
+					"ParamTypes": []
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.Vector3",
@@ -83,6 +89,14 @@
 		},
 		{
 			"Name": "UnityEngine.Transform",
+			"Methods": [
+				{
+					"Name": "SetParent",
+					"ParamTypes": [
+						"UnityEngine.Transform"
+					]
+				}
+			],
 			"Properties": [
 				{
 					"Name": "position",
@@ -136,6 +150,63 @@
 			]
 		},
 		{
+			"Name": "System.Collections.IEnumerator",
+			"Methods": [
+				{
+					"Name": "MoveNext",
+					"ParamTypes": []
+				}
+			],
+			"Properties": [
+				{
+					"Name": "Current",
+					"Get": {},
+					"Set": {}
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.IEnumerator`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			],
+			"Properties": [
+				{
+					"Name": "Current",
+					"Get": {}
+				}
+			]
+		},
+		{
 			"Name": "System.Collections.Generic.IEnumerable`1",
 			"GenericParams": [
 				{
@@ -167,6 +238,12 @@
 					"Types": [
 						"UnityEngine.Resolution"
 					]
+				}
+			],
+			"Methods": [
+				{
+					"Name": "GetEnumerator",
+					"ParamTypes": []
 				}
 			]
 		},
@@ -737,22 +814,6 @@
 		},
 		{
 			"Name": "UnityEngine.SceneManagement.LoadSceneMode"
-		},
-		{
-			"Name": "System.Collections.IEnumerator",
-			"Methods": [
-				{
-					"Name": "MoveNext",
-					"ParamTypes": []
-				}
-			],
-			"Properties": [
-				{
-					"Name": "Current",
-					"Get": {},
-					"Set": {}
-				}
-			]
 		},
 		{
 			"Name": "System.EventArgs"
