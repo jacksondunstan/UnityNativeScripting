@@ -101,7 +101,7 @@ C++ is the standard language for video games as well as many other fields. By pr
     * Arrays (single- and multi-dimensional)
     * Delegates
     * Events
-    * Boxing and unboxing (e.g. boxing `int` to `object`, casting `object` to `int`)
+    * Boxing and unboxing (e.g. casting `int` to `object` and visa versa)
     * Implementing C# interfaces with C++ classes
     * Deriving from C# classes with C++ classes
     * Default parameters

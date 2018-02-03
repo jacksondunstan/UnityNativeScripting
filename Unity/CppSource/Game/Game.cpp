@@ -52,7 +52,7 @@ void MyGame::MonoBehaviours::TestScript::Awake()
 	Debug::Log(message);
 }
 
-void MyGame::MonoBehaviours::TestScript::OnAnimatorIK(int32_t param0)
+void MyGame::MonoBehaviours::TestScript::OnAnimatorIK(Int32 param0)
 {
 	String message("C++ TestScript OnAnimatorIK");
 	Debug::Log(message);

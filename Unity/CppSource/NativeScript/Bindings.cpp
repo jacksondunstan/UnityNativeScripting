@@ -32,53 +32,6 @@
 #endif
 
 ////////////////////////////////////////////////////////////////
-// Global variables
-////////////////////////////////////////////////////////////////
-
-namespace Plugin
-{
-	System::String NullString(nullptr);
-}
-
-////////////////////////////////////////////////////////////////
-// Support for using IEnumerable with range for loops
-////////////////////////////////////////////////////////////////
-
-namespace Plugin
-{
-	// End iterators are dummies full of null
-	EnumerableIterator::EnumerableIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	// Begin iterators keep track of an IEnumerator
-	EnumerableIterator::EnumerableIterator(
-		System::Collections::IEnumerable& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	EnumerableIterator& EnumerableIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool EnumerableIterator::operator!=(const EnumerableIterator& other)
-	{
-		return hasMore;
-	}
-	
-	System::Object EnumerableIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-////////////////////////////////////////////////////////////////
 // C# functions for C++ to call
 ////////////////////////////////////////////////////////////////
 
@@ -91,9 +44,10 @@ namespace Plugin
 	int32_t (*EnumerableGetEnumerator)(int32_t handle);
 	
 	/*BEGIN FUNCTION POINTERS*/
+	System::Int32 (*SystemIComparableMethodCompareToSystemObject)(int32_t thisHandle, int32_t objHandle);
 	void (*SystemIDisposableMethodDispose)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
-	float (*UnityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz);
+	System::Single (*UnityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz);
 	void (*UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ);
 	UnityEngine::Vector3 (*UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b);
 	UnityEngine::Vector3 (*UnityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a);
@@ -112,11 +66,12 @@ namespace Plugin
 	int32_t (*BoxGradientColorKey)(UnityEngine::GradientColorKey& val);
 	UnityEngine::GradientColorKey (*UnboxGradientColorKey)(int32_t valHandle);
 	void (*ReleaseUnityEngineResolution)(int32_t handle);
-	int32_t (*UnityEngineResolutionPropertyGetWidth)(int32_t thisHandle);
+	int32_t (*UnityEngineResolutionConstructor)();
+	System::Int32 (*UnityEngineResolutionPropertyGetWidth)(int32_t thisHandle);
 	void (*UnityEngineResolutionPropertySetWidth)(int32_t thisHandle, int32_t value);
-	int32_t (*UnityEngineResolutionPropertyGetHeight)(int32_t thisHandle);
+	System::Int32 (*UnityEngineResolutionPropertyGetHeight)(int32_t thisHandle);
 	void (*UnityEngineResolutionPropertySetHeight)(int32_t thisHandle, int32_t value);
-	int32_t (*UnityEngineResolutionPropertyGetRefreshRate)(int32_t thisHandle);
+	System::Int32 (*UnityEngineResolutionPropertyGetRefreshRate)(int32_t thisHandle);
 	void (*UnityEngineResolutionPropertySetRefreshRate)(int32_t thisHandle, int32_t value);
 	int32_t (*BoxResolution)(int32_t valHandle);
 	int32_t (*UnboxResolution)(int32_t valHandle);
@@ -128,27 +83,15 @@ namespace Plugin
 	int32_t (*UnboxRaycastHit)(int32_t valHandle);
 	int32_t (*SystemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle);
 	int32_t (*SystemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent)(int32_t thisHandle);
-	float (*SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent)(int32_t thisHandle);
-	UnityEngine::GradientColorKey (*SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator)(int32_t thisHandle);
-	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator)(int32_t thisHandle);
 	void (*ReleaseUnityEnginePlayablesPlayableGraph)(int32_t handle);
 	int32_t (*BoxPlayableGraph)(int32_t valHandle);
 	int32_t (*UnboxPlayableGraph)(int32_t valHandle);
 	void (*ReleaseUnityEngineAnimationsAnimationMixerPlayable)(int32_t handle);
-	int32_t (*UnityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean)(int32_t graphHandle, int32_t inputCount, System::Boolean normalizeWeights);
+	int32_t (*UnityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean)(int32_t graphHandle, int32_t inputCount, uint32_t normalizeWeights);
 	int32_t (*BoxAnimationMixerPlayable)(int32_t valHandle);
 	int32_t (*UnboxAnimationMixerPlayable)(int32_t valHandle);
 	int32_t (*SystemDiagnosticsStopwatchConstructor)();
-	int64_t (*SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle);
+	System::Int64 (*SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle);
 	void (*SystemDiagnosticsStopwatchMethodStart)(int32_t thisHandle);
 	void (*SystemDiagnosticsStopwatchMethodReset)(int32_t thisHandle);
 	int32_t (*UnityEngineGameObjectConstructor)();
@@ -159,7 +102,7 @@ namespace Plugin
 	int32_t (*UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type);
 	void (*UnityEngineDebugMethodLogSystemObject)(int32_t messageHandle);
 	int32_t (*UnityEngineAssertionsAssertFieldGetRaiseExceptions)();
-	void (*UnityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value);
+	void (*UnityEngineAssertionsAssertFieldSetRaiseExceptions)(uint32_t value);
 	void (*UnityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle);
 	void (*UnityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle);
 	int32_t (*UnityEngineMonoBehaviourPropertyGetTransform)(int32_t thisHandle);
@@ -168,7 +111,7 @@ namespace Plugin
 	void (*UnityEngineNetworkingNetworkTransportMethodInit)();
 	int32_t (*BoxQuaternion)(UnityEngine::Quaternion& val);
 	UnityEngine::Quaternion (*UnboxQuaternion)(int32_t valHandle);
-	float (*UnityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column);
+	System::Single (*UnityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column);
 	void (*UnityEngineMatrix4x4PropertySetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column, float value);
 	int32_t (*BoxMatrix4x4)(UnityEngine::Matrix4x4& val);
 	UnityEngine::Matrix4x4 (*UnboxMatrix4x4)(int32_t valHandle);
@@ -177,19 +120,9 @@ namespace Plugin
 	void (*ReleaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble)(int32_t handle);
 	int32_t (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble)(int32_t keyHandle, double value);
 	int32_t (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)(int32_t thisHandle);
-	double (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle);
+	System::Double (*SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle);
 	int32_t (*BoxKeyValuePairSystemString_SystemDouble)(int32_t valHandle);
 	int32_t (*UnboxKeyValuePairSystemString_SystemDouble)(int32_t valHandle);
-	int32_t (*SystemCollectionsGenericListSystemStringConstructor)();
-	int32_t (*SystemCollectionsGenericListSystemStringPropertyGetItem)(int32_t thisHandle, int32_t index);
-	void (*SystemCollectionsGenericListSystemStringPropertySetItem)(int32_t thisHandle, int32_t index, int32_t valueHandle);
-	void (*SystemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle);
-	void (*SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle);
-	int32_t (*SystemCollectionsGenericListSystemInt32Constructor)();
-	int32_t (*SystemCollectionsGenericListSystemInt32PropertyGetItem)(int32_t thisHandle, int32_t index);
-	void (*SystemCollectionsGenericListSystemInt32PropertySetItem)(int32_t thisHandle, int32_t index, int32_t value);
-	void (*SystemCollectionsGenericListSystemInt32MethodAddSystemInt32)(int32_t thisHandle, int32_t item);
-	void (*SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle);
 	int32_t (*SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle);
 	int32_t (*SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)(int32_t thisHandle);
 	void (*SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)(int32_t thisHandle, int32_t valueHandle);
@@ -202,7 +135,7 @@ namespace Plugin
 	int32_t (*UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction);
 	int32_t (*BoxRay)(int32_t valHandle);
 	int32_t (*UnboxRay)(int32_t valHandle);
-	int32_t (*UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1)(int32_t rayHandle, int32_t resultsHandle);
+	System::Int32 (*UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1)(int32_t rayHandle, int32_t resultsHandle);
 	int32_t (*UnityEnginePhysicsMethodRaycastAllUnityEngineRay)(int32_t rayHandle);
 	int32_t (*UnityEngineGradientConstructor)();
 	int32_t (*UnityEngineGradientPropertyGetColorKeys)(int32_t thisHandle);
@@ -221,7 +154,7 @@ namespace Plugin
 	UnityEngine::SceneManagement::LoadSceneMode (*UnboxLoadSceneMode)(int32_t valHandle);
 	int32_t (*BoxPrimitiveType)(UnityEngine::PrimitiveType val);
 	UnityEngine::PrimitiveType (*UnboxPrimitiveType)(int32_t valHandle);
-	float (*UnityEngineTimePropertyGetDeltaTime)();
+	System::Single (*UnityEngineTimePropertyGetDeltaTime)();
 	int32_t (*BoxFileMode)(System::IO::FileMode val);
 	System::IO::FileMode (*UnboxFileMode)(int32_t valHandle);
 	void (*ReleaseSystemCollectionsGenericBaseIComparerSystemInt32)(int32_t handle);
@@ -230,7 +163,7 @@ namespace Plugin
 	void (*SystemCollectionsGenericBaseIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemBaseStringComparer)(int32_t handle);
 	void (*SystemBaseStringComparerConstructor)(int32_t cppHandle, int32_t* handle);
-	int32_t (*SystemCollectionsQueuePropertyGetCount)(int32_t thisHandle);
+	System::Int32 (*SystemCollectionsQueuePropertyGetCount)(int32_t thisHandle);
 	void (*ReleaseSystemCollectionsBaseQueue)(int32_t handle);
 	void (*SystemCollectionsBaseQueueConstructor)(int32_t cppHandle, int32_t* handle);
 	void (*ReleaseSystemComponentModelDesignBaseIComponentChangeService)(int32_t handle);
@@ -242,6 +175,8 @@ namespace Plugin
 	void (*ReleaseUnityEnginePlayablesPlayableHandle)(int32_t handle);
 	int32_t (*BoxPlayableHandle)(int32_t valHandle);
 	int32_t (*UnboxPlayableHandle)(int32_t valHandle);
+	int32_t (*SystemCollectionsGenericIEnumeratorUnityEngineExperimentalUIElementsVisualElementPropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineExperimentalUIElementsVisualElementMethodGetEnumerator)(int32_t thisHandle);
 	int32_t (*UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1)(int32_t eHandle, int32_t nameHandle, int32_t classesHandle);
 	int32_t (*UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString)(int32_t eHandle, int32_t nameHandle, int32_t classNameHandle);
 	int32_t (*BoxInteractionSourcePositionAccuracy)(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val);
@@ -252,43 +187,65 @@ namespace Plugin
 	int32_t (*UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node);
 	int32_t (*BoxInteractionSourcePose)(int32_t valHandle);
 	int32_t (*UnboxInteractionSourcePose)(int32_t valHandle);
-	int32_t (*BoxBoolean)(System::Boolean val);
+	int32_t (*SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent)(int32_t thisHandle);
+	System::Int32 (*SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent)(int32_t thisHandle);
+	System::Single (*SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent)(int32_t thisHandle);
+	UnityEngine::GradientColorKey (*SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator)(int32_t thisHandle);
+	int32_t (*SystemCollectionsGenericListSystemStringConstructor)();
+	int32_t (*SystemCollectionsGenericListSystemStringPropertyGetItem)(int32_t thisHandle, int32_t index);
+	void (*SystemCollectionsGenericListSystemStringPropertySetItem)(int32_t thisHandle, int32_t index, int32_t valueHandle);
+	void (*SystemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle);
+	void (*SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle);
+	int32_t (*SystemCollectionsGenericListSystemInt32Constructor)();
+	System::Int32 (*SystemCollectionsGenericListSystemInt32PropertyGetItem)(int32_t thisHandle, int32_t index);
+	void (*SystemCollectionsGenericListSystemInt32PropertySetItem)(int32_t thisHandle, int32_t index, int32_t value);
+	void (*SystemCollectionsGenericListSystemInt32MethodAddSystemInt32)(int32_t thisHandle, int32_t item);
+	void (*SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle);
+	int32_t (*BoxBoolean)(uint32_t val);
 	int32_t (*UnboxBoolean)(int32_t valHandle);
 	int32_t (*BoxSByte)(int8_t val);
-	int8_t (*UnboxSByte)(int32_t valHandle);
+	System::SByte (*UnboxSByte)(int32_t valHandle);
 	int32_t (*BoxByte)(uint8_t val);
-	uint8_t (*UnboxByte)(int32_t valHandle);
+	System::Byte (*UnboxByte)(int32_t valHandle);
 	int32_t (*BoxInt16)(int16_t val);
-	int16_t (*UnboxInt16)(int32_t valHandle);
+	System::Int16 (*UnboxInt16)(int32_t valHandle);
 	int32_t (*BoxUInt16)(uint16_t val);
-	uint16_t (*UnboxUInt16)(int32_t valHandle);
+	System::UInt16 (*UnboxUInt16)(int32_t valHandle);
 	int32_t (*BoxInt32)(int32_t val);
-	int32_t (*UnboxInt32)(int32_t valHandle);
+	System::Int32 (*UnboxInt32)(int32_t valHandle);
 	int32_t (*BoxUInt32)(uint32_t val);
-	uint32_t (*UnboxUInt32)(int32_t valHandle);
+	System::UInt32 (*UnboxUInt32)(int32_t valHandle);
 	int32_t (*BoxInt64)(int64_t val);
-	int64_t (*UnboxInt64)(int32_t valHandle);
+	System::Int64 (*UnboxInt64)(int32_t valHandle);
 	int32_t (*BoxUInt64)(uint64_t val);
-	uint64_t (*UnboxUInt64)(int32_t valHandle);
-	int32_t (*BoxChar)(System::Char val);
+	System::UInt64 (*UnboxUInt64)(int32_t valHandle);
+	int32_t (*BoxChar)(uint16_t val);
 	int16_t (*UnboxChar)(int32_t valHandle);
 	int32_t (*BoxSingle)(float val);
-	float (*UnboxSingle)(int32_t valHandle);
+	System::Single (*UnboxSingle)(int32_t valHandle);
 	int32_t (*BoxDouble)(double val);
-	double (*UnboxDouble)(int32_t valHandle);
+	System::Double (*UnboxDouble)(int32_t valHandle);
 	int32_t (*SystemSystemInt32Array1Constructor1)(int32_t length0);
-	int32_t (*SystemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0);
+	System::Int32 (*SystemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*SystemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item);
 	int32_t (*SystemSystemSingleArray1Constructor1)(int32_t length0);
-	float (*SystemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0);
+	System::Single (*SystemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0);
 	int32_t (*SystemSingleArray1SetItem1)(int32_t thisHandle, int32_t index0, float item);
 	int32_t (*SystemSystemSingleArray2Constructor2)(int32_t length0, int32_t length1);
 	int32_t (*SystemSystemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension);
-	float (*SystemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1);
+	System::Single (*SystemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1);
 	int32_t (*SystemSingleArray2SetItem2)(int32_t thisHandle, int32_t index0, int32_t index1, float item);
 	int32_t (*SystemSystemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2);
 	int32_t (*SystemSystemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension);
-	float (*SystemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2);
+	System::Single (*SystemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2);
 	int32_t (*SystemSingleArray3SetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2, float item);
 	int32_t (*SystemSystemStringArray1Constructor1)(int32_t length0);
 	int32_t (*SystemStringArray1GetItem1)(int32_t thisHandle, int32_t index0);
@@ -321,7 +278,7 @@ namespace Plugin
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove)(int32_t thisHandle, int32_t delHandle);
-	double (*SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2);
+	System::Double (*SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2);
 	void (*ReleaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t classHandle);
 	void (*SystemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle);
 	void (*SystemFuncSystemInt16_SystemInt32_SystemStringAdd)(int32_t thisHandle, int32_t delHandle);
@@ -363,6 +320,587 @@ namespace Plugin
 	void (*SystemComponentModelDesignComponentRenameEventHandlerRemove)(int32_t thisHandle, int32_t delHandle);
 	void (*SystemComponentModelDesignComponentRenameEventHandlerInvoke)(int32_t thisHandle, int32_t senderHandle, int32_t eHandle);
 	/*END FUNCTION POINTERS*/
+}
+
+////////////////////////////////////////////////////////////////
+// Global variables
+////////////////////////////////////////////////////////////////
+
+namespace Plugin
+{
+	System::String NullString(nullptr);
+}
+
+////////////////////////////////////////////////////////////////
+// Plugin Types
+////////////////////////////////////////////////////////////////
+
+namespace Plugin
+{
+	ManagedType::ManagedType()
+		: Handle(0)
+	{
+	}
+	
+	ManagedType::ManagedType(decltype(nullptr))
+		: Handle(0)
+	{
+	}
+	
+	ManagedType::ManagedType(Plugin::InternalUse iu, int32_t handle)
+		: Handle(handle)
+	{
+	}
+}
+
+////////////////////////////////////////////////////////////////
+// C# Primitive Types
+////////////////////////////////////////////////////////////////
+
+namespace System
+{
+	Boolean::Boolean()
+		: Value(0)
+	{
+	}
+	
+	Boolean::Boolean(bool value)
+		: Value((int32_t)value)
+	{
+	}
+	
+	Boolean::Boolean(int32_t value)
+		: Value(value)
+	{
+	}
+	
+	Boolean::Boolean(uint32_t value)
+		: Value(value)
+	{
+	}
+	
+	Boolean::operator bool() const
+	{
+		return (bool)Value;
+	}
+	
+	Boolean::operator int32_t() const
+	{
+		return Value;
+	}
+	
+	Boolean::operator uint32_t() const
+	{
+		return Value;
+	}
+	
+	Boolean::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
+	}
+	
+	Boolean::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
+	}
+	
+	Boolean::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
+	}
+	
+	Boolean::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
+	}
+	
+	Boolean::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
+	}
+	
+	Char::Char()
+		: Value(0)
+	{
+	}
+	
+	Char::Char(char value)
+		: Value(value)
+	{
+	}
+	
+	Char::Char(int16_t value)
+		: Value(value)
+	{
+	}
+	
+	Char::operator int16_t() const
+	{
+		return Value;
+	}
+	
+	Char::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
+	}
+	
+	Char::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
+	}
+	
+	Char::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
+	}
+	
+	Char::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
+	}
+	
+	Char::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
+	}
+
+	SByte::SByte()
+		: Value(0)
+	{
+	}
+	
+	SByte::SByte(int8_t val)
+		: Value(val)
+	{
+	}
+	
+	SByte::operator int8_t() const
+	{
+		return Value;
+	}
+	
+	SByte::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
+	}
+	
+	SByte::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
+	}
+	
+	SByte::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
+	}
+	
+	SByte::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
+	}
+	
+	SByte::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
+	}
+
+	Byte::Byte()
+		: Value(0)
+	{
+	}
+	
+	Byte::Byte(uint8_t value)
+		: Value(value)
+	{
+	}
+	
+	Byte::operator uint8_t() const
+	{
+		return Value;
+	}
+	
+	Byte::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
+	}
+	
+	Byte::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
+	}
+	
+	Byte::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
+	}
+	
+	Byte::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
+	}
+	
+	Byte::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
+	}
+
+	Int16::Int16()
+		: Value(0)
+	{
+	}
+	
+	Int16::Int16(int16_t value)
+		: Value(value)
+	{
+	}
+	
+	Int16::operator int16_t() const
+	{
+		return Value;
+	}
+	
+	Int16::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
+	}
+	
+	Int16::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
+	}
+	
+	Int16::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
+	}
+	
+	Int16::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
+	}
+	
+	Int16::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
+	}
+
+	UInt16::UInt16()
+		: Value(0)
+	{
+	}
+	
+	UInt16::UInt16(uint16_t value)
+		: Value(value)
+	{
+	}
+	
+	UInt16::operator uint16_t() const
+	{
+		return Value;
+	}
+	
+	UInt16::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
+	}
+	
+	UInt16::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
+	}
+	
+	UInt16::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
+	}
+	
+	UInt16::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
+	}
+	
+	UInt16::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
+	}
+
+	Int32::Int32()
+		: Value(0)
+	{
+	}
+	
+	Int32::Int32(int32_t value)
+		: Value(value)
+	{
+	}
+	
+	Int32::operator int32_t() const
+	{
+		return Value;
+	}
+	
+	Int32::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
+	}
+	
+	Int32::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
+	}
+	
+	Int32::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
+	}
+	
+	Int32::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
+	}
+	
+	Int32::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
+	}
+
+	UInt32::UInt32()
+		: Value(0)
+	{
+	}
+	
+	UInt32::UInt32(uint32_t value)
+		: Value(value)
+	{
+	}
+	
+	UInt32::operator uint32_t() const
+	{
+		return Value;
+	}
+	
+	UInt32::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
+	}
+	
+	UInt32::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
+	}
+	
+	UInt32::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
+	}
+	
+	UInt32::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
+	}
+	
+	UInt32::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
+	}
+
+	Int64::Int64()
+		: Value(0)
+	{
+	}
+	
+	Int64::Int64(int64_t value)
+		: Value(value)
+	{
+	}
+	
+	Int64::operator int64_t() const
+	{
+		return Value;
+	}
+	
+	Int64::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
+	}
+	
+	Int64::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
+	}
+	
+	Int64::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
+	}
+	
+	Int64::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
+	}
+	
+	Int64::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
+	}
+
+	UInt64::UInt64()
+		: Value(0)
+	{
+	}
+	
+	UInt64::UInt64(uint64_t value)
+		: Value(value)
+	{
+	}
+	
+	UInt64::operator uint64_t() const
+	{
+		return Value;
+	}
+	
+	UInt64::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
+	}
+	
+	UInt64::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
+	}
+	
+	UInt64::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
+	}
+	
+	UInt64::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
+	}
+	
+	UInt64::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
+	}
+
+	Single::Single()
+		: Value(0.0f)
+	{
+	}
+	
+	Single::Single(float value)
+		: Value(value)
+	{
+	}
+	
+	Single::operator float() const
+	{
+		return Value;
+	}
+	
+	Single::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
+	}
+	
+	Single::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
+	}
+	
+	Single::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
+	}
+	
+	Single::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
+	}
+	
+	Single::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
+	}
+
+	Double::Double()
+		: Value(0.0)
+	{
+	}
+	
+	Double::Double(double value)
+		: Value(value)
+	{
+	}
+	
+	Double::operator double() const
+	{
+		return Value;
+	}
+	
+	Double::operator Object() const
+	{
+		return Object(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
+	}
+	
+	Double::operator ValueType() const
+	{
+		return ValueType(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
+	}
+	
+	Double::operator IComparable() const
+	{
+		return IComparable(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
+	}
+	
+	Double::operator IFormattable() const
+	{
+		return IFormattable(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
+	}
+	
+	Double::operator IConvertible() const
+	{
+		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
+	}
+}
+
+////////////////////////////////////////////////////////////////
+// Support for using IEnumerable with range for loops
+////////////////////////////////////////////////////////////////
+
+namespace Plugin
+{
+	// End iterators are dummies full of null
+	EnumerableIterator::EnumerableIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	// Begin iterators keep track of an IEnumerator
+	EnumerableIterator::EnumerableIterator(
+		System::Collections::IEnumerable& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	EnumerableIterator& EnumerableIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool EnumerableIterator::operator!=(const EnumerableIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Object EnumerableIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -587,19 +1125,19 @@ namespace Plugin
 	}
 	
 	int32_t SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize;
-	System::Collections::Generic::BaseIComparer<int32_t>** SystemCollectionsGenericBaseIComparerSystemInt32FreeList;
-	System::Collections::Generic::BaseIComparer<int32_t>** NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
+	System::Collections::Generic::BaseIComparer<System::Int32>** SystemCollectionsGenericBaseIComparerSystemInt32FreeList;
+	System::Collections::Generic::BaseIComparer<System::Int32>** NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
 	
-	int32_t StoreSystemCollectionsGenericBaseIComparerSystemInt32(System::Collections::Generic::BaseIComparer<int32_t>* del)
+	int32_t StoreSystemCollectionsGenericBaseIComparerSystemInt32(System::Collections::Generic::BaseIComparer<System::Int32>* del)
 	{
 		assert(NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 != nullptr);
-		System::Collections::Generic::BaseIComparer<int32_t>** pNext = NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
-		NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = (System::Collections::Generic::BaseIComparer<int32_t>**)*pNext;
+		System::Collections::Generic::BaseIComparer<System::Int32>** pNext = NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
+		NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = (System::Collections::Generic::BaseIComparer<System::Int32>**)*pNext;
 		*pNext = del;
 		return (int32_t)(pNext - SystemCollectionsGenericBaseIComparerSystemInt32FreeList);
 	}
 	
-	System::Collections::Generic::BaseIComparer<int32_t>* GetSystemCollectionsGenericBaseIComparerSystemInt32(int32_t handle)
+	System::Collections::Generic::BaseIComparer<System::Int32>* GetSystemCollectionsGenericBaseIComparerSystemInt32(int32_t handle)
 	{
 		assert(handle >= 0 && handle < SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize);
 		return SystemCollectionsGenericBaseIComparerSystemInt32FreeList[handle];
@@ -607,8 +1145,8 @@ namespace Plugin
 	
 	void RemoveSystemCollectionsGenericBaseIComparerSystemInt32(int32_t handle)
 	{
-		System::Collections::Generic::BaseIComparer<int32_t>** pRelease = SystemCollectionsGenericBaseIComparerSystemInt32FreeList + handle;
-		*pRelease = (System::Collections::Generic::BaseIComparer<int32_t>*)NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
+		System::Collections::Generic::BaseIComparer<System::Int32>** pRelease = SystemCollectionsGenericBaseIComparerSystemInt32FreeList + handle;
+		*pRelease = (System::Collections::Generic::BaseIComparer<System::Int32>*)NextFreeSystemCollectionsGenericBaseIComparerSystemInt32;
 		NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = pRelease;
 	}
 	int32_t SystemCollectionsGenericBaseIComparerSystemStringFreeListSize;
@@ -812,19 +1350,19 @@ namespace Plugin
 		NextFreeSystemAction = pRelease;
 	}
 	int32_t SystemActionSystemSingleFreeListSize;
-	System::Action1<float>** SystemActionSystemSingleFreeList;
-	System::Action1<float>** NextFreeSystemActionSystemSingle;
+	System::Action1<System::Single>** SystemActionSystemSingleFreeList;
+	System::Action1<System::Single>** NextFreeSystemActionSystemSingle;
 	
-	int32_t StoreSystemActionSystemSingle(System::Action1<float>* del)
+	int32_t StoreSystemActionSystemSingle(System::Action1<System::Single>* del)
 	{
 		assert(NextFreeSystemActionSystemSingle != nullptr);
-		System::Action1<float>** pNext = NextFreeSystemActionSystemSingle;
-		NextFreeSystemActionSystemSingle = (System::Action1<float>**)*pNext;
+		System::Action1<System::Single>** pNext = NextFreeSystemActionSystemSingle;
+		NextFreeSystemActionSystemSingle = (System::Action1<System::Single>**)*pNext;
 		*pNext = del;
 		return (int32_t)(pNext - SystemActionSystemSingleFreeList);
 	}
 	
-	System::Action1<float>* GetSystemActionSystemSingle(int32_t handle)
+	System::Action1<System::Single>* GetSystemActionSystemSingle(int32_t handle)
 	{
 		assert(handle >= 0 && handle < SystemActionSystemSingleFreeListSize);
 		return SystemActionSystemSingleFreeList[handle];
@@ -832,24 +1370,24 @@ namespace Plugin
 	
 	void RemoveSystemActionSystemSingle(int32_t handle)
 	{
-		System::Action1<float>** pRelease = SystemActionSystemSingleFreeList + handle;
-		*pRelease = (System::Action1<float>*)NextFreeSystemActionSystemSingle;
+		System::Action1<System::Single>** pRelease = SystemActionSystemSingleFreeList + handle;
+		*pRelease = (System::Action1<System::Single>*)NextFreeSystemActionSystemSingle;
 		NextFreeSystemActionSystemSingle = pRelease;
 	}
 	int32_t SystemActionSystemSingle_SystemSingleFreeListSize;
-	System::Action2<float, float>** SystemActionSystemSingle_SystemSingleFreeList;
-	System::Action2<float, float>** NextFreeSystemActionSystemSingle_SystemSingle;
+	System::Action2<System::Single, System::Single>** SystemActionSystemSingle_SystemSingleFreeList;
+	System::Action2<System::Single, System::Single>** NextFreeSystemActionSystemSingle_SystemSingle;
 	
-	int32_t StoreSystemActionSystemSingle_SystemSingle(System::Action2<float, float>* del)
+	int32_t StoreSystemActionSystemSingle_SystemSingle(System::Action2<System::Single, System::Single>* del)
 	{
 		assert(NextFreeSystemActionSystemSingle_SystemSingle != nullptr);
-		System::Action2<float, float>** pNext = NextFreeSystemActionSystemSingle_SystemSingle;
-		NextFreeSystemActionSystemSingle_SystemSingle = (System::Action2<float, float>**)*pNext;
+		System::Action2<System::Single, System::Single>** pNext = NextFreeSystemActionSystemSingle_SystemSingle;
+		NextFreeSystemActionSystemSingle_SystemSingle = (System::Action2<System::Single, System::Single>**)*pNext;
 		*pNext = del;
 		return (int32_t)(pNext - SystemActionSystemSingle_SystemSingleFreeList);
 	}
 	
-	System::Action2<float, float>* GetSystemActionSystemSingle_SystemSingle(int32_t handle)
+	System::Action2<System::Single, System::Single>* GetSystemActionSystemSingle_SystemSingle(int32_t handle)
 	{
 		assert(handle >= 0 && handle < SystemActionSystemSingle_SystemSingleFreeListSize);
 		return SystemActionSystemSingle_SystemSingleFreeList[handle];
@@ -857,24 +1395,24 @@ namespace Plugin
 	
 	void RemoveSystemActionSystemSingle_SystemSingle(int32_t handle)
 	{
-		System::Action2<float, float>** pRelease = SystemActionSystemSingle_SystemSingleFreeList + handle;
-		*pRelease = (System::Action2<float, float>*)NextFreeSystemActionSystemSingle_SystemSingle;
+		System::Action2<System::Single, System::Single>** pRelease = SystemActionSystemSingle_SystemSingleFreeList + handle;
+		*pRelease = (System::Action2<System::Single, System::Single>*)NextFreeSystemActionSystemSingle_SystemSingle;
 		NextFreeSystemActionSystemSingle_SystemSingle = pRelease;
 	}
 	int32_t SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize;
-	System::Func3<int32_t, float, double>** SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList;
-	System::Func3<int32_t, float, double>** NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble;
+	System::Func3<System::Int32, System::Single, System::Double>** SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList;
+	System::Func3<System::Int32, System::Single, System::Double>** NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble;
 	
-	int32_t StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(System::Func3<int32_t, float, double>* del)
+	int32_t StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(System::Func3<System::Int32, System::Single, System::Double>* del)
 	{
 		assert(NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble != nullptr);
-		System::Func3<int32_t, float, double>** pNext = NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble;
-		NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble = (System::Func3<int32_t, float, double>**)*pNext;
+		System::Func3<System::Int32, System::Single, System::Double>** pNext = NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble;
+		NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble = (System::Func3<System::Int32, System::Single, System::Double>**)*pNext;
 		*pNext = del;
 		return (int32_t)(pNext - SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList);
 	}
 	
-	System::Func3<int32_t, float, double>* GetSystemFuncSystemInt32_SystemSingle_SystemDouble(int32_t handle)
+	System::Func3<System::Int32, System::Single, System::Double>* GetSystemFuncSystemInt32_SystemSingle_SystemDouble(int32_t handle)
 	{
 		assert(handle >= 0 && handle < SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize);
 		return SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[handle];
@@ -882,24 +1420,24 @@ namespace Plugin
 	
 	void RemoveSystemFuncSystemInt32_SystemSingle_SystemDouble(int32_t handle)
 	{
-		System::Func3<int32_t, float, double>** pRelease = SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + handle;
-		*pRelease = (System::Func3<int32_t, float, double>*)NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble;
+		System::Func3<System::Int32, System::Single, System::Double>** pRelease = SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + handle;
+		*pRelease = (System::Func3<System::Int32, System::Single, System::Double>*)NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble;
 		NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble = pRelease;
 	}
 	int32_t SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize;
-	System::Func3<int16_t, int32_t, System::String>** SystemFuncSystemInt16_SystemInt32_SystemStringFreeList;
-	System::Func3<int16_t, int32_t, System::String>** NextFreeSystemFuncSystemInt16_SystemInt32_SystemString;
+	System::Func3<System::Int16, System::Int32, System::String>** SystemFuncSystemInt16_SystemInt32_SystemStringFreeList;
+	System::Func3<System::Int16, System::Int32, System::String>** NextFreeSystemFuncSystemInt16_SystemInt32_SystemString;
 	
-	int32_t StoreSystemFuncSystemInt16_SystemInt32_SystemString(System::Func3<int16_t, int32_t, System::String>* del)
+	int32_t StoreSystemFuncSystemInt16_SystemInt32_SystemString(System::Func3<System::Int16, System::Int32, System::String>* del)
 	{
 		assert(NextFreeSystemFuncSystemInt16_SystemInt32_SystemString != nullptr);
-		System::Func3<int16_t, int32_t, System::String>** pNext = NextFreeSystemFuncSystemInt16_SystemInt32_SystemString;
-		NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = (System::Func3<int16_t, int32_t, System::String>**)*pNext;
+		System::Func3<System::Int16, System::Int32, System::String>** pNext = NextFreeSystemFuncSystemInt16_SystemInt32_SystemString;
+		NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = (System::Func3<System::Int16, System::Int32, System::String>**)*pNext;
 		*pNext = del;
 		return (int32_t)(pNext - SystemFuncSystemInt16_SystemInt32_SystemStringFreeList);
 	}
 	
-	System::Func3<int16_t, int32_t, System::String>* GetSystemFuncSystemInt16_SystemInt32_SystemString(int32_t handle)
+	System::Func3<System::Int16, System::Int32, System::String>* GetSystemFuncSystemInt16_SystemInt32_SystemString(int32_t handle)
 	{
 		assert(handle >= 0 && handle < SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize);
 		return SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[handle];
@@ -907,8 +1445,8 @@ namespace Plugin
 	
 	void RemoveSystemFuncSystemInt16_SystemInt32_SystemString(int32_t handle)
 	{
-		System::Func3<int16_t, int32_t, System::String>** pRelease = SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + handle;
-		*pRelease = (System::Func3<int16_t, int32_t, System::String>*)NextFreeSystemFuncSystemInt16_SystemInt32_SystemString;
+		System::Func3<System::Int16, System::Int32, System::String>** pRelease = SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + handle;
+		*pRelease = (System::Func3<System::Int16, System::Int32, System::String>*)NextFreeSystemFuncSystemInt16_SystemInt32_SystemString;
 		NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = pRelease;
 	}
 	int32_t SystemAppDomainInitializerFreeListSize;
@@ -1103,17 +1641,17 @@ namespace Plugin
 namespace System
 {
 	Object::Object()
-		: Handle(0)
+		: Plugin::ManagedType(nullptr)
 	{
 	}
 	
 	Object::Object(Plugin::InternalUse iu, int32_t handle)
-		: Handle(handle)
+		: ManagedType(Plugin::InternalUse::Only, handle)
 	{
 	}
 	
 	Object::Object(decltype(nullptr))
-		: Handle(0)
+		: ManagedType(nullptr)
 	{
 	}
 	
@@ -1139,6 +1677,16 @@ namespace System
 	
 	ValueType::ValueType(decltype(nullptr))
 		: Object(nullptr)
+	{
+	}
+	
+	Enum::Enum(Plugin::InternalUse iu, int32_t handle)
+		: ValueType(iu, handle)
+	{
+	}
+	
+	Enum::Enum(decltype(nullptr))
+		: ValueType(nullptr)
 	{
 	}
 	
@@ -1323,11 +1871,267 @@ namespace System
 /*BEGIN METHOD DEFINITIONS*/
 namespace System
 {
+	IFormattable::IFormattable(decltype(nullptr))
+	{
+	}
+	
+	IFormattable::IFormattable(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IFormattable::IFormattable(const IFormattable& other)
+		: IFormattable(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IFormattable::IFormattable(IFormattable&& other)
+		: IFormattable(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IFormattable::~IFormattable()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IFormattable& IFormattable::operator=(const IFormattable& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IFormattable& IFormattable::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IFormattable& IFormattable::operator=(IFormattable&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IFormattable::operator==(const IFormattable& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IFormattable::operator!=(const IFormattable& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IConvertible::IConvertible(decltype(nullptr))
+	{
+	}
+	
+	IConvertible::IConvertible(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IConvertible::IConvertible(const IConvertible& other)
+		: IConvertible(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IConvertible::IConvertible(IConvertible&& other)
+		: IConvertible(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IConvertible::~IConvertible()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IConvertible& IConvertible::operator=(const IConvertible& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IConvertible& IConvertible::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IConvertible& IConvertible::operator=(IConvertible&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IConvertible::operator==(const IConvertible& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IConvertible::operator!=(const IConvertible& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable::IComparable(decltype(nullptr))
+	{
+	}
+	
+	IComparable::IComparable(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable::IComparable(const IComparable& other)
+		: IComparable(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable::IComparable(IComparable&& other)
+		: IComparable(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable::~IComparable()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable& IComparable::operator=(const IComparable& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable& IComparable::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable& IComparable::operator=(IComparable&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable::operator==(const IComparable& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable::operator!=(const IComparable& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	System::Int32 IComparable::CompareTo(System::Object& obj)
+	{
+		auto returnValue = Plugin::SystemIComparableMethodCompareToSystemObject(Handle, obj.Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnValue;
+	}
+}
+
+namespace System
+{
 	IDisposable::IDisposable(decltype(nullptr))
 	{
 	}
 	
-	IDisposable::IDisposable(Plugin::InternalUse iu, int32_t handle)
+	IDisposable::IDisposable(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -1420,7 +2224,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Vector3::Vector3(float x, float y, float z)
+	Vector3::Vector3(System::Single x, System::Single y, System::Single z)
 	{
 		auto returnValue = Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(x, y, z);
 		if (Plugin::unhandledCsharpException)
@@ -1433,7 +2237,7 @@ namespace UnityEngine
 		*this = returnValue;
 	}
 	
-	float Vector3::GetMagnitude()
+	System::Single Vector3::GetMagnitude()
 	{
 		auto returnValue = Plugin::UnityEngineVector3PropertyGetMagnitude(this);
 		if (Plugin::unhandledCsharpException)
@@ -1446,7 +2250,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Vector3::Set(float newX, float newY, float newZ)
+	void Vector3::Set(System::Single newX, System::Single newY, System::Single newZ)
 	{
 		Plugin::UnityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle(this, newX, newY, newZ);
 		if (Plugin::unhandledCsharpException)
@@ -1483,13 +2287,10 @@ namespace UnityEngine
 		}
 		return returnValue;
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::Vector3& val)
+	
+	Vector3::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxVector3(val);
+		int32_t handle = Plugin::BoxVector3(*this);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -1500,10 +2301,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	Vector3::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxVector3(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::Vector3()
 	{
 		UnityEngine::Vector3 returnVal(Plugin::UnboxVector3(Handle));
@@ -1524,7 +2347,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Object::Object(Plugin::InternalUse iu, int32_t handle)
+	Object::Object(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -1657,7 +2480,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Component::Component(Plugin::InternalUse iu, int32_t handle)
+	Component::Component(Plugin::InternalUse, int32_t handle)
 		: UnityEngine::Object(nullptr)
 	{
 		Handle = handle;
@@ -1755,7 +2578,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Transform::Transform(Plugin::InternalUse iu, int32_t handle)
+	Transform::Transform(Plugin::InternalUse, int32_t handle)
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, System::Collections::IEnumerable(nullptr)
@@ -1875,13 +2698,10 @@ namespace UnityEngine
 	Color::Color()
 	{
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::Color& val)
+	
+	Color::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxColor(val);
+		int32_t handle = Plugin::BoxColor(*this);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -1892,10 +2712,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	Color::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxColor(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::Color()
 	{
 		UnityEngine::Color returnVal(Plugin::UnboxColor(Handle));
@@ -1915,13 +2757,10 @@ namespace UnityEngine
 	GradientColorKey::GradientColorKey()
 	{
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::GradientColorKey& val)
+	
+	GradientColorKey::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxGradientColorKey(val);
+		int32_t handle = Plugin::BoxGradientColorKey(*this);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -1932,10 +2771,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	GradientColorKey::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxGradientColorKey(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::GradientColorKey()
 	{
 		UnityEngine::GradientColorKey returnVal(Plugin::UnboxGradientColorKey(Handle));
@@ -1953,12 +2814,10 @@ namespace System
 namespace UnityEngine
 {
 	Resolution::Resolution(decltype(nullptr))
-		: System::ValueType(nullptr)
 	{
 	}
 	
-	Resolution::Resolution(Plugin::InternalUse iu, int32_t handle)
-		: System::ValueType(nullptr)
+	Resolution::Resolution(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -2032,7 +2891,24 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	int32_t Resolution::GetWidth()
+	Resolution::Resolution()
+	{
+		auto returnValue = Plugin::UnityEngineResolutionConstructor();
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedUnityEngineResolution(Handle);
+		}
+	}
+	
+	System::Int32 Resolution::GetWidth()
 	{
 		auto returnValue = Plugin::UnityEngineResolutionPropertyGetWidth(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2045,7 +2921,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Resolution::SetWidth(int32_t value)
+	void Resolution::SetWidth(System::Int32 value)
 	{
 		Plugin::UnityEngineResolutionPropertySetWidth(Handle, value);
 		if (Plugin::unhandledCsharpException)
@@ -2057,7 +2933,7 @@ namespace UnityEngine
 		}
 	}
 	
-	int32_t Resolution::GetHeight()
+	System::Int32 Resolution::GetHeight()
 	{
 		auto returnValue = Plugin::UnityEngineResolutionPropertyGetHeight(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2070,7 +2946,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Resolution::SetHeight(int32_t value)
+	void Resolution::SetHeight(System::Int32 value)
 	{
 		Plugin::UnityEngineResolutionPropertySetHeight(Handle, value);
 		if (Plugin::unhandledCsharpException)
@@ -2082,7 +2958,7 @@ namespace UnityEngine
 		}
 	}
 	
-	int32_t Resolution::GetRefreshRate()
+	System::Int32 Resolution::GetRefreshRate()
 	{
 		auto returnValue = Plugin::UnityEngineResolutionPropertyGetRefreshRate(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2095,7 +2971,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Resolution::SetRefreshRate(int32_t value)
+	void Resolution::SetRefreshRate(System::Int32 value)
 	{
 		Plugin::UnityEngineResolutionPropertySetRefreshRate(Handle, value);
 		if (Plugin::unhandledCsharpException)
@@ -2106,13 +2982,10 @@ namespace UnityEngine
 			delete ex;
 		}
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::Resolution& val)
+	
+	Resolution::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxResolution(val.Handle);
+		int32_t handle = Plugin::BoxResolution(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -2123,10 +2996,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	Resolution::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxResolution(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::Resolution()
 	{
 		UnityEngine::Resolution returnVal(Plugin::InternalUse::Only, Plugin::UnboxResolution(Handle));
@@ -2144,12 +3039,10 @@ namespace System
 namespace UnityEngine
 {
 	RaycastHit::RaycastHit(decltype(nullptr))
-		: System::ValueType(nullptr)
 	{
 	}
 	
-	RaycastHit::RaycastHit(Plugin::InternalUse iu, int32_t handle)
-		: System::ValueType(nullptr)
+	RaycastHit::RaycastHit(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -2260,13 +3153,10 @@ namespace UnityEngine
 		}
 		return UnityEngine::Transform(Plugin::InternalUse::Only, returnValue);
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::RaycastHit& val)
+	
+	RaycastHit::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxRaycastHit(val.Handle);
+		int32_t handle = Plugin::BoxRaycastHit(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -2277,10 +3167,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	RaycastHit::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxRaycastHit(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::RaycastHit()
 	{
 		UnityEngine::RaycastHit returnVal(Plugin::InternalUse::Only, Plugin::UnboxRaycastHit(Handle));
@@ -2303,7 +3215,7 @@ namespace System
 		{
 		}
 		
-		IEnumerator::IEnumerator(Plugin::InternalUse iu, int32_t handle)
+		IEnumerator::IEnumerator(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -2407,3042 +3319,6 @@ namespace System
 
 namespace System
 {
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerator<System::String>::IEnumerator(decltype(nullptr))
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-			}
-			
-			IEnumerator<System::String>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerator<System::String>::IEnumerator(const IEnumerator<System::String>& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerator<System::String>::IEnumerator(IEnumerator<System::String>&& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerator<System::String>::~IEnumerator<System::String>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerator<System::String>& IEnumerator<System::String>::operator=(const IEnumerator<System::String>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerator<System::String>& IEnumerator<System::String>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerator<System::String>& IEnumerator<System::String>::operator=(IEnumerator<System::String>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerator<System::String>::operator==(const IEnumerator<System::String>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerator<System::String>::operator!=(const IEnumerator<System::String>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			System::String IEnumerator<System::String>::GetCurrent()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::String(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerator<int32_t>::IEnumerator(decltype(nullptr))
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-			}
-			
-			IEnumerator<int32_t>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerator<int32_t>::IEnumerator(const IEnumerator<int32_t>& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerator<int32_t>::IEnumerator(IEnumerator<int32_t>&& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerator<int32_t>::~IEnumerator<int32_t>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerator<int32_t>& IEnumerator<int32_t>::operator=(const IEnumerator<int32_t>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerator<int32_t>& IEnumerator<int32_t>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerator<int32_t>& IEnumerator<int32_t>::operator=(IEnumerator<int32_t>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerator<int32_t>::operator==(const IEnumerator<int32_t>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerator<int32_t>::operator!=(const IEnumerator<int32_t>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			int32_t IEnumerator<int32_t>::GetCurrent()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return returnValue;
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerator<float>::IEnumerator(decltype(nullptr))
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-			}
-			
-			IEnumerator<float>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerator<float>::IEnumerator(const IEnumerator<float>& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerator<float>::IEnumerator(IEnumerator<float>&& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerator<float>::~IEnumerator<float>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerator<float>& IEnumerator<float>::operator=(const IEnumerator<float>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerator<float>& IEnumerator<float>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerator<float>& IEnumerator<float>::operator=(IEnumerator<float>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerator<float>::operator==(const IEnumerator<float>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerator<float>::operator!=(const IEnumerator<float>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			float IEnumerator<float>::GetCurrent()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return returnValue;
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(decltype(nullptr))
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-			}
-			
-			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(const IEnumerator<UnityEngine::RaycastHit>& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(IEnumerator<UnityEngine::RaycastHit>&& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerator<UnityEngine::RaycastHit>::~IEnumerator<UnityEngine::RaycastHit>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(const IEnumerator<UnityEngine::RaycastHit>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(IEnumerator<UnityEngine::RaycastHit>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerator<UnityEngine::RaycastHit>::operator==(const IEnumerator<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerator<UnityEngine::RaycastHit>::operator!=(const IEnumerator<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			UnityEngine::RaycastHit IEnumerator<UnityEngine::RaycastHit>::GetCurrent()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return UnityEngine::RaycastHit(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(decltype(nullptr))
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-			}
-			
-			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(const IEnumerator<UnityEngine::GradientColorKey>& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(IEnumerator<UnityEngine::GradientColorKey>&& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerator<UnityEngine::GradientColorKey>::~IEnumerator<UnityEngine::GradientColorKey>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(const IEnumerator<UnityEngine::GradientColorKey>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(IEnumerator<UnityEngine::GradientColorKey>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerator<UnityEngine::GradientColorKey>::operator==(const IEnumerator<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerator<UnityEngine::GradientColorKey>::operator!=(const IEnumerator<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			UnityEngine::GradientColorKey IEnumerator<UnityEngine::GradientColorKey>::GetCurrent()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return returnValue;
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerator<UnityEngine::Resolution>::IEnumerator(decltype(nullptr))
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-			}
-			
-			IEnumerator<UnityEngine::Resolution>::IEnumerator(Plugin::InternalUse iu, int32_t handle)
-				: System::IDisposable(nullptr)
-				, System::Collections::IEnumerator(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerator<UnityEngine::Resolution>::IEnumerator(const IEnumerator<UnityEngine::Resolution>& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerator<UnityEngine::Resolution>::IEnumerator(IEnumerator<UnityEngine::Resolution>&& other)
-				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerator<UnityEngine::Resolution>::~IEnumerator<UnityEngine::Resolution>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(const IEnumerator<UnityEngine::Resolution>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(IEnumerator<UnityEngine::Resolution>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerator<UnityEngine::Resolution>::operator==(const IEnumerator<UnityEngine::Resolution>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerator<UnityEngine::Resolution>::operator!=(const IEnumerator<UnityEngine::Resolution>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			UnityEngine::Resolution IEnumerator<UnityEngine::Resolution>::GetCurrent()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return UnityEngine::Resolution(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerable<System::String>::IEnumerable(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-			{
-			}
-			
-			IEnumerable<System::String>::IEnumerable(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerable<System::String>::IEnumerable(const IEnumerable<System::String>& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerable<System::String>::IEnumerable(IEnumerable<System::String>&& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerable<System::String>::~IEnumerable<System::String>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerable<System::String>& IEnumerable<System::String>::operator=(const IEnumerable<System::String>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerable<System::String>& IEnumerable<System::String>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerable<System::String>& IEnumerable<System::String>::operator=(IEnumerable<System::String>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerable<System::String>::operator==(const IEnumerable<System::String>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerable<System::String>::operator!=(const IEnumerable<System::String>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			System::Collections::Generic::IEnumerator<System::String> IEnumerable<System::String>::GetEnumerator()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::Collections::Generic::IEnumerator<System::String>(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerable<int32_t>::IEnumerable(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-			{
-			}
-			
-			IEnumerable<int32_t>::IEnumerable(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerable<int32_t>::IEnumerable(const IEnumerable<int32_t>& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerable<int32_t>::IEnumerable(IEnumerable<int32_t>&& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerable<int32_t>::~IEnumerable<int32_t>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerable<int32_t>& IEnumerable<int32_t>::operator=(const IEnumerable<int32_t>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerable<int32_t>& IEnumerable<int32_t>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerable<int32_t>& IEnumerable<int32_t>::operator=(IEnumerable<int32_t>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerable<int32_t>::operator==(const IEnumerable<int32_t>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerable<int32_t>::operator!=(const IEnumerable<int32_t>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			System::Collections::Generic::IEnumerator<int32_t> IEnumerable<int32_t>::GetEnumerator()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::Collections::Generic::IEnumerator<int32_t>(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerable<float>::IEnumerable(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-			{
-			}
-			
-			IEnumerable<float>::IEnumerable(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerable<float>::IEnumerable(const IEnumerable<float>& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerable<float>::IEnumerable(IEnumerable<float>&& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerable<float>::~IEnumerable<float>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerable<float>& IEnumerable<float>::operator=(const IEnumerable<float>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerable<float>& IEnumerable<float>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerable<float>& IEnumerable<float>::operator=(IEnumerable<float>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerable<float>::operator==(const IEnumerable<float>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerable<float>::operator!=(const IEnumerable<float>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			System::Collections::Generic::IEnumerator<float> IEnumerable<float>::GetEnumerator()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::Collections::Generic::IEnumerator<float>(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-			{
-			}
-			
-			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(const IEnumerable<UnityEngine::RaycastHit>& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(IEnumerable<UnityEngine::RaycastHit>&& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerable<UnityEngine::RaycastHit>::~IEnumerable<UnityEngine::RaycastHit>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(const IEnumerable<UnityEngine::RaycastHit>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(IEnumerable<UnityEngine::RaycastHit>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerable<UnityEngine::RaycastHit>::operator==(const IEnumerable<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerable<UnityEngine::RaycastHit>::operator!=(const IEnumerable<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			System::Collections::Generic::IEnumerator<UnityEngine::RaycastHit> IEnumerable<UnityEngine::RaycastHit>::GetEnumerator()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::Collections::Generic::IEnumerator<UnityEngine::RaycastHit>(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-			{
-			}
-			
-			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(const IEnumerable<UnityEngine::GradientColorKey>& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(IEnumerable<UnityEngine::GradientColorKey>&& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerable<UnityEngine::GradientColorKey>::~IEnumerable<UnityEngine::GradientColorKey>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(const IEnumerable<UnityEngine::GradientColorKey>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(IEnumerable<UnityEngine::GradientColorKey>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerable<UnityEngine::GradientColorKey>::operator==(const IEnumerable<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerable<UnityEngine::GradientColorKey>::operator!=(const IEnumerable<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			System::Collections::Generic::IEnumerator<UnityEngine::GradientColorKey> IEnumerable<UnityEngine::GradientColorKey>::GetEnumerator()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::Collections::Generic::IEnumerator<UnityEngine::GradientColorKey>(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IEnumerable<UnityEngine::Resolution>::IEnumerable(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-			{
-			}
-			
-			IEnumerable<UnityEngine::Resolution>::IEnumerable(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IEnumerable<UnityEngine::Resolution>::IEnumerable(const IEnumerable<UnityEngine::Resolution>& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IEnumerable<UnityEngine::Resolution>::IEnumerable(IEnumerable<UnityEngine::Resolution>&& other)
-				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IEnumerable<UnityEngine::Resolution>::~IEnumerable<UnityEngine::Resolution>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(const IEnumerable<UnityEngine::Resolution>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(IEnumerable<UnityEngine::Resolution>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IEnumerable<UnityEngine::Resolution>::operator==(const IEnumerable<UnityEngine::Resolution>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IEnumerable<UnityEngine::Resolution>::operator!=(const IEnumerable<UnityEngine::Resolution>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			System::Collections::Generic::IEnumerator<UnityEngine::Resolution> IEnumerable<UnityEngine::Resolution>::GetEnumerator()
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator(Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::Collections::Generic::IEnumerator<UnityEngine::Resolution>(Plugin::InternalUse::Only, returnValue);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			ICollection<System::String>::ICollection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
-			{
-			}
-			
-			ICollection<System::String>::ICollection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			ICollection<System::String>::ICollection(const ICollection<System::String>& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			ICollection<System::String>::ICollection(ICollection<System::String>&& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			ICollection<System::String>::~ICollection<System::String>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			ICollection<System::String>& ICollection<System::String>::operator=(const ICollection<System::String>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			ICollection<System::String>& ICollection<System::String>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			ICollection<System::String>& ICollection<System::String>::operator=(ICollection<System::String>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool ICollection<System::String>::operator==(const ICollection<System::String>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool ICollection<System::String>::operator!=(const ICollection<System::String>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericICollectionSystemStringIterator::SystemCollectionsGenericICollectionSystemStringIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericICollectionSystemStringIterator::SystemCollectionsGenericICollectionSystemStringIterator(System::Collections::Generic::ICollection<System::String>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericICollectionSystemStringIterator::~SystemCollectionsGenericICollectionSystemStringIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericICollectionSystemStringIterator& SystemCollectionsGenericICollectionSystemStringIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericICollectionSystemStringIterator::operator!=(const SystemCollectionsGenericICollectionSystemStringIterator& other)
-	{
-		return hasMore;
-	}
-	
-	System::String SystemCollectionsGenericICollectionSystemStringIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericICollectionSystemStringIterator begin(System::Collections::Generic::ICollection<System::String>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionSystemStringIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericICollectionSystemStringIterator end(System::Collections::Generic::ICollection<System::String>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionSystemStringIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			ICollection<int32_t>::ICollection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-			{
-			}
-			
-			ICollection<int32_t>::ICollection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			ICollection<int32_t>::ICollection(const ICollection<int32_t>& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			ICollection<int32_t>::ICollection(ICollection<int32_t>&& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			ICollection<int32_t>::~ICollection<int32_t>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			ICollection<int32_t>& ICollection<int32_t>::operator=(const ICollection<int32_t>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			ICollection<int32_t>& ICollection<int32_t>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			ICollection<int32_t>& ICollection<int32_t>::operator=(ICollection<int32_t>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool ICollection<int32_t>::operator==(const ICollection<int32_t>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool ICollection<int32_t>::operator!=(const ICollection<int32_t>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericICollectionSystemInt32Iterator::SystemCollectionsGenericICollectionSystemInt32Iterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericICollectionSystemInt32Iterator::SystemCollectionsGenericICollectionSystemInt32Iterator(System::Collections::Generic::ICollection<int32_t>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericICollectionSystemInt32Iterator::~SystemCollectionsGenericICollectionSystemInt32Iterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericICollectionSystemInt32Iterator& SystemCollectionsGenericICollectionSystemInt32Iterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericICollectionSystemInt32Iterator::operator!=(const SystemCollectionsGenericICollectionSystemInt32Iterator& other)
-	{
-		return hasMore;
-	}
-	
-	int32_t SystemCollectionsGenericICollectionSystemInt32Iterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator begin(System::Collections::Generic::ICollection<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator end(System::Collections::Generic::ICollection<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			ICollection<float>::ICollection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<float>(nullptr)
-			{
-			}
-			
-			ICollection<float>::ICollection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<float>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			ICollection<float>::ICollection(const ICollection<float>& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			ICollection<float>::ICollection(ICollection<float>&& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			ICollection<float>::~ICollection<float>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			ICollection<float>& ICollection<float>::operator=(const ICollection<float>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			ICollection<float>& ICollection<float>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			ICollection<float>& ICollection<float>::operator=(ICollection<float>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool ICollection<float>::operator==(const ICollection<float>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool ICollection<float>::operator!=(const ICollection<float>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericICollectionSystemSingleIterator::SystemCollectionsGenericICollectionSystemSingleIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericICollectionSystemSingleIterator::SystemCollectionsGenericICollectionSystemSingleIterator(System::Collections::Generic::ICollection<float>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericICollectionSystemSingleIterator::~SystemCollectionsGenericICollectionSystemSingleIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericICollectionSystemSingleIterator& SystemCollectionsGenericICollectionSystemSingleIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericICollectionSystemSingleIterator::operator!=(const SystemCollectionsGenericICollectionSystemSingleIterator& other)
-	{
-		return hasMore;
-	}
-	
-	float SystemCollectionsGenericICollectionSystemSingleIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericICollectionSystemSingleIterator begin(System::Collections::Generic::ICollection<float>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionSystemSingleIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericICollectionSystemSingleIterator end(System::Collections::Generic::ICollection<float>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionSystemSingleIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			ICollection<UnityEngine::RaycastHit>::ICollection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
-			{
-			}
-			
-			ICollection<UnityEngine::RaycastHit>::ICollection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			ICollection<UnityEngine::RaycastHit>::ICollection(const ICollection<UnityEngine::RaycastHit>& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			ICollection<UnityEngine::RaycastHit>::ICollection(ICollection<UnityEngine::RaycastHit>&& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			ICollection<UnityEngine::RaycastHit>::~ICollection<UnityEngine::RaycastHit>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(const ICollection<UnityEngine::RaycastHit>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(ICollection<UnityEngine::RaycastHit>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool ICollection<UnityEngine::RaycastHit>::operator==(const ICollection<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool ICollection<UnityEngine::RaycastHit>::operator!=(const ICollection<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::~SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator& SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator& other)
-	{
-		return hasMore;
-	}
-	
-	UnityEngine::RaycastHit SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator begin(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator end(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			ICollection<UnityEngine::GradientColorKey>::ICollection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
-			{
-			}
-			
-			ICollection<UnityEngine::GradientColorKey>::ICollection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			ICollection<UnityEngine::GradientColorKey>::ICollection(const ICollection<UnityEngine::GradientColorKey>& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			ICollection<UnityEngine::GradientColorKey>::ICollection(ICollection<UnityEngine::GradientColorKey>&& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			ICollection<UnityEngine::GradientColorKey>::~ICollection<UnityEngine::GradientColorKey>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(const ICollection<UnityEngine::GradientColorKey>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(ICollection<UnityEngine::GradientColorKey>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool ICollection<UnityEngine::GradientColorKey>::operator==(const ICollection<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool ICollection<UnityEngine::GradientColorKey>::operator!=(const ICollection<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::~SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator& SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator& other)
-	{
-		return hasMore;
-	}
-	
-	UnityEngine::GradientColorKey SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator begin(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator end(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			ICollection<UnityEngine::Resolution>::ICollection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
-			{
-			}
-			
-			ICollection<UnityEngine::Resolution>::ICollection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			ICollection<UnityEngine::Resolution>::ICollection(const ICollection<UnityEngine::Resolution>& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			ICollection<UnityEngine::Resolution>::ICollection(ICollection<UnityEngine::Resolution>&& other)
-				: ICollection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			ICollection<UnityEngine::Resolution>::~ICollection<UnityEngine::Resolution>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(const ICollection<UnityEngine::Resolution>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(ICollection<UnityEngine::Resolution>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool ICollection<UnityEngine::Resolution>::operator==(const ICollection<UnityEngine::Resolution>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool ICollection<UnityEngine::Resolution>::operator!=(const ICollection<UnityEngine::Resolution>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::~SystemCollectionsGenericICollectionUnityEngineResolutionIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericICollectionUnityEngineResolutionIterator& SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineResolutionIterator& other)
-	{
-		return hasMore;
-	}
-	
-	UnityEngine::Resolution SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator begin(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator end(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IList<System::String>::IList(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
-				, System::Collections::Generic::ICollection<System::String>(nullptr)
-			{
-			}
-			
-			IList<System::String>::IList(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
-				, System::Collections::Generic::ICollection<System::String>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IList<System::String>::IList(const IList<System::String>& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IList<System::String>::IList(IList<System::String>&& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IList<System::String>::~IList<System::String>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IList<System::String>& IList<System::String>::operator=(const IList<System::String>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IList<System::String>& IList<System::String>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IList<System::String>& IList<System::String>::operator=(IList<System::String>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IList<System::String>::operator==(const IList<System::String>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IList<System::String>::operator!=(const IList<System::String>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericIListSystemStringIterator::SystemCollectionsGenericIListSystemStringIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericIListSystemStringIterator::SystemCollectionsGenericIListSystemStringIterator(System::Collections::Generic::IList<System::String>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericIListSystemStringIterator::~SystemCollectionsGenericIListSystemStringIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericIListSystemStringIterator& SystemCollectionsGenericIListSystemStringIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericIListSystemStringIterator::operator!=(const SystemCollectionsGenericIListSystemStringIterator& other)
-	{
-		return hasMore;
-	}
-	
-	System::String SystemCollectionsGenericIListSystemStringIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericIListSystemStringIterator begin(System::Collections::Generic::IList<System::String>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListSystemStringIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericIListSystemStringIterator end(System::Collections::Generic::IList<System::String>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListSystemStringIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IList<int32_t>::IList(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-			{
-			}
-			
-			IList<int32_t>::IList(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IList<int32_t>::IList(const IList<int32_t>& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IList<int32_t>::IList(IList<int32_t>&& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IList<int32_t>::~IList<int32_t>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IList<int32_t>& IList<int32_t>::operator=(const IList<int32_t>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IList<int32_t>& IList<int32_t>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IList<int32_t>& IList<int32_t>::operator=(IList<int32_t>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IList<int32_t>::operator==(const IList<int32_t>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IList<int32_t>::operator!=(const IList<int32_t>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericIListSystemInt32Iterator::SystemCollectionsGenericIListSystemInt32Iterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericIListSystemInt32Iterator::SystemCollectionsGenericIListSystemInt32Iterator(System::Collections::Generic::IList<int32_t>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericIListSystemInt32Iterator::~SystemCollectionsGenericIListSystemInt32Iterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericIListSystemInt32Iterator& SystemCollectionsGenericIListSystemInt32Iterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericIListSystemInt32Iterator::operator!=(const SystemCollectionsGenericIListSystemInt32Iterator& other)
-	{
-		return hasMore;
-	}
-	
-	int32_t SystemCollectionsGenericIListSystemInt32Iterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericIListSystemInt32Iterator begin(System::Collections::Generic::IList<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListSystemInt32Iterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericIListSystemInt32Iterator end(System::Collections::Generic::IList<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListSystemInt32Iterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IList<float>::IList(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<float>(nullptr)
-				, System::Collections::Generic::ICollection<float>(nullptr)
-			{
-			}
-			
-			IList<float>::IList(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<float>(nullptr)
-				, System::Collections::Generic::ICollection<float>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IList<float>::IList(const IList<float>& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IList<float>::IList(IList<float>&& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IList<float>::~IList<float>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IList<float>& IList<float>::operator=(const IList<float>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IList<float>& IList<float>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IList<float>& IList<float>::operator=(IList<float>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IList<float>::operator==(const IList<float>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IList<float>::operator!=(const IList<float>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericIListSystemSingleIterator::SystemCollectionsGenericIListSystemSingleIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericIListSystemSingleIterator::SystemCollectionsGenericIListSystemSingleIterator(System::Collections::Generic::IList<float>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericIListSystemSingleIterator::~SystemCollectionsGenericIListSystemSingleIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericIListSystemSingleIterator& SystemCollectionsGenericIListSystemSingleIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericIListSystemSingleIterator::operator!=(const SystemCollectionsGenericIListSystemSingleIterator& other)
-	{
-		return hasMore;
-	}
-	
-	float SystemCollectionsGenericIListSystemSingleIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericIListSystemSingleIterator begin(System::Collections::Generic::IList<float>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListSystemSingleIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericIListSystemSingleIterator end(System::Collections::Generic::IList<float>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListSystemSingleIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IList<UnityEngine::RaycastHit>::IList(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
-				, System::Collections::Generic::ICollection<UnityEngine::RaycastHit>(nullptr)
-			{
-			}
-			
-			IList<UnityEngine::RaycastHit>::IList(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
-				, System::Collections::Generic::ICollection<UnityEngine::RaycastHit>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IList<UnityEngine::RaycastHit>::IList(const IList<UnityEngine::RaycastHit>& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IList<UnityEngine::RaycastHit>::IList(IList<UnityEngine::RaycastHit>&& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IList<UnityEngine::RaycastHit>::~IList<UnityEngine::RaycastHit>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(const IList<UnityEngine::RaycastHit>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(IList<UnityEngine::RaycastHit>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IList<UnityEngine::RaycastHit>::operator==(const IList<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IList<UnityEngine::RaycastHit>::operator!=(const IList<UnityEngine::RaycastHit>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::~SystemCollectionsGenericIListUnityEngineRaycastHitIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericIListUnityEngineRaycastHitIterator& SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator!=(const SystemCollectionsGenericIListUnityEngineRaycastHitIterator& other)
-	{
-		return hasMore;
-	}
-	
-	UnityEngine::RaycastHit SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator begin(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator end(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IList<UnityEngine::GradientColorKey>::IList(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
-				, System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>(nullptr)
-			{
-			}
-			
-			IList<UnityEngine::GradientColorKey>::IList(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
-				, System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IList<UnityEngine::GradientColorKey>::IList(const IList<UnityEngine::GradientColorKey>& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IList<UnityEngine::GradientColorKey>::IList(IList<UnityEngine::GradientColorKey>&& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IList<UnityEngine::GradientColorKey>::~IList<UnityEngine::GradientColorKey>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(const IList<UnityEngine::GradientColorKey>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(IList<UnityEngine::GradientColorKey>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IList<UnityEngine::GradientColorKey>::operator==(const IList<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IList<UnityEngine::GradientColorKey>::operator!=(const IList<UnityEngine::GradientColorKey>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::~SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator& SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator!=(const SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator& other)
-	{
-		return hasMore;
-	}
-	
-	UnityEngine::GradientColorKey SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator begin(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator end(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			IList<UnityEngine::Resolution>::IList(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
-				, System::Collections::Generic::ICollection<UnityEngine::Resolution>(nullptr)
-			{
-			}
-			
-			IList<UnityEngine::Resolution>::IList(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
-				, System::Collections::Generic::ICollection<UnityEngine::Resolution>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			IList<UnityEngine::Resolution>::IList(const IList<UnityEngine::Resolution>& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			IList<UnityEngine::Resolution>::IList(IList<UnityEngine::Resolution>&& other)
-				: IList(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			IList<UnityEngine::Resolution>::~IList<UnityEngine::Resolution>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(const IList<UnityEngine::Resolution>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(IList<UnityEngine::Resolution>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool IList<UnityEngine::Resolution>::operator==(const IList<UnityEngine::Resolution>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool IList<UnityEngine::Resolution>::operator!=(const IList<UnityEngine::Resolution>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericIListUnityEngineResolutionIterator::SystemCollectionsGenericIListUnityEngineResolutionIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericIListUnityEngineResolutionIterator::SystemCollectionsGenericIListUnityEngineResolutionIterator(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericIListUnityEngineResolutionIterator::~SystemCollectionsGenericIListUnityEngineResolutionIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericIListUnityEngineResolutionIterator& SystemCollectionsGenericIListUnityEngineResolutionIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericIListUnityEngineResolutionIterator::operator!=(const SystemCollectionsGenericIListUnityEngineResolutionIterator& other)
-	{
-		return hasMore;
-	}
-	
-	UnityEngine::Resolution SystemCollectionsGenericIListUnityEngineResolutionIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator begin(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator end(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
 	namespace Runtime
 	{
 		namespace Serialization
@@ -5451,7 +3327,7 @@ namespace System
 			{
 			}
 			
-			ISerializable::ISerializable(Plugin::InternalUse iu, int32_t handle)
+			ISerializable::ISerializable(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -5538,7 +3414,7 @@ namespace System
 			{
 			}
 			
-			_Exception::_Exception(Plugin::InternalUse iu, int32_t handle)
+			_Exception::_Exception(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -5621,7 +3497,7 @@ namespace System
 	{
 	}
 	
-	IAppDomainSetup::IAppDomainSetup(Plugin::InternalUse iu, int32_t handle)
+	IAppDomainSetup::IAppDomainSetup(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -5704,7 +3580,7 @@ namespace System
 		{
 		}
 		
-		IComparer::IComparer(Plugin::InternalUse iu, int32_t handle)
+		IComparer::IComparer(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -5788,7 +3664,7 @@ namespace System
 		{
 		}
 		
-		IEqualityComparer::IEqualityComparer(Plugin::InternalUse iu, int32_t handle)
+		IEqualityComparer::IEqualityComparer(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -5874,7 +3750,7 @@ namespace System
 			{
 			}
 			
-			IEqualityComparer<System::String>::IEqualityComparer(Plugin::InternalUse iu, int32_t handle)
+			IEqualityComparer<System::String>::IEqualityComparer(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -5957,11 +3833,11 @@ namespace System
 	{
 		namespace Generic
 		{
-			IEqualityComparer<int32_t>::IEqualityComparer(decltype(nullptr))
+			IEqualityComparer<System::Int32>::IEqualityComparer(decltype(nullptr))
 			{
 			}
 			
-			IEqualityComparer<int32_t>::IEqualityComparer(Plugin::InternalUse iu, int32_t handle)
+			IEqualityComparer<System::Int32>::IEqualityComparer(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -5970,18 +3846,18 @@ namespace System
 				}
 			}
 			
-			IEqualityComparer<int32_t>::IEqualityComparer(const IEqualityComparer<int32_t>& other)
+			IEqualityComparer<System::Int32>::IEqualityComparer(const IEqualityComparer<System::Int32>& other)
 				: IEqualityComparer(Plugin::InternalUse::Only, other.Handle)
 			{
 			}
 			
-			IEqualityComparer<int32_t>::IEqualityComparer(IEqualityComparer<int32_t>&& other)
+			IEqualityComparer<System::Int32>::IEqualityComparer(IEqualityComparer<System::Int32>&& other)
 				: IEqualityComparer(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
 			
-			IEqualityComparer<int32_t>::~IEqualityComparer<int32_t>()
+			IEqualityComparer<System::Int32>::~IEqualityComparer<System::Int32>()
 			{
 				if (Handle)
 				{
@@ -5990,7 +3866,7 @@ namespace System
 				}
 			}
 			
-			IEqualityComparer<int32_t>& IEqualityComparer<int32_t>::operator=(const IEqualityComparer<int32_t>& other)
+			IEqualityComparer<System::Int32>& IEqualityComparer<System::Int32>::operator=(const IEqualityComparer<System::Int32>& other)
 			{
 				if (this->Handle)
 				{
@@ -6004,7 +3880,7 @@ namespace System
 				return *this;
 			}
 			
-			IEqualityComparer<int32_t>& IEqualityComparer<int32_t>::operator=(decltype(nullptr))
+			IEqualityComparer<System::Int32>& IEqualityComparer<System::Int32>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -6014,7 +3890,7 @@ namespace System
 				return *this;
 			}
 			
-			IEqualityComparer<int32_t>& IEqualityComparer<int32_t>::operator=(IEqualityComparer<int32_t>&& other)
+			IEqualityComparer<System::Int32>& IEqualityComparer<System::Int32>::operator=(IEqualityComparer<System::Int32>&& other)
 			{
 				if (Handle)
 				{
@@ -6025,12 +3901,12 @@ namespace System
 				return *this;
 			}
 			
-			bool IEqualityComparer<int32_t>::operator==(const IEqualityComparer<int32_t>& other) const
+			bool IEqualityComparer<System::Int32>::operator==(const IEqualityComparer<System::Int32>& other) const
 			{
 				return Handle == other.Handle;
 			}
 			
-			bool IEqualityComparer<int32_t>::operator!=(const IEqualityComparer<int32_t>& other) const
+			bool IEqualityComparer<System::Int32>::operator!=(const IEqualityComparer<System::Int32>& other) const
 			{
 				return Handle != other.Handle;
 			}
@@ -6043,12 +3919,10 @@ namespace UnityEngine
 	namespace Playables
 	{
 		PlayableGraph::PlayableGraph(decltype(nullptr))
-			: System::ValueType(nullptr)
 		{
 		}
 		
-		PlayableGraph::PlayableGraph(Plugin::InternalUse iu, int32_t handle)
-			: System::ValueType(nullptr)
+		PlayableGraph::PlayableGraph(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -6121,28 +3995,47 @@ namespace UnityEngine
 		{
 			return Handle != other.Handle;
 		}
+		
+		PlayableGraph::operator System::ValueType()
+		{
+			int32_t handle = Plugin::BoxPlayableGraph(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::ValueType(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		PlayableGraph::operator System::Object()
+		{
+			int32_t handle = Plugin::BoxPlayableGraph(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Object(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
 	}
 }
 
 namespace System
 {
-	Object::Object(UnityEngine::Playables::PlayableGraph& val)
-	{
-		int32_t handle = Plugin::BoxPlayableGraph(val.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
 	Object::operator UnityEngine::Playables::PlayableGraph()
 	{
 		UnityEngine::Playables::PlayableGraph returnVal(Plugin::InternalUse::Only, Plugin::UnboxPlayableGraph(Handle));
@@ -6165,7 +4058,7 @@ namespace UnityEngine
 		{
 		}
 		
-		IPlayable::IPlayable(Plugin::InternalUse iu, int32_t handle)
+		IPlayable::IPlayable(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -6247,7 +4140,7 @@ namespace System
 	{
 	}
 	
-	IEquatable<UnityEngine::Animations::AnimationMixerPlayable>::IEquatable(Plugin::InternalUse iu, int32_t handle)
+	IEquatable<UnityEngine::Animations::AnimationMixerPlayable>::IEquatable(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -6327,16 +4220,10 @@ namespace UnityEngine
 	namespace Animations
 	{
 		AnimationMixerPlayable::AnimationMixerPlayable(decltype(nullptr))
-			: System::ValueType(nullptr)
-			, System::IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(nullptr)
-			, UnityEngine::Playables::IPlayable(nullptr)
 		{
 		}
 		
-		AnimationMixerPlayable::AnimationMixerPlayable(Plugin::InternalUse iu, int32_t handle)
-			: System::ValueType(nullptr)
-			, System::IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(nullptr)
-			, UnityEngine::Playables::IPlayable(nullptr)
+		AnimationMixerPlayable::AnimationMixerPlayable(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -6410,7 +4297,7 @@ namespace UnityEngine
 			return Handle != other.Handle;
 		}
 		
-		UnityEngine::Animations::AnimationMixerPlayable AnimationMixerPlayable::Create(UnityEngine::Playables::PlayableGraph& graph, int32_t inputCount, System::Boolean normalizeWeights)
+		UnityEngine::Animations::AnimationMixerPlayable AnimationMixerPlayable::Create(UnityEngine::Playables::PlayableGraph& graph, System::Int32 inputCount, System::Boolean normalizeWeights)
 		{
 			auto returnValue = Plugin::UnityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean(graph.Handle, inputCount, normalizeWeights);
 			if (Plugin::unhandledCsharpException)
@@ -6422,28 +4309,83 @@ namespace UnityEngine
 			}
 			return UnityEngine::Animations::AnimationMixerPlayable(Plugin::InternalUse::Only, returnValue);
 		}
+	
+		AnimationMixerPlayable::operator System::ValueType()
+		{
+			int32_t handle = Plugin::BoxAnimationMixerPlayable(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::ValueType(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		AnimationMixerPlayable::operator System::Object()
+		{
+			int32_t handle = Plugin::BoxAnimationMixerPlayable(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Object(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		AnimationMixerPlayable::operator UnityEngine::Playables::IPlayable()
+		{
+			int32_t handle = Plugin::BoxAnimationMixerPlayable(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return UnityEngine::Playables::IPlayable(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		AnimationMixerPlayable::operator System::IEquatable<UnityEngine::Animations::AnimationMixerPlayable>()
+		{
+			int32_t handle = Plugin::BoxAnimationMixerPlayable(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::IEquatable<UnityEngine::Animations::AnimationMixerPlayable>(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
 	}
 }
 
 namespace System
 {
-	Object::Object(UnityEngine::Animations::AnimationMixerPlayable& val)
-	{
-		int32_t handle = Plugin::BoxAnimationMixerPlayable(val.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
 	Object::operator UnityEngine::Animations::AnimationMixerPlayable()
 	{
 		UnityEngine::Animations::AnimationMixerPlayable returnVal(Plugin::InternalUse::Only, Plugin::UnboxAnimationMixerPlayable(Handle));
@@ -6468,7 +4410,7 @@ namespace System
 			{
 			}
 			
-			IStrongBox::IStrongBox(Plugin::InternalUse iu, int32_t handle)
+			IStrongBox::IStrongBox(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -6555,7 +4497,7 @@ namespace UnityEngine
 			{
 			}
 			
-			IEventHandler::IEventHandler(Plugin::InternalUse iu, int32_t handle)
+			IEventHandler::IEventHandler(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -6638,11 +4580,191 @@ namespace UnityEngine
 	{
 		namespace UIElements
 		{
+			CallbackEventHandler::CallbackEventHandler(decltype(nullptr))
+				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
+			{
+			}
+			
+			CallbackEventHandler::CallbackEventHandler(Plugin::InternalUse, int32_t handle)
+				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			CallbackEventHandler::CallbackEventHandler(const CallbackEventHandler& other)
+				: CallbackEventHandler(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			CallbackEventHandler::CallbackEventHandler(CallbackEventHandler&& other)
+				: CallbackEventHandler(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			CallbackEventHandler::~CallbackEventHandler()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			CallbackEventHandler& CallbackEventHandler::operator=(const CallbackEventHandler& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			CallbackEventHandler& CallbackEventHandler::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			CallbackEventHandler& CallbackEventHandler::operator=(CallbackEventHandler&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool CallbackEventHandler::operator==(const CallbackEventHandler& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool CallbackEventHandler::operator!=(const CallbackEventHandler& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			Focusable::Focusable(decltype(nullptr))
+				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
+				, UnityEngine::Experimental::UIElements::CallbackEventHandler(nullptr)
+			{
+			}
+			
+			Focusable::Focusable(Plugin::InternalUse, int32_t handle)
+				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
+				, UnityEngine::Experimental::UIElements::CallbackEventHandler(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			Focusable::Focusable(const Focusable& other)
+				: Focusable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			Focusable::Focusable(Focusable&& other)
+				: Focusable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			Focusable::~Focusable()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			Focusable& Focusable::operator=(const Focusable& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			Focusable& Focusable::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			Focusable& Focusable::operator=(Focusable&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool Focusable::operator==(const Focusable& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool Focusable::operator!=(const Focusable& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
 			IStyle::IStyle(decltype(nullptr))
 			{
 			}
 			
-			IStyle::IStyle(Plugin::InternalUse iu, int32_t handle)
+			IStyle::IStyle(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -6727,7 +4849,7 @@ namespace System
 		{
 		}
 		
-		Stopwatch::Stopwatch(Plugin::InternalUse iu, int32_t handle)
+		Stopwatch::Stopwatch(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -6818,7 +4940,7 @@ namespace System
 			}
 		}
 		
-		int64_t Stopwatch::GetElapsedMilliseconds()
+		System::Int64 Stopwatch::GetElapsedMilliseconds()
 		{
 			auto returnValue = Plugin::SystemDiagnosticsStopwatchPropertyGetElapsedMilliseconds(Handle);
 			if (Plugin::unhandledCsharpException)
@@ -6864,7 +4986,7 @@ namespace UnityEngine
 	{
 	}
 	
-	GameObject::GameObject(Plugin::InternalUse iu, int32_t handle)
+	GameObject::GameObject(Plugin::InternalUse, int32_t handle)
 		: UnityEngine::Object(nullptr)
 	{
 		Handle = handle;
@@ -7034,7 +5156,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Debug::Debug(Plugin::InternalUse iu, int32_t handle)
+	Debug::Debug(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -7182,7 +5304,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Collision::Collision(Plugin::InternalUse iu, int32_t handle)
+	Collision::Collision(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -7265,7 +5387,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Behaviour::Behaviour(Plugin::InternalUse iu, int32_t handle)
+	Behaviour::Behaviour(Plugin::InternalUse, int32_t handle)
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 	{
@@ -7351,7 +5473,7 @@ namespace UnityEngine
 	{
 	}
 	
-	MonoBehaviour::MonoBehaviour(Plugin::InternalUse iu, int32_t handle)
+	MonoBehaviour::MonoBehaviour(Plugin::InternalUse, int32_t handle)
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, UnityEngine::Behaviour(nullptr)
@@ -7448,7 +5570,7 @@ namespace UnityEngine
 	{
 	}
 	
-	AudioSettings::AudioSettings(Plugin::InternalUse iu, int32_t handle)
+	AudioSettings::AudioSettings(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -7522,9 +5644,9 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	void AudioSettings::GetDSPBufferSize(int32_t* bufferLength, int32_t* numBuffers)
+	void AudioSettings::GetDSPBufferSize(System::Int32* bufferLength, System::Int32* numBuffers)
 	{
-		Plugin::UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(bufferLength, numBuffers);
+		Plugin::UnityEngineAudioSettingsMethodGetDSPBufferSizeSystemInt32_SystemInt32(&bufferLength->Value, &numBuffers->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -7543,7 +5665,7 @@ namespace UnityEngine
 		{
 		}
 		
-		NetworkTransport::NetworkTransport(Plugin::InternalUse iu, int32_t handle)
+		NetworkTransport::NetworkTransport(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -7617,10 +5739,10 @@ namespace UnityEngine
 			return Handle != other.Handle;
 		}
 		
-		void NetworkTransport::GetBroadcastConnectionInfo(int32_t hostId, System::String* address, int32_t* port, uint8_t* error)
+		void NetworkTransport::GetBroadcastConnectionInfo(System::Int32 hostId, System::String* address, System::Int32* port, System::Byte* error)
 		{
 			int32_t addressHandle = address->Handle;
-			Plugin::UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(hostId, &addressHandle, port, error);
+			Plugin::UnityEngineNetworkingNetworkTransportMethodGetBroadcastConnectionInfoSystemInt32_SystemString_SystemInt32_SystemByte(hostId, &addressHandle, &port->Value, &error->Value);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -7658,13 +5780,10 @@ namespace UnityEngine
 	Quaternion::Quaternion()
 	{
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::Quaternion& val)
+	
+	Quaternion::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxQuaternion(val);
+		int32_t handle = Plugin::BoxQuaternion(*this);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -7675,10 +5794,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	Quaternion::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxQuaternion(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::Quaternion()
 	{
 		UnityEngine::Quaternion returnVal(Plugin::UnboxQuaternion(Handle));
@@ -7699,7 +5840,7 @@ namespace UnityEngine
 	{
 	}
 	
-	float Matrix4x4::GetItem(int32_t row, int32_t column)
+	System::Single Matrix4x4::GetItem(System::Int32 row, System::Int32 column)
 	{
 		auto returnValue = Plugin::UnityEngineMatrix4x4PropertyGetItem(this, row, column);
 		if (Plugin::unhandledCsharpException)
@@ -7712,7 +5853,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Matrix4x4::SetItem(int32_t row, int32_t column, float value)
+	void Matrix4x4::SetItem(System::Int32 row, System::Int32 column, System::Single value)
 	{
 		Plugin::UnityEngineMatrix4x4PropertySetItem(this, row, column, value);
 		if (Plugin::unhandledCsharpException)
@@ -7723,13 +5864,10 @@ namespace UnityEngine
 			delete ex;
 		}
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::Matrix4x4& val)
+	
+	Matrix4x4::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxMatrix4x4(val);
+		int32_t handle = Plugin::BoxMatrix4x4(*this);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -7740,10 +5878,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	Matrix4x4::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxMatrix4x4(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::Matrix4x4()
 	{
 		UnityEngine::Matrix4x4 returnVal(Plugin::UnboxMatrix4x4(Handle));
@@ -7758,11 +5918,31 @@ namespace System
 	}
 }
 
-namespace System
+namespace UnityEngine
 {
-	Object::Object(UnityEngine::QueryTriggerInteraction val)
+	QueryTriggerInteraction::QueryTriggerInteraction(int32_t value)
+		: Value(value)
 	{
-		int32_t handle = Plugin::BoxQueryTriggerInteraction(val);
+	}
+	
+	UnityEngine::QueryTriggerInteraction::operator int32_t() const
+	{
+		return Value;
+	}
+	
+	bool UnityEngine::QueryTriggerInteraction::operator==(QueryTriggerInteraction other)
+	{
+		return Value == other.Value;
+	}
+	
+	bool UnityEngine::QueryTriggerInteraction::operator!=(QueryTriggerInteraction other)
+	{
+		return Value != other.Value;
+	}
+	
+	QueryTriggerInteraction::operator System::Enum()
+	{
+		int32_t handle = Plugin::BoxQueryTriggerInteraction(*this);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -7773,10 +5953,108 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::Enum(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	QueryTriggerInteraction::operator System::ValueType()
+	{
+		int32_t handle = Plugin::BoxQueryTriggerInteraction(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::ValueType(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	QueryTriggerInteraction::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxQueryTriggerInteraction(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	QueryTriggerInteraction::operator System::IFormattable()
+	{
+		int32_t handle = Plugin::BoxQueryTriggerInteraction(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IFormattable(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	QueryTriggerInteraction::operator System::IConvertible()
+	{
+		int32_t handle = Plugin::BoxQueryTriggerInteraction(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IConvertible(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	QueryTriggerInteraction::operator System::IComparable()
+	{
+		int32_t handle = Plugin::BoxQueryTriggerInteraction(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IComparable(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+}
+const UnityEngine::QueryTriggerInteraction UnityEngine::QueryTriggerInteraction::UseGlobal(0);
+const UnityEngine::QueryTriggerInteraction UnityEngine::QueryTriggerInteraction::Ignore(1);
+const UnityEngine::QueryTriggerInteraction UnityEngine::QueryTriggerInteraction::Collide(2);
+
+namespace System
+{
 	Object::operator UnityEngine::QueryTriggerInteraction()
 	{
 		UnityEngine::QueryTriggerInteraction returnVal(Plugin::UnboxQueryTriggerInteraction(Handle));
@@ -7797,13 +6075,11 @@ namespace System
 	{
 		namespace Generic
 		{
-			KeyValuePair<System::String, double>::KeyValuePair(decltype(nullptr))
-				: System::ValueType(nullptr)
+			KeyValuePair<System::String, System::Double>::KeyValuePair(decltype(nullptr))
 			{
 			}
 			
-			KeyValuePair<System::String, double>::KeyValuePair(Plugin::InternalUse iu, int32_t handle)
-				: System::ValueType(nullptr)
+			KeyValuePair<System::String, System::Double>::KeyValuePair(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -7812,18 +6088,18 @@ namespace System
 				}
 			}
 			
-			KeyValuePair<System::String, double>::KeyValuePair(const KeyValuePair<System::String, double>& other)
+			KeyValuePair<System::String, System::Double>::KeyValuePair(const KeyValuePair<System::String, System::Double>& other)
 				: KeyValuePair(Plugin::InternalUse::Only, other.Handle)
 			{
 			}
 			
-			KeyValuePair<System::String, double>::KeyValuePair(KeyValuePair<System::String, double>&& other)
+			KeyValuePair<System::String, System::Double>::KeyValuePair(KeyValuePair<System::String, System::Double>&& other)
 				: KeyValuePair(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
 			
-			KeyValuePair<System::String, double>::~KeyValuePair<System::String, double>()
+			KeyValuePair<System::String, System::Double>::~KeyValuePair<System::String, System::Double>()
 			{
 				if (Handle)
 				{
@@ -7832,7 +6108,7 @@ namespace System
 				}
 			}
 			
-			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(const KeyValuePair<System::String, double>& other)
+			KeyValuePair<System::String, System::Double>& KeyValuePair<System::String, System::Double>::operator=(const KeyValuePair<System::String, System::Double>& other)
 			{
 				if (this->Handle)
 				{
@@ -7846,7 +6122,7 @@ namespace System
 				return *this;
 			}
 			
-			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(decltype(nullptr))
+			KeyValuePair<System::String, System::Double>& KeyValuePair<System::String, System::Double>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -7856,7 +6132,7 @@ namespace System
 				return *this;
 			}
 			
-			KeyValuePair<System::String, double>& KeyValuePair<System::String, double>::operator=(KeyValuePair<System::String, double>&& other)
+			KeyValuePair<System::String, System::Double>& KeyValuePair<System::String, System::Double>::operator=(KeyValuePair<System::String, System::Double>&& other)
 			{
 				if (Handle)
 				{
@@ -7867,18 +6143,17 @@ namespace System
 				return *this;
 			}
 			
-			bool KeyValuePair<System::String, double>::operator==(const KeyValuePair<System::String, double>& other) const
+			bool KeyValuePair<System::String, System::Double>::operator==(const KeyValuePair<System::String, System::Double>& other) const
 			{
 				return Handle == other.Handle;
 			}
 			
-			bool KeyValuePair<System::String, double>::operator!=(const KeyValuePair<System::String, double>& other) const
+			bool KeyValuePair<System::String, System::Double>::operator!=(const KeyValuePair<System::String, System::Double>& other) const
 			{
 				return Handle != other.Handle;
 			}
 			
-			KeyValuePair<System::String, double>::KeyValuePair(System::String& key, double value)
-				: System::ValueType(nullptr)
+			KeyValuePair<System::String, System::Double>::KeyValuePair(System::String& key, System::Double value)
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble(key.Handle, value);
 				if (Plugin::unhandledCsharpException)
@@ -7895,7 +6170,7 @@ namespace System
 				}
 			}
 			
-			System::String KeyValuePair<System::String, double>::GetKey()
+			System::String KeyValuePair<System::String, System::Double>::GetKey()
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey(Handle);
 				if (Plugin::unhandledCsharpException)
@@ -7908,7 +6183,7 @@ namespace System
 				return System::String(Plugin::InternalUse::Only, returnValue);
 			}
 			
-			double KeyValuePair<System::String, double>::GetValue()
+			System::Double KeyValuePair<System::String, System::Double>::GetValue()
 			{
 				auto returnValue = Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue(Handle);
 				if (Plugin::unhandledCsharpException)
@@ -7920,32 +6195,51 @@ namespace System
 				}
 				return returnValue;
 			}
+			
+			KeyValuePair<System::String, System::Double>::operator System::ValueType()
+			{
+				int32_t handle = Plugin::BoxKeyValuePairSystemString_SystemDouble(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+					return System::ValueType(Plugin::InternalUse::Only, handle);
+				}
+				return nullptr;
+			}
+			
+			KeyValuePair<System::String, System::Double>::operator System::Object()
+			{
+				int32_t handle = Plugin::BoxKeyValuePairSystemString_SystemDouble(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+					return System::Object(Plugin::InternalUse::Only, handle);
+				}
+				return nullptr;
+			}
 		}
 	}
 }
 
 namespace System
 {
-	Object::Object(System::Collections::Generic::KeyValuePair<System::String, double>& val)
+	Object::operator System::Collections::Generic::KeyValuePair<System::String, System::Double>()
 	{
-		int32_t handle = Plugin::BoxKeyValuePairSystemString_SystemDouble(val.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator System::Collections::Generic::KeyValuePair<System::String, double>()
-	{
-		System::Collections::Generic::KeyValuePair<System::String, double> returnVal(Plugin::InternalUse::Only, Plugin::UnboxKeyValuePairSystemString_SystemDouble(Handle));
+		System::Collections::Generic::KeyValuePair<System::String, System::Double> returnVal(Plugin::InternalUse::Only, Plugin::UnboxKeyValuePairSystemString_SystemDouble(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -7963,469 +6257,11 @@ namespace System
 	{
 		namespace Generic
 		{
-			List<System::String>::List(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
-				, System::Collections::Generic::ICollection<System::String>(nullptr)
-				, System::Collections::Generic::IList<System::String>(nullptr)
-			{
-			}
-			
-			List<System::String>::List(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
-				, System::Collections::Generic::ICollection<System::String>(nullptr)
-				, System::Collections::Generic::IList<System::String>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			List<System::String>::List(const List<System::String>& other)
-				: List(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			List<System::String>::List(List<System::String>&& other)
-				: List(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			List<System::String>::~List<System::String>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			List<System::String>& List<System::String>::operator=(const List<System::String>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			List<System::String>& List<System::String>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			List<System::String>& List<System::String>::operator=(List<System::String>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool List<System::String>::operator==(const List<System::String>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool List<System::String>::operator!=(const List<System::String>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			List<System::String>::List()
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
-				, System::Collections::Generic::ICollection<System::String>(nullptr)
-				, System::Collections::Generic::IList<System::String>(nullptr)
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringConstructor();
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				Handle = returnValue;
-				if (returnValue)
-				{
-					Plugin::ReferenceManagedClass(returnValue);
-				}
-			}
-			
-			System::String List<System::String>::GetItem(int32_t index)
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringPropertyGetItem(Handle, index);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return System::String(Plugin::InternalUse::Only, returnValue);
-			}
-			
-			void List<System::String>::SetItem(int32_t index, System::String& value)
-			{
-				Plugin::SystemCollectionsGenericListSystemStringPropertySetItem(Handle, index, value.Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-			
-			void List<System::String>::Add(System::String& item)
-			{
-				Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString(Handle, item.Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-	
-			void List<System::String>::Sort(System::Collections::Generic::IComparer<System::String>& comparer)
-			{
-				Plugin::SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericListSystemStringIterator::SystemCollectionsGenericListSystemStringIterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericListSystemStringIterator::SystemCollectionsGenericListSystemStringIterator(System::Collections::Generic::List<System::String>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericListSystemStringIterator::~SystemCollectionsGenericListSystemStringIterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericListSystemStringIterator& SystemCollectionsGenericListSystemStringIterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericListSystemStringIterator::operator!=(const SystemCollectionsGenericListSystemStringIterator& other)
-	{
-		return hasMore;
-	}
-	
-	System::String SystemCollectionsGenericListSystemStringIterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericListSystemStringIterator begin(System::Collections::Generic::List<System::String>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericListSystemStringIterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericListSystemStringIterator end(System::Collections::Generic::List<System::String>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericListSystemStringIterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			List<int32_t>::List(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-				, System::Collections::Generic::IList<int32_t>(nullptr)
-			{
-			}
-			
-			List<int32_t>::List(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-				, System::Collections::Generic::IList<int32_t>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			List<int32_t>::List(const List<int32_t>& other)
-				: List(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			List<int32_t>::List(List<int32_t>&& other)
-				: List(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			List<int32_t>::~List<int32_t>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			List<int32_t>& List<int32_t>::operator=(const List<int32_t>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			List<int32_t>& List<int32_t>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			List<int32_t>& List<int32_t>::operator=(List<int32_t>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool List<int32_t>::operator==(const List<int32_t>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool List<int32_t>::operator!=(const List<int32_t>& other) const
-			{
-				return Handle != other.Handle;
-			}
-			
-			List<int32_t>::List()
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-				, System::Collections::Generic::IList<int32_t>(nullptr)
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericListSystemInt32Constructor();
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				Handle = returnValue;
-				if (returnValue)
-				{
-					Plugin::ReferenceManagedClass(returnValue);
-				}
-			}
-			
-			int32_t List<int32_t>::GetItem(int32_t index)
-			{
-				auto returnValue = Plugin::SystemCollectionsGenericListSystemInt32PropertyGetItem(Handle, index);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-				return returnValue;
-			}
-			
-			void List<int32_t>::SetItem(int32_t index, int32_t value)
-			{
-				Plugin::SystemCollectionsGenericListSystemInt32PropertySetItem(Handle, index, value);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-			
-			void List<int32_t>::Add(int32_t item)
-			{
-				Plugin::SystemCollectionsGenericListSystemInt32MethodAddSystemInt32(Handle, item);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-	
-			void List<int32_t>::Sort(System::Collections::Generic::IComparer<int32_t>& comparer)
-			{
-				Plugin::SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
-				if (Plugin::unhandledCsharpException)
-				{
-					System::Exception* ex = Plugin::unhandledCsharpException;
-					Plugin::unhandledCsharpException = nullptr;
-					ex->ThrowReferenceToThis();
-					delete ex;
-				}
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsGenericListSystemInt32Iterator::SystemCollectionsGenericListSystemInt32Iterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsGenericListSystemInt32Iterator::SystemCollectionsGenericListSystemInt32Iterator(System::Collections::Generic::List<int32_t>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsGenericListSystemInt32Iterator::~SystemCollectionsGenericListSystemInt32Iterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsGenericListSystemInt32Iterator& SystemCollectionsGenericListSystemInt32Iterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsGenericListSystemInt32Iterator::operator!=(const SystemCollectionsGenericListSystemInt32Iterator& other)
-	{
-		return hasMore;
-	}
-	
-	int32_t SystemCollectionsGenericListSystemInt32Iterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
-			Plugin::SystemCollectionsGenericListSystemInt32Iterator begin(System::Collections::Generic::List<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericListSystemInt32Iterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsGenericListSystemInt32Iterator end(System::Collections::Generic::List<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsGenericListSystemInt32Iterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace Generic
-		{
 			LinkedListNode<System::String>::LinkedListNode(decltype(nullptr))
 			{
 			}
 			
-			LinkedListNode<System::String>::LinkedListNode(Plugin::InternalUse iu, int32_t handle)
+			LinkedListNode<System::String>::LinkedListNode(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -8555,7 +6391,7 @@ namespace System
 			{
 			}
 			
-			StrongBox<System::String>::StrongBox(Plugin::InternalUse iu, int32_t handle)
+			StrongBox<System::String>::StrongBox(Plugin::InternalUse, int32_t handle)
 				: System::Runtime::CompilerServices::IStrongBox(nullptr)
 			{
 				Handle = handle;
@@ -8678,329 +6514,13 @@ namespace System
 
 namespace System
 {
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			Collection<int32_t>::Collection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-				, System::Collections::Generic::IList<int32_t>(nullptr)
-			{
-			}
-			
-			Collection<int32_t>::Collection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-				, System::Collections::Generic::IList<int32_t>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			Collection<int32_t>::Collection(const Collection<int32_t>& other)
-				: Collection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			Collection<int32_t>::Collection(Collection<int32_t>&& other)
-				: Collection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			Collection<int32_t>::~Collection<int32_t>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			Collection<int32_t>& Collection<int32_t>::operator=(const Collection<int32_t>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			Collection<int32_t>& Collection<int32_t>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			Collection<int32_t>& Collection<int32_t>::operator=(Collection<int32_t>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool Collection<int32_t>::operator==(const Collection<int32_t>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool Collection<int32_t>::operator!=(const Collection<int32_t>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsObjectModelCollectionSystemInt32Iterator::SystemCollectionsObjectModelCollectionSystemInt32Iterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsObjectModelCollectionSystemInt32Iterator::SystemCollectionsObjectModelCollectionSystemInt32Iterator(System::Collections::ObjectModel::Collection<int32_t>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsObjectModelCollectionSystemInt32Iterator::~SystemCollectionsObjectModelCollectionSystemInt32Iterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsObjectModelCollectionSystemInt32Iterator& SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator!=(const SystemCollectionsObjectModelCollectionSystemInt32Iterator& other)
-	{
-		return hasMore;
-	}
-	
-	int32_t SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator begin(System::Collections::ObjectModel::Collection<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator end(System::Collections::ObjectModel::Collection<int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			KeyedCollection<System::String, int32_t>::KeyedCollection(decltype(nullptr))
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-				, System::Collections::Generic::IList<int32_t>(nullptr)
-				, System::Collections::ObjectModel::Collection<int32_t>(nullptr)
-			{
-			}
-			
-			KeyedCollection<System::String, int32_t>::KeyedCollection(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::IEnumerable(nullptr)
-				, System::Collections::ICollection(nullptr)
-				, System::Collections::IList(nullptr)
-				, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-				, System::Collections::Generic::ICollection<int32_t>(nullptr)
-				, System::Collections::Generic::IList<int32_t>(nullptr)
-				, System::Collections::ObjectModel::Collection<int32_t>(nullptr)
-			{
-				Handle = handle;
-				if (handle)
-				{
-					Plugin::ReferenceManagedClass(handle);
-				}
-			}
-			
-			KeyedCollection<System::String, int32_t>::KeyedCollection(const KeyedCollection<System::String, int32_t>& other)
-				: KeyedCollection(Plugin::InternalUse::Only, other.Handle)
-			{
-			}
-			
-			KeyedCollection<System::String, int32_t>::KeyedCollection(KeyedCollection<System::String, int32_t>&& other)
-				: KeyedCollection(Plugin::InternalUse::Only, other.Handle)
-			{
-				other.Handle = 0;
-			}
-			
-			KeyedCollection<System::String, int32_t>::~KeyedCollection<System::String, int32_t>()
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-			}
-			
-			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(const KeyedCollection<System::String, int32_t>& other)
-			{
-				if (this->Handle)
-				{
-					Plugin::DereferenceManagedClass(this->Handle);
-				}
-				this->Handle = other.Handle;
-				if (this->Handle)
-				{
-					Plugin::ReferenceManagedClass(this->Handle);
-				}
-				return *this;
-			}
-			
-			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(decltype(nullptr))
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-					Handle = 0;
-				}
-				return *this;
-			}
-			
-			KeyedCollection<System::String, int32_t>& KeyedCollection<System::String, int32_t>::operator=(KeyedCollection<System::String, int32_t>&& other)
-			{
-				if (Handle)
-				{
-					Plugin::DereferenceManagedClass(Handle);
-				}
-				Handle = other.Handle;
-				other.Handle = 0;
-				return *this;
-			}
-			
-			bool KeyedCollection<System::String, int32_t>::operator==(const KeyedCollection<System::String, int32_t>& other) const
-			{
-				return Handle == other.Handle;
-			}
-			
-			bool KeyedCollection<System::String, int32_t>::operator!=(const KeyedCollection<System::String, int32_t>& other) const
-			{
-				return Handle != other.Handle;
-			}
-		}
-	}
-}
-
-namespace Plugin
-{
-	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(decltype(nullptr))
-		: enumerator(nullptr)
-		, hasMore(false)
-	{
-	}
-	
-	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(System::Collections::ObjectModel::KeyedCollection<System::String, int32_t>& enumerable)
-		: enumerator(enumerable.GetEnumerator())
-	{
-		hasMore = enumerator.MoveNext();
-	}
-	
-	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::~SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator()
-	{
-		if (enumerator != nullptr)
-		{
-			enumerator.Dispose();
-		}
-	}
-	
-	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator& SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator++()
-	{
-		hasMore = enumerator.MoveNext();
-		return *this;
-	}
-	
-	bool SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator!=(const SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator& other)
-	{
-		return hasMore;
-	}
-	
-	int32_t SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator*()
-	{
-		return enumerator.GetCurrent();
-	}
-}
-
-namespace System
-{
-	namespace Collections
-	{
-		namespace ObjectModel
-		{
-			Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator begin(System::Collections::ObjectModel::KeyedCollection<System::String, int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(enumerable);
-			}
-			
-			Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator end(System::Collections::ObjectModel::KeyedCollection<System::String, int32_t>& enumerable)
-			{
-				return Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(nullptr);
-			}
-		}
-	}
-}
-
-namespace System
-{
 	Exception::Exception(decltype(nullptr))
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 	{
 	}
 	
-	Exception::Exception(Plugin::InternalUse iu, int32_t handle)
+	Exception::Exception(Plugin::InternalUse, int32_t handle)
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 	{
@@ -9105,7 +6625,7 @@ namespace System
 	{
 	}
 	
-	SystemException::SystemException(Plugin::InternalUse iu, int32_t handle)
+	SystemException::SystemException(Plugin::InternalUse, int32_t handle)
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 		, System::Exception(nullptr)
@@ -9193,7 +6713,7 @@ namespace System
 	{
 	}
 	
-	NullReferenceException::NullReferenceException(Plugin::InternalUse iu, int32_t handle)
+	NullReferenceException::NullReferenceException(Plugin::InternalUse, int32_t handle)
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 		, System::Exception(nullptr)
@@ -9278,7 +6798,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Screen::Screen(Plugin::InternalUse iu, int32_t handle)
+	Screen::Screen(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -9369,12 +6889,10 @@ namespace UnityEngine
 namespace UnityEngine
 {
 	Ray::Ray(decltype(nullptr))
-		: System::ValueType(nullptr)
 	{
 	}
 	
-	Ray::Ray(Plugin::InternalUse iu, int32_t handle)
-		: System::ValueType(nullptr)
+	Ray::Ray(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -9449,7 +6967,6 @@ namespace UnityEngine
 	}
 	
 	Ray::Ray(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction)
-		: System::ValueType(nullptr)
 	{
 		auto returnValue = Plugin::UnityEngineRayConstructorUnityEngineVector3_UnityEngineVector3(origin, direction);
 		if (Plugin::unhandledCsharpException)
@@ -9465,13 +6982,10 @@ namespace UnityEngine
 			Plugin::ReferenceManagedUnityEngineRay(Handle);
 		}
 	}
-}
-
-namespace System
-{
-	Object::Object(UnityEngine::Ray& val)
+	
+	Ray::operator System::ValueType()
 	{
-		int32_t handle = Plugin::BoxRay(val.Handle);
+		int32_t handle = Plugin::BoxRay(Handle);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -9482,10 +6996,32 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::ValueType(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	Ray::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxRay(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
 	Object::operator UnityEngine::Ray()
 	{
 		UnityEngine::Ray returnVal(Plugin::InternalUse::Only, Plugin::UnboxRay(Handle));
@@ -9506,7 +7042,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Physics::Physics(Plugin::InternalUse iu, int32_t handle)
+	Physics::Physics(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -9580,7 +7116,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	int32_t Physics::RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<UnityEngine::RaycastHit>& results)
+	System::Int32 Physics::RaycastNonAlloc(UnityEngine::Ray& ray, System::Array1<UnityEngine::RaycastHit>& results)
 	{
 		auto returnValue = Plugin::UnityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1(ray.Handle, results.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -9613,7 +7149,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Gradient::Gradient(Plugin::InternalUse iu, int32_t handle)
+	Gradient::Gradient(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -9737,7 +7273,7 @@ namespace System
 	{
 	}
 	
-	AppDomainSetup::AppDomainSetup(Plugin::InternalUse iu, int32_t handle)
+	AppDomainSetup::AppDomainSetup(Plugin::InternalUse, int32_t handle)
 		: System::IAppDomainSetup(nullptr)
 	{
 		Handle = handle;
@@ -9862,7 +7398,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Application::Application(Plugin::InternalUse iu, int32_t handle)
+	Application::Application(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -9969,7 +7505,7 @@ namespace UnityEngine
 		{
 		}
 		
-		SceneManager::SceneManager(Plugin::InternalUse iu, int32_t handle)
+		SceneManager::SceneManager(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -10074,12 +7610,10 @@ namespace UnityEngine
 	namespace SceneManagement
 	{
 		Scene::Scene(decltype(nullptr))
-			: System::ValueType(nullptr)
 		{
 		}
 		
-		Scene::Scene(Plugin::InternalUse iu, int32_t handle)
-			: System::ValueType(nullptr)
+		Scene::Scene(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -10152,28 +7686,47 @@ namespace UnityEngine
 		{
 			return Handle != other.Handle;
 		}
+		
+		Scene::operator System::ValueType()
+		{
+			int32_t handle = Plugin::BoxScene(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::ValueType(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		Scene::operator System::Object()
+		{
+			int32_t handle = Plugin::BoxScene(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Object(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
 	}
 }
 
 namespace System
 {
-	Object::Object(UnityEngine::SceneManagement::Scene& val)
-	{
-		int32_t handle = Plugin::BoxScene(val.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
 	Object::operator UnityEngine::SceneManagement::Scene()
 	{
 		UnityEngine::SceneManagement::Scene returnVal(Plugin::InternalUse::Only, Plugin::UnboxScene(Handle));
@@ -10188,25 +7741,145 @@ namespace System
 	}
 }
 
+namespace UnityEngine
+{
+	namespace SceneManagement
+	{
+		LoadSceneMode::LoadSceneMode(int32_t value)
+			: Value(value)
+		{
+		}
+		
+		UnityEngine::SceneManagement::LoadSceneMode::operator int32_t() const
+		{
+			return Value;
+		}
+		
+		bool UnityEngine::SceneManagement::LoadSceneMode::operator==(LoadSceneMode other)
+		{
+			return Value == other.Value;
+		}
+		
+		bool UnityEngine::SceneManagement::LoadSceneMode::operator!=(LoadSceneMode other)
+		{
+			return Value != other.Value;
+		}
+		
+		LoadSceneMode::operator System::Enum()
+		{
+			int32_t handle = Plugin::BoxLoadSceneMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Enum(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		LoadSceneMode::operator System::ValueType()
+		{
+			int32_t handle = Plugin::BoxLoadSceneMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::ValueType(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		LoadSceneMode::operator System::Object()
+		{
+			int32_t handle = Plugin::BoxLoadSceneMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Object(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		LoadSceneMode::operator System::IFormattable()
+		{
+			int32_t handle = Plugin::BoxLoadSceneMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::IFormattable(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		LoadSceneMode::operator System::IConvertible()
+		{
+			int32_t handle = Plugin::BoxLoadSceneMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::IConvertible(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		LoadSceneMode::operator System::IComparable()
+		{
+			int32_t handle = Plugin::BoxLoadSceneMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::IComparable(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+	}
+}
+const UnityEngine::SceneManagement::LoadSceneMode UnityEngine::SceneManagement::LoadSceneMode::Single(0);
+const UnityEngine::SceneManagement::LoadSceneMode UnityEngine::SceneManagement::LoadSceneMode::Additive(1);
+
 namespace System
 {
-	Object::Object(UnityEngine::SceneManagement::LoadSceneMode val)
-	{
-		int32_t handle = Plugin::BoxLoadSceneMode(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
 	Object::operator UnityEngine::SceneManagement::LoadSceneMode()
 	{
 		UnityEngine::SceneManagement::LoadSceneMode returnVal(Plugin::UnboxLoadSceneMode(Handle));
@@ -10227,7 +7900,7 @@ namespace System
 	{
 	}
 	
-	EventArgs::EventArgs(Plugin::InternalUse iu, int32_t handle)
+	EventArgs::EventArgs(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -10313,7 +7986,7 @@ namespace System
 			{
 			}
 			
-			ComponentEventArgs::ComponentEventArgs(Plugin::InternalUse iu, int32_t handle)
+			ComponentEventArgs::ComponentEventArgs(Plugin::InternalUse, int32_t handle)
 				: System::EventArgs(nullptr)
 			{
 				Handle = handle;
@@ -10402,7 +8075,7 @@ namespace System
 			{
 			}
 			
-			ComponentChangingEventArgs::ComponentChangingEventArgs(Plugin::InternalUse iu, int32_t handle)
+			ComponentChangingEventArgs::ComponentChangingEventArgs(Plugin::InternalUse, int32_t handle)
 				: System::EventArgs(nullptr)
 			{
 				Handle = handle;
@@ -10491,7 +8164,7 @@ namespace System
 			{
 			}
 			
-			ComponentChangedEventArgs::ComponentChangedEventArgs(Plugin::InternalUse iu, int32_t handle)
+			ComponentChangedEventArgs::ComponentChangedEventArgs(Plugin::InternalUse, int32_t handle)
 				: System::EventArgs(nullptr)
 			{
 				Handle = handle;
@@ -10580,7 +8253,7 @@ namespace System
 			{
 			}
 			
-			ComponentRenameEventArgs::ComponentRenameEventArgs(Plugin::InternalUse iu, int32_t handle)
+			ComponentRenameEventArgs::ComponentRenameEventArgs(Plugin::InternalUse, int32_t handle)
 				: System::EventArgs(nullptr)
 			{
 				Handle = handle;
@@ -10666,7 +8339,7 @@ namespace System
 		{
 		}
 		
-		MemberDescriptor::MemberDescriptor(Plugin::InternalUse iu, int32_t handle)
+		MemberDescriptor::MemberDescriptor(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -10742,11 +8415,31 @@ namespace System
 	}
 }
 
-namespace System
+namespace UnityEngine
 {
-	Object::Object(UnityEngine::PrimitiveType val)
+	PrimitiveType::PrimitiveType(int32_t value)
+		: Value(value)
 	{
-		int32_t handle = Plugin::BoxPrimitiveType(val);
+	}
+	
+	UnityEngine::PrimitiveType::operator int32_t() const
+	{
+		return Value;
+	}
+	
+	bool UnityEngine::PrimitiveType::operator==(PrimitiveType other)
+	{
+		return Value == other.Value;
+	}
+	
+	bool UnityEngine::PrimitiveType::operator!=(PrimitiveType other)
+	{
+		return Value != other.Value;
+	}
+	
+	PrimitiveType::operator System::Enum()
+	{
+		int32_t handle = Plugin::BoxPrimitiveType(*this);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -10757,10 +8450,111 @@ namespace System
 		if (handle)
 		{
 			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return System::Enum(Plugin::InternalUse::Only, handle);
 		}
+		return nullptr;
 	}
 	
+	PrimitiveType::operator System::ValueType()
+	{
+		int32_t handle = Plugin::BoxPrimitiveType(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::ValueType(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	PrimitiveType::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxPrimitiveType(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	PrimitiveType::operator System::IFormattable()
+	{
+		int32_t handle = Plugin::BoxPrimitiveType(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IFormattable(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	PrimitiveType::operator System::IConvertible()
+	{
+		int32_t handle = Plugin::BoxPrimitiveType(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IConvertible(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	PrimitiveType::operator System::IComparable()
+	{
+		int32_t handle = Plugin::BoxPrimitiveType(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IComparable(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+}
+const UnityEngine::PrimitiveType UnityEngine::PrimitiveType::Sphere(0);
+const UnityEngine::PrimitiveType UnityEngine::PrimitiveType::Capsule(1);
+const UnityEngine::PrimitiveType UnityEngine::PrimitiveType::Cylinder(2);
+const UnityEngine::PrimitiveType UnityEngine::PrimitiveType::Cube(3);
+const UnityEngine::PrimitiveType UnityEngine::PrimitiveType::Plane(4);
+const UnityEngine::PrimitiveType UnityEngine::PrimitiveType::Quad(5);
+
+namespace System
+{
 	Object::operator UnityEngine::PrimitiveType()
 	{
 		UnityEngine::PrimitiveType returnVal(Plugin::UnboxPrimitiveType(Handle));
@@ -10781,7 +8575,7 @@ namespace UnityEngine
 	{
 	}
 	
-	Time::Time(Plugin::InternalUse iu, int32_t handle)
+	Time::Time(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -10855,7 +8649,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	float Time::GetDeltaTime()
+	System::Single Time::GetDeltaTime()
 	{
 		auto returnValue = Plugin::UnityEngineTimePropertyGetDeltaTime();
 		if (Plugin::unhandledCsharpException)
@@ -10871,23 +8665,147 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(System::IO::FileMode val)
+	namespace IO
 	{
-		int32_t handle = Plugin::BoxFileMode(val);
-		if (Plugin::unhandledCsharpException)
+		FileMode::FileMode(int32_t value)
+			: Value(value)
 		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
 		}
-		if (handle)
+		
+		System::IO::FileMode::operator int32_t() const
 		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			return Value;
 		}
+		
+		bool System::IO::FileMode::operator==(FileMode other)
+		{
+			return Value == other.Value;
+		}
+		
+		bool System::IO::FileMode::operator!=(FileMode other)
+		{
+			return Value != other.Value;
+		}
+		
+		FileMode::operator System::Enum()
+		{
+			int32_t handle = Plugin::BoxFileMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Enum(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		FileMode::operator System::ValueType()
+		{
+			int32_t handle = Plugin::BoxFileMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::ValueType(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		FileMode::operator System::Object()
+		{
+			int32_t handle = Plugin::BoxFileMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Object(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		FileMode::operator System::IFormattable()
+		{
+			int32_t handle = Plugin::BoxFileMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::IFormattable(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		FileMode::operator System::IConvertible()
+		{
+			int32_t handle = Plugin::BoxFileMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::IConvertible(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		FileMode::operator System::IComparable()
+		{
+			int32_t handle = Plugin::BoxFileMode(*this);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::IComparable(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
 	}
-	
+}
+const System::IO::FileMode System::IO::FileMode::CreateNew(1);
+const System::IO::FileMode System::IO::FileMode::Create(2);
+const System::IO::FileMode System::IO::FileMode::Open(3);
+const System::IO::FileMode System::IO::FileMode::OpenOrCreate(4);
+const System::IO::FileMode System::IO::FileMode::Truncate(5);
+const System::IO::FileMode System::IO::FileMode::Append(6);
+
+namespace System
+{
 	Object::operator System::IO::FileMode()
 	{
 		System::IO::FileMode returnVal(Plugin::UnboxFileMode(Handle));
@@ -10908,7 +8826,7 @@ namespace System
 	{
 	}
 	
-	MarshalByRefObject::MarshalByRefObject(Plugin::InternalUse iu, int32_t handle)
+	MarshalByRefObject::MarshalByRefObject(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		if (handle)
@@ -10993,7 +8911,7 @@ namespace System
 		{
 		}
 		
-		Stream::Stream(Plugin::InternalUse iu, int32_t handle)
+		Stream::Stream(Plugin::InternalUse, int32_t handle)
 			: System::MarshalByRefObject(nullptr)
 			, System::IDisposable(nullptr)
 		{
@@ -11077,11 +8995,11 @@ namespace System
 	{
 		namespace Generic
 		{
-			IComparer<int32_t>::IComparer(decltype(nullptr))
+			IComparer<System::Int32>::IComparer(decltype(nullptr))
 			{
 			}
 			
-			IComparer<int32_t>::IComparer(Plugin::InternalUse iu, int32_t handle)
+			IComparer<System::Int32>::IComparer(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -11090,18 +9008,18 @@ namespace System
 				}
 			}
 			
-			IComparer<int32_t>::IComparer(const IComparer<int32_t>& other)
+			IComparer<System::Int32>::IComparer(const IComparer<System::Int32>& other)
 				: IComparer(Plugin::InternalUse::Only, other.Handle)
 			{
 			}
 			
-			IComparer<int32_t>::IComparer(IComparer<int32_t>&& other)
+			IComparer<System::Int32>::IComparer(IComparer<System::Int32>&& other)
 				: IComparer(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
 			
-			IComparer<int32_t>::~IComparer<int32_t>()
+			IComparer<System::Int32>::~IComparer<System::Int32>()
 			{
 				if (Handle)
 				{
@@ -11110,7 +9028,7 @@ namespace System
 				}
 			}
 			
-			IComparer<int32_t>& IComparer<int32_t>::operator=(const IComparer<int32_t>& other)
+			IComparer<System::Int32>& IComparer<System::Int32>::operator=(const IComparer<System::Int32>& other)
 			{
 				if (this->Handle)
 				{
@@ -11124,7 +9042,7 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<int32_t>& IComparer<int32_t>::operator=(decltype(nullptr))
+			IComparer<System::Int32>& IComparer<System::Int32>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -11134,7 +9052,7 @@ namespace System
 				return *this;
 			}
 			
-			IComparer<int32_t>& IComparer<int32_t>::operator=(IComparer<int32_t>&& other)
+			IComparer<System::Int32>& IComparer<System::Int32>::operator=(IComparer<System::Int32>&& other)
 			{
 				if (Handle)
 				{
@@ -11145,12 +9063,12 @@ namespace System
 				return *this;
 			}
 			
-			bool IComparer<int32_t>::operator==(const IComparer<int32_t>& other) const
+			bool IComparer<System::Int32>::operator==(const IComparer<System::Int32>& other) const
 			{
 				return Handle == other.Handle;
 			}
 			
-			bool IComparer<int32_t>::operator!=(const IComparer<int32_t>& other) const
+			bool IComparer<System::Int32>::operator!=(const IComparer<System::Int32>& other) const
 			{
 				return Handle != other.Handle;
 			}
@@ -11168,7 +9086,7 @@ namespace System
 			{
 			}
 			
-			IComparer<System::String>::IComparer(Plugin::InternalUse iu, int32_t handle)
+			IComparer<System::String>::IComparer(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -11251,13 +9169,13 @@ namespace System
 	{
 		namespace Generic
 		{
-			BaseIComparer<int32_t>::BaseIComparer()
-				: System::Collections::Generic::IComparer<int32_t>(nullptr)
+			BaseIComparer<System::Int32>::BaseIComparer()
+				: System::Collections::Generic::IComparer<System::Int32>(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
-				int32_t* handle = &Handle;
+				System::Int32* handle = (System::Int32*)&Handle;
 				int32_t cppHandle = CppHandle;
-				Plugin::SystemCollectionsGenericBaseIComparerSystemInt32Constructor(cppHandle, handle);
+				Plugin::SystemCollectionsGenericBaseIComparerSystemInt32Constructor(cppHandle, &handle->Value);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -11283,14 +9201,14 @@ namespace System
 				}
 			}
 			
-			BaseIComparer<int32_t>::BaseIComparer(decltype(nullptr))
-				: System::Collections::Generic::IComparer<int32_t>(nullptr)
+			BaseIComparer<System::Int32>::BaseIComparer(decltype(nullptr))
+				: System::Collections::Generic::IComparer<System::Int32>(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
 			}
 			
-			BaseIComparer<int32_t>::BaseIComparer(const BaseIComparer<int32_t>& other)
-				: System::Collections::Generic::IComparer<int32_t>(nullptr)
+			BaseIComparer<System::Int32>::BaseIComparer(const BaseIComparer<System::Int32>& other)
+				: System::Collections::Generic::IComparer<System::Int32>(nullptr)
 			{
 				Handle = other.Handle;
 				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
@@ -11300,8 +9218,8 @@ namespace System
 				}
 			}
 			
-			BaseIComparer<int32_t>::BaseIComparer(BaseIComparer<int32_t>&& other)
-				: System::Collections::Generic::IComparer<int32_t>(nullptr)
+			BaseIComparer<System::Int32>::BaseIComparer(BaseIComparer<System::Int32>&& other)
+				: System::Collections::Generic::IComparer<System::Int32>(nullptr)
 			{
 				Handle = other.Handle;
 				CppHandle = other.CppHandle;
@@ -11309,8 +9227,8 @@ namespace System
 				other.CppHandle = 0;
 			}
 			
-			BaseIComparer<int32_t>::BaseIComparer(Plugin::InternalUse iu, int32_t handle)
-				: System::Collections::Generic::IComparer<int32_t>(nullptr)
+			BaseIComparer<System::Int32>::BaseIComparer(Plugin::InternalUse, int32_t handle)
+				: System::Collections::Generic::IComparer<System::Int32>(nullptr)
 			{
 				Handle = handle;
 				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemInt32(this);
@@ -11320,7 +9238,7 @@ namespace System
 				}
 			}
 			
-			BaseIComparer<int32_t>::~BaseIComparer()
+			BaseIComparer<System::Int32>::~BaseIComparer()
 			{
 				Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemInt32(CppHandle);
 				CppHandle = 0;
@@ -11342,7 +9260,7 @@ namespace System
 				}
 			}
 			
-			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(const BaseIComparer<int32_t>& other)
+			BaseIComparer<System::Int32>& BaseIComparer<System::Int32>::operator=(const BaseIComparer<System::Int32>& other)
 			{
 				if (this->Handle)
 				{
@@ -11356,7 +9274,7 @@ namespace System
 				return *this;
 			}
 			
-			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(decltype(nullptr))
+			BaseIComparer<System::Int32>& BaseIComparer<System::Int32>::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -11378,7 +9296,7 @@ namespace System
 				return *this;
 			}
 			
-			BaseIComparer<int32_t>& BaseIComparer<int32_t>::operator=(BaseIComparer<int32_t>&& other)
+			BaseIComparer<System::Int32>& BaseIComparer<System::Int32>::operator=(BaseIComparer<System::Int32>&& other)
 			{
 				Plugin::RemoveSystemCollectionsGenericBaseIComparerSystemInt32(CppHandle);
 				CppHandle = 0;
@@ -11403,17 +9321,17 @@ namespace System
 				return *this;
 			}
 			
-			bool BaseIComparer<int32_t>::operator==(const BaseIComparer<int32_t>& other) const
+			bool BaseIComparer<System::Int32>::operator==(const BaseIComparer<System::Int32>& other) const
 			{
 				return Handle == other.Handle;
 			}
 			
-			bool BaseIComparer<int32_t>::operator!=(const BaseIComparer<int32_t>& other) const
+			bool BaseIComparer<System::Int32>::operator!=(const BaseIComparer<System::Int32>& other) const
 			{
 				return Handle != other.Handle;
 			}
 			
-			int32_t BaseIComparer<int32_t>::Compare(int32_t x, int32_t y)
+			System::Int32 BaseIComparer<System::Int32>::Compare(System::Int32 x, System::Int32 y)
 			{
 				return {};
 			}
@@ -11431,7 +9349,7 @@ namespace System
 				}
 				catch (...)
 				{
-					System::String msg = "Unhandled exception invoking System::Collections::Generic::IComparer<int32_t>";
+					System::String msg = "Unhandled exception invoking System::Collections::Generic::IComparer<System::Int32>";
 					System::Exception ex(msg);
 					Plugin::SetException(ex.Handle);
 					return {};
@@ -11451,9 +9369,9 @@ namespace System
 				: System::Collections::Generic::IComparer<System::String>(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemCollectionsGenericBaseIComparerSystemString(this);
-				int32_t* handle = &Handle;
+				System::Int32* handle = (System::Int32*)&Handle;
 				int32_t cppHandle = CppHandle;
-				Plugin::SystemCollectionsGenericBaseIComparerSystemStringConstructor(cppHandle, handle);
+				Plugin::SystemCollectionsGenericBaseIComparerSystemStringConstructor(cppHandle, &handle->Value);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -11505,7 +9423,7 @@ namespace System
 				other.CppHandle = 0;
 			}
 			
-			BaseIComparer<System::String>::BaseIComparer(Plugin::InternalUse iu, int32_t handle)
+			BaseIComparer<System::String>::BaseIComparer(Plugin::InternalUse, int32_t handle)
 				: System::Collections::Generic::IComparer<System::String>(nullptr)
 			{
 				Handle = handle;
@@ -11609,7 +9527,7 @@ namespace System
 				return Handle != other.Handle;
 			}
 			
-			int32_t BaseIComparer<System::String>::Compare(System::String& x, System::String& y)
+			System::Int32 BaseIComparer<System::String>::Compare(System::String& x, System::String& y)
 			{
 				return {};
 			}
@@ -11649,7 +9567,7 @@ namespace System
 	{
 	}
 	
-	StringComparer::StringComparer(Plugin::InternalUse iu, int32_t handle)
+	StringComparer::StringComparer(Plugin::InternalUse, int32_t handle)
 		: System::Collections::IComparer(nullptr)
 		, System::Collections::Generic::IComparer<System::String>(nullptr)
 		, System::Collections::IEqualityComparer(nullptr)
@@ -11738,9 +9656,9 @@ namespace System
 		, System::StringComparer(nullptr)
 	{
 		CppHandle = Plugin::StoreSystemBaseStringComparer(this);
-		int32_t* handle = &Handle;
+		System::Int32* handle = (System::Int32*)&Handle;
 		int32_t cppHandle = CppHandle;
-		Plugin::SystemBaseStringComparerConstructor(cppHandle, handle);
+		Plugin::SystemBaseStringComparerConstructor(cppHandle, &handle->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -11804,7 +9722,7 @@ namespace System
 		other.CppHandle = 0;
 	}
 	
-	BaseStringComparer::BaseStringComparer(Plugin::InternalUse iu, int32_t handle)
+	BaseStringComparer::BaseStringComparer(Plugin::InternalUse, int32_t handle)
 		: System::Collections::IComparer(nullptr)
 		, System::Collections::Generic::IComparer<System::String>(nullptr)
 		, System::Collections::IEqualityComparer(nullptr)
@@ -11912,7 +9830,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	int32_t BaseStringComparer::Compare(System::String& x, System::String& y)
+	System::Int32 BaseStringComparer::Compare(System::String& x, System::String& y)
 	{
 		return {};
 	}
@@ -11966,7 +9884,7 @@ namespace System
 		}
 	}
 	
-	int32_t BaseStringComparer::GetHashCode(System::String& obj)
+	System::Int32 BaseStringComparer::GetHashCode(System::String& obj)
 	{
 		return {};
 	}
@@ -12004,7 +9922,7 @@ namespace System
 		{
 		}
 		
-		Queue::Queue(Plugin::InternalUse iu, int32_t handle)
+		Queue::Queue(Plugin::InternalUse, int32_t handle)
 			: System::ICloneable(nullptr)
 			, System::Collections::IEnumerable(nullptr)
 			, System::Collections::ICollection(nullptr)
@@ -12081,7 +9999,7 @@ namespace System
 			return Handle != other.Handle;
 		}
 		
-		int32_t Queue::GetCount()
+		System::Int32 Queue::GetCount()
 		{
 			auto returnValue = Plugin::SystemCollectionsQueuePropertyGetCount(Handle);
 			if (Plugin::unhandledCsharpException)
@@ -12107,9 +10025,9 @@ namespace System
 			, System::Collections::Queue(nullptr)
 		{
 			CppHandle = Plugin::StoreSystemCollectionsBaseQueue(this);
-			int32_t* handle = &Handle;
+			System::Int32* handle = (System::Int32*)&Handle;
 			int32_t cppHandle = CppHandle;
-			Plugin::SystemCollectionsBaseQueueConstructor(cppHandle, handle);
+			Plugin::SystemCollectionsBaseQueueConstructor(cppHandle, &handle->Value);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -12170,7 +10088,7 @@ namespace System
 			other.CppHandle = 0;
 		}
 		
-		BaseQueue::BaseQueue(Plugin::InternalUse iu, int32_t handle)
+		BaseQueue::BaseQueue(Plugin::InternalUse, int32_t handle)
 			: System::ICloneable(nullptr)
 			, System::Collections::IEnumerable(nullptr)
 			, System::Collections::ICollection(nullptr)
@@ -12277,7 +10195,7 @@ namespace System
 			return Handle != other.Handle;
 		}
 		
-		int32_t BaseQueue::GetCount()
+		System::Int32 BaseQueue::GetCount()
 		{
 			return {};
 		}
@@ -12314,7 +10232,7 @@ namespace System
 			{
 			}
 			
-			IComponentChangeService::IComponentChangeService(Plugin::InternalUse iu, int32_t handle)
+			IComponentChangeService::IComponentChangeService(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -12401,9 +10319,9 @@ namespace System
 				: System::ComponentModel::Design::IComponentChangeService(nullptr)
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignBaseIComponentChangeService(this);
-				int32_t* handle = &Handle;
+				System::Int32* handle = (System::Int32*)&Handle;
 				int32_t cppHandle = CppHandle;
-				Plugin::SystemComponentModelDesignBaseIComponentChangeServiceConstructor(cppHandle, handle);
+				Plugin::SystemComponentModelDesignBaseIComponentChangeServiceConstructor(cppHandle, &handle->Value);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -12455,7 +10373,7 @@ namespace System
 				other.CppHandle = 0;
 			}
 			
-			BaseIComponentChangeService::BaseIComponentChangeService(Plugin::InternalUse iu, int32_t handle)
+			BaseIComponentChangeService::BaseIComponentChangeService(Plugin::InternalUse, int32_t handle)
 				: System::ComponentModel::Design::IComponentChangeService(nullptr)
 			{
 				Handle = handle;
@@ -12945,7 +10863,7 @@ namespace System
 		{
 		}
 		
-		FileStream::FileStream(Plugin::InternalUse iu, int32_t handle)
+		FileStream::FileStream(Plugin::InternalUse, int32_t handle)
 			: System::MarshalByRefObject(nullptr)
 			, System::IDisposable(nullptr)
 			, System::IO::Stream(nullptr)
@@ -13042,7 +10960,7 @@ namespace System
 			}
 		}
 		
-		void FileStream::WriteByte(uint8_t value)
+		void FileStream::WriteByte(System::Byte value)
 		{
 			Plugin::SystemIOFileStreamMethodWriteByteSystemByte(Handle, value);
 			if (Plugin::unhandledCsharpException)
@@ -13067,9 +10985,9 @@ namespace System
 			, System::IO::FileStream(nullptr)
 		{
 			CppHandle = Plugin::StoreSystemIOBaseFileStream(this);
-			int32_t* handle = &Handle;
+			System::Int32* handle = (System::Int32*)&Handle;
 			int32_t cppHandle = CppHandle;
-			Plugin::SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode(cppHandle, handle, path.Handle, mode);
+			Plugin::SystemIOBaseFileStreamConstructorSystemString_SystemIOFileMode(cppHandle, &handle->Value, path.Handle, mode);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -13130,7 +11048,7 @@ namespace System
 			other.CppHandle = 0;
 		}
 		
-		BaseFileStream::BaseFileStream(Plugin::InternalUse iu, int32_t handle)
+		BaseFileStream::BaseFileStream(Plugin::InternalUse, int32_t handle)
 			: System::MarshalByRefObject(nullptr)
 			, System::IDisposable(nullptr)
 			, System::IO::Stream(nullptr)
@@ -13237,7 +11155,7 @@ namespace System
 			return Handle != other.Handle;
 		}
 		
-		void BaseFileStream::WriteByte(uint8_t value)
+		void BaseFileStream::WriteByte(System::Byte value)
 		{
 		}
 		
@@ -13266,12 +11184,10 @@ namespace UnityEngine
 	namespace Playables
 	{
 		PlayableHandle::PlayableHandle(decltype(nullptr))
-			: System::ValueType(nullptr)
 		{
 		}
 		
-		PlayableHandle::PlayableHandle(Plugin::InternalUse iu, int32_t handle)
-			: System::ValueType(nullptr)
+		PlayableHandle::PlayableHandle(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			if (handle)
@@ -13344,28 +11260,47 @@ namespace UnityEngine
 		{
 			return Handle != other.Handle;
 		}
+		
+		PlayableHandle::operator System::ValueType()
+		{
+			int32_t handle = Plugin::BoxPlayableHandle(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::ValueType(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
+		
+		PlayableHandle::operator System::Object()
+		{
+			int32_t handle = Plugin::BoxPlayableHandle(Handle);
+			if (Plugin::unhandledCsharpException)
+			{
+				System::Exception* ex = Plugin::unhandledCsharpException;
+				Plugin::unhandledCsharpException = nullptr;
+				ex->ThrowReferenceToThis();
+				delete ex;
+			}
+			if (handle)
+			{
+				Plugin::ReferenceManagedClass(handle);
+				return System::Object(Plugin::InternalUse::Only, handle);
+			}
+			return nullptr;
+		}
 	}
 }
 
 namespace System
 {
-	Object::Object(UnityEngine::Playables::PlayableHandle& val)
-	{
-		int32_t handle = Plugin::BoxPlayableHandle(val.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
 	Object::operator UnityEngine::Playables::PlayableHandle()
 	{
 		UnityEngine::Playables::PlayableHandle returnVal(Plugin::InternalUse::Only, Plugin::UnboxPlayableHandle(Handle));
@@ -13386,13 +11321,11 @@ namespace UnityEngine
 	{
 		namespace UIElements
 		{
-			CallbackEventHandler::CallbackEventHandler(decltype(nullptr))
-				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
+			ITransform::ITransform(decltype(nullptr))
 			{
 			}
 			
-			CallbackEventHandler::CallbackEventHandler(Plugin::InternalUse iu, int32_t handle)
-				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
+			ITransform::ITransform(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				if (handle)
@@ -13401,18 +11334,18 @@ namespace UnityEngine
 				}
 			}
 			
-			CallbackEventHandler::CallbackEventHandler(const CallbackEventHandler& other)
-				: CallbackEventHandler(Plugin::InternalUse::Only, other.Handle)
+			ITransform::ITransform(const ITransform& other)
+				: ITransform(Plugin::InternalUse::Only, other.Handle)
 			{
 			}
 			
-			CallbackEventHandler::CallbackEventHandler(CallbackEventHandler&& other)
-				: CallbackEventHandler(Plugin::InternalUse::Only, other.Handle)
+			ITransform::ITransform(ITransform&& other)
+				: ITransform(Plugin::InternalUse::Only, other.Handle)
 			{
 				other.Handle = 0;
 			}
 			
-			CallbackEventHandler::~CallbackEventHandler()
+			ITransform::~ITransform()
 			{
 				if (Handle)
 				{
@@ -13421,7 +11354,7 @@ namespace UnityEngine
 				}
 			}
 			
-			CallbackEventHandler& CallbackEventHandler::operator=(const CallbackEventHandler& other)
+			ITransform& ITransform::operator=(const ITransform& other)
 			{
 				if (this->Handle)
 				{
@@ -13435,7 +11368,7 @@ namespace UnityEngine
 				return *this;
 			}
 			
-			CallbackEventHandler& CallbackEventHandler::operator=(decltype(nullptr))
+			ITransform& ITransform::operator=(decltype(nullptr))
 			{
 				if (Handle)
 				{
@@ -13445,7 +11378,7 @@ namespace UnityEngine
 				return *this;
 			}
 			
-			CallbackEventHandler& CallbackEventHandler::operator=(CallbackEventHandler&& other)
+			ITransform& ITransform::operator=(ITransform&& other)
 			{
 				if (Handle)
 				{
@@ -13456,14 +11389,394 @@ namespace UnityEngine
 				return *this;
 			}
 			
-			bool CallbackEventHandler::operator==(const CallbackEventHandler& other) const
+			bool ITransform::operator==(const ITransform& other) const
 			{
 				return Handle == other.Handle;
 			}
 			
-			bool CallbackEventHandler::operator!=(const CallbackEventHandler& other) const
+			bool ITransform::operator!=(const ITransform& other) const
 			{
 				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			IUIElementDataWatch::IUIElementDataWatch(decltype(nullptr))
+			{
+			}
+			
+			IUIElementDataWatch::IUIElementDataWatch(Plugin::InternalUse, int32_t handle)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IUIElementDataWatch::IUIElementDataWatch(const IUIElementDataWatch& other)
+				: IUIElementDataWatch(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IUIElementDataWatch::IUIElementDataWatch(IUIElementDataWatch&& other)
+				: IUIElementDataWatch(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IUIElementDataWatch::~IUIElementDataWatch()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IUIElementDataWatch& IUIElementDataWatch::operator=(const IUIElementDataWatch& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IUIElementDataWatch& IUIElementDataWatch::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IUIElementDataWatch& IUIElementDataWatch::operator=(IUIElementDataWatch&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IUIElementDataWatch::operator==(const IUIElementDataWatch& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IUIElementDataWatch::operator!=(const IUIElementDataWatch& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			IVisualElementScheduler::IVisualElementScheduler(decltype(nullptr))
+			{
+			}
+			
+			IVisualElementScheduler::IVisualElementScheduler(Plugin::InternalUse, int32_t handle)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IVisualElementScheduler::IVisualElementScheduler(const IVisualElementScheduler& other)
+				: IVisualElementScheduler(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IVisualElementScheduler::IVisualElementScheduler(IVisualElementScheduler&& other)
+				: IVisualElementScheduler(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IVisualElementScheduler::~IVisualElementScheduler()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IVisualElementScheduler& IVisualElementScheduler::operator=(const IVisualElementScheduler& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IVisualElementScheduler& IVisualElementScheduler::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IVisualElementScheduler& IVisualElementScheduler::operator=(IVisualElementScheduler&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IVisualElementScheduler::operator==(const IVisualElementScheduler& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IVisualElementScheduler::operator!=(const IVisualElementScheduler& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerator(Plugin::InternalUse, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerator(const IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerator(IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::~IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>& IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::operator=(const IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>& IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>& IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::operator=(IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::operator==(const IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::operator!=(const IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			UnityEngine::Experimental::UIElements::VisualElement IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineExperimentalUIElementsVisualElementPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return UnityEngine::Experimental::UIElements::VisualElement(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerable(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+			{
+			}
+			
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerable(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerable(const IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::IEnumerable(IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>&& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::~IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>& IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::operator=(const IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>& IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>& IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::operator=(IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::operator==(const IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::operator!=(const IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Collections::Generic::IEnumerator<UnityEngine::Experimental::UIElements::VisualElement> IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineExperimentalUIElementsVisualElementMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<UnityEngine::Experimental::UIElements::VisualElement>(Plugin::InternalUse::Only, returnValue);
 			}
 		}
 	}
@@ -13478,14 +11791,26 @@ namespace UnityEngine
 			VisualElement::VisualElement(decltype(nullptr))
 				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
 				, UnityEngine::Experimental::UIElements::CallbackEventHandler(nullptr)
+				, UnityEngine::Experimental::UIElements::Focusable(nullptr)
+				, System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>(nullptr)
 				, UnityEngine::Experimental::UIElements::IStyle(nullptr)
+				, UnityEngine::Experimental::UIElements::ITransform(nullptr)
+				, UnityEngine::Experimental::UIElements::IUIElementDataWatch(nullptr)
+				, UnityEngine::Experimental::UIElements::IVisualElementScheduler(nullptr)
 			{
 			}
 			
-			VisualElement::VisualElement(Plugin::InternalUse iu, int32_t handle)
+			VisualElement::VisualElement(Plugin::InternalUse, int32_t handle)
 				: UnityEngine::Experimental::UIElements::IEventHandler(nullptr)
 				, UnityEngine::Experimental::UIElements::CallbackEventHandler(nullptr)
+				, UnityEngine::Experimental::UIElements::Focusable(nullptr)
+				, System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::Experimental::UIElements::VisualElement>(nullptr)
 				, UnityEngine::Experimental::UIElements::IStyle(nullptr)
+				, UnityEngine::Experimental::UIElements::ITransform(nullptr)
+				, UnityEngine::Experimental::UIElements::IUIElementDataWatch(nullptr)
+				, UnityEngine::Experimental::UIElements::IVisualElementScheduler(nullptr)
 			{
 				Handle = handle;
 				if (handle)
@@ -13562,6 +11887,64 @@ namespace UnityEngine
 	}
 }
 
+namespace Plugin
+{
+	UnityEngineExperimentalUIElementsVisualElementIterator::UnityEngineExperimentalUIElementsVisualElementIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	UnityEngineExperimentalUIElementsVisualElementIterator::UnityEngineExperimentalUIElementsVisualElementIterator(UnityEngine::Experimental::UIElements::VisualElement& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	UnityEngineExperimentalUIElementsVisualElementIterator::~UnityEngineExperimentalUIElementsVisualElementIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	UnityEngineExperimentalUIElementsVisualElementIterator& UnityEngineExperimentalUIElementsVisualElementIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool UnityEngineExperimentalUIElementsVisualElementIterator::operator!=(const UnityEngineExperimentalUIElementsVisualElementIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::Experimental::UIElements::VisualElement UnityEngineExperimentalUIElementsVisualElementIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace UnityEngine
+{
+	namespace Experimental
+	{
+		namespace UIElements
+		{
+			Plugin::UnityEngineExperimentalUIElementsVisualElementIterator begin(UnityEngine::Experimental::UIElements::VisualElement& enumerable)
+			{
+				return Plugin::UnityEngineExperimentalUIElementsVisualElementIterator(enumerable);
+			}
+			
+			Plugin::UnityEngineExperimentalUIElementsVisualElementIterator end(UnityEngine::Experimental::UIElements::VisualElement& enumerable)
+			{
+				return Plugin::UnityEngineExperimentalUIElementsVisualElementIterator(nullptr);
+			}
+		}
+	}
+}
+
 namespace UnityEngine
 {
 	namespace Experimental
@@ -13597,25 +11980,152 @@ namespace UnityEngine
 	}
 }
 
-namespace System
+namespace UnityEngine
 {
-	Object::Object(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val)
+	namespace XR
 	{
-		int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(val);
-		if (Plugin::unhandledCsharpException)
+		namespace WSA
 		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			namespace Input
+			{
+				InteractionSourcePositionAccuracy::InteractionSourcePositionAccuracy(int32_t value)
+					: Value(value)
+				{
+				}
+				
+				UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy::operator int32_t() const
+				{
+					return Value;
+				}
+				
+				bool UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy::operator==(InteractionSourcePositionAccuracy other)
+				{
+					return Value == other.Value;
+				}
+				
+				bool UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy::operator!=(InteractionSourcePositionAccuracy other)
+				{
+					return Value != other.Value;
+				}
+				
+				InteractionSourcePositionAccuracy::operator System::Enum()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::Enum(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourcePositionAccuracy::operator System::ValueType()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::ValueType(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourcePositionAccuracy::operator System::Object()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::Object(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourcePositionAccuracy::operator System::IFormattable()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::IFormattable(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourcePositionAccuracy::operator System::IConvertible()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::IConvertible(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourcePositionAccuracy::operator System::IComparable()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePositionAccuracy(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::IComparable(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+			}
 		}
 	}
-	
+}
+const UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy::None(0);
+const UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy::Approximate(1);
+const UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy::High(2);
+
+namespace System
+{
 	Object::operator UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy()
 	{
 		UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy returnVal(Plugin::UnboxInteractionSourcePositionAccuracy(Handle));
@@ -13630,25 +12140,151 @@ namespace System
 	}
 }
 
-namespace System
+namespace UnityEngine
 {
-	Object::Object(UnityEngine::XR::WSA::Input::InteractionSourceNode val)
+	namespace XR
 	{
-		int32_t handle = Plugin::BoxInteractionSourceNode(val);
-		if (Plugin::unhandledCsharpException)
+		namespace WSA
 		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			namespace Input
+			{
+				InteractionSourceNode::InteractionSourceNode(int32_t value)
+					: Value(value)
+				{
+				}
+				
+				UnityEngine::XR::WSA::Input::InteractionSourceNode::operator int32_t() const
+				{
+					return Value;
+				}
+				
+				bool UnityEngine::XR::WSA::Input::InteractionSourceNode::operator==(InteractionSourceNode other)
+				{
+					return Value == other.Value;
+				}
+				
+				bool UnityEngine::XR::WSA::Input::InteractionSourceNode::operator!=(InteractionSourceNode other)
+				{
+					return Value != other.Value;
+				}
+				
+				InteractionSourceNode::operator System::Enum()
+				{
+					int32_t handle = Plugin::BoxInteractionSourceNode(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::Enum(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourceNode::operator System::ValueType()
+				{
+					int32_t handle = Plugin::BoxInteractionSourceNode(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::ValueType(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourceNode::operator System::Object()
+				{
+					int32_t handle = Plugin::BoxInteractionSourceNode(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::Object(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourceNode::operator System::IFormattable()
+				{
+					int32_t handle = Plugin::BoxInteractionSourceNode(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::IFormattable(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourceNode::operator System::IConvertible()
+				{
+					int32_t handle = Plugin::BoxInteractionSourceNode(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::IConvertible(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourceNode::operator System::IComparable()
+				{
+					int32_t handle = Plugin::BoxInteractionSourceNode(*this);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::IComparable(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+			}
 		}
 	}
-	
+}
+const UnityEngine::XR::WSA::Input::InteractionSourceNode UnityEngine::XR::WSA::Input::InteractionSourceNode::Grip(0);
+const UnityEngine::XR::WSA::Input::InteractionSourceNode UnityEngine::XR::WSA::Input::InteractionSourceNode::Pointer(1);
+
+namespace System
+{
 	Object::operator UnityEngine::XR::WSA::Input::InteractionSourceNode()
 	{
 		UnityEngine::XR::WSA::Input::InteractionSourceNode returnVal(Plugin::UnboxInteractionSourceNode(Handle));
@@ -13672,12 +12308,10 @@ namespace UnityEngine
 			namespace Input
 			{
 				InteractionSourcePose::InteractionSourcePose(decltype(nullptr))
-					: System::ValueType(nullptr)
 				{
 				}
 				
-				InteractionSourcePose::InteractionSourcePose(Plugin::InternalUse iu, int32_t handle)
-					: System::ValueType(nullptr)
+				InteractionSourcePose::InteractionSourcePose(Plugin::InternalUse, int32_t handle)
 				{
 					Handle = handle;
 					if (handle)
@@ -13763,6 +12397,42 @@ namespace UnityEngine
 					}
 					return returnValue;
 				}
+	
+				InteractionSourcePose::operator System::ValueType()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePose(Handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::ValueType(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
+				
+				InteractionSourcePose::operator System::Object()
+				{
+					int32_t handle = Plugin::BoxInteractionSourcePose(Handle);
+					if (Plugin::unhandledCsharpException)
+					{
+						System::Exception* ex = Plugin::unhandledCsharpException;
+						Plugin::unhandledCsharpException = nullptr;
+						ex->ThrowReferenceToThis();
+						delete ex;
+					}
+					if (handle)
+					{
+						Plugin::ReferenceManagedClass(handle);
+						return System::Object(Plugin::InternalUse::Only, handle);
+					}
+					return nullptr;
+				}
 			}
 		}
 	}
@@ -13770,23 +12440,6 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::Object(UnityEngine::XR::WSA::Input::InteractionSourcePose& val)
-	{
-		int32_t handle = Plugin::BoxInteractionSourcePose(val.Handle);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
 	Object::operator UnityEngine::XR::WSA::Input::InteractionSourcePose()
 	{
 		UnityEngine::XR::WSA::Input::InteractionSourcePose returnVal(Plugin::InternalUse::Only, Plugin::UnboxInteractionSourcePose(Handle));
@@ -13803,23 +12456,3816 @@ namespace System
 
 namespace System
 {
-	Object::Object(System::Boolean val)
+	namespace Collections
 	{
-		int32_t handle = Plugin::BoxBoolean(val);
-		if (Plugin::unhandledCsharpException)
+		namespace Generic
 		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
+			IEnumerator<System::String>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<System::String>::IEnumerator(Plugin::InternalUse, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<System::String>::IEnumerator(const IEnumerator<System::String>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<System::String>::IEnumerator(IEnumerator<System::String>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<System::String>::~IEnumerator<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<System::String>& IEnumerator<System::String>::operator=(const IEnumerator<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::String>& IEnumerator<System::String>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::String>& IEnumerator<System::String>::operator=(IEnumerator<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<System::String>::operator==(const IEnumerator<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<System::String>::operator!=(const IEnumerator<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::String IEnumerator<System::String>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::String(Plugin::InternalUse::Only, returnValue);
+			}
 		}
-		if (handle)
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
 		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
+			IEnumerator<System::Int32>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<System::Int32>::IEnumerator(Plugin::InternalUse, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<System::Int32>::IEnumerator(const IEnumerator<System::Int32>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<System::Int32>::IEnumerator(IEnumerator<System::Int32>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<System::Int32>::~IEnumerator<System::Int32>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<System::Int32>& IEnumerator<System::Int32>::operator=(const IEnumerator<System::Int32>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::Int32>& IEnumerator<System::Int32>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::Int32>& IEnumerator<System::Int32>::operator=(IEnumerator<System::Int32>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<System::Int32>::operator==(const IEnumerator<System::Int32>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<System::Int32>::operator!=(const IEnumerator<System::Int32>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Int32 IEnumerator<System::Int32>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<System::Single>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<System::Single>::IEnumerator(Plugin::InternalUse, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<System::Single>::IEnumerator(const IEnumerator<System::Single>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<System::Single>::IEnumerator(IEnumerator<System::Single>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<System::Single>::~IEnumerator<System::Single>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<System::Single>& IEnumerator<System::Single>::operator=(const IEnumerator<System::Single>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::Single>& IEnumerator<System::Single>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<System::Single>& IEnumerator<System::Single>::operator=(IEnumerator<System::Single>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<System::Single>::operator==(const IEnumerator<System::Single>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<System::Single>::operator!=(const IEnumerator<System::Single>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Single IEnumerator<System::Single>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(Plugin::InternalUse, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(const IEnumerator<UnityEngine::RaycastHit>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::IEnumerator(IEnumerator<UnityEngine::RaycastHit>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>::~IEnumerator<UnityEngine::RaycastHit>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(const IEnumerator<UnityEngine::RaycastHit>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::RaycastHit>& IEnumerator<UnityEngine::RaycastHit>::operator=(IEnumerator<UnityEngine::RaycastHit>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<UnityEngine::RaycastHit>::operator==(const IEnumerator<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<UnityEngine::RaycastHit>::operator!=(const IEnumerator<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			UnityEngine::RaycastHit IEnumerator<UnityEngine::RaycastHit>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return UnityEngine::RaycastHit(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(Plugin::InternalUse, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(const IEnumerator<UnityEngine::GradientColorKey>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::IEnumerator(IEnumerator<UnityEngine::GradientColorKey>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>::~IEnumerator<UnityEngine::GradientColorKey>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(const IEnumerator<UnityEngine::GradientColorKey>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::GradientColorKey>& IEnumerator<UnityEngine::GradientColorKey>::operator=(IEnumerator<UnityEngine::GradientColorKey>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<UnityEngine::GradientColorKey>::operator==(const IEnumerator<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<UnityEngine::GradientColorKey>::operator!=(const IEnumerator<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			UnityEngine::GradientColorKey IEnumerator<UnityEngine::GradientColorKey>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(decltype(nullptr))
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(Plugin::InternalUse, int32_t handle)
+				: System::IDisposable(nullptr)
+				, System::Collections::IEnumerator(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(const IEnumerator<UnityEngine::Resolution>& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::IEnumerator(IEnumerator<UnityEngine::Resolution>&& other)
+				: IEnumerator(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerator<UnityEngine::Resolution>::~IEnumerator<UnityEngine::Resolution>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(const IEnumerator<UnityEngine::Resolution>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerator<UnityEngine::Resolution>& IEnumerator<UnityEngine::Resolution>::operator=(IEnumerator<UnityEngine::Resolution>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerator<UnityEngine::Resolution>::operator==(const IEnumerator<UnityEngine::Resolution>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerator<UnityEngine::Resolution>::operator!=(const IEnumerator<UnityEngine::Resolution>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			UnityEngine::Resolution IEnumerator<UnityEngine::Resolution>::GetCurrent()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return UnityEngine::Resolution(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<System::String>::IEnumerable(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+			{
+			}
+			
+			IEnumerable<System::String>::IEnumerable(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerable<System::String>::IEnumerable(const IEnumerable<System::String>& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerable<System::String>::IEnumerable(IEnumerable<System::String>&& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerable<System::String>::~IEnumerable<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerable<System::String>& IEnumerable<System::String>::operator=(const IEnumerable<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerable<System::String>& IEnumerable<System::String>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerable<System::String>& IEnumerable<System::String>::operator=(IEnumerable<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerable<System::String>::operator==(const IEnumerable<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerable<System::String>::operator!=(const IEnumerable<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Collections::Generic::IEnumerator<System::String> IEnumerable<System::String>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<System::String>(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<System::Int32>::IEnumerable(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+			{
+			}
+			
+			IEnumerable<System::Int32>::IEnumerable(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerable<System::Int32>::IEnumerable(const IEnumerable<System::Int32>& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerable<System::Int32>::IEnumerable(IEnumerable<System::Int32>&& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerable<System::Int32>::~IEnumerable<System::Int32>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerable<System::Int32>& IEnumerable<System::Int32>::operator=(const IEnumerable<System::Int32>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerable<System::Int32>& IEnumerable<System::Int32>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerable<System::Int32>& IEnumerable<System::Int32>::operator=(IEnumerable<System::Int32>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerable<System::Int32>::operator==(const IEnumerable<System::Int32>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerable<System::Int32>::operator!=(const IEnumerable<System::Int32>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Collections::Generic::IEnumerator<System::Int32> IEnumerable<System::Int32>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<System::Int32>(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<System::Single>::IEnumerable(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+			{
+			}
+			
+			IEnumerable<System::Single>::IEnumerable(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerable<System::Single>::IEnumerable(const IEnumerable<System::Single>& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerable<System::Single>::IEnumerable(IEnumerable<System::Single>&& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerable<System::Single>::~IEnumerable<System::Single>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerable<System::Single>& IEnumerable<System::Single>::operator=(const IEnumerable<System::Single>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerable<System::Single>& IEnumerable<System::Single>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerable<System::Single>& IEnumerable<System::Single>::operator=(IEnumerable<System::Single>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerable<System::Single>::operator==(const IEnumerable<System::Single>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerable<System::Single>::operator!=(const IEnumerable<System::Single>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Collections::Generic::IEnumerator<System::Single> IEnumerable<System::Single>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<System::Single>(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+			{
+			}
+			
+			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(const IEnumerable<UnityEngine::RaycastHit>& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerable<UnityEngine::RaycastHit>::IEnumerable(IEnumerable<UnityEngine::RaycastHit>&& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerable<UnityEngine::RaycastHit>::~IEnumerable<UnityEngine::RaycastHit>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(const IEnumerable<UnityEngine::RaycastHit>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::RaycastHit>& IEnumerable<UnityEngine::RaycastHit>::operator=(IEnumerable<UnityEngine::RaycastHit>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerable<UnityEngine::RaycastHit>::operator==(const IEnumerable<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerable<UnityEngine::RaycastHit>::operator!=(const IEnumerable<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Collections::Generic::IEnumerator<UnityEngine::RaycastHit> IEnumerable<UnityEngine::RaycastHit>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<UnityEngine::RaycastHit>(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+			{
+			}
+			
+			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(const IEnumerable<UnityEngine::GradientColorKey>& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerable<UnityEngine::GradientColorKey>::IEnumerable(IEnumerable<UnityEngine::GradientColorKey>&& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerable<UnityEngine::GradientColorKey>::~IEnumerable<UnityEngine::GradientColorKey>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(const IEnumerable<UnityEngine::GradientColorKey>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::GradientColorKey>& IEnumerable<UnityEngine::GradientColorKey>::operator=(IEnumerable<UnityEngine::GradientColorKey>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerable<UnityEngine::GradientColorKey>::operator==(const IEnumerable<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerable<UnityEngine::GradientColorKey>::operator!=(const IEnumerable<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Collections::Generic::IEnumerator<UnityEngine::GradientColorKey> IEnumerable<UnityEngine::GradientColorKey>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<UnityEngine::GradientColorKey>(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IEnumerable<UnityEngine::Resolution>::IEnumerable(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+			{
+			}
+			
+			IEnumerable<UnityEngine::Resolution>::IEnumerable(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IEnumerable<UnityEngine::Resolution>::IEnumerable(const IEnumerable<UnityEngine::Resolution>& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IEnumerable<UnityEngine::Resolution>::IEnumerable(IEnumerable<UnityEngine::Resolution>&& other)
+				: IEnumerable(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IEnumerable<UnityEngine::Resolution>::~IEnumerable<UnityEngine::Resolution>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(const IEnumerable<UnityEngine::Resolution>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IEnumerable<UnityEngine::Resolution>& IEnumerable<UnityEngine::Resolution>::operator=(IEnumerable<UnityEngine::Resolution>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IEnumerable<UnityEngine::Resolution>::operator==(const IEnumerable<UnityEngine::Resolution>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IEnumerable<UnityEngine::Resolution>::operator!=(const IEnumerable<UnityEngine::Resolution>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			System::Collections::Generic::IEnumerator<UnityEngine::Resolution> IEnumerable<UnityEngine::Resolution>::GetEnumerator()
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator(Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::Collections::Generic::IEnumerator<UnityEngine::Resolution>(Plugin::InternalUse::Only, returnValue);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<System::String>::ICollection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
+			{
+			}
+			
+			ICollection<System::String>::ICollection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ICollection<System::String>::ICollection(const ICollection<System::String>& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ICollection<System::String>::ICollection(ICollection<System::String>&& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ICollection<System::String>::~ICollection<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ICollection<System::String>& ICollection<System::String>::operator=(const ICollection<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ICollection<System::String>& ICollection<System::String>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ICollection<System::String>& ICollection<System::String>::operator=(ICollection<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ICollection<System::String>::operator==(const ICollection<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ICollection<System::String>::operator!=(const ICollection<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionSystemStringIterator::SystemCollectionsGenericICollectionSystemStringIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionSystemStringIterator::SystemCollectionsGenericICollectionSystemStringIterator(System::Collections::Generic::ICollection<System::String>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionSystemStringIterator::~SystemCollectionsGenericICollectionSystemStringIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
 		}
 	}
 	
+	SystemCollectionsGenericICollectionSystemStringIterator& SystemCollectionsGenericICollectionSystemStringIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionSystemStringIterator::operator!=(const SystemCollectionsGenericICollectionSystemStringIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::String SystemCollectionsGenericICollectionSystemStringIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericICollectionSystemStringIterator begin(System::Collections::Generic::ICollection<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemStringIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionSystemStringIterator end(System::Collections::Generic::ICollection<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemStringIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<System::Int32>::ICollection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+			{
+			}
+			
+			ICollection<System::Int32>::ICollection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ICollection<System::Int32>::ICollection(const ICollection<System::Int32>& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ICollection<System::Int32>::ICollection(ICollection<System::Int32>&& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ICollection<System::Int32>::~ICollection<System::Int32>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ICollection<System::Int32>& ICollection<System::Int32>::operator=(const ICollection<System::Int32>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ICollection<System::Int32>& ICollection<System::Int32>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ICollection<System::Int32>& ICollection<System::Int32>::operator=(ICollection<System::Int32>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ICollection<System::Int32>::operator==(const ICollection<System::Int32>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ICollection<System::Int32>::operator!=(const ICollection<System::Int32>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionSystemInt32Iterator::SystemCollectionsGenericICollectionSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionSystemInt32Iterator::SystemCollectionsGenericICollectionSystemInt32Iterator(System::Collections::Generic::ICollection<System::Int32>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionSystemInt32Iterator::~SystemCollectionsGenericICollectionSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionSystemInt32Iterator& SystemCollectionsGenericICollectionSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionSystemInt32Iterator::operator!=(const SystemCollectionsGenericICollectionSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Int32 SystemCollectionsGenericICollectionSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator begin(System::Collections::Generic::ICollection<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator end(System::Collections::Generic::ICollection<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<System::Single>::ICollection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Single>(nullptr)
+			{
+			}
+			
+			ICollection<System::Single>::ICollection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Single>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ICollection<System::Single>::ICollection(const ICollection<System::Single>& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ICollection<System::Single>::ICollection(ICollection<System::Single>&& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ICollection<System::Single>::~ICollection<System::Single>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ICollection<System::Single>& ICollection<System::Single>::operator=(const ICollection<System::Single>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ICollection<System::Single>& ICollection<System::Single>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ICollection<System::Single>& ICollection<System::Single>::operator=(ICollection<System::Single>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ICollection<System::Single>::operator==(const ICollection<System::Single>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ICollection<System::Single>::operator!=(const ICollection<System::Single>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionSystemSingleIterator::SystemCollectionsGenericICollectionSystemSingleIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionSystemSingleIterator::SystemCollectionsGenericICollectionSystemSingleIterator(System::Collections::Generic::ICollection<System::Single>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionSystemSingleIterator::~SystemCollectionsGenericICollectionSystemSingleIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionSystemSingleIterator& SystemCollectionsGenericICollectionSystemSingleIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionSystemSingleIterator::operator!=(const SystemCollectionsGenericICollectionSystemSingleIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Single SystemCollectionsGenericICollectionSystemSingleIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericICollectionSystemSingleIterator begin(System::Collections::Generic::ICollection<System::Single>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemSingleIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionSystemSingleIterator end(System::Collections::Generic::ICollection<System::Single>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionSystemSingleIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<UnityEngine::RaycastHit>::ICollection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
+			{
+			}
+			
+			ICollection<UnityEngine::RaycastHit>::ICollection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ICollection<UnityEngine::RaycastHit>::ICollection(const ICollection<UnityEngine::RaycastHit>& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ICollection<UnityEngine::RaycastHit>::ICollection(ICollection<UnityEngine::RaycastHit>&& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ICollection<UnityEngine::RaycastHit>::~ICollection<UnityEngine::RaycastHit>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(const ICollection<UnityEngine::RaycastHit>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ICollection<UnityEngine::RaycastHit>& ICollection<UnityEngine::RaycastHit>::operator=(ICollection<UnityEngine::RaycastHit>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ICollection<UnityEngine::RaycastHit>::operator==(const ICollection<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ICollection<UnityEngine::RaycastHit>::operator!=(const ICollection<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::~SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator& SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::RaycastHit SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator begin(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator end(System::Collections::Generic::ICollection<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineRaycastHitIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<UnityEngine::GradientColorKey>::ICollection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
+			{
+			}
+			
+			ICollection<UnityEngine::GradientColorKey>::ICollection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ICollection<UnityEngine::GradientColorKey>::ICollection(const ICollection<UnityEngine::GradientColorKey>& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ICollection<UnityEngine::GradientColorKey>::ICollection(ICollection<UnityEngine::GradientColorKey>&& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ICollection<UnityEngine::GradientColorKey>::~ICollection<UnityEngine::GradientColorKey>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(const ICollection<UnityEngine::GradientColorKey>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ICollection<UnityEngine::GradientColorKey>& ICollection<UnityEngine::GradientColorKey>::operator=(ICollection<UnityEngine::GradientColorKey>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ICollection<UnityEngine::GradientColorKey>::operator==(const ICollection<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ICollection<UnityEngine::GradientColorKey>::operator!=(const ICollection<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::~SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator& SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::GradientColorKey SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator begin(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator end(System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineGradientColorKeyIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			ICollection<UnityEngine::Resolution>::ICollection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
+			{
+			}
+			
+			ICollection<UnityEngine::Resolution>::ICollection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			ICollection<UnityEngine::Resolution>::ICollection(const ICollection<UnityEngine::Resolution>& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			ICollection<UnityEngine::Resolution>::ICollection(ICollection<UnityEngine::Resolution>&& other)
+				: ICollection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			ICollection<UnityEngine::Resolution>::~ICollection<UnityEngine::Resolution>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(const ICollection<UnityEngine::Resolution>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			ICollection<UnityEngine::Resolution>& ICollection<UnityEngine::Resolution>::operator=(ICollection<UnityEngine::Resolution>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool ICollection<UnityEngine::Resolution>::operator==(const ICollection<UnityEngine::Resolution>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool ICollection<UnityEngine::Resolution>::operator!=(const ICollection<UnityEngine::Resolution>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator::~SystemCollectionsGenericICollectionUnityEngineResolutionIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericICollectionUnityEngineResolutionIterator& SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator!=(const SystemCollectionsGenericICollectionUnityEngineResolutionIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::Resolution SystemCollectionsGenericICollectionUnityEngineResolutionIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator begin(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator end(System::Collections::Generic::ICollection<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericICollectionUnityEngineResolutionIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<System::String>::IList(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
+				, System::Collections::Generic::ICollection<System::String>(nullptr)
+			{
+			}
+			
+			IList<System::String>::IList(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
+				, System::Collections::Generic::ICollection<System::String>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IList<System::String>::IList(const IList<System::String>& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IList<System::String>::IList(IList<System::String>&& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IList<System::String>::~IList<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IList<System::String>& IList<System::String>::operator=(const IList<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IList<System::String>& IList<System::String>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IList<System::String>& IList<System::String>::operator=(IList<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IList<System::String>::operator==(const IList<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IList<System::String>::operator!=(const IList<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericIListSystemStringIterator::SystemCollectionsGenericIListSystemStringIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListSystemStringIterator::SystemCollectionsGenericIListSystemStringIterator(System::Collections::Generic::IList<System::String>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListSystemStringIterator::~SystemCollectionsGenericIListSystemStringIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListSystemStringIterator& SystemCollectionsGenericIListSystemStringIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListSystemStringIterator::operator!=(const SystemCollectionsGenericIListSystemStringIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::String SystemCollectionsGenericIListSystemStringIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericIListSystemStringIterator begin(System::Collections::Generic::IList<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemStringIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListSystemStringIterator end(System::Collections::Generic::IList<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemStringIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<System::Int32>::IList(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+			{
+			}
+			
+			IList<System::Int32>::IList(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IList<System::Int32>::IList(const IList<System::Int32>& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IList<System::Int32>::IList(IList<System::Int32>&& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IList<System::Int32>::~IList<System::Int32>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IList<System::Int32>& IList<System::Int32>::operator=(const IList<System::Int32>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IList<System::Int32>& IList<System::Int32>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IList<System::Int32>& IList<System::Int32>::operator=(IList<System::Int32>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IList<System::Int32>::operator==(const IList<System::Int32>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IList<System::Int32>::operator!=(const IList<System::Int32>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericIListSystemInt32Iterator::SystemCollectionsGenericIListSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListSystemInt32Iterator::SystemCollectionsGenericIListSystemInt32Iterator(System::Collections::Generic::IList<System::Int32>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListSystemInt32Iterator::~SystemCollectionsGenericIListSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListSystemInt32Iterator& SystemCollectionsGenericIListSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListSystemInt32Iterator::operator!=(const SystemCollectionsGenericIListSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Int32 SystemCollectionsGenericIListSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericIListSystemInt32Iterator begin(System::Collections::Generic::IList<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListSystemInt32Iterator end(System::Collections::Generic::IList<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<System::Single>::IList(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Single>(nullptr)
+				, System::Collections::Generic::ICollection<System::Single>(nullptr)
+			{
+			}
+			
+			IList<System::Single>::IList(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Single>(nullptr)
+				, System::Collections::Generic::ICollection<System::Single>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IList<System::Single>::IList(const IList<System::Single>& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IList<System::Single>::IList(IList<System::Single>&& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IList<System::Single>::~IList<System::Single>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IList<System::Single>& IList<System::Single>::operator=(const IList<System::Single>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IList<System::Single>& IList<System::Single>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IList<System::Single>& IList<System::Single>::operator=(IList<System::Single>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IList<System::Single>::operator==(const IList<System::Single>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IList<System::Single>::operator!=(const IList<System::Single>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericIListSystemSingleIterator::SystemCollectionsGenericIListSystemSingleIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListSystemSingleIterator::SystemCollectionsGenericIListSystemSingleIterator(System::Collections::Generic::IList<System::Single>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListSystemSingleIterator::~SystemCollectionsGenericIListSystemSingleIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListSystemSingleIterator& SystemCollectionsGenericIListSystemSingleIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListSystemSingleIterator::operator!=(const SystemCollectionsGenericIListSystemSingleIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Single SystemCollectionsGenericIListSystemSingleIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericIListSystemSingleIterator begin(System::Collections::Generic::IList<System::Single>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemSingleIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListSystemSingleIterator end(System::Collections::Generic::IList<System::Single>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListSystemSingleIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<UnityEngine::RaycastHit>::IList(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
+				, System::Collections::Generic::ICollection<UnityEngine::RaycastHit>(nullptr)
+			{
+			}
+			
+			IList<UnityEngine::RaycastHit>::IList(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::RaycastHit>(nullptr)
+				, System::Collections::Generic::ICollection<UnityEngine::RaycastHit>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IList<UnityEngine::RaycastHit>::IList(const IList<UnityEngine::RaycastHit>& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IList<UnityEngine::RaycastHit>::IList(IList<UnityEngine::RaycastHit>&& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IList<UnityEngine::RaycastHit>::~IList<UnityEngine::RaycastHit>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(const IList<UnityEngine::RaycastHit>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IList<UnityEngine::RaycastHit>& IList<UnityEngine::RaycastHit>::operator=(IList<UnityEngine::RaycastHit>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IList<UnityEngine::RaycastHit>::operator==(const IList<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IList<UnityEngine::RaycastHit>::operator!=(const IList<UnityEngine::RaycastHit>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator::~SystemCollectionsGenericIListUnityEngineRaycastHitIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListUnityEngineRaycastHitIterator& SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator!=(const SystemCollectionsGenericIListUnityEngineRaycastHitIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::RaycastHit SystemCollectionsGenericIListUnityEngineRaycastHitIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator begin(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator end(System::Collections::Generic::IList<UnityEngine::RaycastHit>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineRaycastHitIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<UnityEngine::GradientColorKey>::IList(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
+				, System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>(nullptr)
+			{
+			}
+			
+			IList<UnityEngine::GradientColorKey>::IList(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::GradientColorKey>(nullptr)
+				, System::Collections::Generic::ICollection<UnityEngine::GradientColorKey>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IList<UnityEngine::GradientColorKey>::IList(const IList<UnityEngine::GradientColorKey>& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IList<UnityEngine::GradientColorKey>::IList(IList<UnityEngine::GradientColorKey>&& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IList<UnityEngine::GradientColorKey>::~IList<UnityEngine::GradientColorKey>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(const IList<UnityEngine::GradientColorKey>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IList<UnityEngine::GradientColorKey>& IList<UnityEngine::GradientColorKey>::operator=(IList<UnityEngine::GradientColorKey>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IList<UnityEngine::GradientColorKey>::operator==(const IList<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IList<UnityEngine::GradientColorKey>::operator!=(const IList<UnityEngine::GradientColorKey>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::~SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator& SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator!=(const SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::GradientColorKey SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator begin(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator end(System::Collections::Generic::IList<UnityEngine::GradientColorKey>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineGradientColorKeyIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			IList<UnityEngine::Resolution>::IList(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
+				, System::Collections::Generic::ICollection<UnityEngine::Resolution>(nullptr)
+			{
+			}
+			
+			IList<UnityEngine::Resolution>::IList(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::Generic::IEnumerable<UnityEngine::Resolution>(nullptr)
+				, System::Collections::Generic::ICollection<UnityEngine::Resolution>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			IList<UnityEngine::Resolution>::IList(const IList<UnityEngine::Resolution>& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			IList<UnityEngine::Resolution>::IList(IList<UnityEngine::Resolution>&& other)
+				: IList(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			IList<UnityEngine::Resolution>::~IList<UnityEngine::Resolution>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(const IList<UnityEngine::Resolution>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			IList<UnityEngine::Resolution>& IList<UnityEngine::Resolution>::operator=(IList<UnityEngine::Resolution>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool IList<UnityEngine::Resolution>::operator==(const IList<UnityEngine::Resolution>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool IList<UnityEngine::Resolution>::operator!=(const IList<UnityEngine::Resolution>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericIListUnityEngineResolutionIterator::SystemCollectionsGenericIListUnityEngineResolutionIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericIListUnityEngineResolutionIterator::SystemCollectionsGenericIListUnityEngineResolutionIterator(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericIListUnityEngineResolutionIterator::~SystemCollectionsGenericIListUnityEngineResolutionIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericIListUnityEngineResolutionIterator& SystemCollectionsGenericIListUnityEngineResolutionIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericIListUnityEngineResolutionIterator::operator!=(const SystemCollectionsGenericIListUnityEngineResolutionIterator& other)
+	{
+		return hasMore;
+	}
+	
+	UnityEngine::Resolution SystemCollectionsGenericIListUnityEngineResolutionIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator begin(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator end(System::Collections::Generic::IList<UnityEngine::Resolution>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericIListUnityEngineResolutionIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			List<System::String>::List(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
+				, System::Collections::Generic::ICollection<System::String>(nullptr)
+				, System::Collections::Generic::IList<System::String>(nullptr)
+			{
+			}
+			
+			List<System::String>::List(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
+				, System::Collections::Generic::ICollection<System::String>(nullptr)
+				, System::Collections::Generic::IList<System::String>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			List<System::String>::List(const List<System::String>& other)
+				: List(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			List<System::String>::List(List<System::String>&& other)
+				: List(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			List<System::String>::~List<System::String>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			List<System::String>& List<System::String>::operator=(const List<System::String>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			List<System::String>& List<System::String>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			List<System::String>& List<System::String>::operator=(List<System::String>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool List<System::String>::operator==(const List<System::String>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool List<System::String>::operator!=(const List<System::String>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			List<System::String>::List()
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::String>(nullptr)
+				, System::Collections::Generic::ICollection<System::String>(nullptr)
+				, System::Collections::Generic::IList<System::String>(nullptr)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringConstructor();
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				Handle = returnValue;
+				if (returnValue)
+				{
+					Plugin::ReferenceManagedClass(returnValue);
+				}
+			}
+			
+			System::String List<System::String>::GetItem(System::Int32 index)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericListSystemStringPropertyGetItem(Handle, index);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return System::String(Plugin::InternalUse::Only, returnValue);
+			}
+			
+			void List<System::String>::SetItem(System::Int32 index, System::String& value)
+			{
+				Plugin::SystemCollectionsGenericListSystemStringPropertySetItem(Handle, index, value.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void List<System::String>::Add(System::String& item)
+			{
+				Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString(Handle, item.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+	
+			void List<System::String>::Sort(System::Collections::Generic::IComparer<System::String>& comparer)
+			{
+				Plugin::SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericListSystemStringIterator::SystemCollectionsGenericListSystemStringIterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericListSystemStringIterator::SystemCollectionsGenericListSystemStringIterator(System::Collections::Generic::List<System::String>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericListSystemStringIterator::~SystemCollectionsGenericListSystemStringIterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericListSystemStringIterator& SystemCollectionsGenericListSystemStringIterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericListSystemStringIterator::operator!=(const SystemCollectionsGenericListSystemStringIterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::String SystemCollectionsGenericListSystemStringIterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericListSystemStringIterator begin(System::Collections::Generic::List<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemStringIterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericListSystemStringIterator end(System::Collections::Generic::List<System::String>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemStringIterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			List<System::Int32>::List(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+				, System::Collections::Generic::IList<System::Int32>(nullptr)
+			{
+			}
+			
+			List<System::Int32>::List(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+				, System::Collections::Generic::IList<System::Int32>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			List<System::Int32>::List(const List<System::Int32>& other)
+				: List(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			List<System::Int32>::List(List<System::Int32>&& other)
+				: List(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			List<System::Int32>::~List<System::Int32>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			List<System::Int32>& List<System::Int32>::operator=(const List<System::Int32>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			List<System::Int32>& List<System::Int32>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			List<System::Int32>& List<System::Int32>::operator=(List<System::Int32>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool List<System::Int32>::operator==(const List<System::Int32>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool List<System::Int32>::operator!=(const List<System::Int32>& other) const
+			{
+				return Handle != other.Handle;
+			}
+			
+			List<System::Int32>::List()
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+				, System::Collections::Generic::IList<System::Int32>(nullptr)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericListSystemInt32Constructor();
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				Handle = returnValue;
+				if (returnValue)
+				{
+					Plugin::ReferenceManagedClass(returnValue);
+				}
+			}
+			
+			System::Int32 List<System::Int32>::GetItem(System::Int32 index)
+			{
+				auto returnValue = Plugin::SystemCollectionsGenericListSystemInt32PropertyGetItem(Handle, index);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+				return returnValue;
+			}
+			
+			void List<System::Int32>::SetItem(System::Int32 index, System::Int32 value)
+			{
+				Plugin::SystemCollectionsGenericListSystemInt32PropertySetItem(Handle, index, value);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+			
+			void List<System::Int32>::Add(System::Int32 item)
+			{
+				Plugin::SystemCollectionsGenericListSystemInt32MethodAddSystemInt32(Handle, item);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+	
+			void List<System::Int32>::Sort(System::Collections::Generic::IComparer<System::Int32>& comparer)
+			{
+				Plugin::SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer(Handle, comparer.Handle);
+				if (Plugin::unhandledCsharpException)
+				{
+					System::Exception* ex = Plugin::unhandledCsharpException;
+					Plugin::unhandledCsharpException = nullptr;
+					ex->ThrowReferenceToThis();
+					delete ex;
+				}
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsGenericListSystemInt32Iterator::SystemCollectionsGenericListSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsGenericListSystemInt32Iterator::SystemCollectionsGenericListSystemInt32Iterator(System::Collections::Generic::List<System::Int32>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsGenericListSystemInt32Iterator::~SystemCollectionsGenericListSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsGenericListSystemInt32Iterator& SystemCollectionsGenericListSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsGenericListSystemInt32Iterator::operator!=(const SystemCollectionsGenericListSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Int32 SystemCollectionsGenericListSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace Generic
+		{
+			Plugin::SystemCollectionsGenericListSystemInt32Iterator begin(System::Collections::Generic::List<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsGenericListSystemInt32Iterator end(System::Collections::Generic::List<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsGenericListSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			Collection<System::Int32>::Collection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+				, System::Collections::Generic::IList<System::Int32>(nullptr)
+			{
+			}
+			
+			Collection<System::Int32>::Collection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+				, System::Collections::Generic::IList<System::Int32>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			Collection<System::Int32>::Collection(const Collection<System::Int32>& other)
+				: Collection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			Collection<System::Int32>::Collection(Collection<System::Int32>&& other)
+				: Collection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			Collection<System::Int32>::~Collection<System::Int32>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			Collection<System::Int32>& Collection<System::Int32>::operator=(const Collection<System::Int32>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			Collection<System::Int32>& Collection<System::Int32>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			Collection<System::Int32>& Collection<System::Int32>::operator=(Collection<System::Int32>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool Collection<System::Int32>::operator==(const Collection<System::Int32>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool Collection<System::Int32>::operator!=(const Collection<System::Int32>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator::SystemCollectionsObjectModelCollectionSystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator::SystemCollectionsObjectModelCollectionSystemInt32Iterator(System::Collections::ObjectModel::Collection<System::Int32>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator::~SystemCollectionsObjectModelCollectionSystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsObjectModelCollectionSystemInt32Iterator& SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator!=(const SystemCollectionsObjectModelCollectionSystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Int32 SystemCollectionsObjectModelCollectionSystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator begin(System::Collections::ObjectModel::Collection<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator end(System::Collections::ObjectModel::Collection<System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelCollectionSystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			KeyedCollection<System::String, System::Int32>::KeyedCollection(decltype(nullptr))
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+				, System::Collections::Generic::IList<System::Int32>(nullptr)
+				, System::Collections::ObjectModel::Collection<System::Int32>(nullptr)
+			{
+			}
+			
+			KeyedCollection<System::String, System::Int32>::KeyedCollection(Plugin::InternalUse, int32_t handle)
+				: System::Collections::IEnumerable(nullptr)
+				, System::Collections::ICollection(nullptr)
+				, System::Collections::IList(nullptr)
+				, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+				, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+				, System::Collections::Generic::IList<System::Int32>(nullptr)
+				, System::Collections::ObjectModel::Collection<System::Int32>(nullptr)
+			{
+				Handle = handle;
+				if (handle)
+				{
+					Plugin::ReferenceManagedClass(handle);
+				}
+			}
+			
+			KeyedCollection<System::String, System::Int32>::KeyedCollection(const KeyedCollection<System::String, System::Int32>& other)
+				: KeyedCollection(Plugin::InternalUse::Only, other.Handle)
+			{
+			}
+			
+			KeyedCollection<System::String, System::Int32>::KeyedCollection(KeyedCollection<System::String, System::Int32>&& other)
+				: KeyedCollection(Plugin::InternalUse::Only, other.Handle)
+			{
+				other.Handle = 0;
+			}
+			
+			KeyedCollection<System::String, System::Int32>::~KeyedCollection<System::String, System::Int32>()
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+			}
+			
+			KeyedCollection<System::String, System::Int32>& KeyedCollection<System::String, System::Int32>::operator=(const KeyedCollection<System::String, System::Int32>& other)
+			{
+				if (this->Handle)
+				{
+					Plugin::DereferenceManagedClass(this->Handle);
+				}
+				this->Handle = other.Handle;
+				if (this->Handle)
+				{
+					Plugin::ReferenceManagedClass(this->Handle);
+				}
+				return *this;
+			}
+			
+			KeyedCollection<System::String, System::Int32>& KeyedCollection<System::String, System::Int32>::operator=(decltype(nullptr))
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+					Handle = 0;
+				}
+				return *this;
+			}
+			
+			KeyedCollection<System::String, System::Int32>& KeyedCollection<System::String, System::Int32>::operator=(KeyedCollection<System::String, System::Int32>&& other)
+			{
+				if (Handle)
+				{
+					Plugin::DereferenceManagedClass(Handle);
+				}
+				Handle = other.Handle;
+				other.Handle = 0;
+				return *this;
+			}
+			
+			bool KeyedCollection<System::String, System::Int32>::operator==(const KeyedCollection<System::String, System::Int32>& other) const
+			{
+				return Handle == other.Handle;
+			}
+			
+			bool KeyedCollection<System::String, System::Int32>::operator!=(const KeyedCollection<System::String, System::Int32>& other) const
+			{
+				return Handle != other.Handle;
+			}
+		}
+	}
+}
+
+namespace Plugin
+{
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(decltype(nullptr))
+		: enumerator(nullptr)
+		, hasMore(false)
+	{
+	}
+	
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(System::Collections::ObjectModel::KeyedCollection<System::String, System::Int32>& enumerable)
+		: enumerator(enumerable.GetEnumerator())
+	{
+		hasMore = enumerator.MoveNext();
+	}
+	
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::~SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator()
+	{
+		if (enumerator != nullptr)
+		{
+			enumerator.Dispose();
+		}
+	}
+	
+	SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator& SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator++()
+	{
+		hasMore = enumerator.MoveNext();
+		return *this;
+	}
+	
+	bool SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator!=(const SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator& other)
+	{
+		return hasMore;
+	}
+	
+	System::Int32 SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator::operator*()
+	{
+		return enumerator.GetCurrent();
+	}
+}
+
+namespace System
+{
+	namespace Collections
+	{
+		namespace ObjectModel
+		{
+			Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator begin(System::Collections::ObjectModel::KeyedCollection<System::String, System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(enumerable);
+			}
+			
+			Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator end(System::Collections::ObjectModel::KeyedCollection<System::String, System::Int32>& enumerable)
+			{
+				return Plugin::SystemCollectionsObjectModelKeyedCollectionSystemString_SystemInt32Iterator(nullptr);
+			}
+		}
+	}
+}
+
+namespace System
+{
 	Object::operator System::Boolean()
 	{
 		System::Boolean returnVal(Plugin::UnboxBoolean(Handle));
@@ -13836,26 +16282,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(int8_t val)
+	Object::operator System::SByte()
 	{
-		int32_t handle = Plugin::BoxSByte(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator int8_t()
-	{
-		int8_t returnVal(Plugin::UnboxSByte(Handle));
+		System::SByte returnVal(Plugin::UnboxSByte(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -13869,26 +16298,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(uint8_t val)
+	Object::operator System::Byte()
 	{
-		int32_t handle = Plugin::BoxByte(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator uint8_t()
-	{
-		uint8_t returnVal(Plugin::UnboxByte(Handle));
+		System::Byte returnVal(Plugin::UnboxByte(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -13902,26 +16314,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(int16_t val)
+	Object::operator System::Int16()
 	{
-		int32_t handle = Plugin::BoxInt16(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator int16_t()
-	{
-		int16_t returnVal(Plugin::UnboxInt16(Handle));
+		System::Int16 returnVal(Plugin::UnboxInt16(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -13935,26 +16330,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(uint16_t val)
+	Object::operator System::UInt16()
 	{
-		int32_t handle = Plugin::BoxUInt16(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator uint16_t()
-	{
-		uint16_t returnVal(Plugin::UnboxUInt16(Handle));
+		System::UInt16 returnVal(Plugin::UnboxUInt16(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -13968,26 +16346,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(int32_t val)
+	Object::operator System::Int32()
 	{
-		int32_t handle = Plugin::BoxInt32(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator int32_t()
-	{
-		int32_t returnVal(Plugin::UnboxInt32(Handle));
+		System::Int32 returnVal(Plugin::UnboxInt32(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -14001,26 +16362,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(uint32_t val)
+	Object::operator System::UInt32()
 	{
-		int32_t handle = Plugin::BoxUInt32(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator uint32_t()
-	{
-		uint32_t returnVal(Plugin::UnboxUInt32(Handle));
+		System::UInt32 returnVal(Plugin::UnboxUInt32(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -14034,26 +16378,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(int64_t val)
+	Object::operator System::Int64()
 	{
-		int32_t handle = Plugin::BoxInt64(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator int64_t()
-	{
-		int64_t returnVal(Plugin::UnboxInt64(Handle));
+		System::Int64 returnVal(Plugin::UnboxInt64(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -14067,26 +16394,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(uint64_t val)
+	Object::operator System::UInt64()
 	{
-		int32_t handle = Plugin::BoxUInt64(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator uint64_t()
-	{
-		uint64_t returnVal(Plugin::UnboxUInt64(Handle));
+		System::UInt64 returnVal(Plugin::UnboxUInt64(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -14100,23 +16410,6 @@ namespace System
 
 namespace System
 {
-	Object::Object(System::Char val)
-	{
-		int32_t handle = Plugin::BoxChar(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
 	Object::operator System::Char()
 	{
 		System::Char returnVal(Plugin::UnboxChar(Handle));
@@ -14133,26 +16426,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(float val)
+	Object::operator System::Single()
 	{
-		int32_t handle = Plugin::BoxSingle(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator float()
-	{
-		float returnVal(Plugin::UnboxSingle(Handle));
+		System::Single returnVal(Plugin::UnboxSingle(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -14166,26 +16442,9 @@ namespace System
 
 namespace System
 {
-	Object::Object(double val)
+	Object::operator System::Double()
 	{
-		int32_t handle = Plugin::BoxDouble(val);
-		if (Plugin::unhandledCsharpException)
-		{
-			System::Exception* ex = Plugin::unhandledCsharpException;
-			Plugin::unhandledCsharpException = nullptr;
-			ex->ThrowReferenceToThis();
-			delete ex;
-		}
-		if (handle)
-		{
-			Plugin::ReferenceManagedClass(handle);
-			Handle = handle;
-		}
-	}
-	
-	Object::operator double()
-	{
-		double returnVal(Plugin::UnboxDouble(Handle));
+		System::Double returnVal(Plugin::UnboxDouble(Handle));
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -14209,7 +16468,7 @@ namespace MyGame
 		{
 		}
 		
-		TestScript::TestScript(Plugin::InternalUse iu, int32_t handle)
+		TestScript::TestScript(Plugin::InternalUse, int32_t handle)
 			: UnityEngine::Object(nullptr)
 			, UnityEngine::Component(nullptr)
 			, UnityEngine::Behaviour(nullptr)
@@ -14301,7 +16560,7 @@ namespace MyGame
 		{
 		}
 		
-		AnotherScript::AnotherScript(Plugin::InternalUse iu, int32_t handle)
+		AnotherScript::AnotherScript(Plugin::InternalUse, int32_t handle)
 			: UnityEngine::Object(nullptr)
 			, UnityEngine::Component(nullptr)
 			, UnityEngine::Behaviour(nullptr)
@@ -14383,13 +16642,13 @@ namespace MyGame
 
 namespace Plugin
 {
-	ArrayElementProxy1_1<int32_t>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_1<System::Int32>::ArrayElementProxy1_1(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
 	}
 	
-	void ArrayElementProxy1_1<int32_t>::operator=(int32_t item)
+	void ArrayElementProxy1_1<System::Int32>::operator=(System::Int32 item)
 	{
 		Plugin::SystemInt32Array1SetItem1(Handle, Index0, item);
 		if (Plugin::unhandledCsharpException)
@@ -14401,7 +16660,7 @@ namespace Plugin
 		}
 	}
 	
-	ArrayElementProxy1_1<int32_t>::operator int32_t()
+	ArrayElementProxy1_1<System::Int32>::operator System::Int32()
 	{
 		auto returnValue = Plugin::SystemInt32Array1GetItem1(Handle, Index0);
 		if (Plugin::unhandledCsharpException)
@@ -14417,28 +16676,28 @@ namespace Plugin
 
 namespace System
 {
-	Array1<int32_t>::Array1(decltype(nullptr))
+	Array1<System::Int32>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
 		, System::Collections::IList(nullptr)
 		, System::Array(nullptr)
-		, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-		, System::Collections::Generic::ICollection<int32_t>(nullptr)
-		, System::Collections::Generic::IList<int32_t>(nullptr)
+		, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+		, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+		, System::Collections::Generic::IList<System::Int32>(nullptr)
 	{
 		this->InternalLength = 0;
 	}
 	
-	Array1<int32_t>::Array1(Plugin::InternalUse iu, int32_t handle)
+	Array1<System::Int32>::Array1(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
 		, System::Collections::IList(nullptr)
 		, System::Array(nullptr)
-		, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-		, System::Collections::Generic::ICollection<int32_t>(nullptr)
-		, System::Collections::Generic::IList<int32_t>(nullptr)
+		, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+		, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+		, System::Collections::Generic::IList<System::Int32>(nullptr)
 	{
 		Handle = handle;
 		if (handle)
@@ -14448,13 +16707,13 @@ namespace System
 		this->InternalLength = 0;
 	}
 	
-	Array1<int32_t>::Array1(const Array1<int32_t>& other)
+	Array1<System::Int32>::Array1(const Array1<System::Int32>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		InternalLength = other.InternalLength;
 	}
 	
-	Array1<int32_t>::Array1(Array1<int32_t>&& other)
+	Array1<System::Int32>::Array1(Array1<System::Int32>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
@@ -14462,7 +16721,7 @@ namespace System
 		other.InternalLength = 0;
 	}
 	
-	Array1<int32_t>::~Array1<int32_t>()
+	Array1<System::Int32>::~Array1<System::Int32>()
 	{
 		if (Handle)
 		{
@@ -14471,7 +16730,7 @@ namespace System
 		}
 	}
 	
-	Array1<int32_t>& Array1<int32_t>::operator=(const Array1<int32_t>& other)
+	Array1<System::Int32>& Array1<System::Int32>::operator=(const Array1<System::Int32>& other)
 	{
 		if (this->Handle)
 		{
@@ -14486,7 +16745,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<int32_t>& Array1<int32_t>::operator=(decltype(nullptr))
+	Array1<System::Int32>& Array1<System::Int32>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -14496,7 +16755,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<int32_t>& Array1<int32_t>::operator=(Array1<int32_t>&& other)
+	Array1<System::Int32>& Array1<System::Int32>::operator=(Array1<System::Int32>&& other)
 	{
 		if (Handle)
 		{
@@ -14509,25 +16768,25 @@ namespace System
 		return *this;
 	}
 	
-	bool Array1<int32_t>::operator==(const Array1<int32_t>& other) const
+	bool Array1<System::Int32>::operator==(const Array1<System::Int32>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Array1<int32_t>::operator!=(const Array1<int32_t>& other) const
+	bool Array1<System::Int32>::operator!=(const Array1<System::Int32>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	Array1<int32_t>::Array1(int32_t length0)
+	Array1<System::Int32>::Array1(System::Int32 length0)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
 		, System::Collections::IList(nullptr)
 		, System::Array(nullptr)
-		, System::Collections::Generic::IEnumerable<int32_t>(nullptr)
-		, System::Collections::Generic::ICollection<int32_t>(nullptr)
-		, System::Collections::Generic::IList<int32_t>(nullptr)
+		, System::Collections::Generic::IEnumerable<System::Int32>(nullptr)
+		, System::Collections::Generic::ICollection<System::Int32>(nullptr)
+		, System::Collections::Generic::IList<System::Int32>(nullptr)
 	{
 		auto returnValue = Plugin::SystemSystemInt32Array1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
@@ -14545,7 +16804,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array1<int32_t>::GetLength()
+	System::Int32 Array1<System::Int32>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -14556,20 +16815,20 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array1<int32_t>::GetRank()
+	System::Int32 Array1<System::Int32>::GetRank()
 	{
 		return 1;
 	}
 	
-	Plugin::ArrayElementProxy1_1<int32_t> System::Array1<int32_t>::operator[](int32_t index)
+	Plugin::ArrayElementProxy1_1<System::Int32> System::Array1<System::Int32>::operator[](int32_t index)
 	{
-		return Plugin::ArrayElementProxy1_1<int32_t>(Plugin::InternalUse::Only, Handle, index);
+		return Plugin::ArrayElementProxy1_1<System::Int32>(Plugin::InternalUse::Only, Handle, index);
 	}
 }
 
 namespace Plugin
 {
-	SystemInt32Array1Iterator::SystemInt32Array1Iterator(System::Array1<int32_t>& array, int32_t index)
+	SystemInt32Array1Iterator::SystemInt32Array1Iterator(System::Array1<System::Int32>& array, int32_t index)
 		: array(array)
 		, index(index)
 	{
@@ -14586,7 +16845,7 @@ namespace Plugin
 		return index != other.index;
 	}
 	
-	int32_t SystemInt32Array1Iterator::operator*()
+	System::Int32 SystemInt32Array1Iterator::operator*()
 	{
 		return array[index];
 	}
@@ -14594,12 +16853,12 @@ namespace Plugin
 
 namespace System
 {
-	Plugin::SystemInt32Array1Iterator begin(System::Array1<int32_t>& array)
+	Plugin::SystemInt32Array1Iterator begin(System::Array1<System::Int32>& array)
 	{
 		return Plugin::SystemInt32Array1Iterator(array, 0);
 	}
 	
-	Plugin::SystemInt32Array1Iterator end(System::Array1<int32_t>& array)
+	Plugin::SystemInt32Array1Iterator end(System::Array1<System::Int32>& array)
 	{
 		return Plugin::SystemInt32Array1Iterator(array, array.GetLength() - 1);
 	}
@@ -14607,13 +16866,13 @@ namespace System
 
 namespace Plugin
 {
-	ArrayElementProxy1_1<float>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_1<System::Single>::ArrayElementProxy1_1(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
 	}
 	
-	void ArrayElementProxy1_1<float>::operator=(float item)
+	void ArrayElementProxy1_1<System::Single>::operator=(System::Single item)
 	{
 		Plugin::SystemSingleArray1SetItem1(Handle, Index0, item);
 		if (Plugin::unhandledCsharpException)
@@ -14625,7 +16884,7 @@ namespace Plugin
 		}
 	}
 	
-	ArrayElementProxy1_1<float>::operator float()
+	ArrayElementProxy1_1<System::Single>::operator System::Single()
 	{
 		auto returnValue = Plugin::SystemSingleArray1GetItem1(Handle, Index0);
 		if (Plugin::unhandledCsharpException)
@@ -14641,28 +16900,28 @@ namespace Plugin
 
 namespace Plugin
 {
-	ArrayElementProxy1_2<float>::ArrayElementProxy1_2(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_2<System::Single>::ArrayElementProxy1_2(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
 	}
 	
-	Plugin::ArrayElementProxy2_2<float> Plugin::ArrayElementProxy1_2<float>::operator[](int32_t index)
+	Plugin::ArrayElementProxy2_2<System::Single> Plugin::ArrayElementProxy1_2<System::Single>::operator[](int32_t index)
 	{
-		return Plugin::ArrayElementProxy2_2<float>(Plugin::InternalUse::Only, Handle, Index0, index);
+		return Plugin::ArrayElementProxy2_2<System::Single>(Plugin::InternalUse::Only, Handle, Index0, index);
 	}
 }
 
 namespace Plugin
 {
-	ArrayElementProxy2_2<float>::ArrayElementProxy2_2(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1)
+	ArrayElementProxy2_2<System::Single>::ArrayElementProxy2_2(Plugin::InternalUse, int32_t handle, int32_t index0, int32_t index1)
 	{
 		Handle = handle;
 		Index0 = index0;
 		Index1 = index1;
 	}
 	
-	void ArrayElementProxy2_2<float>::operator=(float item)
+	void ArrayElementProxy2_2<System::Single>::operator=(System::Single item)
 	{
 		Plugin::SystemSingleArray2SetItem2(Handle, Index0, Index1, item);
 		if (Plugin::unhandledCsharpException)
@@ -14674,7 +16933,7 @@ namespace Plugin
 		}
 	}
 	
-	ArrayElementProxy2_2<float>::operator float()
+	ArrayElementProxy2_2<System::Single>::operator System::Single()
 	{
 		auto returnValue = Plugin::SystemSingleArray2GetItem2(Handle, Index0, Index1);
 		if (Plugin::unhandledCsharpException)
@@ -14690,36 +16949,36 @@ namespace Plugin
 
 namespace Plugin
 {
-	ArrayElementProxy1_3<float>::ArrayElementProxy1_3(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_3<System::Single>::ArrayElementProxy1_3(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
 	}
 	
-	Plugin::ArrayElementProxy2_3<float> Plugin::ArrayElementProxy1_3<float>::operator[](int32_t index)
+	Plugin::ArrayElementProxy2_3<System::Single> Plugin::ArrayElementProxy1_3<System::Single>::operator[](int32_t index)
 	{
-		return Plugin::ArrayElementProxy2_3<float>(Plugin::InternalUse::Only, Handle, Index0, index);
+		return Plugin::ArrayElementProxy2_3<System::Single>(Plugin::InternalUse::Only, Handle, Index0, index);
 	}
 }
 
 namespace Plugin
 {
-	ArrayElementProxy2_3<float>::ArrayElementProxy2_3(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1)
+	ArrayElementProxy2_3<System::Single>::ArrayElementProxy2_3(Plugin::InternalUse, int32_t handle, int32_t index0, int32_t index1)
 	{
 		Handle = handle;
 		Index0 = index0;
 		Index1 = index1;
 	}
 	
-	Plugin::ArrayElementProxy3_3<float> Plugin::ArrayElementProxy2_3<float>::operator[](int32_t index)
+	Plugin::ArrayElementProxy3_3<System::Single> Plugin::ArrayElementProxy2_3<System::Single>::operator[](int32_t index)
 	{
-		return Plugin::ArrayElementProxy3_3<float>(Plugin::InternalUse::Only, Handle, Index0, Index1, index);
+		return Plugin::ArrayElementProxy3_3<System::Single>(Plugin::InternalUse::Only, Handle, Index0, Index1, index);
 	}
 }
 
 namespace Plugin
 {
-	ArrayElementProxy3_3<float>::ArrayElementProxy3_3(Plugin::InternalUse iu, int32_t handle, int32_t index0, int32_t index1, int32_t index2)
+	ArrayElementProxy3_3<System::Single>::ArrayElementProxy3_3(Plugin::InternalUse, int32_t handle, int32_t index0, int32_t index1, int32_t index2)
 	{
 		Handle = handle;
 		Index0 = index0;
@@ -14727,7 +16986,7 @@ namespace Plugin
 		Index2 = index2;
 	}
 	
-	void ArrayElementProxy3_3<float>::operator=(float item)
+	void ArrayElementProxy3_3<System::Single>::operator=(System::Single item)
 	{
 		Plugin::SystemSingleArray3SetItem3(Handle, Index0, Index1, Index2, item);
 		if (Plugin::unhandledCsharpException)
@@ -14739,7 +16998,7 @@ namespace Plugin
 		}
 	}
 	
-	ArrayElementProxy3_3<float>::operator float()
+	ArrayElementProxy3_3<System::Single>::operator System::Single()
 	{
 		auto returnValue = Plugin::SystemSingleArray3GetItem3(Handle, Index0, Index1, Index2);
 		if (Plugin::unhandledCsharpException)
@@ -14755,28 +17014,28 @@ namespace Plugin
 
 namespace System
 {
-	Array1<float>::Array1(decltype(nullptr))
+	Array1<System::Single>::Array1(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
 		, System::Collections::IList(nullptr)
 		, System::Array(nullptr)
-		, System::Collections::Generic::IEnumerable<float>(nullptr)
-		, System::Collections::Generic::ICollection<float>(nullptr)
-		, System::Collections::Generic::IList<float>(nullptr)
+		, System::Collections::Generic::IEnumerable<System::Single>(nullptr)
+		, System::Collections::Generic::ICollection<System::Single>(nullptr)
+		, System::Collections::Generic::IList<System::Single>(nullptr)
 	{
 		this->InternalLength = 0;
 	}
 	
-	Array1<float>::Array1(Plugin::InternalUse iu, int32_t handle)
+	Array1<System::Single>::Array1(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
 		, System::Collections::IList(nullptr)
 		, System::Array(nullptr)
-		, System::Collections::Generic::IEnumerable<float>(nullptr)
-		, System::Collections::Generic::ICollection<float>(nullptr)
-		, System::Collections::Generic::IList<float>(nullptr)
+		, System::Collections::Generic::IEnumerable<System::Single>(nullptr)
+		, System::Collections::Generic::ICollection<System::Single>(nullptr)
+		, System::Collections::Generic::IList<System::Single>(nullptr)
 	{
 		Handle = handle;
 		if (handle)
@@ -14786,13 +17045,13 @@ namespace System
 		this->InternalLength = 0;
 	}
 	
-	Array1<float>::Array1(const Array1<float>& other)
+	Array1<System::Single>::Array1(const Array1<System::Single>& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		InternalLength = other.InternalLength;
 	}
 	
-	Array1<float>::Array1(Array1<float>&& other)
+	Array1<System::Single>::Array1(Array1<System::Single>&& other)
 		: Array1(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
@@ -14800,7 +17059,7 @@ namespace System
 		other.InternalLength = 0;
 	}
 	
-	Array1<float>::~Array1<float>()
+	Array1<System::Single>::~Array1<System::Single>()
 	{
 		if (Handle)
 		{
@@ -14809,7 +17068,7 @@ namespace System
 		}
 	}
 	
-	Array1<float>& Array1<float>::operator=(const Array1<float>& other)
+	Array1<System::Single>& Array1<System::Single>::operator=(const Array1<System::Single>& other)
 	{
 		if (this->Handle)
 		{
@@ -14824,7 +17083,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<float>& Array1<float>::operator=(decltype(nullptr))
+	Array1<System::Single>& Array1<System::Single>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -14834,7 +17093,7 @@ namespace System
 		return *this;
 	}
 	
-	Array1<float>& Array1<float>::operator=(Array1<float>&& other)
+	Array1<System::Single>& Array1<System::Single>::operator=(Array1<System::Single>&& other)
 	{
 		if (Handle)
 		{
@@ -14847,25 +17106,25 @@ namespace System
 		return *this;
 	}
 	
-	bool Array1<float>::operator==(const Array1<float>& other) const
+	bool Array1<System::Single>::operator==(const Array1<System::Single>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Array1<float>::operator!=(const Array1<float>& other) const
+	bool Array1<System::Single>::operator!=(const Array1<System::Single>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	Array1<float>::Array1(int32_t length0)
+	Array1<System::Single>::Array1(System::Int32 length0)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
 		, System::Collections::IList(nullptr)
 		, System::Array(nullptr)
-		, System::Collections::Generic::IEnumerable<float>(nullptr)
-		, System::Collections::Generic::ICollection<float>(nullptr)
-		, System::Collections::Generic::IList<float>(nullptr)
+		, System::Collections::Generic::IEnumerable<System::Single>(nullptr)
+		, System::Collections::Generic::ICollection<System::Single>(nullptr)
+		, System::Collections::Generic::IList<System::Single>(nullptr)
 	{
 		auto returnValue = Plugin::SystemSystemSingleArray1Constructor1(length0);
 		if (Plugin::unhandledCsharpException)
@@ -14883,7 +17142,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array1<float>::GetLength()
+	System::Int32 Array1<System::Single>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -14894,20 +17153,20 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array1<float>::GetRank()
+	System::Int32 Array1<System::Single>::GetRank()
 	{
 		return 1;
 	}
 	
-	Plugin::ArrayElementProxy1_1<float> System::Array1<float>::operator[](int32_t index)
+	Plugin::ArrayElementProxy1_1<System::Single> System::Array1<System::Single>::operator[](int32_t index)
 	{
-		return Plugin::ArrayElementProxy1_1<float>(Plugin::InternalUse::Only, Handle, index);
+		return Plugin::ArrayElementProxy1_1<System::Single>(Plugin::InternalUse::Only, Handle, index);
 	}
 }
 
 namespace Plugin
 {
-	SystemSingleArray1Iterator::SystemSingleArray1Iterator(System::Array1<float>& array, int32_t index)
+	SystemSingleArray1Iterator::SystemSingleArray1Iterator(System::Array1<System::Single>& array, int32_t index)
 		: array(array)
 		, index(index)
 	{
@@ -14924,7 +17183,7 @@ namespace Plugin
 		return index != other.index;
 	}
 	
-	float SystemSingleArray1Iterator::operator*()
+	System::Single SystemSingleArray1Iterator::operator*()
 	{
 		return array[index];
 	}
@@ -14932,12 +17191,12 @@ namespace Plugin
 
 namespace System
 {
-	Plugin::SystemSingleArray1Iterator begin(System::Array1<float>& array)
+	Plugin::SystemSingleArray1Iterator begin(System::Array1<System::Single>& array)
 	{
 		return Plugin::SystemSingleArray1Iterator(array, 0);
 	}
 	
-	Plugin::SystemSingleArray1Iterator end(System::Array1<float>& array)
+	Plugin::SystemSingleArray1Iterator end(System::Array1<System::Single>& array)
 	{
 		return Plugin::SystemSingleArray1Iterator(array, array.GetLength() - 1);
 	}
@@ -14945,7 +17204,7 @@ namespace System
 
 namespace System
 {
-	Array2<float>::Array2(decltype(nullptr))
+	Array2<System::Single>::Array2(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -14957,7 +17216,7 @@ namespace System
 		this->InternalLengths[1] = 0;
 	}
 	
-	Array2<float>::Array2(Plugin::InternalUse iu, int32_t handle)
+	Array2<System::Single>::Array2(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -14974,7 +17233,7 @@ namespace System
 		this->InternalLengths[1] = 0;
 	}
 	
-	Array2<float>::Array2(const Array2<float>& other)
+	Array2<System::Single>::Array2(const Array2<System::Single>& other)
 		: Array2(Plugin::InternalUse::Only, other.Handle)
 	{
 		InternalLength = other.InternalLength;
@@ -14982,7 +17241,7 @@ namespace System
 		InternalLengths[1] = other.InternalLengths[1];
 	}
 	
-	Array2<float>::Array2(Array2<float>&& other)
+	Array2<System::Single>::Array2(Array2<System::Single>&& other)
 		: Array2(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
@@ -14994,7 +17253,7 @@ namespace System
 		other.InternalLengths[1] = 0;
 	}
 	
-	Array2<float>::~Array2<float>()
+	Array2<System::Single>::~Array2<System::Single>()
 	{
 		if (Handle)
 		{
@@ -15003,7 +17262,7 @@ namespace System
 		}
 	}
 	
-	Array2<float>& Array2<float>::operator=(const Array2<float>& other)
+	Array2<System::Single>& Array2<System::Single>::operator=(const Array2<System::Single>& other)
 	{
 		if (this->Handle)
 		{
@@ -15020,7 +17279,7 @@ namespace System
 		return *this;
 	}
 	
-	Array2<float>& Array2<float>::operator=(decltype(nullptr))
+	Array2<System::Single>& Array2<System::Single>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -15030,7 +17289,7 @@ namespace System
 		return *this;
 	}
 	
-	Array2<float>& Array2<float>::operator=(Array2<float>&& other)
+	Array2<System::Single>& Array2<System::Single>::operator=(Array2<System::Single>&& other)
 	{
 		if (Handle)
 		{
@@ -15047,17 +17306,17 @@ namespace System
 		return *this;
 	}
 	
-	bool Array2<float>::operator==(const Array2<float>& other) const
+	bool Array2<System::Single>::operator==(const Array2<System::Single>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Array2<float>::operator!=(const Array2<float>& other) const
+	bool Array2<System::Single>::operator!=(const Array2<System::Single>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	Array2<float>::Array2(int32_t length0, int32_t length1)
+	Array2<System::Single>::Array2(System::Int32 length0, System::Int32 length1)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15082,7 +17341,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array2<float>::GetLength()
+	System::Int32 Array2<System::Single>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -15093,7 +17352,7 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array2<float>::GetLength(int32_t dimension)
+	System::Int32 Array2<System::Single>::GetLength(System::Int32 dimension)
 	{
 		assert(dimension >= 0 && dimension < 2);
 		int32_t length = InternalLengths[dimension];
@@ -15113,20 +17372,20 @@ namespace System
 		return returnValue;
 	}
 	
-	int32_t Array2<float>::GetRank()
+	System::Int32 Array2<System::Single>::GetRank()
 	{
 		return 2;
 	}
 	
-	Plugin::ArrayElementProxy1_2<float> System::Array2<float>::operator[](int32_t index)
+	Plugin::ArrayElementProxy1_2<System::Single> System::Array2<System::Single>::operator[](int32_t index)
 	{
-		return Plugin::ArrayElementProxy1_2<float>(Plugin::InternalUse::Only, Handle, index);
+		return Plugin::ArrayElementProxy1_2<System::Single>(Plugin::InternalUse::Only, Handle, index);
 	}
 }
 
 namespace System
 {
-	Array3<float>::Array3(decltype(nullptr))
+	Array3<System::Single>::Array3(decltype(nullptr))
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15139,7 +17398,7 @@ namespace System
 		this->InternalLengths[2] = 0;
 	}
 	
-	Array3<float>::Array3(Plugin::InternalUse iu, int32_t handle)
+	Array3<System::Single>::Array3(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15157,7 +17416,7 @@ namespace System
 		this->InternalLengths[2] = 0;
 	}
 	
-	Array3<float>::Array3(const Array3<float>& other)
+	Array3<System::Single>::Array3(const Array3<System::Single>& other)
 		: Array3(Plugin::InternalUse::Only, other.Handle)
 	{
 		InternalLength = other.InternalLength;
@@ -15166,7 +17425,7 @@ namespace System
 		InternalLengths[2] = other.InternalLengths[2];
 	}
 	
-	Array3<float>::Array3(Array3<float>&& other)
+	Array3<System::Single>::Array3(Array3<System::Single>&& other)
 		: Array3(Plugin::InternalUse::Only, other.Handle)
 	{
 		other.Handle = 0;
@@ -15180,7 +17439,7 @@ namespace System
 		other.InternalLengths[2] = 0;
 	}
 	
-	Array3<float>::~Array3<float>()
+	Array3<System::Single>::~Array3<System::Single>()
 	{
 		if (Handle)
 		{
@@ -15189,7 +17448,7 @@ namespace System
 		}
 	}
 	
-	Array3<float>& Array3<float>::operator=(const Array3<float>& other)
+	Array3<System::Single>& Array3<System::Single>::operator=(const Array3<System::Single>& other)
 	{
 		if (this->Handle)
 		{
@@ -15207,7 +17466,7 @@ namespace System
 		return *this;
 	}
 	
-	Array3<float>& Array3<float>::operator=(decltype(nullptr))
+	Array3<System::Single>& Array3<System::Single>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -15217,7 +17476,7 @@ namespace System
 		return *this;
 	}
 	
-	Array3<float>& Array3<float>::operator=(Array3<float>&& other)
+	Array3<System::Single>& Array3<System::Single>::operator=(Array3<System::Single>&& other)
 	{
 		if (Handle)
 		{
@@ -15236,17 +17495,17 @@ namespace System
 		return *this;
 	}
 	
-	bool Array3<float>::operator==(const Array3<float>& other) const
+	bool Array3<System::Single>::operator==(const Array3<System::Single>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Array3<float>::operator!=(const Array3<float>& other) const
+	bool Array3<System::Single>::operator!=(const Array3<System::Single>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	Array3<float>::Array3(int32_t length0, int32_t length1, int32_t length2)
+	Array3<System::Single>::Array3(System::Int32 length0, System::Int32 length1, System::Int32 length2)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15272,7 +17531,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array3<float>::GetLength()
+	System::Int32 Array3<System::Single>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -15283,7 +17542,7 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array3<float>::GetLength(int32_t dimension)
+	System::Int32 Array3<System::Single>::GetLength(System::Int32 dimension)
 	{
 		assert(dimension >= 0 && dimension < 3);
 		int32_t length = InternalLengths[dimension];
@@ -15303,20 +17562,20 @@ namespace System
 		return returnValue;
 	}
 	
-	int32_t Array3<float>::GetRank()
+	System::Int32 Array3<System::Single>::GetRank()
 	{
 		return 3;
 	}
 	
-	Plugin::ArrayElementProxy1_3<float> System::Array3<float>::operator[](int32_t index)
+	Plugin::ArrayElementProxy1_3<System::Single> System::Array3<System::Single>::operator[](int32_t index)
 	{
-		return Plugin::ArrayElementProxy1_3<float>(Plugin::InternalUse::Only, Handle, index);
+		return Plugin::ArrayElementProxy1_3<System::Single>(Plugin::InternalUse::Only, Handle, index);
 	}
 }
 
 namespace Plugin
 {
-	ArrayElementProxy1_1<System::String>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_1<System::String>::ArrayElementProxy1_1(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
@@ -15363,7 +17622,7 @@ namespace System
 		this->InternalLength = 0;
 	}
 	
-	Array1<System::String>::Array1(Plugin::InternalUse iu, int32_t handle)
+	Array1<System::String>::Array1(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15452,7 +17711,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	Array1<System::String>::Array1(int32_t length0)
+	Array1<System::String>::Array1(System::Int32 length0)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15478,7 +17737,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array1<System::String>::GetLength()
+	System::Int32 Array1<System::String>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -15489,7 +17748,7 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array1<System::String>::GetRank()
+	System::Int32 Array1<System::String>::GetRank()
 	{
 		return 1;
 	}
@@ -15540,7 +17799,7 @@ namespace System
 
 namespace Plugin
 {
-	ArrayElementProxy1_1<UnityEngine::Resolution>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_1<UnityEngine::Resolution>::ArrayElementProxy1_1(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
@@ -15587,7 +17846,7 @@ namespace System
 		this->InternalLength = 0;
 	}
 	
-	Array1<UnityEngine::Resolution>::Array1(Plugin::InternalUse iu, int32_t handle)
+	Array1<UnityEngine::Resolution>::Array1(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15676,7 +17935,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	Array1<UnityEngine::Resolution>::Array1(int32_t length0)
+	Array1<UnityEngine::Resolution>::Array1(System::Int32 length0)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15702,7 +17961,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array1<UnityEngine::Resolution>::GetLength()
+	System::Int32 Array1<UnityEngine::Resolution>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -15713,7 +17972,7 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array1<UnityEngine::Resolution>::GetRank()
+	System::Int32 Array1<UnityEngine::Resolution>::GetRank()
 	{
 		return 1;
 	}
@@ -15764,7 +18023,7 @@ namespace System
 
 namespace Plugin
 {
-	ArrayElementProxy1_1<UnityEngine::RaycastHit>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_1<UnityEngine::RaycastHit>::ArrayElementProxy1_1(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
@@ -15811,7 +18070,7 @@ namespace System
 		this->InternalLength = 0;
 	}
 	
-	Array1<UnityEngine::RaycastHit>::Array1(Plugin::InternalUse iu, int32_t handle)
+	Array1<UnityEngine::RaycastHit>::Array1(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15900,7 +18159,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	Array1<UnityEngine::RaycastHit>::Array1(int32_t length0)
+	Array1<UnityEngine::RaycastHit>::Array1(System::Int32 length0)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -15926,7 +18185,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array1<UnityEngine::RaycastHit>::GetLength()
+	System::Int32 Array1<UnityEngine::RaycastHit>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -15937,7 +18196,7 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array1<UnityEngine::RaycastHit>::GetRank()
+	System::Int32 Array1<UnityEngine::RaycastHit>::GetRank()
 	{
 		return 1;
 	}
@@ -15988,7 +18247,7 @@ namespace System
 
 namespace Plugin
 {
-	ArrayElementProxy1_1<UnityEngine::GradientColorKey>::ArrayElementProxy1_1(Plugin::InternalUse iu, int32_t handle, int32_t index0)
+	ArrayElementProxy1_1<UnityEngine::GradientColorKey>::ArrayElementProxy1_1(Plugin::InternalUse, int32_t handle, int32_t index0)
 	{
 		Handle = handle;
 		Index0 = index0;
@@ -16035,7 +18294,7 @@ namespace System
 		this->InternalLength = 0;
 	}
 	
-	Array1<UnityEngine::GradientColorKey>::Array1(Plugin::InternalUse iu, int32_t handle)
+	Array1<UnityEngine::GradientColorKey>::Array1(Plugin::InternalUse, int32_t handle)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -16124,7 +18383,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	Array1<UnityEngine::GradientColorKey>::Array1(int32_t length0)
+	Array1<UnityEngine::GradientColorKey>::Array1(System::Int32 length0)
 		: System::ICloneable(nullptr)
 		, System::Collections::IEnumerable(nullptr)
 		, System::Collections::ICollection(nullptr)
@@ -16150,7 +18409,7 @@ namespace System
 		}
 	}
 	
-	int32_t Array1<UnityEngine::GradientColorKey>::GetLength()
+	System::Int32 Array1<UnityEngine::GradientColorKey>::GetLength()
 	{
 		int32_t returnVal = InternalLength;
 		if (returnVal == 0)
@@ -16161,7 +18420,7 @@ namespace System
 		return returnVal;
 	}
 	
-	int32_t Array1<UnityEngine::GradientColorKey>::GetRank()
+	System::Int32 Array1<UnityEngine::GradientColorKey>::GetRank()
 	{
 		return 1;
 	}
@@ -16215,10 +18474,10 @@ namespace System
 	Action::Action()
 	{
 		CppHandle = Plugin::StoreSystemAction(this);
-		int32_t* handle = &Handle;
+		System::Int32* handle = (System::Int32*)&Handle;
 		int32_t cppHandle = CppHandle;
-		int32_t* classHandle = &ClassHandle;
-		Plugin::SystemActionConstructor(cppHandle, handle, classHandle);
+		System::Int32* classHandle = (System::Int32*)&ClassHandle;
+		Plugin::SystemActionConstructor(cppHandle, &handle->Value, &classHandle->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -16272,7 +18531,7 @@ namespace System
 		other.ClassHandle = 0;
 	}
 	
-	Action::Action(Plugin::InternalUse iu, int32_t handle)
+	Action::Action(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		CppHandle = Plugin::StoreSystemAction(this);
@@ -16447,13 +18706,13 @@ namespace System
 
 namespace System
 {
-	Action1<float>::Action1()
+	Action1<System::Single>::Action1()
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
-		int32_t* handle = &Handle;
+		System::Int32* handle = (System::Int32*)&Handle;
 		int32_t cppHandle = CppHandle;
-		int32_t* classHandle = &ClassHandle;
-		Plugin::SystemActionSystemSingleConstructor(cppHandle, handle, classHandle);
+		System::Int32* classHandle = (System::Int32*)&ClassHandle;
+		Plugin::SystemActionSystemSingleConstructor(cppHandle, &handle->Value, &classHandle->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -16480,13 +18739,13 @@ namespace System
 		}
 	}
 	
-	Action1<float>::Action1(decltype(nullptr))
+	Action1<System::Single>::Action1(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
 		ClassHandle = 0;
 	}
 	
-	Action1<float>::Action1(const Action1<float>& other)
+	Action1<System::Single>::Action1(const Action1<System::Single>& other)
 	{
 		Handle = other.Handle;
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
@@ -16497,7 +18756,7 @@ namespace System
 		ClassHandle = other.ClassHandle;
 	}
 	
-	Action1<float>::Action1(Action1<float>&& other)
+	Action1<System::Single>::Action1(Action1<System::Single>&& other)
 	{
 		Handle = other.Handle;
 		CppHandle = other.CppHandle;
@@ -16507,7 +18766,7 @@ namespace System
 		other.ClassHandle = 0;
 	}
 	
-	Action1<float>::Action1(Plugin::InternalUse iu, int32_t handle)
+	Action1<System::Single>::Action1(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		CppHandle = Plugin::StoreSystemActionSystemSingle(this);
@@ -16518,7 +18777,7 @@ namespace System
 		ClassHandle = 0;
 	}
 	
-	Action1<float>::~Action1()
+	Action1<System::Single>::~Action1()
 	{
 		Plugin::RemoveSystemActionSystemSingle(CppHandle);
 		CppHandle = 0;
@@ -16542,7 +18801,7 @@ namespace System
 		}
 	}
 	
-	Action1<float>& Action1<float>::operator=(const Action1<float>& other)
+	Action1<System::Single>& Action1<System::Single>::operator=(const Action1<System::Single>& other)
 	{
 		if (this->Handle)
 		{
@@ -16557,7 +18816,7 @@ namespace System
 		return *this;
 	}
 	
-	Action1<float>& Action1<float>::operator=(decltype(nullptr))
+	Action1<System::Single>& Action1<System::Single>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -16582,7 +18841,7 @@ namespace System
 		return *this;
 	}
 	
-	Action1<float>& Action1<float>::operator=(Action1<float>&& other)
+	Action1<System::Single>& Action1<System::Single>::operator=(Action1<System::Single>&& other)
 	{
 		Plugin::RemoveSystemActionSystemSingle(CppHandle);
 		CppHandle = 0;
@@ -16611,17 +18870,17 @@ namespace System
 		return *this;
 	}
 	
-	bool Action1<float>::operator==(const Action1<float>& other) const
+	bool Action1<System::Single>::operator==(const Action1<System::Single>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Action1<float>::operator!=(const Action1<float>& other) const
+	bool Action1<System::Single>::operator!=(const Action1<System::Single>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	void Action1<float>::operator+=(System::Action1<float>& del)
+	void Action1<System::Single>::operator+=(System::Action1<System::Single>& del)
 	{
 		Plugin::SystemActionSystemSingleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -16633,7 +18892,7 @@ namespace System
 		}
 	}
 	
-	void Action1<float>::operator-=(System::Action1<float>& del)
+	void Action1<System::Single>::operator-=(System::Action1<System::Single>& del)
 	{
 		Plugin::SystemActionSystemSingleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -16645,7 +18904,7 @@ namespace System
 		}
 	}
 	
-	void Action1<float>::operator()(float obj)
+	void Action1<System::Single>::operator()(System::Single obj)
 	{
 	}
 	
@@ -16661,13 +18920,13 @@ namespace System
 		}
 		catch (...)
 		{
-			System::String msg = "Unhandled exception invoking System::Action1<float>";
+			System::String msg = "Unhandled exception invoking System::Action1<System::Single>";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
 		}
 	}
 	
-	void Action1<float>::Invoke(float obj)
+	void Action1<System::Single>::Invoke(System::Single obj)
 	{
 		Plugin::SystemActionSystemSingleInvoke(Handle, obj);
 		if (Plugin::unhandledCsharpException)
@@ -16682,13 +18941,13 @@ namespace System
 
 namespace System
 {
-	Action2<float, float>::Action2()
+	Action2<System::Single, System::Single>::Action2()
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
-		int32_t* handle = &Handle;
+		System::Int32* handle = (System::Int32*)&Handle;
 		int32_t cppHandle = CppHandle;
-		int32_t* classHandle = &ClassHandle;
-		Plugin::SystemActionSystemSingle_SystemSingleConstructor(cppHandle, handle, classHandle);
+		System::Int32* classHandle = (System::Int32*)&ClassHandle;
+		Plugin::SystemActionSystemSingle_SystemSingleConstructor(cppHandle, &handle->Value, &classHandle->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -16715,13 +18974,13 @@ namespace System
 		}
 	}
 	
-	Action2<float, float>::Action2(decltype(nullptr))
+	Action2<System::Single, System::Single>::Action2(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
 		ClassHandle = 0;
 	}
 	
-	Action2<float, float>::Action2(const Action2<float, float>& other)
+	Action2<System::Single, System::Single>::Action2(const Action2<System::Single, System::Single>& other)
 	{
 		Handle = other.Handle;
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
@@ -16732,7 +18991,7 @@ namespace System
 		ClassHandle = other.ClassHandle;
 	}
 	
-	Action2<float, float>::Action2(Action2<float, float>&& other)
+	Action2<System::Single, System::Single>::Action2(Action2<System::Single, System::Single>&& other)
 	{
 		Handle = other.Handle;
 		CppHandle = other.CppHandle;
@@ -16742,7 +19001,7 @@ namespace System
 		other.ClassHandle = 0;
 	}
 	
-	Action2<float, float>::Action2(Plugin::InternalUse iu, int32_t handle)
+	Action2<System::Single, System::Single>::Action2(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		CppHandle = Plugin::StoreSystemActionSystemSingle_SystemSingle(this);
@@ -16753,7 +19012,7 @@ namespace System
 		ClassHandle = 0;
 	}
 	
-	Action2<float, float>::~Action2()
+	Action2<System::Single, System::Single>::~Action2()
 	{
 		Plugin::RemoveSystemActionSystemSingle_SystemSingle(CppHandle);
 		CppHandle = 0;
@@ -16777,7 +19036,7 @@ namespace System
 		}
 	}
 	
-	Action2<float, float>& Action2<float, float>::operator=(const Action2<float, float>& other)
+	Action2<System::Single, System::Single>& Action2<System::Single, System::Single>::operator=(const Action2<System::Single, System::Single>& other)
 	{
 		if (this->Handle)
 		{
@@ -16792,7 +19051,7 @@ namespace System
 		return *this;
 	}
 	
-	Action2<float, float>& Action2<float, float>::operator=(decltype(nullptr))
+	Action2<System::Single, System::Single>& Action2<System::Single, System::Single>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -16817,7 +19076,7 @@ namespace System
 		return *this;
 	}
 	
-	Action2<float, float>& Action2<float, float>::operator=(Action2<float, float>&& other)
+	Action2<System::Single, System::Single>& Action2<System::Single, System::Single>::operator=(Action2<System::Single, System::Single>&& other)
 	{
 		Plugin::RemoveSystemActionSystemSingle_SystemSingle(CppHandle);
 		CppHandle = 0;
@@ -16846,17 +19105,17 @@ namespace System
 		return *this;
 	}
 	
-	bool Action2<float, float>::operator==(const Action2<float, float>& other) const
+	bool Action2<System::Single, System::Single>::operator==(const Action2<System::Single, System::Single>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Action2<float, float>::operator!=(const Action2<float, float>& other) const
+	bool Action2<System::Single, System::Single>::operator!=(const Action2<System::Single, System::Single>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	void Action2<float, float>::operator+=(System::Action2<float, float>& del)
+	void Action2<System::Single, System::Single>::operator+=(System::Action2<System::Single, System::Single>& del)
 	{
 		Plugin::SystemActionSystemSingle_SystemSingleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -16868,7 +19127,7 @@ namespace System
 		}
 	}
 	
-	void Action2<float, float>::operator-=(System::Action2<float, float>& del)
+	void Action2<System::Single, System::Single>::operator-=(System::Action2<System::Single, System::Single>& del)
 	{
 		Plugin::SystemActionSystemSingle_SystemSingleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -16880,7 +19139,7 @@ namespace System
 		}
 	}
 	
-	void Action2<float, float>::operator()(float arg1, float arg2)
+	void Action2<System::Single, System::Single>::operator()(System::Single arg1, System::Single arg2)
 	{
 	}
 	
@@ -16896,13 +19155,13 @@ namespace System
 		}
 		catch (...)
 		{
-			System::String msg = "Unhandled exception invoking System::Action2<float, float>";
+			System::String msg = "Unhandled exception invoking System::Action2<System::Single, System::Single>";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
 		}
 	}
 	
-	void Action2<float, float>::Invoke(float arg1, float arg2)
+	void Action2<System::Single, System::Single>::Invoke(System::Single arg1, System::Single arg2)
 	{
 		Plugin::SystemActionSystemSingle_SystemSingleInvoke(Handle, arg1, arg2);
 		if (Plugin::unhandledCsharpException)
@@ -16917,13 +19176,13 @@ namespace System
 
 namespace System
 {
-	Func3<int32_t, float, double>::Func3()
+	Func3<System::Int32, System::Single, System::Double>::Func3()
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
-		int32_t* handle = &Handle;
+		System::Int32* handle = (System::Int32*)&Handle;
 		int32_t cppHandle = CppHandle;
-		int32_t* classHandle = &ClassHandle;
-		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(cppHandle, handle, classHandle);
+		System::Int32* classHandle = (System::Int32*)&ClassHandle;
+		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor(cppHandle, &handle->Value, &classHandle->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -16950,13 +19209,13 @@ namespace System
 		}
 	}
 	
-	Func3<int32_t, float, double>::Func3(decltype(nullptr))
+	Func3<System::Int32, System::Single, System::Double>::Func3(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
 		ClassHandle = 0;
 	}
 	
-	Func3<int32_t, float, double>::Func3(const Func3<int32_t, float, double>& other)
+	Func3<System::Int32, System::Single, System::Double>::Func3(const Func3<System::Int32, System::Single, System::Double>& other)
 	{
 		Handle = other.Handle;
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
@@ -16967,7 +19226,7 @@ namespace System
 		ClassHandle = other.ClassHandle;
 	}
 	
-	Func3<int32_t, float, double>::Func3(Func3<int32_t, float, double>&& other)
+	Func3<System::Int32, System::Single, System::Double>::Func3(Func3<System::Int32, System::Single, System::Double>&& other)
 	{
 		Handle = other.Handle;
 		CppHandle = other.CppHandle;
@@ -16977,7 +19236,7 @@ namespace System
 		other.ClassHandle = 0;
 	}
 	
-	Func3<int32_t, float, double>::Func3(Plugin::InternalUse iu, int32_t handle)
+	Func3<System::Int32, System::Single, System::Double>::Func3(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		CppHandle = Plugin::StoreSystemFuncSystemInt32_SystemSingle_SystemDouble(this);
@@ -16988,7 +19247,7 @@ namespace System
 		ClassHandle = 0;
 	}
 	
-	Func3<int32_t, float, double>::~Func3()
+	Func3<System::Int32, System::Single, System::Double>::~Func3()
 	{
 		Plugin::RemoveSystemFuncSystemInt32_SystemSingle_SystemDouble(CppHandle);
 		CppHandle = 0;
@@ -17012,7 +19271,7 @@ namespace System
 		}
 	}
 	
-	Func3<int32_t, float, double>& Func3<int32_t, float, double>::operator=(const Func3<int32_t, float, double>& other)
+	Func3<System::Int32, System::Single, System::Double>& Func3<System::Int32, System::Single, System::Double>::operator=(const Func3<System::Int32, System::Single, System::Double>& other)
 	{
 		if (this->Handle)
 		{
@@ -17027,7 +19286,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int32_t, float, double>& Func3<int32_t, float, double>::operator=(decltype(nullptr))
+	Func3<System::Int32, System::Single, System::Double>& Func3<System::Int32, System::Single, System::Double>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -17052,7 +19311,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int32_t, float, double>& Func3<int32_t, float, double>::operator=(Func3<int32_t, float, double>&& other)
+	Func3<System::Int32, System::Single, System::Double>& Func3<System::Int32, System::Single, System::Double>::operator=(Func3<System::Int32, System::Single, System::Double>&& other)
 	{
 		Plugin::RemoveSystemFuncSystemInt32_SystemSingle_SystemDouble(CppHandle);
 		CppHandle = 0;
@@ -17081,17 +19340,17 @@ namespace System
 		return *this;
 	}
 	
-	bool Func3<int32_t, float, double>::operator==(const Func3<int32_t, float, double>& other) const
+	bool Func3<System::Int32, System::Single, System::Double>::operator==(const Func3<System::Int32, System::Single, System::Double>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Func3<int32_t, float, double>::operator!=(const Func3<int32_t, float, double>& other) const
+	bool Func3<System::Int32, System::Single, System::Double>::operator!=(const Func3<System::Int32, System::Single, System::Double>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	void Func3<int32_t, float, double>::operator+=(System::Func3<int32_t, float, double>& del)
+	void Func3<System::Int32, System::Single, System::Double>::operator+=(System::Func3<System::Int32, System::Single, System::Double>& del)
 	{
 		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -17103,7 +19362,7 @@ namespace System
 		}
 	}
 	
-	void Func3<int32_t, float, double>::operator-=(System::Func3<int32_t, float, double>& del)
+	void Func3<System::Int32, System::Single, System::Double>::operator-=(System::Func3<System::Int32, System::Single, System::Double>& del)
 	{
 		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -17115,7 +19374,7 @@ namespace System
 		}
 	}
 	
-	double Func3<int32_t, float, double>::operator()(int32_t arg1, float arg2)
+	System::Double Func3<System::Int32, System::Single, System::Double>::operator()(System::Int32 arg1, System::Single arg2)
 	{
 		return {};
 	}
@@ -17133,14 +19392,14 @@ namespace System
 		}
 		catch (...)
 		{
-			System::String msg = "Unhandled exception invoking System::Func3<int32_t, float, double>";
+			System::String msg = "Unhandled exception invoking System::Func3<System::Int32, System::Single, System::Double>";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
 			return {};
 		}
 	}
 	
-	double Func3<int32_t, float, double>::Invoke(int32_t arg1, float arg2)
+	System::Double Func3<System::Int32, System::Single, System::Double>::Invoke(System::Int32 arg1, System::Single arg2)
 	{
 		auto returnValue = Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke(Handle, arg1, arg2);
 		if (Plugin::unhandledCsharpException)
@@ -17156,13 +19415,13 @@ namespace System
 
 namespace System
 {
-	Func3<int16_t, int32_t, System::String>::Func3()
+	Func3<System::Int16, System::Int32, System::String>::Func3()
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
-		int32_t* handle = &Handle;
+		System::Int32* handle = (System::Int32*)&Handle;
 		int32_t cppHandle = CppHandle;
-		int32_t* classHandle = &ClassHandle;
-		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(cppHandle, handle, classHandle);
+		System::Int32* classHandle = (System::Int32*)&ClassHandle;
+		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor(cppHandle, &handle->Value, &classHandle->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -17189,13 +19448,13 @@ namespace System
 		}
 	}
 	
-	Func3<int16_t, int32_t, System::String>::Func3(decltype(nullptr))
+	Func3<System::Int16, System::Int32, System::String>::Func3(decltype(nullptr))
 	{
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
 		ClassHandle = 0;
 	}
 	
-	Func3<int16_t, int32_t, System::String>::Func3(const Func3<int16_t, int32_t, System::String>& other)
+	Func3<System::Int16, System::Int32, System::String>::Func3(const Func3<System::Int16, System::Int32, System::String>& other)
 	{
 		Handle = other.Handle;
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
@@ -17206,7 +19465,7 @@ namespace System
 		ClassHandle = other.ClassHandle;
 	}
 	
-	Func3<int16_t, int32_t, System::String>::Func3(Func3<int16_t, int32_t, System::String>&& other)
+	Func3<System::Int16, System::Int32, System::String>::Func3(Func3<System::Int16, System::Int32, System::String>&& other)
 	{
 		Handle = other.Handle;
 		CppHandle = other.CppHandle;
@@ -17216,7 +19475,7 @@ namespace System
 		other.ClassHandle = 0;
 	}
 	
-	Func3<int16_t, int32_t, System::String>::Func3(Plugin::InternalUse iu, int32_t handle)
+	Func3<System::Int16, System::Int32, System::String>::Func3(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		CppHandle = Plugin::StoreSystemFuncSystemInt16_SystemInt32_SystemString(this);
@@ -17227,7 +19486,7 @@ namespace System
 		ClassHandle = 0;
 	}
 	
-	Func3<int16_t, int32_t, System::String>::~Func3()
+	Func3<System::Int16, System::Int32, System::String>::~Func3()
 	{
 		Plugin::RemoveSystemFuncSystemInt16_SystemInt32_SystemString(CppHandle);
 		CppHandle = 0;
@@ -17251,7 +19510,7 @@ namespace System
 		}
 	}
 	
-	Func3<int16_t, int32_t, System::String>& Func3<int16_t, int32_t, System::String>::operator=(const Func3<int16_t, int32_t, System::String>& other)
+	Func3<System::Int16, System::Int32, System::String>& Func3<System::Int16, System::Int32, System::String>::operator=(const Func3<System::Int16, System::Int32, System::String>& other)
 	{
 		if (this->Handle)
 		{
@@ -17266,7 +19525,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int16_t, int32_t, System::String>& Func3<int16_t, int32_t, System::String>::operator=(decltype(nullptr))
+	Func3<System::Int16, System::Int32, System::String>& Func3<System::Int16, System::Int32, System::String>::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -17291,7 +19550,7 @@ namespace System
 		return *this;
 	}
 	
-	Func3<int16_t, int32_t, System::String>& Func3<int16_t, int32_t, System::String>::operator=(Func3<int16_t, int32_t, System::String>&& other)
+	Func3<System::Int16, System::Int32, System::String>& Func3<System::Int16, System::Int32, System::String>::operator=(Func3<System::Int16, System::Int32, System::String>&& other)
 	{
 		Plugin::RemoveSystemFuncSystemInt16_SystemInt32_SystemString(CppHandle);
 		CppHandle = 0;
@@ -17320,17 +19579,17 @@ namespace System
 		return *this;
 	}
 	
-	bool Func3<int16_t, int32_t, System::String>::operator==(const Func3<int16_t, int32_t, System::String>& other) const
+	bool Func3<System::Int16, System::Int32, System::String>::operator==(const Func3<System::Int16, System::Int32, System::String>& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool Func3<int16_t, int32_t, System::String>::operator!=(const Func3<int16_t, int32_t, System::String>& other) const
+	bool Func3<System::Int16, System::Int32, System::String>::operator!=(const Func3<System::Int16, System::Int32, System::String>& other) const
 	{
 		return Handle != other.Handle;
 	}
 	
-	void Func3<int16_t, int32_t, System::String>::operator+=(System::Func3<int16_t, int32_t, System::String>& del)
+	void Func3<System::Int16, System::Int32, System::String>::operator+=(System::Func3<System::Int16, System::Int32, System::String>& del)
 	{
 		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringAdd(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -17342,7 +19601,7 @@ namespace System
 		}
 	}
 	
-	void Func3<int16_t, int32_t, System::String>::operator-=(System::Func3<int16_t, int32_t, System::String>& del)
+	void Func3<System::Int16, System::Int32, System::String>::operator-=(System::Func3<System::Int16, System::Int32, System::String>& del)
 	{
 		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringRemove(Handle, del.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -17354,7 +19613,7 @@ namespace System
 		}
 	}
 	
-	System::String Func3<int16_t, int32_t, System::String>::operator()(int16_t arg1, int32_t arg2)
+	System::String Func3<System::Int16, System::Int32, System::String>::operator()(System::Int16 arg1, System::Int32 arg2)
 	{
 		return nullptr;
 	}
@@ -17372,14 +19631,14 @@ namespace System
 		}
 		catch (...)
 		{
-			System::String msg = "Unhandled exception invoking System::Func3<int16_t, int32_t, System::String>";
+			System::String msg = "Unhandled exception invoking System::Func3<System::Int16, System::Int32, System::String>";
 			System::Exception ex(msg);
 			Plugin::SetException(ex.Handle);
 			return {};
 		}
 	}
 	
-	System::String Func3<int16_t, int32_t, System::String>::Invoke(int16_t arg1, int32_t arg2)
+	System::String Func3<System::Int16, System::Int32, System::String>::Invoke(System::Int16 arg1, System::Int32 arg2)
 	{
 		auto returnValue = Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringInvoke(Handle, arg1, arg2);
 		if (Plugin::unhandledCsharpException)
@@ -17398,10 +19657,10 @@ namespace System
 	AppDomainInitializer::AppDomainInitializer()
 	{
 		CppHandle = Plugin::StoreSystemAppDomainInitializer(this);
-		int32_t* handle = &Handle;
+		System::Int32* handle = (System::Int32*)&Handle;
 		int32_t cppHandle = CppHandle;
-		int32_t* classHandle = &ClassHandle;
-		Plugin::SystemAppDomainInitializerConstructor(cppHandle, handle, classHandle);
+		System::Int32* classHandle = (System::Int32*)&ClassHandle;
+		Plugin::SystemAppDomainInitializerConstructor(cppHandle, &handle->Value, &classHandle->Value);
 		if (Plugin::unhandledCsharpException)
 		{
 			System::Exception* ex = Plugin::unhandledCsharpException;
@@ -17455,7 +19714,7 @@ namespace System
 		other.ClassHandle = 0;
 	}
 	
-	AppDomainInitializer::AppDomainInitializer(Plugin::InternalUse iu, int32_t handle)
+	AppDomainInitializer::AppDomainInitializer(Plugin::InternalUse, int32_t handle)
 	{
 		Handle = handle;
 		CppHandle = Plugin::StoreSystemAppDomainInitializer(this);
@@ -17636,10 +19895,10 @@ namespace UnityEngine
 		UnityAction::UnityAction()
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityAction(this);
-			int32_t* handle = &Handle;
+			System::Int32* handle = (System::Int32*)&Handle;
 			int32_t cppHandle = CppHandle;
-			int32_t* classHandle = &ClassHandle;
-			Plugin::UnityEngineEventsUnityActionConstructor(cppHandle, handle, classHandle);
+			System::Int32* classHandle = (System::Int32*)&ClassHandle;
+			Plugin::UnityEngineEventsUnityActionConstructor(cppHandle, &handle->Value, &classHandle->Value);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -17693,7 +19952,7 @@ namespace UnityEngine
 			other.ClassHandle = 0;
 		}
 		
-		UnityAction::UnityAction(Plugin::InternalUse iu, int32_t handle)
+		UnityAction::UnityAction(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			CppHandle = Plugin::StoreUnityEngineEventsUnityAction(this);
@@ -17874,10 +20133,10 @@ namespace UnityEngine
 		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::UnityAction2()
 		{
 			CppHandle = Plugin::StoreUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(this);
-			int32_t* handle = &Handle;
+			System::Int32* handle = (System::Int32*)&Handle;
 			int32_t cppHandle = CppHandle;
-			int32_t* classHandle = &ClassHandle;
-			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor(cppHandle, handle, classHandle);
+			System::Int32* classHandle = (System::Int32*)&ClassHandle;
+			Plugin::UnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneModeConstructor(cppHandle, &handle->Value, &classHandle->Value);
 			if (Plugin::unhandledCsharpException)
 			{
 				System::Exception* ex = Plugin::unhandledCsharpException;
@@ -17931,7 +20190,7 @@ namespace UnityEngine
 			other.ClassHandle = 0;
 		}
 		
-		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::UnityAction2(Plugin::InternalUse iu, int32_t handle)
+		UnityAction2<UnityEngine::SceneManagement::Scene, UnityEngine::SceneManagement::LoadSceneMode>::UnityAction2(Plugin::InternalUse, int32_t handle)
 		{
 			Handle = handle;
 			CppHandle = Plugin::StoreUnityEngineEventsUnityActionUnityEngineSceneManagementScene_UnityEngineSceneManagementLoadSceneMode(this);
@@ -18115,10 +20374,10 @@ namespace System
 			ComponentEventHandler::ComponentEventHandler()
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
-				int32_t* handle = &Handle;
+				System::Int32* handle = (System::Int32*)&Handle;
 				int32_t cppHandle = CppHandle;
-				int32_t* classHandle = &ClassHandle;
-				Plugin::SystemComponentModelDesignComponentEventHandlerConstructor(cppHandle, handle, classHandle);
+				System::Int32* classHandle = (System::Int32*)&ClassHandle;
+				Plugin::SystemComponentModelDesignComponentEventHandlerConstructor(cppHandle, &handle->Value, &classHandle->Value);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -18172,7 +20431,7 @@ namespace System
 				other.ClassHandle = 0;
 			}
 			
-			ComponentEventHandler::ComponentEventHandler(Plugin::InternalUse iu, int32_t handle)
+			ComponentEventHandler::ComponentEventHandler(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentEventHandler(this);
@@ -18358,10 +20617,10 @@ namespace System
 			ComponentChangingEventHandler::ComponentChangingEventHandler()
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
-				int32_t* handle = &Handle;
+				System::Int32* handle = (System::Int32*)&Handle;
 				int32_t cppHandle = CppHandle;
-				int32_t* classHandle = &ClassHandle;
-				Plugin::SystemComponentModelDesignComponentChangingEventHandlerConstructor(cppHandle, handle, classHandle);
+				System::Int32* classHandle = (System::Int32*)&ClassHandle;
+				Plugin::SystemComponentModelDesignComponentChangingEventHandlerConstructor(cppHandle, &handle->Value, &classHandle->Value);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -18415,7 +20674,7 @@ namespace System
 				other.ClassHandle = 0;
 			}
 			
-			ComponentChangingEventHandler::ComponentChangingEventHandler(Plugin::InternalUse iu, int32_t handle)
+			ComponentChangingEventHandler::ComponentChangingEventHandler(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangingEventHandler(this);
@@ -18601,10 +20860,10 @@ namespace System
 			ComponentChangedEventHandler::ComponentChangedEventHandler()
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
-				int32_t* handle = &Handle;
+				System::Int32* handle = (System::Int32*)&Handle;
 				int32_t cppHandle = CppHandle;
-				int32_t* classHandle = &ClassHandle;
-				Plugin::SystemComponentModelDesignComponentChangedEventHandlerConstructor(cppHandle, handle, classHandle);
+				System::Int32* classHandle = (System::Int32*)&ClassHandle;
+				Plugin::SystemComponentModelDesignComponentChangedEventHandlerConstructor(cppHandle, &handle->Value, &classHandle->Value);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -18658,7 +20917,7 @@ namespace System
 				other.ClassHandle = 0;
 			}
 			
-			ComponentChangedEventHandler::ComponentChangedEventHandler(Plugin::InternalUse iu, int32_t handle)
+			ComponentChangedEventHandler::ComponentChangedEventHandler(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentChangedEventHandler(this);
@@ -18844,10 +21103,10 @@ namespace System
 			ComponentRenameEventHandler::ComponentRenameEventHandler()
 			{
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
-				int32_t* handle = &Handle;
+				System::Int32* handle = (System::Int32*)&Handle;
 				int32_t cppHandle = CppHandle;
-				int32_t* classHandle = &ClassHandle;
-				Plugin::SystemComponentModelDesignComponentRenameEventHandlerConstructor(cppHandle, handle, classHandle);
+				System::Int32* classHandle = (System::Int32*)&ClassHandle;
+				Plugin::SystemComponentModelDesignComponentRenameEventHandlerConstructor(cppHandle, &handle->Value, &classHandle->Value);
 				if (Plugin::unhandledCsharpException)
 				{
 					System::Exception* ex = Plugin::unhandledCsharpException;
@@ -18901,7 +21160,7 @@ namespace System
 				other.ClassHandle = 0;
 			}
 			
-			ComponentRenameEventHandler::ComponentRenameEventHandler(Plugin::InternalUse iu, int32_t handle)
+			ComponentRenameEventHandler::ComponentRenameEventHandler(Plugin::InternalUse, int32_t handle)
 			{
 				Handle = handle;
 				CppHandle = Plugin::StoreSystemComponentModelDesignComponentRenameEventHandler(this);
@@ -19137,9 +21396,10 @@ DLLEXPORT void Init(
 	int32_t (*enumerableGetEnumerator)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
 	int32_t maxManagedObjects,
+	System::Int32 (*systemIComparableMethodCompareToSystemObject)(int32_t thisHandle, int32_t objHandle),
 	void (*systemIDisposableMethodDispose)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
-	float (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
+	System::Single (*unityEngineVector3PropertyGetMagnitude)(UnityEngine::Vector3* thiz),
 	void (*unityEngineVector3MethodSetSystemSingle_SystemSingle_SystemSingle)(UnityEngine::Vector3* thiz, float newX, float newY, float newZ),
 	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b),
 	UnityEngine::Vector3 (*unityEngineVector3Methodop_UnaryNegationUnityEngineVector3)(UnityEngine::Vector3& a),
@@ -19158,11 +21418,12 @@ DLLEXPORT void Init(
 	int32_t (*boxGradientColorKey)(UnityEngine::GradientColorKey& val),
 	UnityEngine::GradientColorKey (*unboxGradientColorKey)(int32_t valHandle),
 	void (*releaseUnityEngineResolution)(int32_t handle),
-	int32_t (*unityEngineResolutionPropertyGetWidth)(int32_t thisHandle),
+	int32_t (*unityEngineResolutionConstructor)(),
+	System::Int32 (*unityEngineResolutionPropertyGetWidth)(int32_t thisHandle),
 	void (*unityEngineResolutionPropertySetWidth)(int32_t thisHandle, int32_t value),
-	int32_t (*unityEngineResolutionPropertyGetHeight)(int32_t thisHandle),
+	System::Int32 (*unityEngineResolutionPropertyGetHeight)(int32_t thisHandle),
 	void (*unityEngineResolutionPropertySetHeight)(int32_t thisHandle, int32_t value),
-	int32_t (*unityEngineResolutionPropertyGetRefreshRate)(int32_t thisHandle),
+	System::Int32 (*unityEngineResolutionPropertyGetRefreshRate)(int32_t thisHandle),
 	void (*unityEngineResolutionPropertySetRefreshRate)(int32_t thisHandle, int32_t value),
 	int32_t (*boxResolution)(int32_t valHandle),
 	int32_t (*unboxResolution)(int32_t valHandle),
@@ -19174,27 +21435,15 @@ DLLEXPORT void Init(
 	int32_t (*unboxRaycastHit)(int32_t valHandle),
 	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
 	int32_t (*systemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent)(int32_t thisHandle),
-	float (*systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent)(int32_t thisHandle),
-	UnityEngine::GradientColorKey (*systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator)(int32_t thisHandle),
-	int32_t (*systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator)(int32_t thisHandle),
 	void (*releaseUnityEnginePlayablesPlayableGraph)(int32_t handle),
 	int32_t (*boxPlayableGraph)(int32_t valHandle),
 	int32_t (*unboxPlayableGraph)(int32_t valHandle),
 	void (*releaseUnityEngineAnimationsAnimationMixerPlayable)(int32_t handle),
-	int32_t (*unityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean)(int32_t graphHandle, int32_t inputCount, System::Boolean normalizeWeights),
+	int32_t (*unityEngineAnimationsAnimationMixerPlayableMethodCreateUnityEnginePlayablesPlayableGraph_SystemInt32_SystemBoolean)(int32_t graphHandle, int32_t inputCount, uint32_t normalizeWeights),
 	int32_t (*boxAnimationMixerPlayable)(int32_t valHandle),
 	int32_t (*unboxAnimationMixerPlayable)(int32_t valHandle),
 	int32_t (*systemDiagnosticsStopwatchConstructor)(),
-	int64_t (*systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
+	System::Int64 (*systemDiagnosticsStopwatchPropertyGetElapsedMilliseconds)(int32_t thisHandle),
 	void (*systemDiagnosticsStopwatchMethodStart)(int32_t thisHandle),
 	void (*systemDiagnosticsStopwatchMethodReset)(int32_t thisHandle),
 	int32_t (*unityEngineGameObjectConstructor)(),
@@ -19205,7 +21454,7 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type),
 	void (*unityEngineDebugMethodLogSystemObject)(int32_t messageHandle),
 	int32_t (*unityEngineAssertionsAssertFieldGetRaiseExceptions)(),
-	void (*unityEngineAssertionsAssertFieldSetRaiseExceptions)(System::Boolean value),
+	void (*unityEngineAssertionsAssertFieldSetRaiseExceptions)(uint32_t value),
 	void (*unityEngineAssertionsAssertMethodAreEqualSystemStringSystemString_SystemString)(int32_t expectedHandle, int32_t actualHandle),
 	void (*unityEngineAssertionsAssertMethodAreEqualUnityEngineGameObjectUnityEngineGameObject_UnityEngineGameObject)(int32_t expectedHandle, int32_t actualHandle),
 	int32_t (*unityEngineMonoBehaviourPropertyGetTransform)(int32_t thisHandle),
@@ -19214,7 +21463,7 @@ DLLEXPORT void Init(
 	void (*unityEngineNetworkingNetworkTransportMethodInit)(),
 	int32_t (*boxQuaternion)(UnityEngine::Quaternion& val),
 	UnityEngine::Quaternion (*unboxQuaternion)(int32_t valHandle),
-	float (*unityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column),
+	System::Single (*unityEngineMatrix4x4PropertyGetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column),
 	void (*unityEngineMatrix4x4PropertySetItem)(UnityEngine::Matrix4x4* thiz, int32_t row, int32_t column, float value),
 	int32_t (*boxMatrix4x4)(UnityEngine::Matrix4x4& val),
 	UnityEngine::Matrix4x4 (*unboxMatrix4x4)(int32_t valHandle),
@@ -19223,19 +21472,9 @@ DLLEXPORT void Init(
 	void (*releaseSystemCollectionsGenericKeyValuePairSystemString_SystemDouble)(int32_t handle),
 	int32_t (*systemCollectionsGenericKeyValuePairSystemString_SystemDoubleConstructorSystemString_SystemDouble)(int32_t keyHandle, double value),
 	int32_t (*systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetKey)(int32_t thisHandle),
-	double (*systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle),
+	System::Double (*systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue)(int32_t thisHandle),
 	int32_t (*boxKeyValuePairSystemString_SystemDouble)(int32_t valHandle),
 	int32_t (*unboxKeyValuePairSystemString_SystemDouble)(int32_t valHandle),
-	int32_t (*systemCollectionsGenericListSystemStringConstructor)(),
-	int32_t (*systemCollectionsGenericListSystemStringPropertyGetItem)(int32_t thisHandle, int32_t index),
-	void (*systemCollectionsGenericListSystemStringPropertySetItem)(int32_t thisHandle, int32_t index, int32_t valueHandle),
-	void (*systemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle),
-	void (*systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle),
-	int32_t (*systemCollectionsGenericListSystemInt32Constructor)(),
-	int32_t (*systemCollectionsGenericListSystemInt32PropertyGetItem)(int32_t thisHandle, int32_t index),
-	void (*systemCollectionsGenericListSystemInt32PropertySetItem)(int32_t thisHandle, int32_t index, int32_t value),
-	void (*systemCollectionsGenericListSystemInt32MethodAddSystemInt32)(int32_t thisHandle, int32_t item),
-	void (*systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle),
 	int32_t (*systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString)(int32_t valueHandle),
 	int32_t (*systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue)(int32_t thisHandle),
 	void (*systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue)(int32_t thisHandle, int32_t valueHandle),
@@ -19248,7 +21487,7 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineRayConstructorUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& origin, UnityEngine::Vector3& direction),
 	int32_t (*boxRay)(int32_t valHandle),
 	int32_t (*unboxRay)(int32_t valHandle),
-	int32_t (*unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1)(int32_t rayHandle, int32_t resultsHandle),
+	System::Int32 (*unityEnginePhysicsMethodRaycastNonAllocUnityEngineRay_UnityEngineRaycastHitArray1)(int32_t rayHandle, int32_t resultsHandle),
 	int32_t (*unityEnginePhysicsMethodRaycastAllUnityEngineRay)(int32_t rayHandle),
 	int32_t (*unityEngineGradientConstructor)(),
 	int32_t (*unityEngineGradientPropertyGetColorKeys)(int32_t thisHandle),
@@ -19267,7 +21506,7 @@ DLLEXPORT void Init(
 	UnityEngine::SceneManagement::LoadSceneMode (*unboxLoadSceneMode)(int32_t valHandle),
 	int32_t (*boxPrimitiveType)(UnityEngine::PrimitiveType val),
 	UnityEngine::PrimitiveType (*unboxPrimitiveType)(int32_t valHandle),
-	float (*unityEngineTimePropertyGetDeltaTime)(),
+	System::Single (*unityEngineTimePropertyGetDeltaTime)(),
 	int32_t (*boxFileMode)(System::IO::FileMode val),
 	System::IO::FileMode (*unboxFileMode)(int32_t valHandle),
 	void (*releaseSystemCollectionsGenericBaseIComparerSystemInt32)(int32_t handle),
@@ -19276,7 +21515,7 @@ DLLEXPORT void Init(
 	void (*systemCollectionsGenericBaseIComparerSystemStringConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemBaseStringComparer)(int32_t handle),
 	void (*systemBaseStringComparerConstructor)(int32_t cppHandle, int32_t* handle),
-	int32_t (*systemCollectionsQueuePropertyGetCount)(int32_t thisHandle),
+	System::Int32 (*systemCollectionsQueuePropertyGetCount)(int32_t thisHandle),
 	void (*releaseSystemCollectionsBaseQueue)(int32_t handle),
 	void (*systemCollectionsBaseQueueConstructor)(int32_t cppHandle, int32_t* handle),
 	void (*releaseSystemComponentModelDesignBaseIComponentChangeService)(int32_t handle),
@@ -19288,6 +21527,8 @@ DLLEXPORT void Init(
 	void (*releaseUnityEnginePlayablesPlayableHandle)(int32_t handle),
 	int32_t (*boxPlayableHandle)(int32_t valHandle),
 	int32_t (*unboxPlayableHandle)(int32_t valHandle),
+	int32_t (*systemCollectionsGenericIEnumeratorUnityEngineExperimentalUIElementsVisualElementPropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableUnityEngineExperimentalUIElementsVisualElementMethodGetEnumerator)(int32_t thisHandle),
 	int32_t (*unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1)(int32_t eHandle, int32_t nameHandle, int32_t classesHandle),
 	int32_t (*unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString)(int32_t eHandle, int32_t nameHandle, int32_t classNameHandle),
 	int32_t (*boxInteractionSourcePositionAccuracy)(UnityEngine::XR::WSA::Input::InteractionSourcePositionAccuracy val),
@@ -19298,43 +21539,65 @@ DLLEXPORT void Init(
 	int32_t (*unityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode)(int32_t thisHandle, UnityEngine::Quaternion* rotation, UnityEngine::XR::WSA::Input::InteractionSourceNode node),
 	int32_t (*boxInteractionSourcePose)(int32_t valHandle),
 	int32_t (*unboxInteractionSourcePose)(int32_t valHandle),
-	int32_t (*boxBoolean)(System::Boolean val),
+	int32_t (*systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent)(int32_t thisHandle),
+	System::Int32 (*systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent)(int32_t thisHandle),
+	System::Single (*systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent)(int32_t thisHandle),
+	UnityEngine::GradientColorKey (*systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator)(int32_t thisHandle),
+	int32_t (*systemCollectionsGenericListSystemStringConstructor)(),
+	int32_t (*systemCollectionsGenericListSystemStringPropertyGetItem)(int32_t thisHandle, int32_t index),
+	void (*systemCollectionsGenericListSystemStringPropertySetItem)(int32_t thisHandle, int32_t index, int32_t valueHandle),
+	void (*systemCollectionsGenericListSystemStringMethodAddSystemString)(int32_t thisHandle, int32_t itemHandle),
+	void (*systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle),
+	int32_t (*systemCollectionsGenericListSystemInt32Constructor)(),
+	System::Int32 (*systemCollectionsGenericListSystemInt32PropertyGetItem)(int32_t thisHandle, int32_t index),
+	void (*systemCollectionsGenericListSystemInt32PropertySetItem)(int32_t thisHandle, int32_t index, int32_t value),
+	void (*systemCollectionsGenericListSystemInt32MethodAddSystemInt32)(int32_t thisHandle, int32_t item),
+	void (*systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer)(int32_t thisHandle, int32_t comparerHandle),
+	int32_t (*boxBoolean)(uint32_t val),
 	int32_t (*unboxBoolean)(int32_t valHandle),
 	int32_t (*boxSByte)(int8_t val),
-	int8_t (*unboxSByte)(int32_t valHandle),
+	System::SByte (*unboxSByte)(int32_t valHandle),
 	int32_t (*boxByte)(uint8_t val),
-	uint8_t (*unboxByte)(int32_t valHandle),
+	System::Byte (*unboxByte)(int32_t valHandle),
 	int32_t (*boxInt16)(int16_t val),
-	int16_t (*unboxInt16)(int32_t valHandle),
+	System::Int16 (*unboxInt16)(int32_t valHandle),
 	int32_t (*boxUInt16)(uint16_t val),
-	uint16_t (*unboxUInt16)(int32_t valHandle),
+	System::UInt16 (*unboxUInt16)(int32_t valHandle),
 	int32_t (*boxInt32)(int32_t val),
-	int32_t (*unboxInt32)(int32_t valHandle),
+	System::Int32 (*unboxInt32)(int32_t valHandle),
 	int32_t (*boxUInt32)(uint32_t val),
-	uint32_t (*unboxUInt32)(int32_t valHandle),
+	System::UInt32 (*unboxUInt32)(int32_t valHandle),
 	int32_t (*boxInt64)(int64_t val),
-	int64_t (*unboxInt64)(int32_t valHandle),
+	System::Int64 (*unboxInt64)(int32_t valHandle),
 	int32_t (*boxUInt64)(uint64_t val),
-	uint64_t (*unboxUInt64)(int32_t valHandle),
-	int32_t (*boxChar)(System::Char val),
+	System::UInt64 (*unboxUInt64)(int32_t valHandle),
+	int32_t (*boxChar)(uint16_t val),
 	int16_t (*unboxChar)(int32_t valHandle),
 	int32_t (*boxSingle)(float val),
-	float (*unboxSingle)(int32_t valHandle),
+	System::Single (*unboxSingle)(int32_t valHandle),
 	int32_t (*boxDouble)(double val),
-	double (*unboxDouble)(int32_t valHandle),
+	System::Double (*unboxDouble)(int32_t valHandle),
 	int32_t (*systemSystemInt32Array1Constructor1)(int32_t length0),
-	int32_t (*systemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0),
+	System::Int32 (*systemInt32Array1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*systemInt32Array1SetItem1)(int32_t thisHandle, int32_t index0, int32_t item),
 	int32_t (*systemSystemSingleArray1Constructor1)(int32_t length0),
-	float (*systemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0),
+	System::Single (*systemSingleArray1GetItem1)(int32_t thisHandle, int32_t index0),
 	int32_t (*systemSingleArray1SetItem1)(int32_t thisHandle, int32_t index0, float item),
 	int32_t (*systemSystemSingleArray2Constructor2)(int32_t length0, int32_t length1),
 	int32_t (*systemSystemSingleArray2GetLength2)(int32_t thisHandle, int32_t dimension),
-	float (*systemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1),
+	System::Single (*systemSingleArray2GetItem2)(int32_t thisHandle, int32_t index0, int32_t index1),
 	int32_t (*systemSingleArray2SetItem2)(int32_t thisHandle, int32_t index0, int32_t index1, float item),
 	int32_t (*systemSystemSingleArray3Constructor3)(int32_t length0, int32_t length1, int32_t length2),
 	int32_t (*systemSystemSingleArray3GetLength3)(int32_t thisHandle, int32_t dimension),
-	float (*systemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2),
+	System::Single (*systemSingleArray3GetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2),
 	int32_t (*systemSingleArray3SetItem3)(int32_t thisHandle, int32_t index0, int32_t index1, int32_t index2, float item),
 	int32_t (*systemSystemStringArray1Constructor1)(int32_t length0),
 	int32_t (*systemStringArray1GetItem1)(int32_t thisHandle, int32_t index0),
@@ -19367,7 +21630,7 @@ DLLEXPORT void Init(
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleAdd)(int32_t thisHandle, int32_t delHandle),
 	void (*systemFuncSystemInt32_SystemSingle_SystemDoubleRemove)(int32_t thisHandle, int32_t delHandle),
-	double (*systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2),
+	System::Double (*systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke)(int32_t thisHandle, int32_t arg1, float arg2),
 	void (*releaseSystemFuncSystemInt16_SystemInt32_SystemString)(int32_t handle, int32_t classHandle),
 	void (*systemFuncSystemInt16_SystemInt32_SystemStringConstructor)(int32_t cppHandle, int32_t* handle, int32_t* classHandle),
 	void (*systemFuncSystemInt16_SystemInt32_SystemStringAdd)(int32_t thisHandle, int32_t delHandle),
@@ -19424,6 +21687,7 @@ DLLEXPORT void Init(
 	Plugin::ArrayGetLength = arrayGetLength;
 	Plugin::EnumerableGetEnumerator = enumerableGetEnumerator;
 	/*BEGIN INIT BODY*/
+	Plugin::SystemIComparableMethodCompareToSystemObject = systemIComparableMethodCompareToSystemObject;
 	Plugin::SystemIDisposableMethodDispose = systemIDisposableMethodDispose;
 	Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
 	Plugin::UnityEngineVector3PropertyGetMagnitude = unityEngineVector3PropertyGetMagnitude;
@@ -19448,6 +21712,7 @@ DLLEXPORT void Init(
 	Plugin::RefCountsUnityEngineResolution = (int32_t*)curMemory;
 	curMemory += 1000 * sizeof(int32_t);
 	Plugin::RefCountsLenUnityEngineResolution = 1000;
+	Plugin::UnityEngineResolutionConstructor = unityEngineResolutionConstructor;
 	Plugin::UnityEngineResolutionPropertyGetWidth = unityEngineResolutionPropertyGetWidth;
 	Plugin::UnityEngineResolutionPropertySetWidth = unityEngineResolutionPropertySetWidth;
 	Plugin::UnityEngineResolutionPropertyGetHeight = unityEngineResolutionPropertyGetHeight;
@@ -19467,18 +21732,6 @@ DLLEXPORT void Init(
 	Plugin::UnboxRaycastHit = unboxRaycastHit;
 	Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent = systemCollectionsIEnumeratorPropertyGetCurrent;
 	Plugin::SystemCollectionsIEnumeratorMethodMoveNext = systemCollectionsIEnumeratorMethodMoveNext;
-	Plugin::SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent;
-	Plugin::SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent;
-	Plugin::SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent;
-	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent;
-	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent;
-	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent;
-	Plugin::SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator = systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator;
-	Plugin::SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator = systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator;
-	Plugin::SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator = systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator;
-	Plugin::SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator;
-	Plugin::SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator;
-	Plugin::SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator;
 	Plugin::ReleaseUnityEnginePlayablesPlayableGraph = releaseUnityEnginePlayablesPlayableGraph;
 	Plugin::RefCountsUnityEnginePlayablesPlayableGraph = (int32_t*)curMemory;
 	curMemory += 1000 * sizeof(int32_t);
@@ -19528,16 +21781,6 @@ DLLEXPORT void Init(
 	Plugin::SystemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue = systemCollectionsGenericKeyValuePairSystemString_SystemDoublePropertyGetValue;
 	Plugin::BoxKeyValuePairSystemString_SystemDouble = boxKeyValuePairSystemString_SystemDouble;
 	Plugin::UnboxKeyValuePairSystemString_SystemDouble = unboxKeyValuePairSystemString_SystemDouble;
-	Plugin::SystemCollectionsGenericListSystemStringConstructor = systemCollectionsGenericListSystemStringConstructor;
-	Plugin::SystemCollectionsGenericListSystemStringPropertyGetItem = systemCollectionsGenericListSystemStringPropertyGetItem;
-	Plugin::SystemCollectionsGenericListSystemStringPropertySetItem = systemCollectionsGenericListSystemStringPropertySetItem;
-	Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString = systemCollectionsGenericListSystemStringMethodAddSystemString;
-	Plugin::SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer = systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer;
-	Plugin::SystemCollectionsGenericListSystemInt32Constructor = systemCollectionsGenericListSystemInt32Constructor;
-	Plugin::SystemCollectionsGenericListSystemInt32PropertyGetItem = systemCollectionsGenericListSystemInt32PropertyGetItem;
-	Plugin::SystemCollectionsGenericListSystemInt32PropertySetItem = systemCollectionsGenericListSystemInt32PropertySetItem;
-	Plugin::SystemCollectionsGenericListSystemInt32MethodAddSystemInt32 = systemCollectionsGenericListSystemInt32MethodAddSystemInt32;
-	Plugin::SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer = systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer;
 	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString = systemCollectionsGenericLinkedListNodeSystemStringConstructorSystemString;
 	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertyGetValue;
 	Plugin::SystemCollectionsGenericLinkedListNodeSystemStringPropertySetValue = systemCollectionsGenericLinkedListNodeSystemStringPropertySetValue;
@@ -19579,8 +21822,8 @@ DLLEXPORT void Init(
 	Plugin::BoxFileMode = boxFileMode;
 	Plugin::UnboxFileMode = unboxFileMode;
 	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize = 1000;
-	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList = (System::Collections::Generic::BaseIComparer<int32_t>**)curMemory;
-	curMemory += 1000 * sizeof(System::Collections::Generic::BaseIComparer<int32_t>*);
+	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList = (System::Collections::Generic::BaseIComparer<System::Int32>**)curMemory;
+	curMemory += 1000 * sizeof(System::Collections::Generic::BaseIComparer<System::Int32>*);
 	
 	Plugin::ReleaseSystemCollectionsGenericBaseIComparerSystemInt32 = releaseSystemCollectionsGenericBaseIComparerSystemInt32;
 	Plugin::SystemCollectionsGenericBaseIComparerSystemInt32Constructor = systemCollectionsGenericBaseIComparerSystemInt32Constructor;
@@ -19623,6 +21866,8 @@ DLLEXPORT void Init(
 	Plugin::RefCountsLenUnityEnginePlayablesPlayableHandle = 1000;
 	Plugin::BoxPlayableHandle = boxPlayableHandle;
 	Plugin::UnboxPlayableHandle = unboxPlayableHandle;
+	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineExperimentalUIElementsVisualElementPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineExperimentalUIElementsVisualElementPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumerableUnityEngineExperimentalUIElementsVisualElementMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineExperimentalUIElementsVisualElementMethodGetEnumerator;
 	Plugin::UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1 = unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemStringArray1;
 	Plugin::UnityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString = unityEngineExperimentalUIElementsUQueryExtensionsMethodQUnityEngineExperimentalUIElementsVisualElement_SystemString_SystemString;
 	Plugin::BoxInteractionSourcePositionAccuracy = boxInteractionSourcePositionAccuracy;
@@ -19636,6 +21881,28 @@ DLLEXPORT void Init(
 	Plugin::UnityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode = unityEngineXRWSAInputInteractionSourcePoseMethodTryGetRotationUnityEngineQuaternion_UnityEngineXRWSAInputInteractionSourceNode;
 	Plugin::BoxInteractionSourcePose = boxInteractionSourcePose;
 	Plugin::UnboxInteractionSourcePose = unboxInteractionSourcePose;
+	Plugin::SystemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemStringPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemInt32PropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent = systemCollectionsGenericIEnumeratorSystemSinglePropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineRaycastHitPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineGradientColorKeyPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent = systemCollectionsGenericIEnumeratorUnityEngineResolutionPropertyGetCurrent;
+	Plugin::SystemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator = systemCollectionsGenericIEnumerableSystemStringMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator = systemCollectionsGenericIEnumerableSystemInt32MethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator = systemCollectionsGenericIEnumerableSystemSingleMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineRaycastHitMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineGradientColorKeyMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator = systemCollectionsGenericIEnumerableUnityEngineResolutionMethodGetEnumerator;
+	Plugin::SystemCollectionsGenericListSystemStringConstructor = systemCollectionsGenericListSystemStringConstructor;
+	Plugin::SystemCollectionsGenericListSystemStringPropertyGetItem = systemCollectionsGenericListSystemStringPropertyGetItem;
+	Plugin::SystemCollectionsGenericListSystemStringPropertySetItem = systemCollectionsGenericListSystemStringPropertySetItem;
+	Plugin::SystemCollectionsGenericListSystemStringMethodAddSystemString = systemCollectionsGenericListSystemStringMethodAddSystemString;
+	Plugin::SystemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer = systemCollectionsGenericListSystemStringMethodSortSystemCollectionsGenericIComparer;
+	Plugin::SystemCollectionsGenericListSystemInt32Constructor = systemCollectionsGenericListSystemInt32Constructor;
+	Plugin::SystemCollectionsGenericListSystemInt32PropertyGetItem = systemCollectionsGenericListSystemInt32PropertyGetItem;
+	Plugin::SystemCollectionsGenericListSystemInt32PropertySetItem = systemCollectionsGenericListSystemInt32PropertySetItem;
+	Plugin::SystemCollectionsGenericListSystemInt32MethodAddSystemInt32 = systemCollectionsGenericListSystemInt32MethodAddSystemInt32;
+	Plugin::SystemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer = systemCollectionsGenericListSystemInt32MethodSortSystemCollectionsGenericIComparer;
 	Plugin::BoxBoolean = boxBoolean;
 	Plugin::UnboxBoolean = unboxBoolean;
 	Plugin::BoxSByte = boxSByte;
@@ -19696,8 +21963,8 @@ DLLEXPORT void Init(
 	Plugin::SystemActionRemove = systemActionRemove;
 	Plugin::SystemActionInvoke = systemActionInvoke;
 	Plugin::SystemActionSystemSingleFreeListSize = 1000;
-	Plugin::SystemActionSystemSingleFreeList = (System::Action1<float>**)curMemory;
-	curMemory += 1000 * sizeof(System::Action1<float>*);
+	Plugin::SystemActionSystemSingleFreeList = (System::Action1<System::Single>**)curMemory;
+	curMemory += 1000 * sizeof(System::Action1<System::Single>*);
 	
 	Plugin::ReleaseSystemActionSystemSingle = releaseSystemActionSystemSingle;
 	Plugin::SystemActionSystemSingleConstructor = systemActionSystemSingleConstructor;
@@ -19705,8 +21972,8 @@ DLLEXPORT void Init(
 	Plugin::SystemActionSystemSingleRemove = systemActionSystemSingleRemove;
 	Plugin::SystemActionSystemSingleInvoke = systemActionSystemSingleInvoke;
 	Plugin::SystemActionSystemSingle_SystemSingleFreeListSize = 100;
-	Plugin::SystemActionSystemSingle_SystemSingleFreeList = (System::Action2<float, float>**)curMemory;
-	curMemory += 100 * sizeof(System::Action2<float, float>*);
+	Plugin::SystemActionSystemSingle_SystemSingleFreeList = (System::Action2<System::Single, System::Single>**)curMemory;
+	curMemory += 100 * sizeof(System::Action2<System::Single, System::Single>*);
 	
 	Plugin::ReleaseSystemActionSystemSingle_SystemSingle = releaseSystemActionSystemSingle_SystemSingle;
 	Plugin::SystemActionSystemSingle_SystemSingleConstructor = systemActionSystemSingle_SystemSingleConstructor;
@@ -19714,8 +21981,8 @@ DLLEXPORT void Init(
 	Plugin::SystemActionSystemSingle_SystemSingleRemove = systemActionSystemSingle_SystemSingleRemove;
 	Plugin::SystemActionSystemSingle_SystemSingleInvoke = systemActionSystemSingle_SystemSingleInvoke;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize = 50;
-	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList = (System::Func3<int32_t, float, double>**)curMemory;
-	curMemory += 50 * sizeof(System::Func3<int32_t, float, double>*);
+	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList = (System::Func3<System::Int32, System::Single, System::Double>**)curMemory;
+	curMemory += 50 * sizeof(System::Func3<System::Int32, System::Single, System::Double>*);
 	
 	Plugin::ReleaseSystemFuncSystemInt32_SystemSingle_SystemDouble = releaseSystemFuncSystemInt32_SystemSingle_SystemDouble;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleConstructor = systemFuncSystemInt32_SystemSingle_SystemDoubleConstructor;
@@ -19723,8 +21990,8 @@ DLLEXPORT void Init(
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleRemove = systemFuncSystemInt32_SystemSingle_SystemDoubleRemove;
 	Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleInvoke = systemFuncSystemInt32_SystemSingle_SystemDoubleInvoke;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize = 25;
-	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList = (System::Func3<int16_t, int32_t, System::String>**)curMemory;
-	curMemory += 25 * sizeof(System::Func3<int16_t, int32_t, System::String>*);
+	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList = (System::Func3<System::Int16, System::Int32, System::String>**)curMemory;
+	curMemory += 25 * sizeof(System::Func3<System::Int16, System::Int32, System::String>*);
 	
 	Plugin::ReleaseSystemFuncSystemInt16_SystemInt32_SystemString = releaseSystemFuncSystemInt16_SystemInt32_SystemString;
 	Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringConstructor = systemFuncSystemInt16_SystemInt32_SystemStringConstructor;
@@ -19797,7 +22064,7 @@ DLLEXPORT void Init(
 	/*END INIT BODY*/
 	
 	// Make sure there was enough memory
-	int32_t usedMemory = curMemory - (uint8_t*)memory;
+	int32_t usedMemory = (int32_t)(curMemory - (uint8_t*)memory);
 	if (usedMemory > memorySize)
 	{
 		System::String msg = "Plugin memory size is too low";
@@ -19813,7 +22080,7 @@ DLLEXPORT void Init(
 		/*BEGIN INIT BODY FIRST BOOT*/
 		for (int32_t i = 0, end = Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1; i < end; ++i)
 		{
-			Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList[i] = (System::Collections::Generic::BaseIComparer<int32_t>*)(Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList + i + 1);
+			Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList[i] = (System::Collections::Generic::BaseIComparer<System::Int32>*)(Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList + i + 1);
 		}
 		Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList[Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeListSize - 1] = nullptr;
 		Plugin::NextFreeSystemCollectionsGenericBaseIComparerSystemInt32 = Plugin::SystemCollectionsGenericBaseIComparerSystemInt32FreeList + 1;
@@ -19862,28 +22129,28 @@ DLLEXPORT void Init(
 		
 		for (int32_t i = 0, end = Plugin::SystemActionSystemSingleFreeListSize - 1; i < end; ++i)
 		{
-			Plugin::SystemActionSystemSingleFreeList[i] = (System::Action1<float>*)(Plugin::SystemActionSystemSingleFreeList + i + 1);
+			Plugin::SystemActionSystemSingleFreeList[i] = (System::Action1<System::Single>*)(Plugin::SystemActionSystemSingleFreeList + i + 1);
 		}
 		Plugin::SystemActionSystemSingleFreeList[Plugin::SystemActionSystemSingleFreeListSize - 1] = nullptr;
 		Plugin::NextFreeSystemActionSystemSingle = Plugin::SystemActionSystemSingleFreeList + 1;
 		
 		for (int32_t i = 0, end = Plugin::SystemActionSystemSingle_SystemSingleFreeListSize - 1; i < end; ++i)
 		{
-			Plugin::SystemActionSystemSingle_SystemSingleFreeList[i] = (System::Action2<float, float>*)(Plugin::SystemActionSystemSingle_SystemSingleFreeList + i + 1);
+			Plugin::SystemActionSystemSingle_SystemSingleFreeList[i] = (System::Action2<System::Single, System::Single>*)(Plugin::SystemActionSystemSingle_SystemSingleFreeList + i + 1);
 		}
 		Plugin::SystemActionSystemSingle_SystemSingleFreeList[Plugin::SystemActionSystemSingle_SystemSingleFreeListSize - 1] = nullptr;
 		Plugin::NextFreeSystemActionSystemSingle_SystemSingle = Plugin::SystemActionSystemSingle_SystemSingleFreeList + 1;
 		
 		for (int32_t i = 0, end = Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize - 1; i < end; ++i)
 		{
-			Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[i] = (System::Func3<int32_t, float, double>*)(Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + i + 1);
+			Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[i] = (System::Func3<System::Int32, System::Single, System::Double>*)(Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + i + 1);
 		}
 		Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList[Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeListSize - 1] = nullptr;
 		Plugin::NextFreeSystemFuncSystemInt32_SystemSingle_SystemDouble = Plugin::SystemFuncSystemInt32_SystemSingle_SystemDoubleFreeList + 1;
 		
 		for (int32_t i = 0, end = Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize - 1; i < end; ++i)
 		{
-			Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[i] = (System::Func3<int16_t, int32_t, System::String>*)(Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + i + 1);
+			Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[i] = (System::Func3<System::Int16, System::Int32, System::String>*)(Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + i + 1);
 		}
 		Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList[Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeListSize - 1] = nullptr;
 		Plugin::NextFreeSystemFuncSystemInt16_SystemInt32_SystemString = Plugin::SystemFuncSystemInt16_SystemInt32_SystemStringFreeList + 1;
@@ -19943,7 +22210,7 @@ DLLEXPORT void Init(
 	{
 		PluginMain(
 			curMemory,
-			memorySize - usedMemory,
+			(int32_t)(memorySize - usedMemory),
 			initMode == InitMode::FirstBoot);
 	}
 	catch (System::Exception ex)
@@ -19987,7 +22254,7 @@ DLLEXPORT void MyGameMonoBehavioursTestScriptAwake(int32_t thisHandle)
 }
 
 
-DLLEXPORT void MyGameMonoBehavioursTestScriptOnAnimatorIK(int32_t thisHandle, int32_t param0)
+DLLEXPORT void MyGameMonoBehavioursTestScriptOnAnimatorIK(int32_t thisHandle, System::Int32 param0)
 {
 	MyGame::MonoBehaviours::TestScript thiz(Plugin::InternalUse::Only, thisHandle);
 	try

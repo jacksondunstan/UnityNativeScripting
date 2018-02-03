@@ -4,6 +4,23 @@
 	],
 	"Types": [
 		{
+			"Name": " System.IFormattable"
+		},
+		{
+			"Name": " System.IConvertible"
+		},
+		{
+			"Name": " System.IComparable",
+			"Methods": [
+				{
+					"Name": "CompareTo",
+					"ParamTypes": [
+						"System.Object"
+					]
+				}
+			]
+		},
+		{
 			"Name": " System.IDisposable",
 			"Methods": [
 				{
@@ -117,6 +134,11 @@
 		},
 		{
 			"Name": "UnityEngine.Resolution",
+			"Constructors": [
+				{
+					"ParamTypes": []
+				}
+			],
 			"Properties": [
 				{
 					"Name": "width",
@@ -162,158 +184,6 @@
 					"Name": "Current",
 					"Get": {},
 					"Set": {}
-				}
-			]
-		},
-		{
-			"Name": "System.Collections.Generic.IEnumerator`1",
-			"GenericParams": [
-				{
-					"Types": [
-						"System.String"
-					]
-				},
-				{
-					"Types": [
-						"System.Int32"
-					]
-				},
-				{
-					"Types": [
-						"System.Single"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.RaycastHit"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.GradientColorKey"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.Resolution"
-					]
-				}
-			],
-			"Properties": [
-				{
-					"Name": "Current",
-					"Get": {}
-				}
-			]
-		},
-		{
-			"Name": "System.Collections.Generic.IEnumerable`1",
-			"GenericParams": [
-				{
-					"Types": [
-						"System.String"
-					]
-				},
-				{
-					"Types": [
-						"System.Int32"
-					]
-				},
-				{
-					"Types": [
-						"System.Single"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.RaycastHit"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.GradientColorKey"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.Resolution"
-					]
-				}
-			],
-			"Methods": [
-				{
-					"Name": "GetEnumerator",
-					"ParamTypes": []
-				}
-			]
-		},
-		{
-			"Name": "System.Collections.Generic.ICollection`1",
-			"GenericParams": [
-				{
-					"Types": [
-						"System.String"
-					]
-				},
-				{
-					"Types": [
-						"System.Int32"
-					]
-				},
-				{
-					"Types": [
-						"System.Single"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.RaycastHit"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.GradientColorKey"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.Resolution"
-					]
-				}
-			]
-		},
-		{
-			"Name": "System.Collections.Generic.IList`1",
-			"GenericParams": [
-				{
-					"Types": [
-						"System.String"
-					]
-				},
-				{
-					"Types": [
-						"System.Int32"
-					]
-				},
-				{
-					"Types": [
-						"System.Single"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.RaycastHit"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.GradientColorKey"
-					]
-				},
-				{
-					"Types": [
-						"UnityEngine.Resolution"
-					]
 				}
 			]
 		},
@@ -381,6 +251,12 @@
 		},
 		{
 			"Name": "UnityEngine.Experimental.UIElements.IEventHandler"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.CallbackEventHandler"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.Focusable"
 		},
 		{
 			"Name": "UnityEngine.Experimental.UIElements.IStyle"
@@ -603,47 +479,6 @@
 			]
 		},
 		{
-			"Name": "System.Collections.Generic.List`1",
-			"GenericParams": [
-				{
-					"Types": [
-						"System.String"
-					]
-				},
-				{
-					"Types": [
-						"System.Int32"
-					]
-				}
-			],
-			"Constructors": [
-				{
-					"ParamTypes": []
-				}
-			],
-			"Properties": [
-				{
-					"Name": "Item",
-					"Get": {},
-					"Set": {}
-				}
-			],
-			"Methods": [
-				{
-					"Name": "Add",
-					"ParamTypes": [
-						"T"
-					]
-				},
-				{
-					"Name": "Sort",
-					"ParamTypes": [
-						"System.Collections.Generic.IComparer`1"
-					]
-				}
-			]
-		},
-		{
 			"Name": "System.Collections.Generic.LinkedListNode`1",
 			"GenericParams": [
 				{
@@ -683,27 +518,6 @@
 				{
 					"ParamTypes": [
 						"T"
-					]
-				}
-			]
-		},
-		{
-			"Name": "System.Collections.ObjectModel.Collection`1",
-			"GenericParams": [
-				{
-					"Types": [
-						"System.Int32"
-					]
-				}
-			]
-		},
-		{
-			"Name": "System.Collections.ObjectModel.KeyedCollection`2",
-			"GenericParams": [
-				{
-					"Types": [
-						"System.String",
-						"System.Int32"
 					]
 				}
 			]
@@ -958,7 +772,45 @@
 			"Name": "UnityEngine.Playables.PlayableHandle"
 		},
 		{
-			"Name": "UnityEngine.Experimental.UIElements.CallbackEventHandler"
+			"Name": "UnityEngine.Experimental.UIElements.ITransform"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.IUIElementDataWatch"
+		},
+		{
+			"Name": "UnityEngine.Experimental.UIElements.IVisualElementScheduler"
+		},
+		{
+			"Name": "System.Collections.Generic.IEnumerator`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"UnityEngine.Experimental.UIElements.VisualElement"
+					]
+				}
+			],
+			"Properties": [
+				{
+					"Name": "Current",
+					"Get": {}
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.IEnumerable`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"UnityEngine.Experimental.UIElements.VisualElement"
+					]
+				}
+			],
+			"Methods": [
+				{
+					"Name": "GetEnumerator",
+					"ParamTypes": []
+				}
+			]
 		},
 		{
 			"Name": "UnityEngine.Experimental.UIElements.VisualElement"
@@ -998,6 +850,220 @@
 					"ParamTypes": [
 						"UnityEngine.Quaternion",
 						"UnityEngine.XR.WSA.Input.InteractionSourceNode"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.IEnumerator`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			],
+			"Properties": [
+				{
+					"Name": "Current",
+					"Get": {}
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.IEnumerable`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			],
+			"Methods": [
+				{
+					"Name": "GetEnumerator",
+					"ParamTypes": []
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.ICollection`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.IList`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.RaycastHit"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.GradientColorKey"
+					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Resolution"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.Generic.List`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				}
+			],
+			"Constructors": [
+				{
+					"ParamTypes": []
+				}
+			],
+			"Properties": [
+				{
+					"Name": "Item",
+					"Get": {},
+					"Set": {}
+				}
+			],
+			"Methods": [
+				{
+					"Name": "Add",
+					"ParamTypes": [
+						"T"
+					]
+				},
+				{
+					"Name": "Sort",
+					"ParamTypes": [
+						"System.Collections.Generic.IComparer`1"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.ObjectModel.Collection`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.Int32"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Collections.ObjectModel.KeyedCollection`2",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.String",
+						"System.Int32"
 					]
 				}
 			]

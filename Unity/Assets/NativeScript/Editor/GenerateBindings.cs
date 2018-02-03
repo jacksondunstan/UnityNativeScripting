@@ -186,7 +186,7 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppGlobalStateAndFunctions =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public readonly StringBuilder CppBoxingMethodDeclarations =
+			public readonly StringBuilder CppUnboxingMethodDeclarations =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppStringDefaultParams =
 				new StringBuilder(InitialStringBuilderCapacity);
@@ -601,7 +601,16 @@ namespace NativeScript
 			// Generate boxing and unboxing for primitive types
 			foreach (Type type in PRIMITIVE_TYPES)
 			{
-				AppendBoxingUnboxing(
+				string dummyString;
+				ParameterInfo[] dummyParams;
+				AppendBoxingBindings(
+					type,
+					TypeKind.Primitive,
+					null,
+					builders,
+					out dummyString,
+					out dummyParams);
+				AppendUnboxing(
 					type,
 					TypeKind.Primitive,
 					null,
@@ -965,7 +974,9 @@ namespace NativeScript
 		
 		static void AddCppCtorInitType(Type type, List<Type> types)
 		{
-			if (type.BaseType != null && type.BaseType != typeof(object))
+			if (type.BaseType != null
+				&& type.BaseType != typeof(object)
+				&& type.BaseType != typeof(ValueType))
 			{
 				AddCppCtorInitType(type.BaseType, types);
 			}
@@ -1341,7 +1352,7 @@ namespace NativeScript
 				AppendEnum(
 					type,
 					builders);
-				AppendBoxingUnboxing(
+				AppendUnboxing(
 					type,
 					typeKind,
 					null,
@@ -1387,7 +1398,7 @@ namespace NativeScript
 							builders);
 						if (typeKind != TypeKind.Class)
 						{
-							AppendBoxingUnboxing(
+							AppendUnboxing(
 								genericType,
 								typeKind,
 								typeParams,
@@ -1412,7 +1423,7 @@ namespace NativeScript
 						builders);
 					if (typeKind != TypeKind.Class)
 					{
-						AppendBoxingUnboxing(
+						AppendUnboxing(
 							type,
 							typeKind,
 							null,
@@ -1618,16 +1629,47 @@ namespace NativeScript
 					builders.CppTypeDeclarations);
 			
 			// C++ type definition (beginning)
-			Type baseType = type.BaseType ?? typeof(object);
 			Type[] interfaceTypes = GetDirectInterfaces(type);
+			string baseTypeName;
+			string baseTypeNamespace;
+			Type[] baseTypeTypeParams;
+			switch (typeKind)
+			{
+				case TypeKind.FullStruct:
+					baseTypeName = null;
+					baseTypeNamespace = null;
+					baseTypeTypeParams = null;
+					break;
+				case TypeKind.ManagedStruct:
+					if (interfaceTypes.Length == 0)
+					{
+						baseTypeName = "ManagedType";
+						baseTypeNamespace = "Plugin";
+						baseTypeTypeParams = null;
+					}
+					else
+					{
+						baseTypeName = null;
+						baseTypeNamespace = null;
+						baseTypeTypeParams = null;
+					}
+					break;
+				default:
+					Type baseType = type.BaseType ?? typeof(object);
+					baseTypeName = baseType.Name;
+					baseTypeNamespace = baseType.Namespace;
+					baseTypeTypeParams = baseType.GetGenericArguments();
+					break;
+			}
+			
 			AppendCppTypeDefinitionBegin(
 				type.Name,
 				type.Namespace,
 				typeKind,
 				typeParams,
-				baseType.Name,
-				baseType.Namespace,
-				baseType.GetGenericArguments(),
+				baseTypeName,
+				baseTypeNamespace,
+				baseTypeTypeParams,
 				interfaceTypes,
 				isStatic,
 				indent,
@@ -1642,9 +1684,9 @@ namespace NativeScript
 				type.Namespace,
 				typeKind,
 				typeParams,
-				baseType.Name,
-				baseType.Namespace,
-				baseType.GetGenericArguments(),
+				baseTypeName,
+				baseTypeNamespace,
+				baseTypeTypeParams,
 				cppCtorInterfaceTypes,
 				isStatic,
 				(extraIndent, subject) => {},
@@ -1725,6 +1767,7 @@ namespace NativeScript
 				}
 			}
 			
+			// Events
 			if (jsonType.Events != null)
 			{
 				foreach (JsonEvent jsonEvent in jsonType.Events)
@@ -1759,6 +1802,17 @@ namespace NativeScript
 						indent,
 						builders);
 				}
+			}
+			
+			// Boxing
+			if (typeKind != TypeKind.Class)
+			{
+				AppendBoxing(
+					type,
+					typeKind,
+					typeParams,
+					indent,
+					builders);
 			}
 			
 			// C++ type definition (ending)
@@ -1883,24 +1937,39 @@ namespace NativeScript
 			Type type,
 			StringBuilders builders)
 		{
-			// C++ type declaration (actually definition)
-			int indent = AppendNamespaceBeginning(
+			// C++ type declaration
+			int indent = AppendCppTypeDeclaration(
 				type.Namespace,
+				type.Name,
+				false,
+				null,
 				builders.CppTypeDeclarations);
-			AppendIndent(
+			
+			// C++ type definition (begin)
+			AppendCppTypeDefinitionBegin(
+				type.Name,
+				type.Namespace,
+				TypeKind.FullStruct,
+				null,
+				null,
+				null,
+				null,
+				null,
+				false,
 				indent,
-				builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append("enum struct ");
-			builders.CppTypeDeclarations.Append(type.Name);
-			builders.CppTypeDeclarations.Append(" : ");
-			AppendCppTypeName(
-				Enum.GetUnderlyingType(type),
-				builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append('\n');
+				builders.CppTypeDefinitions);
 			AppendIndent(
-				indent,
-				builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append("{\n");
+				indent + 1,
+				builders.CppTypeDefinitions);
+			
+			// Primitive type field
+			Type underlyingType = Enum.GetUnderlyingType(type);
+			AppendCppPrimitiveTypeName(
+				underlyingType,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append(" Value;\n");
+			
+			// Enumerator fields
 			FieldInfo[] fields = type.GetFields(
 				BindingFlags.Static
 				| BindingFlags.Public);
@@ -1909,32 +1978,295 @@ namespace NativeScript
 				FieldInfo field = fields[i];
 				AppendIndent(
 					indent + 1,
-					builders.CppTypeDeclarations);
-				builders.CppTypeDeclarations.Append(field.Name);
-				builders.CppTypeDeclarations.Append(" = ");
-				builders.CppTypeDeclarations.Append(
-					field.GetRawConstantValue());
-				if (i != fields.Length - 1)
-				{
-					builders.CppTypeDeclarations.Append(',');
-				}
-				builders.CppTypeDeclarations.Append('\n');
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append("static const ");
+				AppendCppTypeName(
+					type,
+					builders.CppTypeDefinitions);
+				builders.CppTypeDefinitions.Append(' ');
+				builders.CppTypeDefinitions.Append(field.Name);
+				builders.CppTypeDefinitions.Append(";\n");
 			}
+			
+			// Constructor from primitive type
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("explicit ");
+			builders.CppTypeDefinitions.Append(type.Name);
+			builders.CppTypeDefinitions.Append('(');
+			AppendCppPrimitiveTypeName(
+				underlyingType,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append(" value);\n");
+			
+			// Conversion operator to primitive type
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("explicit operator ");
+			AppendCppPrimitiveTypeName(
+				underlyingType,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("() const;\n");
+			
+			// Equality operator
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("bool operator==(");
+			builders.CppTypeDefinitions.Append(type.Name);
+			builders.CppTypeDefinitions.Append(" other);\n");
+			
+			// Inequality operator
+			AppendIndent(
+				indent + 1,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("bool operator!=(");
+			builders.CppTypeDefinitions.Append(type.Name);
+			builders.CppTypeDefinitions.Append(" other);\n");
+			
+			AppendNamespaceBeginning(
+				type.Namespace,
+				builders.CppMethodDefinitions);
+			
+			// Constructor from primitive type
 			AppendIndent(
 				indent,
-				builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append("};\n");
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(type.Name);
+			builders.CppMethodDefinitions.Append("::");
+			builders.CppMethodDefinitions.Append(type.Name);
+			builders.CppMethodDefinitions.Append('(');
+			AppendCppPrimitiveTypeName(
+				underlyingType,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(" value)\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append(": Value(value)\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+			
+			// Conversion operator to primitive type
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			AppendCppTypeName(
+				type,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("::operator ");
+			AppendCppPrimitiveTypeName(
+				underlyingType,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("() const\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return Value;\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+			
+			// Equality operator
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("bool ");
+			AppendCppTypeName(
+				type,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("::operator==(");
+			builders.CppMethodDefinitions.Append(type.Name);
+			builders.CppMethodDefinitions.Append(" other)\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return Value == other.Value;\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+			
+			// Inequality operator
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("bool ");
+			AppendCppTypeName(
+				type,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("::operator!=(");
+			builders.CppMethodDefinitions.Append(type.Name);
+			builders.CppMethodDefinitions.Append(" other)\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("return Value != other.Value;\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append("}\n");
+			AppendIndent(
+				indent,
+				builders.CppMethodDefinitions);
+			builders.CppMethodDefinitions.Append('\n');
+			
+			AppendBoxing(
+				type,
+				TypeKind.Enum,
+				null,
+				indent,
+				builders);
+			
 			AppendNamespaceEnding(
 				indent,
-				builders.CppTypeDeclarations);
-			builders.CppTypeDeclarations.Append('\n');
+				builders.CppMethodDefinitions);
+			AppendIndent(
+				indent,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append("};\n");
+			AppendNamespaceEnding(
+				indent,
+				builders.CppTypeDefinitions);
+			builders.CppTypeDefinitions.Append('\n');
+			
+			// Static initialization
+			for (int i = 0; i < fields.Length; ++i)
+			{
+				FieldInfo field = fields[i];
+				builders.CppMethodDefinitions.Append("const ");
+				AppendCppTypeName(
+					type,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append(' ');
+				AppendCppTypeName(
+					type,
+					builders.CppMethodDefinitions);
+				builders.CppMethodDefinitions.Append("::");
+				builders.CppMethodDefinitions.Append(field.Name);
+				builders.CppMethodDefinitions.Append('(');
+				builders.CppMethodDefinitions.Append(
+					field.GetRawConstantValue());
+				builders.CppMethodDefinitions.Append(");\n");
+			}
+			builders.CppMethodDefinitions.Append('\n');
 		}
 		
-		static void AppendBoxingUnboxing(
+		static void AppendBoxing(
 			Type type,
 			TypeKind typeKind,
 			Type[] typeParams,
+			int indent,
 			StringBuilders builders)
+		{
+			string boxFuncName;
+			ParameterInfo[] boxCppParams;
+			AppendBoxingBindings(
+				type,
+				typeKind,
+				typeParams,
+				builders,
+				out boxFuncName,
+				out boxCppParams);
+			
+			for (Type baseType = type.BaseType;
+				baseType != null;
+				baseType = baseType.BaseType)
+			{
+				string boxMethodDefinitionName;
+				string boxMethodDeclarationName;
+				AppendCppBoxingMethodNames(
+					baseType,
+					builders.TempStrBuilder,
+					out boxMethodDefinitionName,
+					out boxMethodDeclarationName);
+				AppendCppBoxingMethodDeclaration(
+					baseType,
+					baseType.GetGenericArguments(),
+					boxMethodDeclarationName,
+					boxCppParams,
+					indent + 1,
+					builders.CppTypeDefinitions);
+				AppendCppBoxingMethodDefinition(
+					type,
+					typeParams,
+					baseType,
+					typeKind,
+					boxMethodDefinitionName,
+					boxFuncName,
+					boxCppParams,
+					indent,
+					builders.CppMethodDefinitions);
+			}
+			foreach (Type interfaceType in type.GetInterfaces())
+			{
+				string boxMethodDefinitionName;
+				string boxMethodDeclarationName;
+				AppendCppBoxingMethodNames(
+					interfaceType,
+					builders.TempStrBuilder,
+					out boxMethodDefinitionName,
+					out boxMethodDeclarationName);
+				AppendCppBoxingMethodDeclaration(
+					interfaceType,
+					interfaceType.GetGenericArguments(),
+					boxMethodDeclarationName,
+					boxCppParams,
+					indent + 1,
+					builders.CppTypeDefinitions);
+				AppendCppBoxingMethodDefinition(
+					type,
+					typeParams,
+					interfaceType,
+					typeKind,
+					boxMethodDefinitionName,
+					boxFuncName,
+					boxCppParams,
+					indent,
+					builders.CppMethodDefinitions);
+			}
+		}
+		
+		static void AppendBoxingBindings(
+			Type type,
+			TypeKind typeKind,
+			Type[] typeParams,
+			StringBuilders builders,
+			out string boxFuncName,
+			out ParameterInfo[] boxCppParams)
 		{
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append("Box");
@@ -1944,12 +2276,100 @@ namespace NativeScript
 			AppendTypeNames(
 				typeParams,
 				builders.TempStrBuilder);
-			string boxFuncName = builders.TempStrBuilder.ToString();
+			boxFuncName = builders.TempStrBuilder.ToString();
 			
 			builders.TempStrBuilder[0] = char.ToLower(
 				builders.TempStrBuilder[0]);
 			string boxFuncNameLower = builders.TempStrBuilder.ToString();
 			
+			ParameterInfo[] boxParams = {
+				new ParameterInfo
+				{
+					Name = "val",
+					ParameterType = type,
+					DereferencedParameterType = type,
+					IsOut = false,
+					IsRef = false,
+					Kind = typeKind
+				}
+			};
+			
+			boxCppParams = new ParameterInfo[0];
+			
+			// C# init params
+			AppendCsharpInitParam(
+				boxFuncNameLower,
+				builders.CsharpInitParams);
+			
+			// C# delegate types
+			AppendCsharpDelegateType(
+				boxFuncName,
+				true,
+				type,
+				typeKind,
+				typeof(object),
+				boxParams,
+				builders.CsharpDelegateTypes);
+			
+			// C# init call args
+			AppendCsharpInitCallArg(
+				boxFuncName,
+				builders.CsharpInitCall);
+			
+			// C# box function
+			AppendCsharpFunctionBeginning(
+				typeof(object),
+				boxFuncName,
+				true,
+				TypeKind.Class,
+				typeof(object),
+				boxParams,
+				builders.CsharpFunctions);
+			builders.CsharpFunctions.Append(
+				"NativeScript.Bindings.ObjectStore.Store((object)val);");
+			AppendCsharpFunctionReturn(
+				boxParams,
+				typeof(object),
+				TypeKind.Class,
+				null,
+				true,
+				builders.CsharpFunctions);
+			
+			// C++ function pointers
+			AppendCppFunctionPointerDefinition(
+				boxFuncName,
+				true,
+				type.Name,
+				type.Namespace,
+				typeKind,
+				boxParams,
+				typeof(object),
+				builders.CppFunctionPointers);
+			
+			// C++ init params
+			AppendCppInitParam(
+				boxFuncNameLower,
+				true,
+				type.Name,
+				type.Namespace,
+				typeKind,
+				boxParams,
+				typeof(object),
+				builders.CppInitParams);
+			
+			// C++ init body
+			AppendCppInitBody(
+				boxFuncName,
+				boxFuncNameLower,
+				builders.CppInitBody);
+		}
+		
+		static void AppendUnboxing(
+			Type type,
+			TypeKind typeKind,
+			Type[] typeParams,
+			StringBuilders builders)
+		{
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append("Unbox");
 			AppendTypeNameWithoutSuffixes(
@@ -1976,18 +2396,6 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(unboxMethodDefinitionName);
 			string unboxMethodDeclarationName = builders.TempStrBuilder.ToString();
 			
-			ParameterInfo[] boxParams = {
-				new ParameterInfo
-				{
-					Name = "val",
-					ParameterType = type,
-					DereferencedParameterType = type,
-					IsOut = false,
-					IsRef = false,
-					Kind = typeKind
-				}
-			};
-			
 			ParameterInfo[] unboxParams = {
 				new ParameterInfo
 				{
@@ -2004,21 +2412,10 @@ namespace NativeScript
 			
 			// C# init params
 			AppendCsharpInitParam(
-				boxFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitParam(
 				unboxFuncNameLower,
 				builders.CsharpInitParams);
 			
 			// C# delegate types
-			AppendCsharpDelegateType(
-				boxFuncName,
-				true,
-				type,
-				typeKind,
-				typeof(object),
-				boxParams,
-				builders.CsharpDelegateTypes);
 			AppendCsharpDelegateType(
 				unboxFuncName,
 				true,
@@ -2030,30 +2427,8 @@ namespace NativeScript
 			
 			// C# init call args
 			AppendCsharpInitCallArg(
-				boxFuncName,
-				builders.CsharpInitCall);
-			AppendCsharpInitCallArg(
 				unboxFuncName,
 				builders.CsharpInitCall);
-			
-			// C# box function
-			AppendCsharpFunctionBeginning(
-				typeof(object),
-				boxFuncName,
-				true,
-				TypeKind.Class,
-				typeof(object),
-				boxParams,
-				builders.CsharpFunctions);
-			builders.CsharpFunctions.Append(
-				"NativeScript.Bindings.ObjectStore.Store((object)val);");
-			AppendCsharpFunctionReturn(
-				boxParams,
-				typeof(object),
-				TypeKind.Class,
-				null,
-				true,
-				builders.CsharpFunctions);
 			
 			// C# unbox function
 			AppendCsharpFunctionBeginning(
@@ -2095,15 +2470,6 @@ namespace NativeScript
 			
 			// C++ function pointers
 			AppendCppFunctionPointerDefinition(
-				boxFuncName,
-				true,
-				type.Name,
-				type.Namespace,
-				typeKind,
-				boxParams,
-				typeof(object),
-				builders.CppFunctionPointers);
-			AppendCppFunctionPointerDefinition(
 				unboxFuncName,
 				true,
 				type.Name,
@@ -2113,23 +2479,10 @@ namespace NativeScript
 				type,
 				builders.CppFunctionPointers);
 			
-			// C++ method declarations
+			// C++ unbox method declaration and definition
 			AppendIndent(
 				2,
-				builders.CppBoxingMethodDeclarations);
-			AppendCppMethodDeclaration(
-				"Object",
-				false,
-				false,
-				false,
-				null,
-				typeParams,
-				null,
-				boxParams,
-				builders.CppBoxingMethodDeclarations);
-			AppendIndent(
-				2,
-				builders.CppBoxingMethodDeclarations);
+				builders.CppUnboxingMethodDeclarations);
 			AppendCppMethodDeclaration(
 				unboxMethodDeclarationName,
 				false,
@@ -2139,77 +2492,10 @@ namespace NativeScript
 				typeParams,
 				null,
 				unboxCppParams,
-				builders.CppBoxingMethodDeclarations);
-			
-			// C++ method definitions (begin)
+				builders.CppUnboxingMethodDeclarations);
 			int indent = AppendNamespaceBeginning(
 				"System",
 				builders.CppMethodDefinitions);
-			
-			// C++ box method definition
-			AppendCppMethodDefinitionBegin(
-				"Object",
-				null,
-				"Object",
-				null,
-				null,
-				boxParams,
-				indent,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("int32_t handle = Plugin::");
-			builders.CppMethodDefinitions.Append(boxFuncName);
-			builders.CppMethodDefinitions.Append("(val");
-			if (typeKind == TypeKind.ManagedStruct)
-			{
-				builders.CppMethodDefinitions.Append(".Handle");
-			}
-			builders.CppMethodDefinitions.Append(");\n");
-			AppendCppUnhandledExceptionHandling(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"if (handle)\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"{\n");
-			AppendIndent(
-				indent + 2,
-				builders.CppMethodDefinitions);
-			AppendReferenceManagedHandleFunctionCall(
-				"Object",
-				"System",
-				TypeKind.Class,
-				null,
-				"handle",
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(";\n");
-			AppendIndent(
-				indent + 2,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Handle = handle;\n");
-			AppendIndent(
-				indent + 1,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"}\n");
-			AppendIndent(
-				indent,
-				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n\t\n");
-			
-			// C++ unbox method definition
 			AppendCppMethodDefinitionBegin(
 				"Object",
 				null,
@@ -2256,15 +2542,6 @@ namespace NativeScript
 			
 			// C++ init params
 			AppendCppInitParam(
-				boxFuncNameLower,
-				true,
-				type.Name,
-				type.Namespace,
-				typeKind,
-				boxParams,
-				typeof(object),
-				builders.CppInitParams);
-			AppendCppInitParam(
 				unboxFuncNameLower,
 				true,
 				type.Name,
@@ -2276,13 +2553,141 @@ namespace NativeScript
 			
 			// C++ init body
 			AppendCppInitBody(
-				boxFuncName,
-				boxFuncNameLower,
-				builders.CppInitBody);
-			AppendCppInitBody(
 				unboxFuncName,
 				unboxFuncNameLower,
 				builders.CppInitBody);
+		}
+		
+		static void AppendCppBoxingMethodNames(
+			Type baseType,
+			StringBuilder tempBuilder,
+			out string boxMethodDefinitionName,
+			out string boxMethodDeclarationName)
+		{
+			tempBuilder.Length = 0;
+			tempBuilder.Append("operator ");
+			AppendCppTypeName(
+				baseType,
+				tempBuilder);
+			boxMethodDefinitionName = tempBuilder.ToString();
+			
+			tempBuilder.Length = 0;
+			tempBuilder.Append("explicit ");
+			tempBuilder.Append(boxMethodDefinitionName);
+			boxMethodDeclarationName = tempBuilder.ToString();
+		}
+		
+		static void AppendCppBoxingMethodDeclaration(
+			Type type,
+			Type[] typeParams,
+			string boxMethodDeclarationName,
+			ParameterInfo[] boxCppParams,
+			int indent,
+			StringBuilder output)
+		{
+			AppendIndent(
+				indent,
+				output);
+			AppendCppMethodDeclaration(
+				boxMethodDeclarationName,
+				false,
+				false,
+				false,
+				null,
+				typeParams,
+				null,
+				boxCppParams,
+				output);
+		}
+		
+		static void AppendCppBoxingMethodDefinition(
+			Type enclosingType,
+			Type[] enclosingTypeTypeParams,
+			Type boxedType,
+			TypeKind typeKind,
+			string boxMethodDefinitionName,
+			string boxFuncName,
+			ParameterInfo[] boxCppParams,
+			int indent,
+			StringBuilder output)
+		{
+			AppendCppMethodDefinitionBegin(
+				enclosingType.Name,
+				null,
+				boxMethodDefinitionName,
+				enclosingTypeTypeParams,
+				null,
+				boxCppParams,
+				indent,
+				output);
+			AppendIndent(
+				indent,
+				output);
+			output.Append("{\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("int32_t handle = Plugin::");
+			output.Append(boxFuncName);
+			output.Append('(');
+			if (typeKind == TypeKind.ManagedStruct)
+			{
+				output.Append("Handle");
+			}
+			else
+			{
+				output.Append("*this");
+			}
+			output.Append(");\n");
+			AppendCppUnhandledExceptionHandling(
+				indent + 1,
+				output);
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append(
+				"if (handle)\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append(
+				"{\n");
+			AppendIndent(
+				indent + 2,
+				output);
+			AppendReferenceManagedHandleFunctionCall(
+				"Object",
+				"System",
+				TypeKind.Class,
+				null,
+				"handle",
+				output);
+			output.Append(";\n");
+			AppendIndent(
+				indent + 2,
+				output);
+			output.Append("return ");
+			AppendCppTypeName(
+				boxedType,
+				output);
+			output.Append("(Plugin::InternalUse::Only, handle);\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append(
+				"}\n");
+			AppendIndent(
+				indent + 1,
+				output);
+			output.Append("return nullptr;\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append("}\n");
+			AppendIndent(
+				indent,
+				output);
+			output.Append('\n');
 		}
 		
 		static void AppendHandleStoreTypeName(
@@ -5202,7 +5607,7 @@ namespace NativeScript
 				builders.CppTypeDefinitions);
 			builders.CppTypeDefinitions.Append(cppElementProxyTypeName);
 			builders.CppTypeDefinitions.Append(
-				"(Plugin::InternalUse iu, int32_t handle, ");
+				"(Plugin::InternalUse, int32_t handle, ");
 			for (int i = 0; i < rank; ++i)
 			{
 				builders.CppTypeDefinitions.Append("int32_t index");
@@ -5269,7 +5674,7 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append('_');
 			builders.CppMethodDefinitions.Append(maxRank);
 			builders.CppMethodDefinitions.Append(
-				"(Plugin::InternalUse iu, int32_t handle, ");
+				"(Plugin::InternalUse, int32_t handle, ");
 			for (int i = 0; i < rank; ++i)
 			{
 				builders.CppMethodDefinitions.Append("int32_t index");
@@ -8640,6 +9045,11 @@ namespace NativeScript
 					case TypeKind.ManagedStruct:
 						output.Append("int32_t");
 						break;
+					case TypeKind.Primitive:
+						AppendCppPrimitiveTypeName(
+							method.ReturnType,
+							output);
+						break;
 					default:
 						AppendCppTypeName(
 							method.ReturnType,
@@ -8669,6 +9079,13 @@ namespace NativeScript
 						output.Append("int32_t ");
 						output.Append(param.Name);
 						output.Append("Handle");
+						break;
+					case TypeKind.Primitive:
+						AppendCppPrimitiveTypeName(
+							param.ParameterType,
+							output);
+						output.Append(' ');
+						output.Append(param.Name);
 						break;
 					default:
 						AppendCppTypeName(
@@ -9378,7 +9795,7 @@ namespace NativeScript
 				cppTypeName,
 				output);
 			output.Append(
-				"(Plugin::InternalUse iu, int32_t handle)\n");
+				"(Plugin::InternalUse, int32_t handle)\n");
 			string separator = ": ";
 			foreach (Type interfaceType in interfaceTypes)
 			{
@@ -9747,7 +10164,7 @@ namespace NativeScript
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("int32_t* handle = &Handle;\n");
+			output.Append("System::Int32* handle = (System::Int32*)&Handle;\n");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
@@ -9757,7 +10174,7 @@ namespace NativeScript
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append("int32_t* classHandle = &ClassHandle;\n");
+				output.Append("System::Int32* classHandle = (System::Int32*)&ClassHandle;\n");
 			}
 			AppendCppPluginFunctionCall(
 				true,
@@ -10965,7 +11382,6 @@ namespace NativeScript
 				switch (typeKind)
 				{
 					case TypeKind.Class:
-					case TypeKind.ManagedStruct:
 						// Only add the base type if it's not System.Object or
 						// there are no interfaces (since they always extend it)
 						string separator = " : virtual ";
@@ -11002,6 +11418,9 @@ namespace NativeScript
 							}
 						}
 						break;
+					case TypeKind.ManagedStruct:
+						output.Append(" : Plugin::ManagedType");
+						break;
 				}
 			}
 			output.Append('\n');
@@ -11034,7 +11453,7 @@ namespace NativeScript
 							typeParams,
 							output);
 						output.Append(
-							"(Plugin::InternalUse iu, int32_t handle);\n");
+							"(Plugin::InternalUse, int32_t handle);\n");
 						
 						// Copy constructor
 						AppendIndent(indent + 1, output);
@@ -11212,18 +11631,21 @@ namespace NativeScript
 					enclosingTypeName,
 					output);
 				output.Append("(decltype(nullptr))\n");
-				string separator = ": ";
-				foreach (Type interfaceType in interfaceTypes)
+				if (enclosingTypeKind == TypeKind.Class)
 				{
-					AppendIndent(
-						indent + 1,
-						output);
-					output.Append(separator);
-					AppendCppTypeName(
-						interfaceType,
-						output);
-					output.Append("(nullptr)\n");
-					separator = ", ";
+					string separator = ": ";
+					foreach (Type interfaceType in interfaceTypes)
+					{
+						AppendIndent(
+							indent + 1,
+							output);
+						output.Append(separator);
+						AppendCppTypeName(
+							interfaceType,
+							output);
+						output.Append("(nullptr)\n");
+						separator = ", ";
+					}
 				}
 				AppendIndent(indent, output);
 				output.Append("{\n");
@@ -11245,19 +11667,22 @@ namespace NativeScript
 				AppendTypeNameWithoutGenericSuffix(
 					enclosingTypeName,
 					output);
-				output.Append("(Plugin::InternalUse iu, int32_t handle)\n");
-				separator = ": ";
-				foreach (Type interfaceType in interfaceTypes)
+				output.Append("(Plugin::InternalUse, int32_t handle)\n");
+				if (enclosingTypeKind == TypeKind.Class)
 				{
-					AppendIndent(
-						indent + 1,
-						output);
-					output.Append(separator);
-					AppendCppTypeName(
-						interfaceType,
-						output);
-					output.Append("(nullptr)\n");
-					separator = ", ";
+					string separator = ": ";
+					foreach (Type interfaceType in interfaceTypes)
+					{
+						AppendIndent(
+							indent + 1,
+							output);
+						output.Append(separator);
+						AppendCppTypeName(
+							interfaceType,
+							output);
+						output.Append("(nullptr)\n");
+						separator = ", ";
+					}
 				}
 				AppendIndent(indent, output);
 				output.Append("{\n");
@@ -12390,7 +12815,7 @@ namespace NativeScript
 			string enclosingTypeName,
 			Type returnType,
 			string methodName,
-			Type[] typeTypeParams,
+			Type[] enclosingTypeTypeParams,
 			Type[] methodTypeParams,
 			ParameterInfo[] parameters,
 			int indent,
@@ -12421,7 +12846,7 @@ namespace NativeScript
 				enclosingTypeName,
 				output);
 			AppendCppTypeParameters(
-				typeTypeParams,
+				enclosingTypeTypeParams,
 				output);
 			output.Append("::");
 			
@@ -12532,9 +12957,20 @@ namespace NativeScript
 				switch (param.Kind)
 				{
 					case TypeKind.FullStruct:
-					case TypeKind.Primitive:
 					case TypeKind.Enum:
 						output.Append(param.Name);
+						break;
+					case TypeKind.Primitive:
+						if (param.IsOut || param.IsRef)
+						{
+							output.Append("&");
+							output.Append(param.Name);
+							output.Append("->Value");
+						}
+						else
+						{
+							output.Append(param.Name);
+						}
 						break;
 					default:
 						if (param.IsOut || param.IsRef)
@@ -12714,6 +13150,14 @@ namespace NativeScript
 				switch (param.Kind)
 				{
 					case TypeKind.Primitive:
+						AppendCppPrimitiveTypeName(
+							param.DereferencedParameterType,
+							output);
+						if (param.IsOut || param.IsRef)
+						{
+							output.Append('*');
+						}
+						break;
 					case TypeKind.Enum:
 						AppendCppTypeName(
 							param.DereferencedParameterType,
@@ -12950,35 +13394,35 @@ namespace NativeScript
 			}
 			else if (type == typeof(sbyte))
 			{
-				output.Append("int8_t");
+				output.Append("System::SByte");
 			}
 			else if (type == typeof(byte))
 			{
-				output.Append("uint8_t");
+				output.Append("System::Byte");
 			}
 			else if (type == typeof(short))
 			{
-				output.Append("int16_t");
+				output.Append("System::Int16");
 			}
 			else if (type == typeof(ushort))
 			{
-				output.Append("uint16_t");
+				output.Append("System::UInt16");
 			}
 			else if (type == typeof(int))
 			{
-				output.Append("int32_t");
+				output.Append("System::Int32");
 			}
 			else if (type == typeof(uint))
 			{
-				output.Append("uint32_t");
+				output.Append("System::UInt32");
 			}
 			else if (type == typeof(long))
 			{
-				output.Append("int64_t");
+				output.Append("System::Int64");
 			}
 			else if (type == typeof(ulong))
 			{
-				output.Append("uint64_t");
+				output.Append("System::UInt64");
 			}
 			else if (type == typeof(char))
 			{
@@ -12986,11 +13430,11 @@ namespace NativeScript
 			}
 			else if (type == typeof(float))
 			{
-				output.Append("float");
+				output.Append("System::Single");
 			}
 			else if (type == typeof(double))
 			{
-				output.Append("double");
+				output.Append("System::Double");
 			}
 			else if (type == typeof(string))
 			{
@@ -13059,6 +13503,72 @@ namespace NativeScript
 				output);
 		}
 		
+		static void AppendCppPrimitiveTypeName(
+			Type type,
+			StringBuilder output)
+		{
+			if (type == typeof(void))
+			{
+				output.Append("void");
+			}
+			else if (type == typeof(bool))
+			{
+				output.Append("uint32_t"); // C# bool is 4 bytes
+			}
+			else if (type == typeof(sbyte))
+			{
+				output.Append("int8_t");
+			}
+			else if (type == typeof(byte))
+			{
+				output.Append("uint8_t");
+			}
+			else if (type == typeof(short))
+			{
+				output.Append("int16_t");
+			}
+			else if (type == typeof(ushort))
+			{
+				output.Append("uint16_t");
+			}
+			else if (type == typeof(int))
+			{
+				output.Append("int32_t");
+			}
+			else if (type == typeof(uint))
+			{
+				output.Append("uint32_t");
+			}
+			else if (type == typeof(long))
+			{
+				output.Append("int64_t");
+			}
+			else if (type == typeof(ulong))
+			{
+				output.Append("uint64_t");
+			}
+			else if (type == typeof(char))
+			{
+				output.Append("uint16_t"); // C# char is 2 bytes
+			}
+			else if (type == typeof(float))
+			{
+				output.Append("float");
+			}
+			else if (type == typeof(double))
+			{
+				output.Append("double");
+			}
+			else if (type == typeof(IntPtr))
+			{
+				output.Append("void*");
+			}
+			else
+			{
+				throw new Exception(type + " is not a C++ primitive");
+			}
+		}
+		
 		static void RemoveTrailingChars(
 			StringBuilders builders)
 		{
@@ -13084,7 +13594,7 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CppInitBodyFirstBoot);
 			RemoveTrailingChars(builders.CppMonoBehaviourMessages);
 			RemoveTrailingChars(builders.CppGlobalStateAndFunctions);
-			RemoveTrailingChars(builders.CppBoxingMethodDeclarations);
+			RemoveTrailingChars(builders.CppUnboxingMethodDeclarations);
 		}
 		
 		// Remove trailing chars (e.g. commas) for last elements
@@ -13227,9 +13737,9 @@ namespace NativeScript
 				builders.CppGlobalStateAndFunctions.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN BOXING METHOD DECLARATIONS*/\n",
-				"\n\t\t/*END BOXING METHOD DECLARATIONS*/",
-				builders.CppBoxingMethodDeclarations.ToString());
+				"/*BEGIN UNBOXING METHOD DECLARATIONS*/\n",
+				"\n\t\t/*END UNBOXING METHOD DECLARATIONS*/",
+				builders.CppUnboxingMethodDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
 				"/*BEGIN STRING DEFAULT PARAMETERS*/\n",
