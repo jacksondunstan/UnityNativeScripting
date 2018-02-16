@@ -97,7 +97,7 @@ void MyGame::MonoBehaviours::AnotherScript::Update()
 {
 	Transform transform = GetTransform();
 	Vector3 pos = transform.GetPosition();
-	const float speed = 1.2f;
+	const float speed = 0.0012f;
 	const float min = -1.5f;
 	const float max = 1.5f;
 	Vector3 offset(Time::GetDeltaTime() * speed * gameState->Dir, 0, 0);
@@ -106,11 +106,19 @@ void MyGame::MonoBehaviours::AnotherScript::Update()
 	{
 		gameState->Dir *= -1.0f;
 		newPos.x = max - (newPos.x - max);
+		if (newPos.x < min)
+		{
+			newPos.x = min;
+		}
 	}
 	else if (newPos.x < min)
 	{
 		gameState->Dir *= -1.0f;
 		newPos.x = min + (min - newPos.x);
+		if (newPos.x > max)
+		{
+			newPos.x = max;
+		}
 	}
 	transform.SetPosition(newPos);
 }

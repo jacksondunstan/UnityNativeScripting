@@ -292,8 +292,9 @@ namespace NativeScript
 		const string PLUGIN_PATH = "/Plugins/Editor/libNativeScript.so";
 #elif UNITY_EDITOR_WIN
 		const string PLUGIN_PATH = "/Plugins/Editor/NativeScript.dll";
+		const string PLUGIN_TEMP_PATH = "/Plugins/Editor/NativeScript_temp.dll";
 #endif
-		
+
 		enum InitMode : byte
 		{
 			FirstBoot,
@@ -1517,6 +1518,9 @@ namespace NativeScript
 		/*END DELEGATE TYPES*/
 		
 		private static readonly string pluginPath = Application.dataPath + PLUGIN_PATH;
+#if UNITY_EDITOR_WIN
+		private static readonly string pluginTempPath = Application.dataPath + PLUGIN_TEMP_PATH;
+#endif
 		public static Exception UnhandledCppException;
 		public static SetCsharpExceptionDelegate SetCsharpException;
 		private static IntPtr memory;
@@ -1602,8 +1606,16 @@ namespace NativeScript
 		private static void OpenPlugin(InitMode initMode)
 		{
 #if UNITY_EDITOR
+			string loadPath;
+#if UNITY_EDITOR_WIN
+			// Copy native library to temporary file
+			File.Copy(pluginPath, pluginTempPath);
+			loadPath = pluginTempPath;
+#else
+			loadPath = pluginPath;
+#endif
 			// Open native library
-			libraryHandle = OpenLibrary(pluginPath);
+			libraryHandle = OpenLibrary(loadPath);
 			InitDelegate Init = GetDelegate<InitDelegate>(
 				libraryHandle,
 				"Init");
@@ -1967,6 +1979,9 @@ namespace NativeScript
 #if UNITY_EDITOR
 			CloseLibrary(libraryHandle);
 			libraryHandle = IntPtr.Zero;
+#endif
+#if UNITY_EDITOR_WIN
+			File.Delete(pluginTempPath);
 #endif
 		}
 		
