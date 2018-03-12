@@ -94,7 +94,6 @@ C++ is the standard language for video games as well as many other fields. By pr
     * Methods
     * Fields
     * Properties (getters and setters)
-    * `MonoBehaviour` classes with "message" functions like `Update`
     * `out` and `ref` parameters
     * Exceptions
     * Overloaded operators
@@ -105,6 +104,7 @@ C++ is the standard language for video games as well as many other fields. By pr
     * Implementing C# interfaces with C++ classes
     * Deriving from C# classes with C++ classes
     * Default parameters
+    * Generic types and methods
 
 # Performance
 
@@ -140,7 +140,7 @@ With C++, the workflow looks like this:
 2. Copy everything in `Unity/Assets` directory to your Unity project's `Assets` directory
 3. Copy the `Unity/CppSource` directory to your Unity project directory
 4. Edit `NativeScriptTypes.json` and specify what parts of the Unity, .NET, and custom DLL APIs you want access to from C++.
-5. Edit `Unity/CppSource/Game/Game.cpp` to create your game. Some example code is provided, but feel free to delete it. You can add more C++ source (`.cpp`) and header (`.h`) files here as your game grows.
+5. Edit `Unity/CppSource/Game/Game.cpp` and `Unity/CppSource/Game/Game.h` to create your game. Some example code is provided, but feel free to delete it. You can add more C++ source (`.cpp`) and header (`.h`) files here as your game grows.
 
 # Building the C++ Plugin
 
@@ -170,7 +170,7 @@ With C++, the workflow looks like this:
 2. Create a directory for build files. Anywhere is fine.
 3. Open a Command Prompt by clicking the Start button, typing "Command Prompt", then clicking the app
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" -DEDITOR=TRUE /path/to/your/project/CppSource`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"`Visual Studio 15 2017 Win64` for Visual Studio 2017. Any version, including Community, works just fine. Remove `-DEDITOR=TRUE` for standalone builds.
+5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" -DEDITOR=TRUE /path/to/your/project/CppSource`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"Visual Studio 15 2017 Win64"` for Visual Studio 2017. Any version, including Community, works just fine. Remove `-DEDITOR=TRUE` for standalone builds.
 6. The project files are now generated in your build directory
 7. Open `NativeScript.sln` and click `Build > Build Solution`.
 
@@ -202,7 +202,6 @@ To configure the code generator, open `NativeScriptTypes.json` and notice the ex
 
 Note that the code generator does not support (yet):
 
-* `MonoBehaviour` contents (e.g. fields) except for "message" functions
 * `Array`, `string`, and `object` methods (e.g. `GetHashCode`)
 * Non-null string default parameters and null non-string default parameters
 * Implicit `params` parameter (a.k.a. "var args") passing

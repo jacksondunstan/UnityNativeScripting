@@ -39,6 +39,8 @@ namespace NativeScript
 #if UNITY_EDITOR
 		void Update()
 		{
+			Bindings.Update();
+
 			if (AutoReload)
 			{
 				if (AutoReloadPollTime > 0)
