@@ -53,6 +53,11 @@ namespace Plugin
 	int32_t (*EnumerableGetEnumerator)(int32_t handle);
 	
 	/*BEGIN FUNCTION POINTERS*/
+	void (*ReleaseSystemDecimal)(int32_t handle);
+	int32_t (*SystemDecimalConstructorSystemDouble)(double value);
+	int32_t (*SystemDecimalConstructorSystemUInt64)(uint64_t value);
+	int32_t (*BoxDecimal)(int32_t valHandle);
+	int32_t (*UnboxDecimal)(int32_t valHandle);
 	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
 	UnityEngine::Vector3 (*UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b);
 	int32_t (*BoxVector3)(UnityEngine::Vector3& val);
@@ -198,6 +203,16 @@ namespace System
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
 	}
 	
+	Boolean::operator IComparable_1<Boolean>() const
+	{
+		return IComparable_1<Boolean>(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
+	}
+	
+	Boolean::operator IEquatable_1<Boolean>() const
+	{
+		return IEquatable_1<Boolean>(Plugin::InternalUse::Only, Plugin::BoxBoolean(Value));
+	}
+	
 	Char::Char()
 		: Value(0)
 	{
@@ -242,6 +257,16 @@ namespace System
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
 	}
+	
+	Char::operator IComparable_1<Char>() const
+	{
+		return IComparable_1<Char>(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
+	}
+	
+	Char::operator IEquatable_1<Char>() const
+	{
+		return IEquatable_1<Char>(Plugin::InternalUse::Only, Plugin::BoxChar(Value));
+	}
 
 	SByte::SByte()
 		: Value(0)
@@ -281,6 +306,16 @@ namespace System
 	SByte::operator IConvertible() const
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
+	}
+	
+	SByte::operator IComparable_1<SByte>() const
+	{
+		return IComparable_1<SByte>(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
+	}
+	
+	SByte::operator IEquatable_1<SByte>() const
+	{
+		return IEquatable_1<SByte>(Plugin::InternalUse::Only, Plugin::BoxSByte(Value));
 	}
 
 	Byte::Byte()
@@ -322,6 +357,16 @@ namespace System
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
 	}
+	
+	Byte::operator IComparable_1<Byte>() const
+	{
+		return IComparable_1<Byte>(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
+	}
+	
+	Byte::operator IEquatable_1<Byte>() const
+	{
+		return IEquatable_1<Byte>(Plugin::InternalUse::Only, Plugin::BoxByte(Value));
+	}
 
 	Int16::Int16()
 		: Value(0)
@@ -361,6 +406,16 @@ namespace System
 	Int16::operator IConvertible() const
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
+	}
+	
+	Int16::operator IComparable_1<Int16>() const
+	{
+		return IComparable_1<Int16>(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
+	}
+	
+	Int16::operator IEquatable_1<Int16>() const
+	{
+		return IEquatable_1<Int16>(Plugin::InternalUse::Only, Plugin::BoxInt16(Value));
 	}
 
 	UInt16::UInt16()
@@ -402,6 +457,16 @@ namespace System
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
 	}
+	
+	UInt16::operator IComparable_1<UInt16>() const
+	{
+		return IComparable_1<UInt16>(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
+	}
+	
+	UInt16::operator IEquatable_1<UInt16>() const
+	{
+		return IEquatable_1<UInt16>(Plugin::InternalUse::Only, Plugin::BoxUInt16(Value));
+	}
 
 	Int32::Int32()
 		: Value(0)
@@ -441,6 +506,16 @@ namespace System
 	Int32::operator IConvertible() const
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
+	}
+	
+	Int32::operator IComparable_1<Int32>() const
+	{
+		return IComparable_1<Int32>(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
+	}
+	
+	Int32::operator IEquatable_1<Int32>() const
+	{
+		return IEquatable_1<Int32>(Plugin::InternalUse::Only, Plugin::BoxInt32(Value));
 	}
 
 	UInt32::UInt32()
@@ -482,6 +557,16 @@ namespace System
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
 	}
+	
+	UInt32::operator IComparable_1<UInt32>() const
+	{
+		return IComparable_1<UInt32>(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
+	}
+	
+	UInt32::operator IEquatable_1<UInt32>() const
+	{
+		return IEquatable_1<UInt32>(Plugin::InternalUse::Only, Plugin::BoxUInt32(Value));
+	}
 
 	Int64::Int64()
 		: Value(0)
@@ -521,6 +606,16 @@ namespace System
 	Int64::operator IConvertible() const
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
+	}
+	
+	Int64::operator IComparable_1<Int64>() const
+	{
+		return IComparable_1<Int64>(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
+	}
+	
+	Int64::operator IEquatable_1<Int64>() const
+	{
+		return IEquatable_1<Int64>(Plugin::InternalUse::Only, Plugin::BoxInt64(Value));
 	}
 
 	UInt64::UInt64()
@@ -562,6 +657,16 @@ namespace System
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
 	}
+	
+	UInt64::operator IComparable_1<UInt64>() const
+	{
+		return IComparable_1<UInt64>(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
+	}
+	
+	UInt64::operator IEquatable_1<UInt64>() const
+	{
+		return IEquatable_1<UInt64>(Plugin::InternalUse::Only, Plugin::BoxUInt64(Value));
+	}
 
 	Single::Single()
 		: Value(0.0f)
@@ -601,6 +706,16 @@ namespace System
 	Single::operator IConvertible() const
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
+	}
+	
+	Single::operator IComparable_1<Single>() const
+	{
+		return IComparable_1<Single>(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
+	}
+	
+	Single::operator IEquatable_1<Single>() const
+	{
+		return IEquatable_1<Single>(Plugin::InternalUse::Only, Plugin::BoxSingle(Value));
 	}
 
 	Double::Double()
@@ -642,6 +757,16 @@ namespace System
 	{
 		return IConvertible(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
 	}
+	
+	Double::operator IComparable_1<Double>() const
+	{
+		return IComparable_1<Double>(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
+	}
+	
+	Double::operator IEquatable_1<Double>() const
+	{
+		return IEquatable_1<Double>(Plugin::InternalUse::Only, Plugin::BoxDouble(Value));
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -680,6 +805,20 @@ namespace Plugin
 	{
 		return enumerator.GetCurrent();
 	}
+}
+
+////////////////////////////////////////////////////////////////
+// User-defined literals for creating decimals (System.Decimal)
+////////////////////////////////////////////////////////////////
+
+System::Decimal operator"" _m(long double x)
+{
+	return System::Decimal((System::Double)x);
+}
+
+System::Decimal operator"" _m(unsigned long long x)
+{
+	return System::Decimal((System::UInt64)x);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -728,6 +867,31 @@ namespace Plugin
 	}
 	
 	/*BEGIN GLOBAL STATE AND FUNCTIONS*/
+	int32_t RefCountsLenSystemDecimal;
+	int32_t* RefCountsSystemDecimal;
+	
+	void ReferenceManagedSystemDecimal(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenSystemDecimal);
+		if (handle != 0)
+		{
+			RefCountsSystemDecimal[handle]++;
+		}
+	}
+	
+	void DereferenceManagedSystemDecimal(int32_t handle)
+	{
+		assert(handle >= 0 && handle < RefCountsLenSystemDecimal);
+		if (handle != 0)
+		{
+			int32_t numRemain = --RefCountsSystemDecimal[handle];
+			if (numRemain == 0)
+			{
+				ReleaseSystemDecimal(handle);
+			}
+		}
+	}
+	
 	// Free list for MyGame::BaseBallScript pointers
 	
 	int32_t BaseBallScriptFreeListSize;
@@ -1272,13 +1436,2376 @@ namespace System
 	}
 }
 
+namespace System
+{
+	IEquatable_1<System::Boolean>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Boolean>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Boolean>::IEquatable_1(const IEquatable_1<System::Boolean>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Boolean>::IEquatable_1(IEquatable_1<System::Boolean>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Boolean>::~IEquatable_1<System::Boolean>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Boolean>& IEquatable_1<System::Boolean>::operator=(const IEquatable_1<System::Boolean>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Boolean>& IEquatable_1<System::Boolean>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Boolean>& IEquatable_1<System::Boolean>::operator=(IEquatable_1<System::Boolean>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Boolean>::operator==(const IEquatable_1<System::Boolean>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Boolean>::operator!=(const IEquatable_1<System::Boolean>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Char>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Char>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Char>::IEquatable_1(const IEquatable_1<System::Char>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Char>::IEquatable_1(IEquatable_1<System::Char>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Char>::~IEquatable_1<System::Char>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Char>& IEquatable_1<System::Char>::operator=(const IEquatable_1<System::Char>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Char>& IEquatable_1<System::Char>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Char>& IEquatable_1<System::Char>::operator=(IEquatable_1<System::Char>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Char>::operator==(const IEquatable_1<System::Char>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Char>::operator!=(const IEquatable_1<System::Char>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::SByte>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::SByte>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::SByte>::IEquatable_1(const IEquatable_1<System::SByte>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::SByte>::IEquatable_1(IEquatable_1<System::SByte>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::SByte>::~IEquatable_1<System::SByte>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::SByte>& IEquatable_1<System::SByte>::operator=(const IEquatable_1<System::SByte>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::SByte>& IEquatable_1<System::SByte>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::SByte>& IEquatable_1<System::SByte>::operator=(IEquatable_1<System::SByte>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::SByte>::operator==(const IEquatable_1<System::SByte>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::SByte>::operator!=(const IEquatable_1<System::SByte>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Byte>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Byte>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Byte>::IEquatable_1(const IEquatable_1<System::Byte>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Byte>::IEquatable_1(IEquatable_1<System::Byte>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Byte>::~IEquatable_1<System::Byte>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Byte>& IEquatable_1<System::Byte>::operator=(const IEquatable_1<System::Byte>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Byte>& IEquatable_1<System::Byte>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Byte>& IEquatable_1<System::Byte>::operator=(IEquatable_1<System::Byte>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Byte>::operator==(const IEquatable_1<System::Byte>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Byte>::operator!=(const IEquatable_1<System::Byte>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Int16>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Int16>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Int16>::IEquatable_1(const IEquatable_1<System::Int16>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Int16>::IEquatable_1(IEquatable_1<System::Int16>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Int16>::~IEquatable_1<System::Int16>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Int16>& IEquatable_1<System::Int16>::operator=(const IEquatable_1<System::Int16>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Int16>& IEquatable_1<System::Int16>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Int16>& IEquatable_1<System::Int16>::operator=(IEquatable_1<System::Int16>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Int16>::operator==(const IEquatable_1<System::Int16>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Int16>::operator!=(const IEquatable_1<System::Int16>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::UInt16>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::UInt16>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::UInt16>::IEquatable_1(const IEquatable_1<System::UInt16>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::UInt16>::IEquatable_1(IEquatable_1<System::UInt16>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::UInt16>::~IEquatable_1<System::UInt16>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::UInt16>& IEquatable_1<System::UInt16>::operator=(const IEquatable_1<System::UInt16>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::UInt16>& IEquatable_1<System::UInt16>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::UInt16>& IEquatable_1<System::UInt16>::operator=(IEquatable_1<System::UInt16>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::UInt16>::operator==(const IEquatable_1<System::UInt16>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::UInt16>::operator!=(const IEquatable_1<System::UInt16>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Int32>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Int32>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Int32>::IEquatable_1(const IEquatable_1<System::Int32>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Int32>::IEquatable_1(IEquatable_1<System::Int32>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Int32>::~IEquatable_1<System::Int32>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Int32>& IEquatable_1<System::Int32>::operator=(const IEquatable_1<System::Int32>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Int32>& IEquatable_1<System::Int32>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Int32>& IEquatable_1<System::Int32>::operator=(IEquatable_1<System::Int32>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Int32>::operator==(const IEquatable_1<System::Int32>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Int32>::operator!=(const IEquatable_1<System::Int32>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::UInt32>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::UInt32>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::UInt32>::IEquatable_1(const IEquatable_1<System::UInt32>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::UInt32>::IEquatable_1(IEquatable_1<System::UInt32>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::UInt32>::~IEquatable_1<System::UInt32>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::UInt32>& IEquatable_1<System::UInt32>::operator=(const IEquatable_1<System::UInt32>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::UInt32>& IEquatable_1<System::UInt32>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::UInt32>& IEquatable_1<System::UInt32>::operator=(IEquatable_1<System::UInt32>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::UInt32>::operator==(const IEquatable_1<System::UInt32>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::UInt32>::operator!=(const IEquatable_1<System::UInt32>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Int64>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Int64>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Int64>::IEquatable_1(const IEquatable_1<System::Int64>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Int64>::IEquatable_1(IEquatable_1<System::Int64>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Int64>::~IEquatable_1<System::Int64>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Int64>& IEquatable_1<System::Int64>::operator=(const IEquatable_1<System::Int64>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Int64>& IEquatable_1<System::Int64>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Int64>& IEquatable_1<System::Int64>::operator=(IEquatable_1<System::Int64>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Int64>::operator==(const IEquatable_1<System::Int64>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Int64>::operator!=(const IEquatable_1<System::Int64>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::UInt64>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::UInt64>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::UInt64>::IEquatable_1(const IEquatable_1<System::UInt64>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::UInt64>::IEquatable_1(IEquatable_1<System::UInt64>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::UInt64>::~IEquatable_1<System::UInt64>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::UInt64>& IEquatable_1<System::UInt64>::operator=(const IEquatable_1<System::UInt64>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::UInt64>& IEquatable_1<System::UInt64>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::UInt64>& IEquatable_1<System::UInt64>::operator=(IEquatable_1<System::UInt64>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::UInt64>::operator==(const IEquatable_1<System::UInt64>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::UInt64>::operator!=(const IEquatable_1<System::UInt64>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Single>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Single>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Single>::IEquatable_1(const IEquatable_1<System::Single>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Single>::IEquatable_1(IEquatable_1<System::Single>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Single>::~IEquatable_1<System::Single>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Single>& IEquatable_1<System::Single>::operator=(const IEquatable_1<System::Single>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Single>& IEquatable_1<System::Single>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Single>& IEquatable_1<System::Single>::operator=(IEquatable_1<System::Single>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Single>::operator==(const IEquatable_1<System::Single>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Single>::operator!=(const IEquatable_1<System::Single>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Double>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Double>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Double>::IEquatable_1(const IEquatable_1<System::Double>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Double>::IEquatable_1(IEquatable_1<System::Double>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Double>::~IEquatable_1<System::Double>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Double>& IEquatable_1<System::Double>::operator=(const IEquatable_1<System::Double>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Double>& IEquatable_1<System::Double>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Double>& IEquatable_1<System::Double>::operator=(IEquatable_1<System::Double>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Double>::operator==(const IEquatable_1<System::Double>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Double>::operator!=(const IEquatable_1<System::Double>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IEquatable_1<System::Decimal>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<System::Decimal>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<System::Decimal>::IEquatable_1(const IEquatable_1<System::Decimal>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<System::Decimal>::IEquatable_1(IEquatable_1<System::Decimal>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<System::Decimal>::~IEquatable_1<System::Decimal>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<System::Decimal>& IEquatable_1<System::Decimal>::operator=(const IEquatable_1<System::Decimal>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Decimal>& IEquatable_1<System::Decimal>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<System::Decimal>& IEquatable_1<System::Decimal>::operator=(IEquatable_1<System::Decimal>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<System::Decimal>::operator==(const IEquatable_1<System::Decimal>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<System::Decimal>::operator!=(const IEquatable_1<System::Decimal>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Boolean>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Boolean>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Boolean>::IComparable_1(const IComparable_1<System::Boolean>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Boolean>::IComparable_1(IComparable_1<System::Boolean>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Boolean>::~IComparable_1<System::Boolean>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Boolean>& IComparable_1<System::Boolean>::operator=(const IComparable_1<System::Boolean>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Boolean>& IComparable_1<System::Boolean>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Boolean>& IComparable_1<System::Boolean>::operator=(IComparable_1<System::Boolean>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Boolean>::operator==(const IComparable_1<System::Boolean>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Boolean>::operator!=(const IComparable_1<System::Boolean>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Char>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Char>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Char>::IComparable_1(const IComparable_1<System::Char>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Char>::IComparable_1(IComparable_1<System::Char>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Char>::~IComparable_1<System::Char>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Char>& IComparable_1<System::Char>::operator=(const IComparable_1<System::Char>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Char>& IComparable_1<System::Char>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Char>& IComparable_1<System::Char>::operator=(IComparable_1<System::Char>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Char>::operator==(const IComparable_1<System::Char>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Char>::operator!=(const IComparable_1<System::Char>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::SByte>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::SByte>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::SByte>::IComparable_1(const IComparable_1<System::SByte>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::SByte>::IComparable_1(IComparable_1<System::SByte>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::SByte>::~IComparable_1<System::SByte>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::SByte>& IComparable_1<System::SByte>::operator=(const IComparable_1<System::SByte>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::SByte>& IComparable_1<System::SByte>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::SByte>& IComparable_1<System::SByte>::operator=(IComparable_1<System::SByte>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::SByte>::operator==(const IComparable_1<System::SByte>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::SByte>::operator!=(const IComparable_1<System::SByte>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Byte>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Byte>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Byte>::IComparable_1(const IComparable_1<System::Byte>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Byte>::IComparable_1(IComparable_1<System::Byte>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Byte>::~IComparable_1<System::Byte>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Byte>& IComparable_1<System::Byte>::operator=(const IComparable_1<System::Byte>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Byte>& IComparable_1<System::Byte>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Byte>& IComparable_1<System::Byte>::operator=(IComparable_1<System::Byte>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Byte>::operator==(const IComparable_1<System::Byte>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Byte>::operator!=(const IComparable_1<System::Byte>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Int16>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Int16>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Int16>::IComparable_1(const IComparable_1<System::Int16>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Int16>::IComparable_1(IComparable_1<System::Int16>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Int16>::~IComparable_1<System::Int16>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Int16>& IComparable_1<System::Int16>::operator=(const IComparable_1<System::Int16>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Int16>& IComparable_1<System::Int16>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Int16>& IComparable_1<System::Int16>::operator=(IComparable_1<System::Int16>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Int16>::operator==(const IComparable_1<System::Int16>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Int16>::operator!=(const IComparable_1<System::Int16>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::UInt16>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::UInt16>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::UInt16>::IComparable_1(const IComparable_1<System::UInt16>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::UInt16>::IComparable_1(IComparable_1<System::UInt16>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::UInt16>::~IComparable_1<System::UInt16>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::UInt16>& IComparable_1<System::UInt16>::operator=(const IComparable_1<System::UInt16>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::UInt16>& IComparable_1<System::UInt16>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::UInt16>& IComparable_1<System::UInt16>::operator=(IComparable_1<System::UInt16>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::UInt16>::operator==(const IComparable_1<System::UInt16>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::UInt16>::operator!=(const IComparable_1<System::UInt16>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Int32>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Int32>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Int32>::IComparable_1(const IComparable_1<System::Int32>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Int32>::IComparable_1(IComparable_1<System::Int32>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Int32>::~IComparable_1<System::Int32>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Int32>& IComparable_1<System::Int32>::operator=(const IComparable_1<System::Int32>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Int32>& IComparable_1<System::Int32>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Int32>& IComparable_1<System::Int32>::operator=(IComparable_1<System::Int32>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Int32>::operator==(const IComparable_1<System::Int32>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Int32>::operator!=(const IComparable_1<System::Int32>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::UInt32>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::UInt32>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::UInt32>::IComparable_1(const IComparable_1<System::UInt32>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::UInt32>::IComparable_1(IComparable_1<System::UInt32>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::UInt32>::~IComparable_1<System::UInt32>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::UInt32>& IComparable_1<System::UInt32>::operator=(const IComparable_1<System::UInt32>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::UInt32>& IComparable_1<System::UInt32>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::UInt32>& IComparable_1<System::UInt32>::operator=(IComparable_1<System::UInt32>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::UInt32>::operator==(const IComparable_1<System::UInt32>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::UInt32>::operator!=(const IComparable_1<System::UInt32>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Int64>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Int64>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Int64>::IComparable_1(const IComparable_1<System::Int64>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Int64>::IComparable_1(IComparable_1<System::Int64>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Int64>::~IComparable_1<System::Int64>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Int64>& IComparable_1<System::Int64>::operator=(const IComparable_1<System::Int64>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Int64>& IComparable_1<System::Int64>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Int64>& IComparable_1<System::Int64>::operator=(IComparable_1<System::Int64>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Int64>::operator==(const IComparable_1<System::Int64>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Int64>::operator!=(const IComparable_1<System::Int64>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::UInt64>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::UInt64>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::UInt64>::IComparable_1(const IComparable_1<System::UInt64>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::UInt64>::IComparable_1(IComparable_1<System::UInt64>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::UInt64>::~IComparable_1<System::UInt64>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::UInt64>& IComparable_1<System::UInt64>::operator=(const IComparable_1<System::UInt64>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::UInt64>& IComparable_1<System::UInt64>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::UInt64>& IComparable_1<System::UInt64>::operator=(IComparable_1<System::UInt64>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::UInt64>::operator==(const IComparable_1<System::UInt64>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::UInt64>::operator!=(const IComparable_1<System::UInt64>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Single>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Single>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Single>::IComparable_1(const IComparable_1<System::Single>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Single>::IComparable_1(IComparable_1<System::Single>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Single>::~IComparable_1<System::Single>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Single>& IComparable_1<System::Single>::operator=(const IComparable_1<System::Single>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Single>& IComparable_1<System::Single>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Single>& IComparable_1<System::Single>::operator=(IComparable_1<System::Single>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Single>::operator==(const IComparable_1<System::Single>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Single>::operator!=(const IComparable_1<System::Single>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Double>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Double>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Double>::IComparable_1(const IComparable_1<System::Double>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Double>::IComparable_1(IComparable_1<System::Double>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Double>::~IComparable_1<System::Double>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Double>& IComparable_1<System::Double>::operator=(const IComparable_1<System::Double>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Double>& IComparable_1<System::Double>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Double>& IComparable_1<System::Double>::operator=(IComparable_1<System::Double>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Double>::operator==(const IComparable_1<System::Double>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Double>::operator!=(const IComparable_1<System::Double>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	IComparable_1<System::Decimal>::IComparable_1(decltype(nullptr))
+	{
+	}
+	
+	IComparable_1<System::Decimal>::IComparable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IComparable_1<System::Decimal>::IComparable_1(const IComparable_1<System::Decimal>& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IComparable_1<System::Decimal>::IComparable_1(IComparable_1<System::Decimal>&& other)
+		: IComparable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IComparable_1<System::Decimal>::~IComparable_1<System::Decimal>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IComparable_1<System::Decimal>& IComparable_1<System::Decimal>::operator=(const IComparable_1<System::Decimal>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Decimal>& IComparable_1<System::Decimal>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IComparable_1<System::Decimal>& IComparable_1<System::Decimal>::operator=(IComparable_1<System::Decimal>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IComparable_1<System::Decimal>::operator==(const IComparable_1<System::Decimal>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IComparable_1<System::Decimal>::operator!=(const IComparable_1<System::Decimal>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
+	Decimal::Decimal(decltype(nullptr))
+	{
+	}
+	
+	Decimal::Decimal(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedSystemDecimal(Handle);
+		}
+	}
+	
+	Decimal::Decimal(const Decimal& other)
+		: Decimal(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	Decimal::Decimal(Decimal&& other)
+		: Decimal(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	Decimal::~Decimal()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedSystemDecimal(Handle);
+			Handle = 0;
+		}
+	}
+	
+	Decimal& Decimal::operator=(const Decimal& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedSystemDecimal(Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedSystemDecimal(Handle);
+		}
+		return *this;
+	}
+	
+	Decimal& Decimal::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedSystemDecimal(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	Decimal& Decimal::operator=(Decimal&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedSystemDecimal(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool Decimal::operator==(const Decimal& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool Decimal::operator!=(const Decimal& other) const
+	{
+		return Handle != other.Handle;
+	}
+	
+	System::Decimal::Decimal(System::Double value)
+	{
+		auto returnValue = Plugin::SystemDecimalConstructorSystemDouble(value);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedSystemDecimal(Handle);
+		}
+	}
+	
+	System::Decimal::Decimal(System::UInt64 value)
+	{
+		auto returnValue = Plugin::SystemDecimalConstructorSystemUInt64(value);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		Handle = returnValue;
+		if (returnValue)
+		{
+			Plugin::ReferenceManagedSystemDecimal(Handle);
+		}
+	}
+	
+	System::Decimal::operator System::ValueType()
+	{
+		int32_t handle = Plugin::BoxDecimal(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::ValueType(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	System::Decimal::operator System::Object()
+	{
+		int32_t handle = Plugin::BoxDecimal(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	System::Decimal::operator System::IFormattable()
+	{
+		int32_t handle = Plugin::BoxDecimal(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IFormattable(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	System::Decimal::operator System::IConvertible()
+	{
+		int32_t handle = Plugin::BoxDecimal(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IConvertible(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	System::Decimal::operator System::IComparable()
+	{
+		int32_t handle = Plugin::BoxDecimal(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IComparable(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	System::Decimal::operator System::IComparable_1<System::Decimal>()
+	{
+		int32_t handle = Plugin::BoxDecimal(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IComparable_1<System::Decimal>(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	System::Decimal::operator System::IEquatable_1<System::Decimal>()
+	{
+		int32_t handle = Plugin::BoxDecimal(Handle);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IEquatable_1<System::Decimal>(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+}
+
+namespace System
+{
+	System::Object::operator System::Decimal()
+	{
+		System::Decimal returnVal(Plugin::InternalUse::Only, Plugin::UnboxDecimal(Handle));
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		return returnVal;
+	}
+}
+
 namespace UnityEngine
 {
 	Vector3::Vector3()
 	{
 	}
 	
-	Vector3::Vector3(System::Single x, System::Single y, System::Single z)
+	UnityEngine::Vector3::Vector3(System::Single x, System::Single y, System::Single z)
 	{
 		auto returnValue = Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(x, y, z);
 		if (Plugin::unhandledCsharpException)
@@ -1291,7 +3818,7 @@ namespace UnityEngine
 		*this = returnValue;
 	}
 	
-	UnityEngine::Vector3 Vector3::operator+(UnityEngine::Vector3& a)
+	UnityEngine::Vector3 UnityEngine::Vector3::operator+(UnityEngine::Vector3& a)
 	{
 		auto returnValue = Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3(*this, a);
 		if (Plugin::unhandledCsharpException)
@@ -1304,7 +3831,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	Vector3::operator System::ValueType()
+	UnityEngine::Vector3::operator System::ValueType()
 	{
 		int32_t handle = Plugin::BoxVector3(*this);
 		if (Plugin::unhandledCsharpException)
@@ -1322,7 +3849,7 @@ namespace UnityEngine
 		return nullptr;
 	}
 	
-	Vector3::operator System::Object()
+	UnityEngine::Vector3::operator System::Object()
 	{
 		int32_t handle = Plugin::BoxVector3(*this);
 		if (Plugin::unhandledCsharpException)
@@ -1343,7 +3870,7 @@ namespace UnityEngine
 
 namespace System
 {
-	Object::operator UnityEngine::Vector3()
+	System::Object::operator UnityEngine::Vector3()
 	{
 		UnityEngine::Vector3 returnVal(Plugin::UnboxVector3(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -1437,7 +3964,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	System::String Object::GetName()
+	System::String UnityEngine::Object::GetName()
 	{
 		auto returnValue = Plugin::UnityEngineObjectPropertyGetName(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -1450,7 +3977,7 @@ namespace UnityEngine
 		return System::String(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	void Object::SetName(System::String& value)
+	void UnityEngine::Object::SetName(System::String& value)
 	{
 		Plugin::UnityEngineObjectPropertySetName(Handle, value.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -1545,7 +4072,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	UnityEngine::Transform Component::GetTransform()
+	UnityEngine::Transform UnityEngine::Component::GetTransform()
 	{
 		auto returnValue = Plugin::UnityEngineComponentPropertyGetTransform(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -1645,7 +4172,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	UnityEngine::Vector3 Transform::GetPosition()
+	UnityEngine::Vector3 UnityEngine::Transform::GetPosition()
 	{
 		auto returnValue = Plugin::UnityEngineTransformPropertyGetPosition(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -1658,7 +4185,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void Transform::SetPosition(UnityEngine::Vector3& value)
+	void UnityEngine::Transform::SetPosition(UnityEngine::Vector3& value)
 	{
 		Plugin::UnityEngineTransformPropertySetPosition(Handle, value);
 		if (Plugin::unhandledCsharpException)
@@ -1753,7 +4280,7 @@ namespace System
 			return Handle != other.Handle;
 		}
 		
-		System::Object IEnumerator::GetCurrent()
+		System::Object System::Collections::IEnumerator::GetCurrent()
 		{
 			auto returnValue = Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent(Handle);
 			if (Plugin::unhandledCsharpException)
@@ -1766,7 +4293,7 @@ namespace System
 			return System::Object(Plugin::InternalUse::Only, returnValue);
 		}
 		
-		System::Boolean IEnumerator::MoveNext()
+		System::Boolean System::Collections::IEnumerator::MoveNext()
 		{
 			auto returnValue = Plugin::SystemCollectionsIEnumeratorMethodMoveNext(Handle);
 			if (Plugin::unhandledCsharpException)
@@ -2037,7 +4564,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	template<> MyGame::BaseBallScript GameObject::AddComponent<MyGame::BaseBallScript>()
+	template<> MyGame::BaseBallScript UnityEngine::GameObject::AddComponent<MyGame::BaseBallScript>()
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2050,7 +4577,7 @@ namespace UnityEngine
 		return MyGame::BaseBallScript(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	UnityEngine::GameObject GameObject::CreatePrimitive(UnityEngine::PrimitiveType type)
+	UnityEngine::GameObject UnityEngine::GameObject::CreatePrimitive(UnityEngine::PrimitiveType type)
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType(type);
 		if (Plugin::unhandledCsharpException)
@@ -2144,7 +4671,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	void Debug::Log(System::Object& message)
+	void UnityEngine::Debug::Log(System::Object& message)
 	{
 		Plugin::UnityEngineDebugMethodLogSystemObject(message.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2328,7 +4855,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	UnityEngine::Transform MonoBehaviour::GetTransform()
+	UnityEngine::Transform UnityEngine::MonoBehaviour::GetTransform()
 	{
 		auto returnValue = Plugin::UnityEngineMonoBehaviourPropertyGetTransform(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -2426,7 +4953,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	Exception::Exception(System::String& message)
+	System::Exception::Exception(System::String& message)
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 	{
@@ -2644,7 +5171,7 @@ namespace UnityEngine
 		return Value != other.Value;
 	}
 	
-	PrimitiveType::operator System::Enum()
+	UnityEngine::PrimitiveType::operator System::Enum()
 	{
 		int32_t handle = Plugin::BoxPrimitiveType(*this);
 		if (Plugin::unhandledCsharpException)
@@ -2662,7 +5189,7 @@ namespace UnityEngine
 		return nullptr;
 	}
 	
-	PrimitiveType::operator System::ValueType()
+	UnityEngine::PrimitiveType::operator System::ValueType()
 	{
 		int32_t handle = Plugin::BoxPrimitiveType(*this);
 		if (Plugin::unhandledCsharpException)
@@ -2680,7 +5207,7 @@ namespace UnityEngine
 		return nullptr;
 	}
 	
-	PrimitiveType::operator System::Object()
+	UnityEngine::PrimitiveType::operator System::Object()
 	{
 		int32_t handle = Plugin::BoxPrimitiveType(*this);
 		if (Plugin::unhandledCsharpException)
@@ -2698,7 +5225,7 @@ namespace UnityEngine
 		return nullptr;
 	}
 	
-	PrimitiveType::operator System::IFormattable()
+	UnityEngine::PrimitiveType::operator System::IFormattable()
 	{
 		int32_t handle = Plugin::BoxPrimitiveType(*this);
 		if (Plugin::unhandledCsharpException)
@@ -2716,7 +5243,7 @@ namespace UnityEngine
 		return nullptr;
 	}
 	
-	PrimitiveType::operator System::IConvertible()
+	UnityEngine::PrimitiveType::operator System::IConvertible()
 	{
 		int32_t handle = Plugin::BoxPrimitiveType(*this);
 		if (Plugin::unhandledCsharpException)
@@ -2734,7 +5261,7 @@ namespace UnityEngine
 		return nullptr;
 	}
 	
-	PrimitiveType::operator System::IComparable()
+	UnityEngine::PrimitiveType::operator System::IComparable()
 	{
 		int32_t handle = Plugin::BoxPrimitiveType(*this);
 		if (Plugin::unhandledCsharpException)
@@ -2762,7 +5289,7 @@ const UnityEngine::PrimitiveType UnityEngine::PrimitiveType::Quad(5);
 
 namespace System
 {
-	Object::operator UnityEngine::PrimitiveType()
+	System::Object::operator UnityEngine::PrimitiveType()
 	{
 		UnityEngine::PrimitiveType returnVal(Plugin::UnboxPrimitiveType(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -2856,7 +5383,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	System::Single Time::GetDeltaTime()
+	System::Single UnityEngine::Time::GetDeltaTime()
 	{
 		auto returnValue = Plugin::UnityEngineTimePropertyGetDeltaTime();
 		if (Plugin::unhandledCsharpException)
@@ -2961,7 +5488,7 @@ namespace MyGame
 
 namespace MyGame
 {
-	BaseBallScript::BaseBallScript()
+	MyGame::BaseBallScript::BaseBallScript()
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, UnityEngine::Behaviour(nullptr)
@@ -3007,7 +5534,7 @@ namespace MyGame
 		CppHandle = Plugin::StoreBaseBallScript(this);
 	}
 	
-	BaseBallScript::BaseBallScript(const BaseBallScript& other)
+	MyGame::BaseBallScript::BaseBallScript(const MyGame::BaseBallScript& other)
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, UnityEngine::Behaviour(nullptr)
@@ -3022,7 +5549,7 @@ namespace MyGame
 		}
 	}
 	
-	BaseBallScript::BaseBallScript(BaseBallScript&& other)
+	MyGame::BaseBallScript::BaseBallScript(MyGame::BaseBallScript&& other)
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, UnityEngine::Behaviour(nullptr)
@@ -3035,7 +5562,7 @@ namespace MyGame
 		other.CppHandle = 0;
 	}
 	
-	BaseBallScript::BaseBallScript(Plugin::InternalUse, int32_t handle)
+	MyGame::BaseBallScript::BaseBallScript(Plugin::InternalUse, int32_t handle)
 		: UnityEngine::Object(nullptr)
 		, UnityEngine::Component(nullptr)
 		, UnityEngine::Behaviour(nullptr)
@@ -3050,7 +5577,7 @@ namespace MyGame
 		}
 	}
 	
-	BaseBallScript::~BaseBallScript()
+	MyGame::BaseBallScript::~BaseBallScript()
 	{
 		Plugin::RemoveWholeBaseBallScript(this);
 		Plugin::RemoveBaseBallScript(CppHandle);
@@ -3073,7 +5600,7 @@ namespace MyGame
 		}
 	}
 	
-	BaseBallScript& BaseBallScript::operator=(const BaseBallScript& other)
+	MyGame::BaseBallScript& MyGame::BaseBallScript::operator=(const MyGame::BaseBallScript& other)
 	{
 		if (this->Handle)
 		{
@@ -3087,7 +5614,7 @@ namespace MyGame
 		return *this;
 	}
 	
-	BaseBallScript& BaseBallScript::operator=(decltype(nullptr))
+	MyGame::BaseBallScript& MyGame::BaseBallScript::operator=(decltype(nullptr))
 	{
 		if (Handle)
 		{
@@ -3109,7 +5636,7 @@ namespace MyGame
 		return *this;
 	}
 	
-	BaseBallScript& BaseBallScript::operator=(BaseBallScript&& other)
+	MyGame::BaseBallScript& MyGame::BaseBallScript::operator=(MyGame::BaseBallScript&& other)
 	{
 		Plugin::RemoveBaseBallScript(CppHandle);
 		CppHandle = 0;
@@ -3134,12 +5661,12 @@ namespace MyGame
 		return *this;
 	}
 	
-	bool BaseBallScript::operator==(const BaseBallScript& other) const
+	bool MyGame::BaseBallScript::operator==(const MyGame::BaseBallScript& other) const
 	{
 		return Handle == other.Handle;
 	}
 	
-	bool BaseBallScript::operator!=(const BaseBallScript& other) const
+	bool MyGame::BaseBallScript::operator!=(const MyGame::BaseBallScript& other) const
 	{
 		return Handle != other.Handle;
 	}
@@ -3153,11 +5680,11 @@ namespace MyGame
 
 	DLLEXPORT void DestroyBaseBallScript(int32_t cppHandle)
 	{
-		BaseBallScript* instance = Plugin::GetBaseBallScript(cppHandle);
+		MyGame::BaseBallScript* instance = Plugin::GetBaseBallScript(cppHandle);
 		instance->~BaseBallScript();
 	}
 
-	void BaseBallScript::Update()
+	void MyGame::BaseBallScript::Update()
 	{
 	}
 	
@@ -3182,7 +5709,7 @@ namespace MyGame
 
 namespace System
 {
-	Object::operator System::Boolean()
+	System::Object::operator System::Boolean()
 	{
 		System::Boolean returnVal(Plugin::UnboxBoolean(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3198,7 +5725,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::SByte()
+	System::Object::operator System::SByte()
 	{
 		System::SByte returnVal(Plugin::UnboxSByte(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3214,7 +5741,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::Byte()
+	System::Object::operator System::Byte()
 	{
 		System::Byte returnVal(Plugin::UnboxByte(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3230,7 +5757,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::Int16()
+	System::Object::operator System::Int16()
 	{
 		System::Int16 returnVal(Plugin::UnboxInt16(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3246,7 +5773,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::UInt16()
+	System::Object::operator System::UInt16()
 	{
 		System::UInt16 returnVal(Plugin::UnboxUInt16(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3262,7 +5789,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::Int32()
+	System::Object::operator System::Int32()
 	{
 		System::Int32 returnVal(Plugin::UnboxInt32(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3278,7 +5805,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::UInt32()
+	System::Object::operator System::UInt32()
 	{
 		System::UInt32 returnVal(Plugin::UnboxUInt32(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3294,7 +5821,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::Int64()
+	System::Object::operator System::Int64()
 	{
 		System::Int64 returnVal(Plugin::UnboxInt64(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3310,7 +5837,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::UInt64()
+	System::Object::operator System::UInt64()
 	{
 		System::UInt64 returnVal(Plugin::UnboxUInt64(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3326,7 +5853,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::Char()
+	System::Object::operator System::Char()
 	{
 		System::Char returnVal(Plugin::UnboxChar(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3342,7 +5869,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::Single()
+	System::Object::operator System::Single()
 	{
 		System::Single returnVal(Plugin::UnboxSingle(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3358,7 +5885,7 @@ namespace System
 
 namespace System
 {
-	Object::operator System::Double()
+	System::Object::operator System::Double()
 	{
 		System::Double returnVal(Plugin::UnboxDouble(Handle));
 		if (Plugin::unhandledCsharpException)
@@ -3431,6 +5958,11 @@ DLLEXPORT void Init(
 	int32_t (*enumerableGetEnumerator)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
 	int32_t maxManagedObjects,
+	void (*releaseSystemDecimal)(int32_t handle),
+	int32_t (*systemDecimalConstructorSystemDouble)(double value),
+	int32_t (*systemDecimalConstructorSystemUInt64)(uint64_t value),
+	int32_t (*boxDecimal)(int32_t valHandle),
+	int32_t (*unboxDecimal)(int32_t valHandle),
 	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
 	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b),
 	int32_t (*boxVector3)(UnityEngine::Vector3& val),
@@ -3492,6 +6024,14 @@ DLLEXPORT void Init(
 	Plugin::ArrayGetLength = arrayGetLength;
 	Plugin::EnumerableGetEnumerator = enumerableGetEnumerator;
 	/*BEGIN INIT BODY*/
+	Plugin::ReleaseSystemDecimal = releaseSystemDecimal;
+	Plugin::RefCountsSystemDecimal = (int32_t*)curMemory;
+	curMemory += 1000 * sizeof(int32_t);
+	Plugin::RefCountsLenSystemDecimal = 1000;
+	Plugin::SystemDecimalConstructorSystemDouble = systemDecimalConstructorSystemDouble;
+	Plugin::SystemDecimalConstructorSystemUInt64 = systemDecimalConstructorSystemUInt64;
+	Plugin::BoxDecimal = boxDecimal;
+	Plugin::UnboxDecimal = unboxDecimal;
 	Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
 	Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3 = unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3;
 	Plugin::BoxVector3 = boxVector3;

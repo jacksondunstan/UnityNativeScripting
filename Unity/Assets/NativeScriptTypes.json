@@ -12,6 +12,161 @@
 			"Name": " System.IComparable"
 		},
 		{
+			"Name": "System.IEquatable`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.Boolean"
+					]
+				},
+				{
+					"Types": [
+						"System.Char"
+					]
+				},
+				{
+					"Types": [
+						"System.SByte"
+					]
+				},
+				{
+					"Types": [
+						"System.Byte"
+					]
+				},
+				{
+					"Types": [
+						"System.Int16"
+					]
+				},
+				{
+					"Types": [
+						"System.UInt16"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.UInt32"
+					]
+				},
+				{
+					"Types": [
+						"System.Int64"
+					]
+				},
+				{
+					"Types": [
+						"System.UInt64"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"System.Double"
+					]
+				},
+				{
+					"Types": [
+						"System.Decimal"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.IComparable`1",
+			"GenericParams": [
+				{
+					"Types": [
+						"System.Boolean"
+					]
+				},
+				{
+					"Types": [
+						"System.Char"
+					]
+				},
+				{
+					"Types": [
+						"System.SByte"
+					]
+				},
+				{
+					"Types": [
+						"System.Byte"
+					]
+				},
+				{
+					"Types": [
+						"System.Int16"
+					]
+				},
+				{
+					"Types": [
+						"System.UInt16"
+					]
+				},
+				{
+					"Types": [
+						"System.Int32"
+					]
+				},
+				{
+					"Types": [
+						"System.UInt32"
+					]
+				},
+				{
+					"Types": [
+						"System.Int64"
+					]
+				},
+				{
+					"Types": [
+						"System.UInt64"
+					]
+				},
+				{
+					"Types": [
+						"System.Single"
+					]
+				},
+				{
+					"Types": [
+						"System.Double"
+					]
+				},
+				{
+					"Types": [
+						"System.Decimal"
+					]
+				}
+			]
+		},
+		{
+			"Name": "System.Decimal",
+			"Constructors": [
+				{
+					"ParamTypes": [
+						"System.Double"
+					]
+				},
+				{
+					"ParamTypes": [
+						"System.UInt64"
+					]
+				}
+			]
+		},
+		{
 			"Name": "UnityEngine.Vector3",
 			"Constructors": [
 				{

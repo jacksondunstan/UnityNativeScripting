@@ -334,6 +334,11 @@ namespace NativeScript
 			IntPtr enumerableGetEnumerator,
 			/*BEGIN INIT PARAMS*/
 			int maxManagedObjects,
+			IntPtr releaseSystemDecimal,
+			IntPtr systemDecimalConstructorSystemDouble,
+			IntPtr systemDecimalConstructorSystemUInt64,
+			IntPtr boxDecimal,
+			IntPtr unboxDecimal,
 			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
 			IntPtr boxVector3,
@@ -498,6 +503,11 @@ namespace NativeScript
 			IntPtr enumerableGetEnumerator,
 			/*BEGIN INIT PARAMS*/
 			int maxManagedObjects,
+			IntPtr releaseSystemDecimal,
+			IntPtr systemDecimalConstructorSystemDouble,
+			IntPtr systemDecimalConstructorSystemUInt64,
+			IntPtr boxDecimal,
+			IntPtr unboxDecimal,
 			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
 			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
 			IntPtr boxVector3,
@@ -570,6 +580,11 @@ namespace NativeScript
 		delegate int EnumerableGetEnumeratorDelegate(int handle);
 		
 		/*BEGIN DELEGATE TYPES*/
+		delegate void ReleaseSystemDecimalDelegate(int handle);
+		delegate int SystemDecimalConstructorSystemDoubleDelegate(double value);
+		delegate int SystemDecimalConstructorSystemUInt64Delegate(ulong value);
+		delegate int BoxDecimalDelegate(int valHandle);
+		delegate int UnboxDecimalDelegate(int valHandle);
 		delegate UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(float x, float y, float z);
 		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b);
 		delegate int BoxVector3Delegate(ref UnityEngine.Vector3 val);
@@ -641,6 +656,7 @@ namespace NativeScript
 		{
 			/*BEGIN STORE INIT CALLS*/
 			NativeScript.Bindings.ObjectStore.Init(1000);
+			NativeScript.Bindings.StructStore<System.Decimal>.Init(1000);
 			/*END STORE INIT CALLS*/
 
 			// Allocate unmanaged memory
@@ -744,6 +760,11 @@ namespace NativeScript
 				Marshal.GetFunctionPointerForDelegate(new EnumerableGetEnumeratorDelegate(EnumerableGetEnumerator)),
 				/*BEGIN INIT CALL*/
 				1000,
+				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemDecimalDelegate(ReleaseSystemDecimal)),
+				Marshal.GetFunctionPointerForDelegate(new SystemDecimalConstructorSystemDoubleDelegate(SystemDecimalConstructorSystemDouble)),
+				Marshal.GetFunctionPointerForDelegate(new SystemDecimalConstructorSystemUInt64Delegate(SystemDecimalConstructorSystemUInt64)),
+				Marshal.GetFunctionPointerForDelegate(new BoxDecimalDelegate(BoxDecimal)),
+				Marshal.GetFunctionPointerForDelegate(new UnboxDecimalDelegate(UnboxDecimal)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)),
 				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)),
 				Marshal.GetFunctionPointerForDelegate(new BoxVector3Delegate(BoxVector3)),
@@ -918,6 +939,118 @@ namespace NativeScript
 		}
 
 		/*BEGIN FUNCTIONS*/
+		[MonoPInvokeCallback(typeof(ReleaseSystemDecimalDelegate))]
+		static void ReleaseSystemDecimal(int handle)
+		{
+			try
+			{
+				if (handle != 0)
+			{
+				NativeScript.Bindings.StructStore<System.Decimal>.Remove(handle);
+			}
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemDecimalConstructorSystemDoubleDelegate))]
+		static int SystemDecimalConstructorSystemDouble(double value)
+		{
+			try
+			{
+				var returnValue = NativeScript.Bindings.StructStore<System.Decimal>.Store(new System.Decimal(value));
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(SystemDecimalConstructorSystemUInt64Delegate))]
+		static int SystemDecimalConstructorSystemUInt64(ulong value)
+		{
+			try
+			{
+				var returnValue = NativeScript.Bindings.StructStore<System.Decimal>.Store(new System.Decimal(value));
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(BoxDecimalDelegate))]
+		static int BoxDecimal(int valHandle)
+		{
+			try
+			{
+				var val = (System.Decimal)NativeScript.Bindings.StructStore<System.Decimal>.Get(valHandle);
+				var returnValue = NativeScript.Bindings.ObjectStore.Store((object)val);
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
+		[MonoPInvokeCallback(typeof(UnboxDecimalDelegate))]
+		static int UnboxDecimal(int valHandle)
+		{
+			try
+			{
+				var val = NativeScript.Bindings.ObjectStore.Get(valHandle);
+				var returnValue = NativeScript.Bindings.StructStore<System.Decimal>.Store((System.Decimal)val);
+				return returnValue;
+			}
+			catch (System.NullReferenceException ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpExceptionSystemNullReferenceException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+			catch (System.Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+				NativeScript.Bindings.SetCsharpException(NativeScript.Bindings.ObjectStore.Store(ex));
+				return default(int);
+			}
+		}
+		
 		[MonoPInvokeCallback(typeof(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate))]
 		static UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(float x, float y, float z)
 		{

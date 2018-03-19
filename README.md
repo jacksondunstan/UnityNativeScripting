@@ -58,10 +58,11 @@ While IL2CPP transforms C# into C++ already, it generates a lot of overhead. The
 
 ## Industry Standard Language
 
-C++ is the standard language for video games as well as many other fields. By programming in C++ you can more easily transfer your skills and code to and from non-Unity projects. For example, you can avoid lock-in by using the same language (C++) that you'd use in the Unreal or Lumberyard engines.
+C++ is the standard language for video games as well as many other fields. By programming in C++ you can more easily transfer your skills and code to and from non-Unity projects. For example, you can avoid lock-in by using the same language (C++) that you'd use in the [Unreal](https://www.unrealengine.com) or [Lumberyard](https://aws.amazon.com/lumberyard/) engines.
 
 # UnityNativeScripting Features
 
+* Code generator exposes any C# API to C++
 * Supports Windows, macOS, Linux, iOS, and Android (editor and standalone)
 * Works with Unity 2017.x and 5.x
 * Plays nice with other C# scripts- no need to use 100% C++
@@ -85,26 +86,48 @@ C++ is the standard language for video games as well as many other fields. By pr
 
 * Platform-dependent compilation via the [usual flags](https://docs.unity3d.com/Manual/PlatformDependentCompilation.html) (e.g. `#if UNITY_EDITOR`)
 * [CMake](https://cmake.org/) build system sets up any IDE project or command-line build
-* Code generator exposes any C# API (Unity, .NET, custom DLLs) with a simple JSON config file and runs from a menu in the Unity editor. It supports a wide range of features:
-    * Class types
-    * Struct types
-    * Enumeration types
-    * Base classes
-    * Constructors
-    * Methods
-    * Fields
-    * Properties (getters and setters)
-    * `out` and `ref` parameters
-    * Exceptions
-    * Overloaded operators
-    * Arrays (single- and multi-dimensional)
-    * Delegates
-    * Events
-    * Boxing and unboxing (e.g. casting `int` to `object` and visa versa)
-    * Implementing C# interfaces with C++ classes
-    * Deriving from C# classes with C++ classes
-    * Default parameters
-    * Generic types and methods
+
+# Code Generator
+
+The core of this project is a code generator. It generates C# and C++ code called "bindings" that make C# APIs available to C++ game code. It supports a wide range of language features:
+
+* Types
+	* `class`
+	* `struct`
+	* `enum`
+	* Arrays (single- and multi-dimensional)
+	* Delegates (e.g. `Action`)
+	* `decimal`
+* Type Contents
+	* Constructors
+	* Methods
+	* Fields
+	* Properties (`get` and `set` like `obj.x`)
+	* Indexers (`get` and `set` like `obj[x]`)
+	* Events (`add` and `remove` delegates)
+	* Overloaded operators
+	* Boxing and unboxing (e.g. casting `int` to `object` and visa versa)
+* Function Features
+	* `out` and `ref` parameters
+	* Generic types and methods
+	* Default parameters
+* Cross-Language Features
+	* Exceptions (C# to C++ and C++ to C#)
+	* Implementing C# interfaces with C++ classes
+	* Deriving from C# classes with C++ classes
+
+Note that the code generator does not yet support:
+
+* `Array`, `string`, and `object` methods (e.g. `GetHashCode`)
+* Non-null string default parameters and null non-string default parameters
+* Implicit `params` parameter (a.k.a. "var args") passing
+* C# pointers
+* Nested types
+* Down-casting
+
+To configure the code generator, open `Unity/Assets/NativeScriptTypes.json` and notice the existing examples. Add on to this file to expose more C# APIs from Unity, .NET, or custom DLLs to your C++ code.
+
+To run the code generator, choose `NativeScript > Generate Bindings` from the Unity editor.
 
 # Performance
 
@@ -193,20 +216,6 @@ With C++, the workflow looks like this:
 5. Execute `cmake -G MyGenerator -DANDROID_NDK=/path/to/android/ndk /path/to/your/project/CppSource`. Replace `MyGenerator` with the generator of your choice. To see the options, execute `cmake --help` and look at the list at the bottom. To make a build for any platform other than Android, omit the `-DANDROID_NDK=/path/to/android/ndk` part.
 6. The build scripts or IDE project files are now generated in your build directory
 7. Build as appropriate for your generator. For example, execute `make` if you chose `Unix Makefiles` as your generator.
-
-# The Code Generator
-
-To run the code generator, choose `NativeScript > Generate Bindings` from the Unity editor.
-
-To configure the code generator, open `NativeScriptTypes.json` and notice the existing examples. Add on to this file to expose more C# APIs from Unity, .NET, or custom DLLs to your C++ code.
-
-Note that the code generator does not support (yet):
-
-* `Array`, `string`, and `object` methods (e.g. `GetHashCode`)
-* Non-null string default parameters and null non-string default parameters
-* Implicit `params` parameter (a.k.a. "var args") passing
-* `decimal`
-* C# pointers
 
 # Updating To A New Version
 
