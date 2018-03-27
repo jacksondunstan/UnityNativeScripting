@@ -1093,6 +1093,7 @@ namespace System
 	String::String(const char* chars)
 		: Object(Plugin::InternalUse::Only, Plugin::StringNew(chars))
 	{
+		Plugin::ReferenceManagedClass(Handle);
 	}
 	
 	ICloneable::ICloneable(Plugin::InternalUse iu, int32_t handle)
