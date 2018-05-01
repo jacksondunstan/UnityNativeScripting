@@ -7550,7 +7550,8 @@ namespace NativeScript
 					GetTypeName(string.Empty, string.Empty),
 					null,
 					cppDefaultConstructorBindingFunctionName,
-					cppDefaultConstructorBindingFunctionParams,
+					ConvertParameters(Type.EmptyTypes),
+					typeof(int),
 					builders.CsharpImports);
 				AppendCsharpGetDelegateCall(
 					GetTypeName(string.Empty, string.Empty),
@@ -7607,11 +7608,14 @@ namespace NativeScript
 					typeof(void),
 					TypeKind.None,
 					builders.CsharpDelegates);
+				ParameterInfo[] cppDestroyImportFunctionParams = ConvertParameters(
+					new Type[0]);
 				AppendCsharpImport(
 					GetTypeName(string.Empty, string.Empty),
 					null,
 					cppDestroyBindingFunctionName,
-					cppDestroyBindingFunctionParams,
+					cppDestroyImportFunctionParams,
+					typeof(void),
 					builders.CsharpImports);
 				AppendCsharpGetDelegateCall(
 					GetTypeName(string.Empty, string.Empty),
@@ -8685,6 +8689,7 @@ namespace NativeScript
 				typeParams,
 				funcName,
 				invokeParams,
+				typeof(void),
 				builders.CsharpImports);
 			
 			return invokeParams;
@@ -10639,11 +10644,14 @@ namespace NativeScript
 			Type[] typeParams,
 			string funcName,
 			ParameterInfo[] parameters,
+			Type returnType,
 			StringBuilder output
 		)
 		{
-			output.Append("\t\t[DllImport(Constants.PluginName)]\n");
-			output.Append("\t\tpublic static extern void ");
+			output.Append("\t\t[DllImport(NativeScriptConstants.PluginName)]\n");
+			output.Append("\t\tpublic static extern ");
+			AppendCsharpTypeFullName(returnType, output);
+			output.Append(' ');
 			AppendCsharpDelegateName(
 				typeTypeName,
 				typeParams,
@@ -10857,7 +10865,8 @@ namespace NativeScript
 					GetTypeName(string.Empty, string.Empty),
 					null,
 					funcName,
-					parameters,
+					ConvertParameters(Type.EmptyTypes),
+					typeof(void),
 					builders.CsharpImports);
 				
 				// C# delegate

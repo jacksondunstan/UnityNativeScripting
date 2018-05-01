@@ -491,11 +491,11 @@ namespace NativeScript
 				typeof(T)) as T;
 		}
 #else
-		[DllImport(PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		static extern void Init(
 			IntPtr memory,
 			int memorySize,
-			initMode initMode,
+			InitMode initMode,
 			IntPtr releaseObject,
 			IntPtr stringNew,
 			IntPtr setException,
@@ -555,21 +555,21 @@ namespace NativeScript
 			IntPtr unboxDouble
 			/*END INIT PARAMS*/);
 		
-		[DllImport(PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		static extern void SetCsharpException(int handle);
 		
 		/*BEGIN IMPORTS*/
-		[DllImport(Constants.PluginName)]
-		public static extern void NewBaseBallScript(int thisHandle, int param0);
+		[DllImport(NativeScriptConstants.PluginName)]
+		public static extern int NewBaseBallScript(int thisHandle);
 		
-		[DllImport(Constants.PluginName)]
-		public static extern void DestroyBaseBallScript(int thisHandle, int param0);
+		[DllImport(NativeScriptConstants.PluginName)]
+		public static extern void DestroyBaseBallScript(int thisHandle);
 		
-		[DllImport(Constants.PluginName)]
+		[DllImport(NativeScriptConstants.PluginName)]
 		public static extern void MyGameAbstractBaseBallScriptUpdate(int thisHandle);
 		
-		[DllImport(Constants.PluginName)]
-		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle, int param0);
+		[DllImport(NativeScriptConstants.PluginName)]
+		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle);
 		/*END IMPORTS*/
 #endif
 		
@@ -631,13 +631,15 @@ namespace NativeScript
 		delegate int BoxDoubleDelegate(double val);
 		delegate double UnboxDoubleDelegate(int valHandle);
 		/*END DELEGATE TYPES*/
-		
-		private static readonly string pluginPath = Application.dataPath + PLUGIN_PATH;
+
 #if UNITY_EDITOR_WIN
 		private static readonly string pluginTempPath = Application.dataPath + PLUGIN_TEMP_PATH;
 #endif
 		public static Exception UnhandledCppException;
+#if UNITY_EDITOR
+		private static readonly string pluginPath = Application.dataPath + PLUGIN_PATH;
 		public static SetCsharpExceptionDelegate SetCsharpException;
+#endif
 		static IntPtr memory;
 		static int memorySize;
 		static DestroyEntry[] destroyQueue;
