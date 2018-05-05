@@ -18,9 +18,9 @@ This project aims to give you a viable alternative to C#. Scripting in C++ isn't
 
 ## Fast Device Build Times
 
-Changing one line of C# code requires you to make a new build of the game. Typical iOS build times tend to be at least 10 minutes because IL2CPP has to run and then Xcode has to compile a huge amount of C++.
+Changing one line of C# code requires you to make a new build of the game. Typical Android build times tend to be at least 10 minutes because IL2CPP has to run and then a huge amount of C++ must be compiled.
 
-By using C++, we can compile the game as a C++ plugin in about 1 second, swap the plugin into the Xcode project, and then immediately run the game. That's a huge productivity boost!
+By using C++, we can compile the game as a C++ plugin in about 1 second, swap the plugin into the APK, and then immediately install and run the game. That's a huge productivity boost!
 
 ## Fast Compile Times
 
