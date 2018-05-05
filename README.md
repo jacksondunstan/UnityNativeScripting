@@ -84,7 +84,7 @@ C++ is the standard language for video games as well as many other fields. By pr
 		Debug::Log(message);
 	}
 
-* Platform-dependent compilation via the [usual flags](https://docs.unity3d.com/Manual/PlatformDependentCompilation.html) (e.g. `#if UNITY_EDITOR`)
+* Platform-dependent compilation (e.g. `#if TARGET_OS_ANDROID`)
 * [CMake](https://cmake.org/) build system sets up any IDE project or command-line build
 
 # Code Generator

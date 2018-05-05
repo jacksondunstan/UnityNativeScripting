@@ -301,7 +301,11 @@ namespace NativeScript
 		}
 		
 		// Name of the plugin when using [DllImport]
+#if !UNITY_EDITOR && UNITY_IOS
+		const string PLUGIN_NAME = "__Internal";
+#else
 		const string PLUGIN_NAME = "NativeScript";
+#endif
 		
 		// Path to load the plugin from when running inside the editor
 #if UNITY_EDITOR_OSX
@@ -491,7 +495,7 @@ namespace NativeScript
 				typeof(T)) as T;
 		}
 #else
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(PLUGIN_NAME)]
 		static extern void Init(
 			IntPtr memory,
 			int memorySize,
@@ -555,20 +559,20 @@ namespace NativeScript
 			IntPtr unboxDouble
 			/*END INIT PARAMS*/);
 		
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(PLUGIN_NAME)]
 		static extern void SetCsharpException(int handle);
 		
 		/*BEGIN IMPORTS*/
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(PLUGIN_NAME)]
 		public static extern int NewBaseBallScript(int thisHandle);
 		
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(PLUGIN_NAME)]
 		public static extern void DestroyBaseBallScript(int thisHandle);
 		
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(PLUGIN_NAME)]
 		public static extern void MyGameAbstractBaseBallScriptUpdate(int thisHandle);
 		
-		[DllImport(NativeScriptConstants.PluginName)]
+		[DllImport(PLUGIN_NAME)]
 		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle);
 		/*END IMPORTS*/
 #endif
