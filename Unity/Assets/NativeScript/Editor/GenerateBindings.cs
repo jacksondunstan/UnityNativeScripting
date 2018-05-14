@@ -24,7 +24,7 @@ namespace NativeScript
 	{
 		// Disable unused field types. JsonUtility actually uses them, but it
 		// does so with reflection.
-		#pragma warning disable CS0649
+		#pragma warning disable 649
 		
 		[Serializable]
 		class JsonConstructor
@@ -289,7 +289,9 @@ namespace NativeScript
 		static readonly string CppDirPath =
 			Path.Combine(
 				Path.Combine(
-					ProjectDirPath,
+					Path.Combine(
+						ProjectDirPath,
+						"Assets"),
 					"CppSource"),
 				"NativeScript");
 		static readonly string CsharpPath = Path.Combine(
@@ -308,7 +310,7 @@ namespace NativeScript
 			= new FieldOrderComparer();
 		
 		// Restore unused field types
-		#pragma warning restore CS0649
+		#pragma warning restore 649
 		
 		public static void Generate()
 		{
