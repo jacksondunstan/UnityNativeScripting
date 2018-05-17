@@ -10650,7 +10650,7 @@ namespace NativeScript
 			StringBuilder output
 		)
 		{
-			output.Append("\t\t[DllImport(NativeScriptConstants.PluginName)]\n");
+			output.Append("\t\t[DllImport(PLUGIN_NAME)]\n");
 			output.Append("\t\tpublic static extern ");
 			AppendCsharpTypeFullName(returnType, output);
 			output.Append(' ');
