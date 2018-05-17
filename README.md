@@ -161,9 +161,8 @@ With C++, the workflow looks like this:
 
 1. Download or clone this repo
 2. Copy everything in `Unity/Assets` directory to your Unity project's `Assets` directory
-3. Copy the `Unity/CppSource` directory to your Unity project directory
-4. Edit `NativeScriptTypes.json` and specify what parts of the Unity, .NET, and custom DLL APIs you want access to from C++.
-5. Edit `Unity/CppSource/Game/Game.cpp` and `Unity/CppSource/Game/Game.h` to create your game. Some example code is provided, but feel free to delete it. You can add more C++ source (`.cpp`) and header (`.h`) files here as your game grows.
+3. Edit `NativeScriptTypes.json` and specify what parts of the Unity, .NET, and custom DLL APIs you want access to from C++.
+4. Edit `Unity/Assets/CppSource/Game/Game.cpp` and `Unity/Assets/CppSource/Game/Game.h` to create your game. Some example code is provided, but feel free to delete it. You can add more C++ source (`.cpp`) and header (`.h`) files here as your game grows.
 
 # Building the C++ Plugin
 
