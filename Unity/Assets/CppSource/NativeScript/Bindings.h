@@ -11,7 +11,7 @@
 #pragma once
 
 // For int32_t, etc.
-#include <stdint.h>
+#include <cstdint>
 
 ////////////////////////////////////////////////////////////////
 // Plugin internals. Do not name these in game code as they may

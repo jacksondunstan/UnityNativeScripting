@@ -16,16 +16,13 @@
 #include "Game.h"
 
 // For assert()
-#include <assert.h>
-
-// For int32_t, etc.
-#include <stdint.h>
+#include <cassert>
 
 // For malloc(), etc.
-#include <stdlib.h>
+#include <cstdlib>
 
 // For memset(), etc.
-#include <string.h>
+#include <cstring>
 
 // Support placement new
 void* operator new(size_t, void* p)
