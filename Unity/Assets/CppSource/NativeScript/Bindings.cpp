@@ -3965,7 +3965,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	System::String UnityEngine::Object::GetName()
+	System::String UnityEngine::Object::GetName() const
 	{
 		auto returnValue = Plugin::UnityEngineObjectPropertyGetName(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4073,7 +4073,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	UnityEngine::Transform UnityEngine::Component::GetTransform()
+	UnityEngine::Transform UnityEngine::Component::GetTransform() const
 	{
 		auto returnValue = Plugin::UnityEngineComponentPropertyGetTransform(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4173,7 +4173,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	UnityEngine::Vector3 UnityEngine::Transform::GetPosition()
+	UnityEngine::Vector3 UnityEngine::Transform::GetPosition() const
 	{
 		auto returnValue = Plugin::UnityEngineTransformPropertyGetPosition(Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4281,7 +4281,7 @@ namespace System
 			return Handle != other.Handle;
 		}
 		
-		System::Object System::Collections::IEnumerator::GetCurrent()
+		System::Object System::Collections::IEnumerator::GetCurrent() const
 		{
 			auto returnValue = Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent(Handle);
 			if (Plugin::unhandledCsharpException)
@@ -4856,7 +4856,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	UnityEngine::Transform UnityEngine::MonoBehaviour::GetTransform()
+	UnityEngine::Transform UnityEngine::MonoBehaviour::GetTransform() const
 	{
 		auto returnValue = Plugin::UnityEngineMonoBehaviourPropertyGetTransform(Handle);
 		if (Plugin::unhandledCsharpException)
