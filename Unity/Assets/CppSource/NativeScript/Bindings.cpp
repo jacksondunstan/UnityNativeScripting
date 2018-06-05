@@ -27,11 +27,8 @@
 // For memset(), etc.
 #include <string.h>
 
-// Support placement new
-void* operator new(size_t, void* p)
-{
-	return p;
-}
+// For smart pointers
+#include <memory>
 
 // Macro to put before functions that need to be exposed to C#
 #ifdef _WIN32
@@ -954,7 +951,7 @@ namespace Plugin
 namespace Plugin
 {
 	// An unhandled exception caused by C++ calling into C#
-	System::Exception* unhandledCsharpException = nullptr;
+	std::unique_ptr<System::Exception> unhandledCsharpException;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -6141,8 +6138,6 @@ DLLEXPORT void Init(
 // Receive an unhandled exception from C#
 DLLEXPORT void SetCsharpException(int32_t handle)
 {
-	Plugin::unhandledCsharpException = new System::Exception(
-		Plugin::InternalUse::Only,
-		handle);
+	Plugin::unhandledCsharpException = std::make_unique<System::Exception>(Plugin::InternalUse::Only, handle);
 }
 
