@@ -1615,6 +1615,7 @@ namespace NativeScript
 				AppendCppFunctionPointerDefinition(
 					funcName,
 					true,
+					false,
 					default(TypeName),
 					TypeKind.None,
 					parameters,
@@ -1625,6 +1626,7 @@ namespace NativeScript
 				AppendCppInitParam(
 					funcNameLower,
 					true,
+					false,
 					default(TypeName),
 					TypeKind.None,
 					parameters,
@@ -2406,6 +2408,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				boxFuncName,
 				true,
+				false,
 				GetTypeName(type),
 				typeKind,
 				boxParams,
@@ -2416,6 +2419,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				boxFuncNameLower,
 				true,
+				false,
 				GetTypeName(type),
 				typeKind,
 				boxParams,
@@ -2537,6 +2541,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				unboxFuncName,
 				true,
+				false,
 				GetTypeName(type),
 				typeKind,
 				unboxParams,
@@ -2552,6 +2557,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				false,
 				null,
 				null,
 				unboxCppParams,
@@ -2561,6 +2567,7 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(typeof(object)),
+				false,
 				null,
 				unboxMethodDefinitionName,
 				null,
@@ -2607,6 +2614,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				unboxFuncNameLower,
 				true,
+				false,
 				GetTypeName(type),
 				typeKind,
 				unboxParams,
@@ -2653,6 +2661,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				false,
 				null,
 				null,
 				boxCppParams,
@@ -2672,6 +2681,7 @@ namespace NativeScript
 		{
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(enclosingType),
+				false,
 				null,
 				boxMethodDefinitionName,
 				enclosingTypeTypeParams,
@@ -2935,6 +2945,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				true,
+				false,
 				enclosingTypeTypeName,
 				enclosingTypeKind,
 				parameters,
@@ -2950,6 +2961,7 @@ namespace NativeScript
 				enclosingTypeIsStatic,
 				false,
 				false,
+				false,
 				null,
 				null,
 				parameters,
@@ -2958,6 +2970,7 @@ namespace NativeScript
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(enclosingType),
+				false,
 				null,
 				cppMethodName,
 				enclosingTypeParams,
@@ -3040,6 +3053,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				true,
+				false,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
@@ -3476,6 +3490,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
+				false,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				methodParams,
@@ -3496,6 +3511,7 @@ namespace NativeScript
 				enclosingTypeIsStatic,
 				false,
 				cppMethodIsStatic,
+				false,
 				cppReturnType,
 				null,
 				cppParameters,
@@ -3504,6 +3520,7 @@ namespace NativeScript
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(enclosingType),
+				false,
 				cppReturnType,
 				cppMethodName,
 				typeTypeParams,
@@ -3534,6 +3551,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
+				false,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				methodParams,
@@ -4033,6 +4051,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
+				false,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
@@ -4207,6 +4226,7 @@ namespace NativeScript
 					enclosingTypeIsStatic,
 					false,
 					cppMethodIsStatic,
+					false,
 					cppReturnType,
 					methodTypeParams,
 					cppParameters,
@@ -4216,6 +4236,7 @@ namespace NativeScript
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(enclosingType),
+				false,
 				cppReturnType,
 				cppMethodName,
 				enclosingTypeParams,
@@ -4251,6 +4272,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
+				false,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
@@ -5618,6 +5640,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				true,
+				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
@@ -5628,6 +5651,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				true,
+				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
@@ -5649,6 +5673,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				false,
 				null,
 				null,
 				parameters,
@@ -5658,6 +5683,7 @@ namespace NativeScript
 			Type[] cppTypeParams = { elementType };
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(cppArrayTypeName, "System"),
+				false,
 				null,
 				cppArrayTypeName,
 				cppTypeParams,
@@ -5785,6 +5811,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				true,
 				typeof(int),
 				null,
 				parameters,
@@ -5793,6 +5820,7 @@ namespace NativeScript
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(cppArrayTypeName, "System"),
+				true,
 				typeof(int),
 				"GetLength",
 				cppTypeParams,
@@ -5863,6 +5891,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				true,
 				typeof(int),
 				null,
 				parameters,
@@ -5871,6 +5900,7 @@ namespace NativeScript
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(cppArrayTypeName, "System"),
+				true,
 				typeof(int),
 				"GetRank",
 				cppTypeParams,
@@ -5981,6 +6011,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				false,
+				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
@@ -5990,6 +6021,7 @@ namespace NativeScript
 			// C++ init param
 			AppendCppInitParam(
 				funcNameLower,
+				false,
 				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
@@ -6012,6 +6044,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				true,
 				typeof(int),
 				null,
 				parameters,
@@ -6021,6 +6054,7 @@ namespace NativeScript
 			Type[] cppTypeParams = { elementType };
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(cppArrayTypeName, "System"),
+				true,
 				typeof(int),
 				"GetLength",
 				cppTypeParams,
@@ -6170,6 +6204,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				false,
+				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
@@ -6179,6 +6214,7 @@ namespace NativeScript
 			// C++ init param
 			AppendCppInitParam(
 				funcNameLower,
+				false,
 				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
@@ -6274,6 +6310,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				false,
+				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
@@ -6283,6 +6320,7 @@ namespace NativeScript
 			// C++ init param
 			AppendCppInitParam(
 				funcNameLower,
+				false,
 				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
@@ -6537,6 +6575,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				false,
 				null,
 				null,
 				new ParameterInfo[0],
@@ -6546,6 +6585,7 @@ namespace NativeScript
 				builders.CppTypeDefinitions);
 			AppendCppMethodDeclaration(
 				"operator+=",
+				false,
 				false,
 				false,
 				false,
@@ -6561,6 +6601,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				false,
 				typeof(void),
 				null,
 				addRemoveParams,
@@ -6570,6 +6611,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				releaseFuncName,
 				true,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				releaseParams,
@@ -6578,6 +6620,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				constructorFuncName,
 				true,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				constructorParams,
@@ -6586,6 +6629,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				addFuncName,
 				false,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				addRemoveParams,
@@ -6593,6 +6637,7 @@ namespace NativeScript
 				builders.CppFunctionPointers);
 			AppendCppFunctionPointerDefinition(
 				removeFuncName,
+				false,
 				false,
 				default(TypeName),
 				TypeKind.None,
@@ -6604,6 +6649,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				releaseFuncNameLower,
 				true,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				releaseParams,
@@ -6612,6 +6658,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				constructorFuncNameLower,
 				true,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				constructorParams,
@@ -6620,6 +6667,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				addFuncNameLower,
 				false,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				addRemoveParams,
@@ -6627,6 +6675,7 @@ namespace NativeScript
 				builders.CppInitParams);
 			AppendCppInitParam(
 				removeFuncNameLower,
+				false,
 				false,
 				default(TypeName),
 				TypeKind.None,
@@ -6782,6 +6831,7 @@ namespace NativeScript
 			// C++ add
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(type),
+				false,
 				typeof(void),
 				"operator+=",
 				typeParams,
@@ -6814,6 +6864,7 @@ namespace NativeScript
 			// C++ remove
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(type),
+				false,
 				typeof(void),
 				"operator-=",
 				typeParams,
@@ -7225,6 +7276,7 @@ namespace NativeScript
 					false,
 					false,
 					false,
+					false,
 					null,
 					null,
 					cppConstructorParams[i],
@@ -7307,6 +7359,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				releaseFuncName,
 				true,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				releaseParams,
@@ -7317,6 +7370,7 @@ namespace NativeScript
 				AppendCppFunctionPointerDefinition(
 					constructorFuncNames[i],
 					true,
+					false,
 					default(TypeName),
 					TypeKind.None,
 					constructorParams[i],
@@ -7328,6 +7382,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				releaseFuncNameLower,
 				true,
+				false,
 				default(TypeName),
 				TypeKind.None,
 				releaseParams,
@@ -7338,6 +7393,7 @@ namespace NativeScript
 				AppendCppInitParam(
 					constructorFuncNameLowers[i],
 					true,
+					false,
 					default(TypeName),
 					TypeKind.None,
 					constructorParams[i],
@@ -8398,6 +8454,7 @@ namespace NativeScript
 				false,
 				false,
 				false,
+				false,
 				methodInfo.ReturnType,
 				null,
 				invokeParams,
@@ -8406,6 +8463,7 @@ namespace NativeScript
 			// C++ function pointer for the C# binding function
 			AppendCppFunctionPointerDefinition(
 				funcName,
+				false,
 				false,
 				default(TypeName),
 				TypeKind.None,
@@ -8416,6 +8474,7 @@ namespace NativeScript
 			// C++ and C# Init parameter and body for the C# binding function
 			AppendCppInitParam(
 				funcNameLower,
+				false,
 				false,
 				default(TypeName),
 				TypeKind.None,
@@ -8438,6 +8497,7 @@ namespace NativeScript
 				methodInfo.ReturnType);
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(type),
+				false,
 				methodInfo.ReturnType,
 				methodName,
 				typeParams,
@@ -8615,6 +8675,7 @@ namespace NativeScript
 				false,
 				true,
 				false,
+				false,
 				invokeMethod.ReturnType,
 				null,
 				invokeParams,
@@ -8623,6 +8684,7 @@ namespace NativeScript
 			// C++ method definition. This is a no-op that game code overrides.
 			AppendCppMethodDefinitionBegin(
 				typeTypeName,
+				false,
 				invokeMethod.ReturnType,
 				methodName,
 				typeIsDelegate ? typeParams : null,
@@ -10021,6 +10083,7 @@ namespace NativeScript
 		{
 			AppendCppMethodDefinitionBegin(
 				typeTypeName,
+				false,
 				null,
 				cppTypeName,
 				typeIsDelegate ? typeParams : null,
@@ -11032,6 +11095,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
+				!methodIsStatic,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
@@ -11045,6 +11109,7 @@ namespace NativeScript
 				enclosingTypeIsStatic,
 				false,
 				methodIsStatic,
+				!methodIsStatic,
 				fieldType,
 				null,
 				parameters,
@@ -11053,6 +11118,7 @@ namespace NativeScript
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(enclosingType),
+				!methodIsStatic,
 				fieldType,
 				methodName,
 				enclosingTypeParams,
@@ -11086,6 +11152,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
+				!methodIsStatic,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
@@ -11223,6 +11290,7 @@ namespace NativeScript
 			AppendCppFunctionPointerDefinition(
 				funcName,
 				methodIsStatic,
+				false,
 				enclosingTypeTypeName,
 				enclosingTypeKind,
 				parameters,
@@ -11233,6 +11301,7 @@ namespace NativeScript
 			AppendIndent(indent + 1, builders.CppTypeDefinitions);
 			AppendCppMethodDeclaration(
 				methodName,
+				false,
 				enclosingTypeIsStatic,
 				false,
 				methodIsStatic,
@@ -11244,6 +11313,7 @@ namespace NativeScript
 			// C++ method definition
 			AppendCppMethodDefinitionBegin(
 				GetTypeName(enclosingType),
+				false,
 				typeof(void),
 				methodName,
 				enclosingTypeParams,
@@ -11272,6 +11342,7 @@ namespace NativeScript
 			AppendCppInitParam(
 				funcNameLower,
 				methodIsStatic,
+				false,
 				enclosingTypeTypeName,
 				enclosingTypeKind,
 				parameters,
@@ -12809,6 +12880,7 @@ namespace NativeScript
 		
 		static void AppendCppMethodDefinitionBegin(
 			TypeName enclosingTypeTypeName,
+			bool methodIsConst,
 			Type returnType,
 			string methodName,
 			Type[] enclosingTypeTypeParams,
@@ -12863,7 +12935,14 @@ namespace NativeScript
 				null, // don't substitute method type params
 				false,
 				output);
-			output.Append(")\n");
+			output.Append(")");
+
+			if (methodIsConst)
+			{
+				output.Append(" const");
+			}
+
+			output.Append("\n");
 		}
 		
 		static void AppendCppMethodReturn(
@@ -13033,6 +13112,7 @@ namespace NativeScript
 		static void AppendCppInitParam(
 			string funcName,
 			bool isStatic,
+			bool isConst,
 			TypeName enclosingTypeTypeName,
 			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
@@ -13044,6 +13124,7 @@ namespace NativeScript
 			AppendCppFunctionPointer(
 				funcName,
 				isStatic,
+				isConst,
 				enclosingTypeTypeName,
 				enclosingTypeKind,
 				parameters,
@@ -13057,6 +13138,7 @@ namespace NativeScript
 		static void AppendCppFunctionPointerDefinition(
 			string funcName,
 			bool isStatic,
+			bool isConst,
 			TypeName enclosingTypeTypeName,
 			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
@@ -13068,6 +13150,7 @@ namespace NativeScript
 			AppendCppFunctionPointer(
 				funcName,
 				isStatic,
+				isConst,
 				enclosingTypeTypeName,
 				enclosingTypeKind,
 				parameters,
@@ -13081,6 +13164,7 @@ namespace NativeScript
 		static void AppendCppFunctionPointer(
 			string funcName,
 			bool isStatic,
+			bool isConst,
 			TypeName enclosingTypeTypeName,
 			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
@@ -13117,6 +13201,10 @@ namespace NativeScript
 				{
 					case TypeKind.FullStruct:
 					case TypeKind.Primitive:
+						if(isConst)
+						{
+							output.Append("const ");
+						}
 						AppendCppTypeFullName(
 							enclosingTypeTypeName,
 							output);
@@ -13220,6 +13308,7 @@ namespace NativeScript
 			bool enclosingTypeIsStatic,
 			bool methodIsVirtual,
 			bool methodIsStatic,
+			bool methodIsConst,
 			Type returnType,
 			Type[] methodTypeParameters,
 			ParameterInfo[] parameters,
@@ -13274,6 +13363,11 @@ namespace NativeScript
 				true,
 				output);
 			output.Append(')');
+
+			if(methodIsConst)
+			{
+				output.Append(" const");
+			}
 			
 			output.Append(";\n");
 		}

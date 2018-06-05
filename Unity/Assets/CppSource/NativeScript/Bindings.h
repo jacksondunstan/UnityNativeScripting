@@ -1210,7 +1210,7 @@ namespace UnityEngine
 		Object& operator=(Object&& other);
 		bool operator==(const Object& other) const;
 		bool operator!=(const Object& other) const;
-		System::String GetName();
+		System::String GetName() const;
 		void SetName(System::String& value);
 	};
 }
@@ -1229,7 +1229,7 @@ namespace UnityEngine
 		Component& operator=(Component&& other);
 		bool operator==(const Component& other) const;
 		bool operator!=(const Component& other) const;
-		UnityEngine::Transform GetTransform();
+		UnityEngine::Transform GetTransform() const;
 	};
 }
 
@@ -1247,7 +1247,7 @@ namespace UnityEngine
 		Transform& operator=(Transform&& other);
 		bool operator==(const Transform& other) const;
 		bool operator!=(const Transform& other) const;
-		UnityEngine::Vector3 GetPosition();
+		UnityEngine::Vector3 GetPosition() const;
 		void SetPosition(UnityEngine::Vector3& value);
 	};
 }
@@ -1268,7 +1268,7 @@ namespace System
 			IEnumerator& operator=(IEnumerator&& other);
 			bool operator==(const IEnumerator& other) const;
 			bool operator!=(const IEnumerator& other) const;
-			System::Object GetCurrent();
+			System::Object GetCurrent() const;
 			System::Boolean MoveNext();
 		};
 	}
@@ -1388,7 +1388,7 @@ namespace UnityEngine
 		MonoBehaviour& operator=(MonoBehaviour&& other);
 		bool operator==(const MonoBehaviour& other) const;
 		bool operator!=(const MonoBehaviour& other) const;
-		UnityEngine::Transform GetTransform();
+		UnityEngine::Transform GetTransform() const;
 	};
 }
 
