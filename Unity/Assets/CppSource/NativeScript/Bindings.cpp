@@ -53,56 +53,56 @@ namespace Plugin
 	int32_t (*EnumerableGetEnumerator)(int32_t handle);
 	
 	/*BEGIN FUNCTION POINTERS*/
-	void (*ReleaseSystemDecimal)(int32_t handle);
-	int32_t (*SystemDecimalConstructorSystemDouble)(double value);
-	int32_t (*SystemDecimalConstructorSystemUInt64)(uint64_t value);
-	int32_t (*BoxDecimal)(int32_t valHandle);
-	int32_t (*UnboxDecimal)(int32_t valHandle);
-	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z);
-	UnityEngine::Vector3 (*UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b);
-	int32_t (*BoxVector3)(UnityEngine::Vector3& val);
-	UnityEngine::Vector3 (*UnboxVector3)(int32_t valHandle);
+	void (*ReleaseSystemDecimal)(const int32_t handle);
+	int32_t (*SystemDecimalConstructorSystemDouble)(const double value);
+	int32_t (*SystemDecimalConstructorSystemUInt64)(const uint64_t value);
+	int32_t (*BoxDecimal)(const int32_t valHandle);
+	int32_t (*UnboxDecimal)(const int32_t valHandle);
+	UnityEngine::Vector3 (*UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(const float x, const float y, const float z);
+	UnityEngine::Vector3 (*UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(const UnityEngine::Vector3& a, const UnityEngine::Vector3& b);
+	int32_t (*BoxVector3)(const UnityEngine::Vector3& val);
+	UnityEngine::Vector3 (*UnboxVector3)(const int32_t valHandle);
 	int32_t (*UnityEngineObjectPropertyGetName)(int32_t thisHandle);
-	void (*UnityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle);
+	void (*UnityEngineObjectPropertySetName)(int32_t thisHandle, const int32_t valueHandle);
 	int32_t (*UnityEngineComponentPropertyGetTransform)(int32_t thisHandle);
 	UnityEngine::Vector3 (*UnityEngineTransformPropertyGetPosition)(int32_t thisHandle);
-	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value);
+	void (*UnityEngineTransformPropertySetPosition)(int32_t thisHandle, const UnityEngine::Vector3& value);
 	int32_t (*SystemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle);
 	int32_t (*SystemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle);
 	int32_t (*UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript)(int32_t thisHandle);
-	int32_t (*UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type);
-	void (*UnityEngineDebugMethodLogSystemObject)(int32_t messageHandle);
+	int32_t (*UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(const UnityEngine::PrimitiveType type);
+	void (*UnityEngineDebugMethodLogSystemObject)(const int32_t messageHandle);
 	int32_t (*UnityEngineMonoBehaviourPropertyGetTransform)(int32_t thisHandle);
-	int32_t (*SystemExceptionConstructorSystemString)(int32_t messageHandle);
-	int32_t (*BoxPrimitiveType)(UnityEngine::PrimitiveType val);
-	UnityEngine::PrimitiveType (*UnboxPrimitiveType)(int32_t valHandle);
+	int32_t (*SystemExceptionConstructorSystemString)(const int32_t messageHandle);
+	int32_t (*BoxPrimitiveType)(const UnityEngine::PrimitiveType val);
+	UnityEngine::PrimitiveType (*UnboxPrimitiveType)(const int32_t valHandle);
 	System::Single (*UnityEngineTimePropertyGetDeltaTime)();
-	void (*ReleaseBaseBallScript)(int32_t handle);
-	void (*BaseBallScriptConstructor)(int32_t cppHandle, int32_t* handle);
-	int32_t (*BoxBoolean)(uint32_t val);
-	int32_t (*UnboxBoolean)(int32_t valHandle);
-	int32_t (*BoxSByte)(int8_t val);
-	System::SByte (*UnboxSByte)(int32_t valHandle);
-	int32_t (*BoxByte)(uint8_t val);
-	System::Byte (*UnboxByte)(int32_t valHandle);
-	int32_t (*BoxInt16)(int16_t val);
-	System::Int16 (*UnboxInt16)(int32_t valHandle);
-	int32_t (*BoxUInt16)(uint16_t val);
-	System::UInt16 (*UnboxUInt16)(int32_t valHandle);
-	int32_t (*BoxInt32)(int32_t val);
-	System::Int32 (*UnboxInt32)(int32_t valHandle);
-	int32_t (*BoxUInt32)(uint32_t val);
-	System::UInt32 (*UnboxUInt32)(int32_t valHandle);
-	int32_t (*BoxInt64)(int64_t val);
-	System::Int64 (*UnboxInt64)(int32_t valHandle);
-	int32_t (*BoxUInt64)(uint64_t val);
-	System::UInt64 (*UnboxUInt64)(int32_t valHandle);
-	int32_t (*BoxChar)(uint16_t val);
-	int16_t (*UnboxChar)(int32_t valHandle);
-	int32_t (*BoxSingle)(float val);
-	System::Single (*UnboxSingle)(int32_t valHandle);
-	int32_t (*BoxDouble)(double val);
-	System::Double (*UnboxDouble)(int32_t valHandle);
+	void (*ReleaseBaseBallScript)(const int32_t handle);
+	void (*BaseBallScriptConstructor)(const int32_t cppHandle, int32_t* handle);
+	int32_t (*BoxBoolean)(const uint32_t val);
+	int32_t (*UnboxBoolean)(const int32_t valHandle);
+	int32_t (*BoxSByte)(const int8_t val);
+	System::SByte (*UnboxSByte)(const int32_t valHandle);
+	int32_t (*BoxByte)(const uint8_t val);
+	System::Byte (*UnboxByte)(const int32_t valHandle);
+	int32_t (*BoxInt16)(const int16_t val);
+	System::Int16 (*UnboxInt16)(const int32_t valHandle);
+	int32_t (*BoxUInt16)(const uint16_t val);
+	System::UInt16 (*UnboxUInt16)(const int32_t valHandle);
+	int32_t (*BoxInt32)(const int32_t val);
+	System::Int32 (*UnboxInt32)(const int32_t valHandle);
+	int32_t (*BoxUInt32)(const uint32_t val);
+	System::UInt32 (*UnboxUInt32)(const int32_t valHandle);
+	int32_t (*BoxInt64)(const int64_t val);
+	System::Int64 (*UnboxInt64)(const int32_t valHandle);
+	int32_t (*BoxUInt64)(const uint64_t val);
+	System::UInt64 (*UnboxUInt64)(const int32_t valHandle);
+	int32_t (*BoxChar)(const uint16_t val);
+	int16_t (*UnboxChar)(const int32_t valHandle);
+	int32_t (*BoxSingle)(const float val);
+	System::Single (*UnboxSingle)(const int32_t valHandle);
+	int32_t (*BoxDouble)(const double val);
+	System::Double (*UnboxDouble)(const int32_t valHandle);
 	/*END FUNCTION POINTERS*/
 }
 
@@ -3623,7 +3623,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	System::Decimal::Decimal(System::Double value)
+	System::Decimal::Decimal(const System::Double value)
 	{
 		auto returnValue = Plugin::SystemDecimalConstructorSystemDouble(value);
 		if (Plugin::unhandledCsharpException)
@@ -3640,7 +3640,7 @@ namespace System
 		}
 	}
 	
-	System::Decimal::Decimal(System::UInt64 value)
+	System::Decimal::Decimal(const System::UInt64 value)
 	{
 		auto returnValue = Plugin::SystemDecimalConstructorSystemUInt64(value);
 		if (Plugin::unhandledCsharpException)
@@ -3806,7 +3806,7 @@ namespace UnityEngine
 	{
 	}
 	
-	UnityEngine::Vector3::Vector3(System::Single x, System::Single y, System::Single z)
+	UnityEngine::Vector3::Vector3(const System::Single x, const System::Single y, const System::Single z)
 	{
 		auto returnValue = Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(x, y, z);
 		if (Plugin::unhandledCsharpException)
@@ -3819,7 +3819,7 @@ namespace UnityEngine
 		*this = returnValue;
 	}
 	
-	UnityEngine::Vector3 UnityEngine::Vector3::operator+(UnityEngine::Vector3& a)
+	UnityEngine::Vector3 UnityEngine::Vector3::operator+(const UnityEngine::Vector3& a)
 	{
 		auto returnValue = Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3(*this, a);
 		if (Plugin::unhandledCsharpException)
@@ -3978,7 +3978,7 @@ namespace UnityEngine
 		return System::String(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	void UnityEngine::Object::SetName(System::String& value)
+	void UnityEngine::Object::SetName(const System::String& value)
 	{
 		Plugin::UnityEngineObjectPropertySetName(Handle, value.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4186,7 +4186,7 @@ namespace UnityEngine
 		return returnValue;
 	}
 	
-	void UnityEngine::Transform::SetPosition(UnityEngine::Vector3& value)
+	void UnityEngine::Transform::SetPosition(const UnityEngine::Vector3& value)
 	{
 		Plugin::UnityEngineTransformPropertySetPosition(Handle, value);
 		if (Plugin::unhandledCsharpException)
@@ -4578,7 +4578,7 @@ namespace UnityEngine
 		return MyGame::BaseBallScript(Plugin::InternalUse::Only, returnValue);
 	}
 	
-	UnityEngine::GameObject UnityEngine::GameObject::CreatePrimitive(UnityEngine::PrimitiveType type)
+	UnityEngine::GameObject UnityEngine::GameObject::CreatePrimitive(const UnityEngine::PrimitiveType type)
 	{
 		auto returnValue = Plugin::UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType(type);
 		if (Plugin::unhandledCsharpException)
@@ -4672,7 +4672,7 @@ namespace UnityEngine
 		return Handle != other.Handle;
 	}
 	
-	void UnityEngine::Debug::Log(System::Object& message)
+	void UnityEngine::Debug::Log(const System::Object& message)
 	{
 		Plugin::UnityEngineDebugMethodLogSystemObject(message.Handle);
 		if (Plugin::unhandledCsharpException)
@@ -4954,7 +4954,7 @@ namespace System
 		return Handle != other.Handle;
 	}
 	
-	System::Exception::Exception(System::String& message)
+	System::Exception::Exception(const System::String& message)
 		: System::Runtime::InteropServices::_Exception(nullptr)
 		, System::Runtime::Serialization::ISerializable(nullptr)
 	{
@@ -5959,56 +5959,56 @@ DLLEXPORT void Init(
 	int32_t (*enumerableGetEnumerator)(int32_t handle),
 	/*BEGIN INIT PARAMS*/
 	int32_t maxManagedObjects,
-	void (*releaseSystemDecimal)(int32_t handle),
-	int32_t (*systemDecimalConstructorSystemDouble)(double value),
-	int32_t (*systemDecimalConstructorSystemUInt64)(uint64_t value),
-	int32_t (*boxDecimal)(int32_t valHandle),
-	int32_t (*unboxDecimal)(int32_t valHandle),
-	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
-	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b),
-	int32_t (*boxVector3)(UnityEngine::Vector3& val),
-	UnityEngine::Vector3 (*unboxVector3)(int32_t valHandle),
+	void (*releaseSystemDecimal)(const int32_t handle),
+	int32_t (*systemDecimalConstructorSystemDouble)(const double value),
+	int32_t (*systemDecimalConstructorSystemUInt64)(const uint64_t value),
+	int32_t (*boxDecimal)(const int32_t valHandle),
+	int32_t (*unboxDecimal)(const int32_t valHandle),
+	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(const float x, const float y, const float z),
+	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(const UnityEngine::Vector3& a, const UnityEngine::Vector3& b),
+	int32_t (*boxVector3)(const UnityEngine::Vector3& val),
+	UnityEngine::Vector3 (*unboxVector3)(const int32_t valHandle),
 	int32_t (*unityEngineObjectPropertyGetName)(int32_t thisHandle),
-	void (*unityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
+	void (*unityEngineObjectPropertySetName)(int32_t thisHandle, const int32_t valueHandle),
 	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
 	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
-	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value),
+	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, const UnityEngine::Vector3& value),
 	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
 	int32_t (*systemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle),
 	int32_t (*unityEngineGameObjectMethodAddComponentMyGameBaseBallScript)(int32_t thisHandle),
-	int32_t (*unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type),
-	void (*unityEngineDebugMethodLogSystemObject)(int32_t messageHandle),
+	int32_t (*unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(const UnityEngine::PrimitiveType type),
+	void (*unityEngineDebugMethodLogSystemObject)(const int32_t messageHandle),
 	int32_t (*unityEngineMonoBehaviourPropertyGetTransform)(int32_t thisHandle),
-	int32_t (*systemExceptionConstructorSystemString)(int32_t messageHandle),
-	int32_t (*boxPrimitiveType)(UnityEngine::PrimitiveType val),
-	UnityEngine::PrimitiveType (*unboxPrimitiveType)(int32_t valHandle),
+	int32_t (*systemExceptionConstructorSystemString)(const int32_t messageHandle),
+	int32_t (*boxPrimitiveType)(const UnityEngine::PrimitiveType val),
+	UnityEngine::PrimitiveType (*unboxPrimitiveType)(const int32_t valHandle),
 	System::Single (*unityEngineTimePropertyGetDeltaTime)(),
-	void (*releaseBaseBallScript)(int32_t handle),
-	void (*baseBallScriptConstructor)(int32_t cppHandle, int32_t* handle),
-	int32_t (*boxBoolean)(uint32_t val),
-	int32_t (*unboxBoolean)(int32_t valHandle),
-	int32_t (*boxSByte)(int8_t val),
-	System::SByte (*unboxSByte)(int32_t valHandle),
-	int32_t (*boxByte)(uint8_t val),
-	System::Byte (*unboxByte)(int32_t valHandle),
-	int32_t (*boxInt16)(int16_t val),
-	System::Int16 (*unboxInt16)(int32_t valHandle),
-	int32_t (*boxUInt16)(uint16_t val),
-	System::UInt16 (*unboxUInt16)(int32_t valHandle),
-	int32_t (*boxInt32)(int32_t val),
-	System::Int32 (*unboxInt32)(int32_t valHandle),
-	int32_t (*boxUInt32)(uint32_t val),
-	System::UInt32 (*unboxUInt32)(int32_t valHandle),
-	int32_t (*boxInt64)(int64_t val),
-	System::Int64 (*unboxInt64)(int32_t valHandle),
-	int32_t (*boxUInt64)(uint64_t val),
-	System::UInt64 (*unboxUInt64)(int32_t valHandle),
-	int32_t (*boxChar)(uint16_t val),
-	int16_t (*unboxChar)(int32_t valHandle),
-	int32_t (*boxSingle)(float val),
-	System::Single (*unboxSingle)(int32_t valHandle),
-	int32_t (*boxDouble)(double val),
-	System::Double (*unboxDouble)(int32_t valHandle)
+	void (*releaseBaseBallScript)(const int32_t handle),
+	void (*baseBallScriptConstructor)(const int32_t cppHandle, int32_t* handle),
+	int32_t (*boxBoolean)(const uint32_t val),
+	int32_t (*unboxBoolean)(const int32_t valHandle),
+	int32_t (*boxSByte)(const int8_t val),
+	System::SByte (*unboxSByte)(const int32_t valHandle),
+	int32_t (*boxByte)(const uint8_t val),
+	System::Byte (*unboxByte)(const int32_t valHandle),
+	int32_t (*boxInt16)(const int16_t val),
+	System::Int16 (*unboxInt16)(const int32_t valHandle),
+	int32_t (*boxUInt16)(const uint16_t val),
+	System::UInt16 (*unboxUInt16)(const int32_t valHandle),
+	int32_t (*boxInt32)(const int32_t val),
+	System::Int32 (*unboxInt32)(const int32_t valHandle),
+	int32_t (*boxUInt32)(const uint32_t val),
+	System::UInt32 (*unboxUInt32)(const int32_t valHandle),
+	int32_t (*boxInt64)(const int64_t val),
+	System::Int64 (*unboxInt64)(const int32_t valHandle),
+	int32_t (*boxUInt64)(const uint64_t val),
+	System::UInt64 (*unboxUInt64)(const int32_t valHandle),
+	int32_t (*boxChar)(const uint16_t val),
+	int16_t (*unboxChar)(const int32_t valHandle),
+	int32_t (*boxSingle)(const float val),
+	System::Single (*unboxSingle)(const int32_t valHandle),
+	int32_t (*boxDouble)(const double val),
+	System::Double (*unboxDouble)(const int32_t valHandle)
 	/*END INIT PARAMS*/)
 {
 	uint8_t* curMemory = memory;

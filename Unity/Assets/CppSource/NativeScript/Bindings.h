@@ -1169,8 +1169,8 @@ namespace System
 		Decimal& operator=(Decimal&& other);
 		bool operator==(const Decimal& other) const;
 		bool operator!=(const Decimal& other) const;
-		Decimal(System::Double value);
-		Decimal(System::UInt64 value);
+		Decimal(const System::Double value);
+		Decimal(const System::UInt64 value);
 		explicit operator System::ValueType();
 		explicit operator System::Object();
 		explicit operator System::IFormattable();
@@ -1186,11 +1186,11 @@ namespace UnityEngine
 	struct Vector3
 	{
 		Vector3();
-		Vector3(System::Single x, System::Single y, System::Single z);
+		Vector3(const System::Single x, const System::Single y, const System::Single z);
 		System::Single x;
 		System::Single y;
 		System::Single z;
-		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
+		UnityEngine::Vector3 operator+(const UnityEngine::Vector3& a);
 		explicit operator System::ValueType();
 		explicit operator System::Object();
 	};
@@ -1211,7 +1211,7 @@ namespace UnityEngine
 		bool operator==(const Object& other) const;
 		bool operator!=(const Object& other) const;
 		System::String GetName();
-		void SetName(System::String& value);
+		void SetName(const System::String& value);
 	};
 }
 
@@ -1248,7 +1248,7 @@ namespace UnityEngine
 		bool operator==(const Transform& other) const;
 		bool operator!=(const Transform& other) const;
 		UnityEngine::Vector3 GetPosition();
-		void SetPosition(UnityEngine::Vector3& value);
+		void SetPosition(const UnityEngine::Vector3& value);
 	};
 }
 
@@ -1335,7 +1335,7 @@ namespace UnityEngine
 		bool operator==(const GameObject& other) const;
 		bool operator!=(const GameObject& other) const;
 		template<typename MT0> MT0 AddComponent();
-		static UnityEngine::GameObject CreatePrimitive(UnityEngine::PrimitiveType type);
+		static UnityEngine::GameObject CreatePrimitive(const UnityEngine::PrimitiveType type);
 	};
 }
 
@@ -1353,7 +1353,7 @@ namespace UnityEngine
 		Debug& operator=(Debug&& other);
 		bool operator==(const Debug& other) const;
 		bool operator!=(const Debug& other) const;
-		static void Log(System::Object& message);
+		static void Log(const System::Object& message);
 	};
 }
 
@@ -1406,7 +1406,7 @@ namespace System
 		Exception& operator=(Exception&& other);
 		bool operator==(const Exception& other) const;
 		bool operator!=(const Exception& other) const;
-		Exception(System::String& message);
+		Exception(const System::String& message);
 	};
 }
 

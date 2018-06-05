@@ -12680,6 +12680,12 @@ namespace NativeScript
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
+
+				if (!param.IsOut && !param.IsRef)
+				{
+					output.Append("const ");
+				}
+
 				Type paramType = param.DereferencedParameterType;
 				
 				int typeParamIndex = ArrayIndexOf(
@@ -12696,7 +12702,7 @@ namespace NativeScript
 						paramType,
 						output);
 				}
-				
+
 				// Pointer (*) or reference (&) suffix if necessary
 				if (param.IsOut || param.IsRef)
 				{
@@ -13134,6 +13140,12 @@ namespace NativeScript
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
+
+				if (!param.IsOut && !param.IsRef)
+				{
+					output.Append("const ");
+				}
+
 				switch (param.Kind)
 				{
 					case TypeKind.Primitive:
