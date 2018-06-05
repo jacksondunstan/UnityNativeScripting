@@ -10850,12 +10850,11 @@ namespace NativeScript
 				builders.CppMethodDefinitions.Append(funcName);
 				builders.CppMethodDefinitions.Append("(int32_t handle)\n");
 				builders.CppMethodDefinitions.Append("{\n");
-				builders.CppMethodDefinitions.Append("\tdelete Plugin::unhandledCsharpException;\n");
-				builders.CppMethodDefinitions.Append("\tPlugin::unhandledCsharpException = new ");
+				builders.CppMethodDefinitions.Append("\tPlugin::unhandledCsharpException = std::make_unique<");
 				AppendCppTypeFullName(
 					exceptionType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("Thrower(handle);\n");
+				builders.CppMethodDefinitions.Append("Thrower>(handle);\n");
 				builders.CppMethodDefinitions.Append("}\n\n");
 				
 				// Build parameters
@@ -13019,13 +13018,7 @@ namespace NativeScript
 			AppendIndent(indent, output);
 			output.Append("{\n");
 			AppendIndent(indent + 1, output);
-			output.Append("System::Exception* ex = Plugin::unhandledCsharpException;\n");
-			AppendIndent(indent + 1, output);
-			output.Append("Plugin::unhandledCsharpException = nullptr;\n");
-			AppendIndent(indent + 1, output);
-			output.Append("ex->ThrowReferenceToThis();\n");
-			AppendIndent(indent + 1, output);
-			output.Append("delete ex;\n");
+			output.Append("std::move(Plugin::unhandledCsharpException)->ThrowReferenceToThis();\n");
 			AppendIndent(indent, output);
 			output.Append("}\n");
 		}
