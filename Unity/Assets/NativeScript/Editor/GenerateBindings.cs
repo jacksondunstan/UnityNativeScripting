@@ -8691,7 +8691,7 @@ namespace NativeScript
 				typeParams,
 				funcName,
 				invokeParams,
-				typeof(void),
+				invokeMethod.ReturnType,
 				builders.CsharpImports);
 			
 			return invokeParams;
