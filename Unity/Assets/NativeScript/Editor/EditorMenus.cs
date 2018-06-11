@@ -1,7 +1,6 @@
-using UnityEngine;
 using UnityEditor;
 
-namespace NativeScript
+namespace NativeScript.Editor
 {
 	/// <summary>
 	/// Menus for the Unity Editor

@@ -330,81 +330,23 @@ namespace NativeScript
 		delegate void InitDelegate(
 			IntPtr memory,
 			int memorySize,
-			InitMode initMode,
-			IntPtr releaseObject,
-			IntPtr stringNew,
-			IntPtr setException,
-			IntPtr arrayGetLength,
-			IntPtr enumerableGetEnumerator,
-			/*BEGIN INIT PARAMS*/
-			int maxManagedObjects,
-			IntPtr releaseSystemDecimal,
-			IntPtr systemDecimalConstructorSystemDouble,
-			IntPtr systemDecimalConstructorSystemUInt64,
-			IntPtr boxDecimal,
-			IntPtr unboxDecimal,
-			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
-			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
-			IntPtr boxVector3,
-			IntPtr unboxVector3,
-			IntPtr unityEngineObjectPropertyGetName,
-			IntPtr unityEngineObjectPropertySetName,
-			IntPtr unityEngineComponentPropertyGetTransform,
-			IntPtr unityEngineTransformPropertyGetPosition,
-			IntPtr unityEngineTransformPropertySetPosition,
-			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
-			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
-			IntPtr unityEngineGameObjectMethodAddComponentMyGameBaseBallScript,
-			IntPtr unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType,
-			IntPtr unityEngineDebugMethodLogSystemObject,
-			IntPtr unityEngineMonoBehaviourPropertyGetTransform,
-			IntPtr systemExceptionConstructorSystemString,
-			IntPtr boxPrimitiveType,
-			IntPtr unboxPrimitiveType,
-			IntPtr unityEngineTimePropertyGetDeltaTime,
-			IntPtr releaseBaseBallScript,
-			IntPtr baseBallScriptConstructor,
-			IntPtr boxBoolean,
-			IntPtr unboxBoolean,
-			IntPtr boxSByte,
-			IntPtr unboxSByte,
-			IntPtr boxByte,
-			IntPtr unboxByte,
-			IntPtr boxInt16,
-			IntPtr unboxInt16,
-			IntPtr boxUInt16,
-			IntPtr unboxUInt16,
-			IntPtr boxInt32,
-			IntPtr unboxInt32,
-			IntPtr boxUInt32,
-			IntPtr unboxUInt32,
-			IntPtr boxInt64,
-			IntPtr unboxInt64,
-			IntPtr boxUInt64,
-			IntPtr unboxUInt64,
-			IntPtr boxChar,
-			IntPtr unboxChar,
-			IntPtr boxSingle,
-			IntPtr unboxSingle,
-			IntPtr boxDouble,
-			IntPtr unboxDouble
-			/*END INIT PARAMS*/);
+			InitMode initMode);
 		
 		public delegate void SetCsharpExceptionDelegate(int handle);
 		
-		/*BEGIN DELEGATES*/
-		public delegate int NewBaseBallScriptDelegate(int param0);
-		public static NewBaseBallScriptDelegate NewBaseBallScript;
+		/*BEGIN CPP DELEGATES*/
+		public delegate int NewBaseBallScriptDelegateType(int param0);
+		public static NewBaseBallScriptDelegateType NewBaseBallScript;
 		
-		public delegate void DestroyBaseBallScriptDelegate(int param0);
-		public static DestroyBaseBallScriptDelegate DestroyBaseBallScript;
+		public delegate void DestroyBaseBallScriptDelegateType(int param0);
+		public static DestroyBaseBallScriptDelegateType DestroyBaseBallScript;
 		
-		public delegate void MyGameAbstractBaseBallScriptUpdateDelegate(int thisHandle);
-		public static MyGameAbstractBaseBallScriptUpdateDelegate MyGameAbstractBaseBallScriptUpdate;
+		public delegate void MyGameAbstractBaseBallScriptUpdateDelegateType(int thisHandle);
+		public static MyGameAbstractBaseBallScriptUpdateDelegateType MyGameAbstractBaseBallScriptUpdate;
 		
-		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegate(int param0);
-		public static SetCsharpExceptionSystemNullReferenceExceptionDelegate SetCsharpExceptionSystemNullReferenceException;
-		/*END DELEGATES*/
+		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegateType(int param0);
+		public static SetCsharpExceptionSystemNullReferenceExceptionDelegateType SetCsharpExceptionSystemNullReferenceException;
+		/*END CPP DELEGATES*/
 #endif
 
 #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
@@ -499,65 +441,7 @@ namespace NativeScript
 		static extern void Init(
 			IntPtr memory,
 			int memorySize,
-			InitMode initMode,
-			IntPtr releaseObject,
-			IntPtr stringNew,
-			IntPtr setException,
-			IntPtr arrayGetLength,
-			IntPtr enumerableGetEnumerator,
-			/*BEGIN INIT PARAMS*/
-			int maxManagedObjects,
-			IntPtr releaseSystemDecimal,
-			IntPtr systemDecimalConstructorSystemDouble,
-			IntPtr systemDecimalConstructorSystemUInt64,
-			IntPtr boxDecimal,
-			IntPtr unboxDecimal,
-			IntPtr unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle,
-			IntPtr unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3,
-			IntPtr boxVector3,
-			IntPtr unboxVector3,
-			IntPtr unityEngineObjectPropertyGetName,
-			IntPtr unityEngineObjectPropertySetName,
-			IntPtr unityEngineComponentPropertyGetTransform,
-			IntPtr unityEngineTransformPropertyGetPosition,
-			IntPtr unityEngineTransformPropertySetPosition,
-			IntPtr systemCollectionsIEnumeratorPropertyGetCurrent,
-			IntPtr systemCollectionsIEnumeratorMethodMoveNext,
-			IntPtr unityEngineGameObjectMethodAddComponentMyGameBaseBallScript,
-			IntPtr unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType,
-			IntPtr unityEngineDebugMethodLogSystemObject,
-			IntPtr unityEngineMonoBehaviourPropertyGetTransform,
-			IntPtr systemExceptionConstructorSystemString,
-			IntPtr boxPrimitiveType,
-			IntPtr unboxPrimitiveType,
-			IntPtr unityEngineTimePropertyGetDeltaTime,
-			IntPtr releaseBaseBallScript,
-			IntPtr baseBallScriptConstructor,
-			IntPtr boxBoolean,
-			IntPtr unboxBoolean,
-			IntPtr boxSByte,
-			IntPtr unboxSByte,
-			IntPtr boxByte,
-			IntPtr unboxByte,
-			IntPtr boxInt16,
-			IntPtr unboxInt16,
-			IntPtr boxUInt16,
-			IntPtr unboxUInt16,
-			IntPtr boxInt32,
-			IntPtr unboxInt32,
-			IntPtr boxUInt32,
-			IntPtr unboxUInt32,
-			IntPtr boxInt64,
-			IntPtr unboxInt64,
-			IntPtr boxUInt64,
-			IntPtr unboxUInt64,
-			IntPtr boxChar,
-			IntPtr unboxChar,
-			IntPtr boxSingle,
-			IntPtr unboxSingle,
-			IntPtr boxDouble,
-			IntPtr unboxDouble
-			/*END INIT PARAMS*/);
+			InitMode initMode);
 		
 		[DllImport(PLUGIN_NAME)]
 		static extern void SetCsharpException(int handle);
@@ -577,63 +461,63 @@ namespace NativeScript
 		/*END IMPORTS*/
 #endif
 		
-		delegate void ReleaseObjectDelegate(int handle);
-		delegate int StringNewDelegate(string chars);
-		delegate void SetExceptionDelegate(int handle);
-		delegate int ArrayGetLengthDelegate(int handle);
-		delegate int EnumerableGetEnumeratorDelegate(int handle);
+		delegate void ReleaseObjectDelegateType(int handle);
+		delegate int StringNewDelegateType(string chars);
+		delegate void SetExceptionDelegateType(int handle);
+		delegate int ArrayGetLengthDelegateType(int handle);
+		delegate int EnumerableGetEnumeratorDelegateType(int handle);
 		
 		/*BEGIN DELEGATE TYPES*/
-		delegate void ReleaseSystemDecimalDelegate(int handle);
-		delegate int SystemDecimalConstructorSystemDoubleDelegate(double value);
-		delegate int SystemDecimalConstructorSystemUInt64Delegate(ulong value);
-		delegate int BoxDecimalDelegate(int valHandle);
-		delegate int UnboxDecimalDelegate(int valHandle);
-		delegate UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(float x, float y, float z);
-		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b);
-		delegate int BoxVector3Delegate(ref UnityEngine.Vector3 val);
-		delegate UnityEngine.Vector3 UnboxVector3Delegate(int valHandle);
-		delegate int UnityEngineObjectPropertyGetNameDelegate(int thisHandle);
-		delegate void UnityEngineObjectPropertySetNameDelegate(int thisHandle, int valueHandle);
-		delegate int UnityEngineComponentPropertyGetTransformDelegate(int thisHandle);
-		delegate UnityEngine.Vector3 UnityEngineTransformPropertyGetPositionDelegate(int thisHandle);
-		delegate void UnityEngineTransformPropertySetPositionDelegate(int thisHandle, ref UnityEngine.Vector3 value);
-		delegate int SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(int thisHandle);
-		delegate bool SystemCollectionsIEnumeratorMethodMoveNextDelegate(int thisHandle);
-		delegate int UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegate(int thisHandle);
-		delegate int UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate(UnityEngine.PrimitiveType type);
-		delegate void UnityEngineDebugMethodLogSystemObjectDelegate(int messageHandle);
-		delegate int UnityEngineMonoBehaviourPropertyGetTransformDelegate(int thisHandle);
-		delegate int SystemExceptionConstructorSystemStringDelegate(int messageHandle);
-		delegate int BoxPrimitiveTypeDelegate(UnityEngine.PrimitiveType val);
-		delegate UnityEngine.PrimitiveType UnboxPrimitiveTypeDelegate(int valHandle);
-		delegate float UnityEngineTimePropertyGetDeltaTimeDelegate();
-		delegate void BaseBallScriptConstructorDelegate(int cppHandle, ref int handle);
-		delegate void ReleaseBaseBallScriptDelegate(int handle);
-		delegate int BoxBooleanDelegate(bool val);
-		delegate bool UnboxBooleanDelegate(int valHandle);
-		delegate int BoxSByteDelegate(sbyte val);
-		delegate sbyte UnboxSByteDelegate(int valHandle);
-		delegate int BoxByteDelegate(byte val);
-		delegate byte UnboxByteDelegate(int valHandle);
-		delegate int BoxInt16Delegate(short val);
-		delegate short UnboxInt16Delegate(int valHandle);
-		delegate int BoxUInt16Delegate(ushort val);
-		delegate ushort UnboxUInt16Delegate(int valHandle);
-		delegate int BoxInt32Delegate(int val);
-		delegate int UnboxInt32Delegate(int valHandle);
-		delegate int BoxUInt32Delegate(uint val);
-		delegate uint UnboxUInt32Delegate(int valHandle);
-		delegate int BoxInt64Delegate(long val);
-		delegate long UnboxInt64Delegate(int valHandle);
-		delegate int BoxUInt64Delegate(ulong val);
-		delegate ulong UnboxUInt64Delegate(int valHandle);
-		delegate int BoxCharDelegate(char val);
-		delegate char UnboxCharDelegate(int valHandle);
-		delegate int BoxSingleDelegate(float val);
-		delegate float UnboxSingleDelegate(int valHandle);
-		delegate int BoxDoubleDelegate(double val);
-		delegate double UnboxDoubleDelegate(int valHandle);
+		delegate void ReleaseSystemDecimalDelegateType(int handle);
+		delegate int SystemDecimalConstructorSystemDoubleDelegateType(double value);
+		delegate int SystemDecimalConstructorSystemUInt64DelegateType(ulong value);
+		delegate int BoxDecimalDelegateType(int valHandle);
+		delegate int UnboxDecimalDelegateType(int valHandle);
+		delegate UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegateType(float x, float y, float z);
+		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3DelegateType(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b);
+		delegate int BoxVector3DelegateType(ref UnityEngine.Vector3 val);
+		delegate UnityEngine.Vector3 UnboxVector3DelegateType(int valHandle);
+		delegate int UnityEngineObjectPropertyGetNameDelegateType(int thisHandle);
+		delegate void UnityEngineObjectPropertySetNameDelegateType(int thisHandle, int valueHandle);
+		delegate int UnityEngineComponentPropertyGetTransformDelegateType(int thisHandle);
+		delegate UnityEngine.Vector3 UnityEngineTransformPropertyGetPositionDelegateType(int thisHandle);
+		delegate void UnityEngineTransformPropertySetPositionDelegateType(int thisHandle, ref UnityEngine.Vector3 value);
+		delegate int SystemCollectionsIEnumeratorPropertyGetCurrentDelegateType(int thisHandle);
+		delegate bool SystemCollectionsIEnumeratorMethodMoveNextDelegateType(int thisHandle);
+		delegate int UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegateType(int thisHandle);
+		delegate int UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegateType(UnityEngine.PrimitiveType type);
+		delegate void UnityEngineDebugMethodLogSystemObjectDelegateType(int messageHandle);
+		delegate int UnityEngineMonoBehaviourPropertyGetTransformDelegateType(int thisHandle);
+		delegate int SystemExceptionConstructorSystemStringDelegateType(int messageHandle);
+		delegate int BoxPrimitiveTypeDelegateType(UnityEngine.PrimitiveType val);
+		delegate UnityEngine.PrimitiveType UnboxPrimitiveTypeDelegateType(int valHandle);
+		delegate float UnityEngineTimePropertyGetDeltaTimeDelegateType();
+		delegate void BaseBallScriptConstructorDelegateType(int cppHandle, ref int handle);
+		delegate void ReleaseBaseBallScriptDelegateType(int handle);
+		delegate int BoxBooleanDelegateType(bool val);
+		delegate bool UnboxBooleanDelegateType(int valHandle);
+		delegate int BoxSByteDelegateType(sbyte val);
+		delegate sbyte UnboxSByteDelegateType(int valHandle);
+		delegate int BoxByteDelegateType(byte val);
+		delegate byte UnboxByteDelegateType(int valHandle);
+		delegate int BoxInt16DelegateType(short val);
+		delegate short UnboxInt16DelegateType(int valHandle);
+		delegate int BoxUInt16DelegateType(ushort val);
+		delegate ushort UnboxUInt16DelegateType(int valHandle);
+		delegate int BoxInt32DelegateType(int val);
+		delegate int UnboxInt32DelegateType(int valHandle);
+		delegate int BoxUInt32DelegateType(uint val);
+		delegate uint UnboxUInt32DelegateType(int valHandle);
+		delegate int BoxInt64DelegateType(long val);
+		delegate long UnboxInt64DelegateType(int valHandle);
+		delegate int BoxUInt64DelegateType(ulong val);
+		delegate ulong UnboxUInt64DelegateType(int valHandle);
+		delegate int BoxCharDelegateType(char val);
+		delegate char UnboxCharDelegateType(int valHandle);
+		delegate int BoxSingleDelegateType(float val);
+		delegate float UnboxSingleDelegateType(int valHandle);
+		delegate int BoxDoubleDelegateType(double val);
+		delegate double UnboxDoubleDelegateType(int valHandle);
 		/*END DELEGATE TYPES*/
 
 #if UNITY_EDITOR_WIN
@@ -650,6 +534,67 @@ namespace NativeScript
 		static int destroyQueueCount;
 		static int destroyQueueCapacity;
 		static object destroyQueueLockObj;
+		
+		// Fixed delegates
+		static readonly ReleaseObjectDelegateType ReleaseObjectDelegate = new ReleaseObjectDelegateType(ReleaseObject);
+		static readonly StringNewDelegateType StringNewDelegate = new StringNewDelegateType(StringNew);
+		static readonly SetExceptionDelegateType SetExceptionDelegate = new SetExceptionDelegateType(SetException);
+		static readonly ArrayGetLengthDelegateType ArrayGetLengthDelegate = new ArrayGetLengthDelegateType(ArrayGetLength);
+		static readonly EnumerableGetEnumeratorDelegateType EnumerableGetEnumeratorDelegate = new EnumerableGetEnumeratorDelegateType(EnumerableGetEnumerator);
+		
+		// Generated delegates
+		/*BEGIN CSHARP DELEGATES*/
+		static readonly ReleaseSystemDecimalDelegateType ReleaseSystemDecimalDelegate = new ReleaseSystemDecimalDelegateType(ReleaseSystemDecimal);
+		static readonly SystemDecimalConstructorSystemDoubleDelegateType SystemDecimalConstructorSystemDoubleDelegate = new SystemDecimalConstructorSystemDoubleDelegateType(SystemDecimalConstructorSystemDouble);
+		static readonly SystemDecimalConstructorSystemUInt64DelegateType SystemDecimalConstructorSystemUInt64Delegate = new SystemDecimalConstructorSystemUInt64DelegateType(SystemDecimalConstructorSystemUInt64);
+		static readonly BoxDecimalDelegateType BoxDecimalDelegate = new BoxDecimalDelegateType(BoxDecimal);
+		static readonly UnboxDecimalDelegateType UnboxDecimalDelegate = new UnboxDecimalDelegateType(UnboxDecimal);
+		static readonly UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegateType UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate = new UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegateType(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle);
+		static readonly UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3DelegateType UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate = new UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3DelegateType(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3);
+		static readonly BoxVector3DelegateType BoxVector3Delegate = new BoxVector3DelegateType(BoxVector3);
+		static readonly UnboxVector3DelegateType UnboxVector3Delegate = new UnboxVector3DelegateType(UnboxVector3);
+		static readonly UnityEngineObjectPropertyGetNameDelegateType UnityEngineObjectPropertyGetNameDelegate = new UnityEngineObjectPropertyGetNameDelegateType(UnityEngineObjectPropertyGetName);
+		static readonly UnityEngineObjectPropertySetNameDelegateType UnityEngineObjectPropertySetNameDelegate = new UnityEngineObjectPropertySetNameDelegateType(UnityEngineObjectPropertySetName);
+		static readonly UnityEngineComponentPropertyGetTransformDelegateType UnityEngineComponentPropertyGetTransformDelegate = new UnityEngineComponentPropertyGetTransformDelegateType(UnityEngineComponentPropertyGetTransform);
+		static readonly UnityEngineTransformPropertyGetPositionDelegateType UnityEngineTransformPropertyGetPositionDelegate = new UnityEngineTransformPropertyGetPositionDelegateType(UnityEngineTransformPropertyGetPosition);
+		static readonly UnityEngineTransformPropertySetPositionDelegateType UnityEngineTransformPropertySetPositionDelegate = new UnityEngineTransformPropertySetPositionDelegateType(UnityEngineTransformPropertySetPosition);
+		static readonly SystemCollectionsIEnumeratorPropertyGetCurrentDelegateType SystemCollectionsIEnumeratorPropertyGetCurrentDelegate = new SystemCollectionsIEnumeratorPropertyGetCurrentDelegateType(SystemCollectionsIEnumeratorPropertyGetCurrent);
+		static readonly SystemCollectionsIEnumeratorMethodMoveNextDelegateType SystemCollectionsIEnumeratorMethodMoveNextDelegate = new SystemCollectionsIEnumeratorMethodMoveNextDelegateType(SystemCollectionsIEnumeratorMethodMoveNext);
+		static readonly UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegateType UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegate = new UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegateType(UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript);
+		static readonly UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegateType UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate = new UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegateType(UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType);
+		static readonly UnityEngineDebugMethodLogSystemObjectDelegateType UnityEngineDebugMethodLogSystemObjectDelegate = new UnityEngineDebugMethodLogSystemObjectDelegateType(UnityEngineDebugMethodLogSystemObject);
+		static readonly UnityEngineMonoBehaviourPropertyGetTransformDelegateType UnityEngineMonoBehaviourPropertyGetTransformDelegate = new UnityEngineMonoBehaviourPropertyGetTransformDelegateType(UnityEngineMonoBehaviourPropertyGetTransform);
+		static readonly SystemExceptionConstructorSystemStringDelegateType SystemExceptionConstructorSystemStringDelegate = new SystemExceptionConstructorSystemStringDelegateType(SystemExceptionConstructorSystemString);
+		static readonly BoxPrimitiveTypeDelegateType BoxPrimitiveTypeDelegate = new BoxPrimitiveTypeDelegateType(BoxPrimitiveType);
+		static readonly UnboxPrimitiveTypeDelegateType UnboxPrimitiveTypeDelegate = new UnboxPrimitiveTypeDelegateType(UnboxPrimitiveType);
+		static readonly UnityEngineTimePropertyGetDeltaTimeDelegateType UnityEngineTimePropertyGetDeltaTimeDelegate = new UnityEngineTimePropertyGetDeltaTimeDelegateType(UnityEngineTimePropertyGetDeltaTime);
+		static readonly ReleaseBaseBallScriptDelegateType ReleaseBaseBallScriptDelegate = new ReleaseBaseBallScriptDelegateType(ReleaseBaseBallScript);
+		static readonly BaseBallScriptConstructorDelegateType BaseBallScriptConstructorDelegate = new BaseBallScriptConstructorDelegateType(BaseBallScriptConstructor);
+		static readonly BoxBooleanDelegateType BoxBooleanDelegate = new BoxBooleanDelegateType(BoxBoolean);
+		static readonly UnboxBooleanDelegateType UnboxBooleanDelegate = new UnboxBooleanDelegateType(UnboxBoolean);
+		static readonly BoxSByteDelegateType BoxSByteDelegate = new BoxSByteDelegateType(BoxSByte);
+		static readonly UnboxSByteDelegateType UnboxSByteDelegate = new UnboxSByteDelegateType(UnboxSByte);
+		static readonly BoxByteDelegateType BoxByteDelegate = new BoxByteDelegateType(BoxByte);
+		static readonly UnboxByteDelegateType UnboxByteDelegate = new UnboxByteDelegateType(UnboxByte);
+		static readonly BoxInt16DelegateType BoxInt16Delegate = new BoxInt16DelegateType(BoxInt16);
+		static readonly UnboxInt16DelegateType UnboxInt16Delegate = new UnboxInt16DelegateType(UnboxInt16);
+		static readonly BoxUInt16DelegateType BoxUInt16Delegate = new BoxUInt16DelegateType(BoxUInt16);
+		static readonly UnboxUInt16DelegateType UnboxUInt16Delegate = new UnboxUInt16DelegateType(UnboxUInt16);
+		static readonly BoxInt32DelegateType BoxInt32Delegate = new BoxInt32DelegateType(BoxInt32);
+		static readonly UnboxInt32DelegateType UnboxInt32Delegate = new UnboxInt32DelegateType(UnboxInt32);
+		static readonly BoxUInt32DelegateType BoxUInt32Delegate = new BoxUInt32DelegateType(BoxUInt32);
+		static readonly UnboxUInt32DelegateType UnboxUInt32Delegate = new UnboxUInt32DelegateType(UnboxUInt32);
+		static readonly BoxInt64DelegateType BoxInt64Delegate = new BoxInt64DelegateType(BoxInt64);
+		static readonly UnboxInt64DelegateType UnboxInt64Delegate = new UnboxInt64DelegateType(UnboxInt64);
+		static readonly BoxUInt64DelegateType BoxUInt64Delegate = new BoxUInt64DelegateType(BoxUInt64);
+		static readonly UnboxUInt64DelegateType UnboxUInt64Delegate = new UnboxUInt64DelegateType(UnboxUInt64);
+		static readonly BoxCharDelegateType BoxCharDelegate = new BoxCharDelegateType(BoxChar);
+		static readonly UnboxCharDelegateType UnboxCharDelegate = new UnboxCharDelegateType(UnboxChar);
+		static readonly BoxSingleDelegateType BoxSingleDelegate = new BoxSingleDelegateType(BoxSingle);
+		static readonly UnboxSingleDelegateType UnboxSingleDelegate = new UnboxSingleDelegateType(UnboxSingle);
+		static readonly BoxDoubleDelegateType BoxDoubleDelegate = new BoxDoubleDelegateType(BoxDouble);
+		static readonly UnboxDoubleDelegateType UnboxDoubleDelegate = new UnboxDoubleDelegateType(UnboxDouble);
+		/*END CSHARP DELEGATES*/
 		
 		/// <summary>
 		/// Open the C++ plugin and call its PluginMain()
@@ -748,76 +693,147 @@ namespace NativeScript
 				libraryHandle,
 				"SetCsharpException");
 			/*BEGIN GETDELEGATE CALLS*/
-			NewBaseBallScript = GetDelegate<NewBaseBallScriptDelegate>(libraryHandle, "NewBaseBallScript");
-			DestroyBaseBallScript = GetDelegate<DestroyBaseBallScriptDelegate>(libraryHandle, "DestroyBaseBallScript");
-			MyGameAbstractBaseBallScriptUpdate = GetDelegate<MyGameAbstractBaseBallScriptUpdateDelegate>(libraryHandle, "MyGameAbstractBaseBallScriptUpdate");
-			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegate>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
+			NewBaseBallScript = GetDelegate<NewBaseBallScriptDelegateType>(libraryHandle, "NewBaseBallScript");
+			DestroyBaseBallScript = GetDelegate<DestroyBaseBallScriptDelegateType>(libraryHandle, "DestroyBaseBallScript");
+			MyGameAbstractBaseBallScriptUpdate = GetDelegate<MyGameAbstractBaseBallScriptUpdateDelegateType>(libraryHandle, "MyGameAbstractBaseBallScriptUpdate");
+			SetCsharpExceptionSystemNullReferenceException = GetDelegate<SetCsharpExceptionSystemNullReferenceExceptionDelegateType>(libraryHandle, "SetCsharpExceptionSystemNullReferenceException");
 			/*END GETDELEGATE CALLS*/
 #endif
-			// Init C++ library
-			Init(
+			// Pass parameters through 'memory'
+			int curMemory = 0;
+			Marshal.WriteIntPtr(
 				memory,
-				memorySize,
-				initMode,
-				Marshal.GetFunctionPointerForDelegate(new ReleaseObjectDelegate(ReleaseObject)),
-				Marshal.GetFunctionPointerForDelegate(new StringNewDelegate(StringNew)),
-				Marshal.GetFunctionPointerForDelegate(new SetExceptionDelegate(SetException)),
-				Marshal.GetFunctionPointerForDelegate(new ArrayGetLengthDelegate(ArrayGetLength)),
-				Marshal.GetFunctionPointerForDelegate(new EnumerableGetEnumeratorDelegate(EnumerableGetEnumerator)),
-				/*BEGIN INIT CALL*/
-				1000,
-				Marshal.GetFunctionPointerForDelegate(new ReleaseSystemDecimalDelegate(ReleaseSystemDecimal)),
-				Marshal.GetFunctionPointerForDelegate(new SystemDecimalConstructorSystemDoubleDelegate(SystemDecimalConstructorSystemDouble)),
-				Marshal.GetFunctionPointerForDelegate(new SystemDecimalConstructorSystemUInt64Delegate(SystemDecimalConstructorSystemUInt64)),
-				Marshal.GetFunctionPointerForDelegate(new BoxDecimalDelegate(BoxDecimal)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxDecimalDelegate(UnboxDecimal)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)),
-				Marshal.GetFunctionPointerForDelegate(new BoxVector3Delegate(BoxVector3)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxVector3Delegate(UnboxVector3)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectPropertyGetNameDelegate(UnityEngineObjectPropertyGetName)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineObjectPropertySetNameDelegate(UnityEngineObjectPropertySetName)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineComponentPropertyGetTransformDelegate(UnityEngineComponentPropertyGetTransform)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertyGetPositionDelegate(UnityEngineTransformPropertyGetPosition)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineTransformPropertySetPositionDelegate(UnityEngineTransformPropertySetPosition)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorPropertyGetCurrentDelegate(SystemCollectionsIEnumeratorPropertyGetCurrent)),
-				Marshal.GetFunctionPointerForDelegate(new SystemCollectionsIEnumeratorMethodMoveNextDelegate(SystemCollectionsIEnumeratorMethodMoveNext)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegate(UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate(UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineDebugMethodLogSystemObjectDelegate(UnityEngineDebugMethodLogSystemObject)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineMonoBehaviourPropertyGetTransformDelegate(UnityEngineMonoBehaviourPropertyGetTransform)),
-				Marshal.GetFunctionPointerForDelegate(new SystemExceptionConstructorSystemStringDelegate(SystemExceptionConstructorSystemString)),
-				Marshal.GetFunctionPointerForDelegate(new BoxPrimitiveTypeDelegate(BoxPrimitiveType)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxPrimitiveTypeDelegate(UnboxPrimitiveType)),
-				Marshal.GetFunctionPointerForDelegate(new UnityEngineTimePropertyGetDeltaTimeDelegate(UnityEngineTimePropertyGetDeltaTime)),
-				Marshal.GetFunctionPointerForDelegate(new ReleaseBaseBallScriptDelegate(ReleaseBaseBallScript)),
-				Marshal.GetFunctionPointerForDelegate(new BaseBallScriptConstructorDelegate(BaseBallScriptConstructor)),
-				Marshal.GetFunctionPointerForDelegate(new BoxBooleanDelegate(BoxBoolean)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxBooleanDelegate(UnboxBoolean)),
-				Marshal.GetFunctionPointerForDelegate(new BoxSByteDelegate(BoxSByte)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxSByteDelegate(UnboxSByte)),
-				Marshal.GetFunctionPointerForDelegate(new BoxByteDelegate(BoxByte)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxByteDelegate(UnboxByte)),
-				Marshal.GetFunctionPointerForDelegate(new BoxInt16Delegate(BoxInt16)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxInt16Delegate(UnboxInt16)),
-				Marshal.GetFunctionPointerForDelegate(new BoxUInt16Delegate(BoxUInt16)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxUInt16Delegate(UnboxUInt16)),
-				Marshal.GetFunctionPointerForDelegate(new BoxInt32Delegate(BoxInt32)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxInt32Delegate(UnboxInt32)),
-				Marshal.GetFunctionPointerForDelegate(new BoxUInt32Delegate(BoxUInt32)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxUInt32Delegate(UnboxUInt32)),
-				Marshal.GetFunctionPointerForDelegate(new BoxInt64Delegate(BoxInt64)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxInt64Delegate(UnboxInt64)),
-				Marshal.GetFunctionPointerForDelegate(new BoxUInt64Delegate(BoxUInt64)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxUInt64Delegate(UnboxUInt64)),
-				Marshal.GetFunctionPointerForDelegate(new BoxCharDelegate(BoxChar)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxCharDelegate(UnboxChar)),
-				Marshal.GetFunctionPointerForDelegate(new BoxSingleDelegate(BoxSingle)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxSingleDelegate(UnboxSingle)),
-				Marshal.GetFunctionPointerForDelegate(new BoxDoubleDelegate(BoxDouble)),
-				Marshal.GetFunctionPointerForDelegate(new UnboxDoubleDelegate(UnboxDouble))
-				/*END INIT CALL*/
-				);
+				curMemory,
+				Marshal.GetFunctionPointerForDelegate(ReleaseObjectDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(
+				memory,
+				curMemory,
+				Marshal.GetFunctionPointerForDelegate(StringNewDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(
+				memory,
+				curMemory,
+				Marshal.GetFunctionPointerForDelegate(SetExceptionDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(
+				memory,
+				curMemory,
+				Marshal.GetFunctionPointerForDelegate(ArrayGetLengthDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(
+				memory,
+				curMemory,
+				Marshal.GetFunctionPointerForDelegate(EnumerableGetEnumeratorDelegate));
+			curMemory += IntPtr.Size;
+			
+			/*BEGIN INIT CALL*/
+			Marshal.WriteInt32(memory, curMemory, 1000); // max managed objects
+			curMemory += sizeof(int);
+ 			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(ReleaseSystemDecimalDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(SystemDecimalConstructorSystemDoubleDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(SystemDecimalConstructorSystemUInt64Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxDecimalDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxDecimalDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxVector3Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxVector3Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineObjectPropertyGetNameDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineObjectPropertySetNameDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineComponentPropertyGetTransformDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineTransformPropertyGetPositionDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineTransformPropertySetPositionDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(SystemCollectionsIEnumeratorPropertyGetCurrentDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(SystemCollectionsIEnumeratorMethodMoveNextDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineDebugMethodLogSystemObjectDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineMonoBehaviourPropertyGetTransformDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(SystemExceptionConstructorSystemStringDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxPrimitiveTypeDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxPrimitiveTypeDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnityEngineTimePropertyGetDeltaTimeDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(ReleaseBaseBallScriptDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BaseBallScriptConstructorDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxBooleanDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxBooleanDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxSByteDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxSByteDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxByteDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxByteDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxInt16Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxInt16Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxUInt16Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxUInt16Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxInt32Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxInt32Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxUInt32Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxUInt32Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxInt64Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxInt64Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxUInt64Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxUInt64Delegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxCharDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxCharDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxSingleDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxSingleDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(BoxDoubleDelegate));
+			curMemory += IntPtr.Size;
+			Marshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(UnboxDoubleDelegate));
+			curMemory += IntPtr.Size;
+			/*END INIT CALL*/
+			
+			// Init C++ library
+			Init(memory, memorySize, initMode);
 			if (UnhandledCppException != null)
 			{
 				Exception ex = UnhandledCppException;
@@ -908,7 +924,7 @@ namespace NativeScript
 		// C# functions for C++ to call
 		////////////////////////////////////////////////////////////////
 		
-		[MonoPInvokeCallback(typeof(ReleaseObjectDelegate))]
+		[MonoPInvokeCallback(typeof(ReleaseObjectDelegateType))]
 		static void ReleaseObject(
 			int handle)
 		{
@@ -918,7 +934,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(StringNewDelegate))]
+		[MonoPInvokeCallback(typeof(StringNewDelegateType))]
 		static int StringNew(
 			string chars)
 		{
@@ -926,26 +942,26 @@ namespace NativeScript
 			return handle;
 		}
 		
-		[MonoPInvokeCallback(typeof(SetExceptionDelegate))]
+		[MonoPInvokeCallback(typeof(SetExceptionDelegateType))]
 		static void SetException(int handle)
 		{
 			UnhandledCppException = ObjectStore.Get(handle) as Exception;
 		}
 		
-		[MonoPInvokeCallback(typeof(ArrayGetLengthDelegate))]
+		[MonoPInvokeCallback(typeof(ArrayGetLengthDelegateType))]
 		static int ArrayGetLength(int handle)
 		{
 			return ((Array)ObjectStore.Get(handle)).Length;
 		}
 		
-		[MonoPInvokeCallback(typeof(EnumerableGetEnumeratorDelegate))]
+		[MonoPInvokeCallback(typeof(EnumerableGetEnumeratorDelegateType))]
 		static int EnumerableGetEnumerator(int handle)
 		{
 			return ObjectStore.Store(((IEnumerable)ObjectStore.Get(handle)).GetEnumerator());
 		}
 
 		/*BEGIN FUNCTIONS*/
-		[MonoPInvokeCallback(typeof(ReleaseSystemDecimalDelegate))]
+		[MonoPInvokeCallback(typeof(ReleaseSystemDecimalDelegateType))]
 		static void ReleaseSystemDecimal(int handle)
 		{
 			try
@@ -967,7 +983,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemDecimalConstructorSystemDoubleDelegate))]
+		[MonoPInvokeCallback(typeof(SystemDecimalConstructorSystemDoubleDelegateType))]
 		static int SystemDecimalConstructorSystemDouble(double value)
 		{
 			try
@@ -989,7 +1005,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemDecimalConstructorSystemUInt64Delegate))]
+		[MonoPInvokeCallback(typeof(SystemDecimalConstructorSystemUInt64DelegateType))]
 		static int SystemDecimalConstructorSystemUInt64(ulong value)
 		{
 			try
@@ -1011,7 +1027,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxDecimalDelegate))]
+		[MonoPInvokeCallback(typeof(BoxDecimalDelegateType))]
 		static int BoxDecimal(int valHandle)
 		{
 			try
@@ -1034,7 +1050,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxDecimalDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxDecimalDelegateType))]
 		static int UnboxDecimal(int valHandle)
 		{
 			try
@@ -1057,7 +1073,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegateType))]
 		static UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle(float x, float y, float z)
 		{
 			try
@@ -1079,7 +1095,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3Delegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3DelegateType))]
 		static UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b)
 		{
 			try
@@ -1101,7 +1117,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxVector3Delegate))]
+		[MonoPInvokeCallback(typeof(BoxVector3DelegateType))]
 		static int BoxVector3(ref UnityEngine.Vector3 val)
 		{
 			try
@@ -1123,7 +1139,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxVector3Delegate))]
+		[MonoPInvokeCallback(typeof(UnboxVector3DelegateType))]
 		static UnityEngine.Vector3 UnboxVector3(int valHandle)
 		{
 			try
@@ -1146,7 +1162,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertyGetNameDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertyGetNameDelegateType))]
 		static int UnityEngineObjectPropertyGetName(int thisHandle)
 		{
 			try
@@ -1169,7 +1185,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertySetNameDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineObjectPropertySetNameDelegateType))]
 		static void UnityEngineObjectPropertySetName(int thisHandle, int valueHandle)
 		{
 			try
@@ -1190,7 +1206,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineComponentPropertyGetTransformDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineComponentPropertyGetTransformDelegateType))]
 		static int UnityEngineComponentPropertyGetTransform(int thisHandle)
 		{
 			try
@@ -1213,7 +1229,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertyGetPositionDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertyGetPositionDelegateType))]
 		static UnityEngine.Vector3 UnityEngineTransformPropertyGetPosition(int thisHandle)
 		{
 			try
@@ -1236,7 +1252,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertySetPositionDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineTransformPropertySetPositionDelegateType))]
 		static void UnityEngineTransformPropertySetPosition(int thisHandle, ref UnityEngine.Vector3 value)
 		{
 			try
@@ -1256,7 +1272,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorPropertyGetCurrentDelegate))]
+		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorPropertyGetCurrentDelegateType))]
 		static int SystemCollectionsIEnumeratorPropertyGetCurrent(int thisHandle)
 		{
 			try
@@ -1279,7 +1295,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorMethodMoveNextDelegate))]
+		[MonoPInvokeCallback(typeof(SystemCollectionsIEnumeratorMethodMoveNextDelegateType))]
 		static bool SystemCollectionsIEnumeratorMethodMoveNext(int thisHandle)
 		{
 			try
@@ -1302,7 +1318,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegateType))]
 		static int UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript(int thisHandle)
 		{
 			try
@@ -1325,7 +1341,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegateType))]
 		static int UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType(UnityEngine.PrimitiveType type)
 		{
 			try
@@ -1347,7 +1363,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineDebugMethodLogSystemObjectDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineDebugMethodLogSystemObjectDelegateType))]
 		static void UnityEngineDebugMethodLogSystemObject(int messageHandle)
 		{
 			try
@@ -1367,7 +1383,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineMonoBehaviourPropertyGetTransformDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineMonoBehaviourPropertyGetTransformDelegateType))]
 		static int UnityEngineMonoBehaviourPropertyGetTransform(int thisHandle)
 		{
 			try
@@ -1390,7 +1406,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(SystemExceptionConstructorSystemStringDelegate))]
+		[MonoPInvokeCallback(typeof(SystemExceptionConstructorSystemStringDelegateType))]
 		static int SystemExceptionConstructorSystemString(int messageHandle)
 		{
 			try
@@ -1413,7 +1429,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxPrimitiveTypeDelegate))]
+		[MonoPInvokeCallback(typeof(BoxPrimitiveTypeDelegateType))]
 		static int BoxPrimitiveType(UnityEngine.PrimitiveType val)
 		{
 			try
@@ -1435,7 +1451,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxPrimitiveTypeDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxPrimitiveTypeDelegateType))]
 		static UnityEngine.PrimitiveType UnboxPrimitiveType(int valHandle)
 		{
 			try
@@ -1458,7 +1474,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnityEngineTimePropertyGetDeltaTimeDelegate))]
+		[MonoPInvokeCallback(typeof(UnityEngineTimePropertyGetDeltaTimeDelegateType))]
 		static float UnityEngineTimePropertyGetDeltaTime()
 		{
 			try
@@ -1480,7 +1496,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BaseBallScriptConstructorDelegate))]
+		[MonoPInvokeCallback(typeof(BaseBallScriptConstructorDelegateType))]
 		static void BaseBallScriptConstructor(int cppHandle, ref int handle)
 		{
 			try
@@ -1502,7 +1518,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(ReleaseBaseBallScriptDelegate))]
+		[MonoPInvokeCallback(typeof(ReleaseBaseBallScriptDelegateType))]
 		static void ReleaseBaseBallScript(int handle)
 		{
 			try
@@ -1526,7 +1542,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxBooleanDelegate))]
+		[MonoPInvokeCallback(typeof(BoxBooleanDelegateType))]
 		static int BoxBoolean(bool val)
 		{
 			try
@@ -1548,7 +1564,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxBooleanDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxBooleanDelegateType))]
 		static bool UnboxBoolean(int valHandle)
 		{
 			try
@@ -1571,7 +1587,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxSByteDelegate))]
+		[MonoPInvokeCallback(typeof(BoxSByteDelegateType))]
 		static int BoxSByte(sbyte val)
 		{
 			try
@@ -1593,7 +1609,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxSByteDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxSByteDelegateType))]
 		static sbyte UnboxSByte(int valHandle)
 		{
 			try
@@ -1616,7 +1632,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxByteDelegate))]
+		[MonoPInvokeCallback(typeof(BoxByteDelegateType))]
 		static int BoxByte(byte val)
 		{
 			try
@@ -1638,7 +1654,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxByteDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxByteDelegateType))]
 		static byte UnboxByte(int valHandle)
 		{
 			try
@@ -1661,7 +1677,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxInt16Delegate))]
+		[MonoPInvokeCallback(typeof(BoxInt16DelegateType))]
 		static int BoxInt16(short val)
 		{
 			try
@@ -1683,7 +1699,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxInt16Delegate))]
+		[MonoPInvokeCallback(typeof(UnboxInt16DelegateType))]
 		static short UnboxInt16(int valHandle)
 		{
 			try
@@ -1706,7 +1722,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxUInt16Delegate))]
+		[MonoPInvokeCallback(typeof(BoxUInt16DelegateType))]
 		static int BoxUInt16(ushort val)
 		{
 			try
@@ -1728,7 +1744,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxUInt16Delegate))]
+		[MonoPInvokeCallback(typeof(UnboxUInt16DelegateType))]
 		static ushort UnboxUInt16(int valHandle)
 		{
 			try
@@ -1751,7 +1767,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxInt32Delegate))]
+		[MonoPInvokeCallback(typeof(BoxInt32DelegateType))]
 		static int BoxInt32(int val)
 		{
 			try
@@ -1773,7 +1789,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxInt32Delegate))]
+		[MonoPInvokeCallback(typeof(UnboxInt32DelegateType))]
 		static int UnboxInt32(int valHandle)
 		{
 			try
@@ -1796,7 +1812,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxUInt32Delegate))]
+		[MonoPInvokeCallback(typeof(BoxUInt32DelegateType))]
 		static int BoxUInt32(uint val)
 		{
 			try
@@ -1818,7 +1834,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxUInt32Delegate))]
+		[MonoPInvokeCallback(typeof(UnboxUInt32DelegateType))]
 		static uint UnboxUInt32(int valHandle)
 		{
 			try
@@ -1841,7 +1857,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxInt64Delegate))]
+		[MonoPInvokeCallback(typeof(BoxInt64DelegateType))]
 		static int BoxInt64(long val)
 		{
 			try
@@ -1863,7 +1879,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxInt64Delegate))]
+		[MonoPInvokeCallback(typeof(UnboxInt64DelegateType))]
 		static long UnboxInt64(int valHandle)
 		{
 			try
@@ -1886,7 +1902,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxUInt64Delegate))]
+		[MonoPInvokeCallback(typeof(BoxUInt64DelegateType))]
 		static int BoxUInt64(ulong val)
 		{
 			try
@@ -1908,7 +1924,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxUInt64Delegate))]
+		[MonoPInvokeCallback(typeof(UnboxUInt64DelegateType))]
 		static ulong UnboxUInt64(int valHandle)
 		{
 			try
@@ -1931,7 +1947,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxCharDelegate))]
+		[MonoPInvokeCallback(typeof(BoxCharDelegateType))]
 		static int BoxChar(char val)
 		{
 			try
@@ -1953,7 +1969,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxCharDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxCharDelegateType))]
 		static char UnboxChar(int valHandle)
 		{
 			try
@@ -1976,7 +1992,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxSingleDelegate))]
+		[MonoPInvokeCallback(typeof(BoxSingleDelegateType))]
 		static int BoxSingle(float val)
 		{
 			try
@@ -1998,7 +2014,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxSingleDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxSingleDelegateType))]
 		static float UnboxSingle(int valHandle)
 		{
 			try
@@ -2021,7 +2037,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(BoxDoubleDelegate))]
+		[MonoPInvokeCallback(typeof(BoxDoubleDelegateType))]
 		static int BoxDouble(double val)
 		{
 			try
@@ -2043,7 +2059,7 @@ namespace NativeScript
 			}
 		}
 		
-		[MonoPInvokeCallback(typeof(UnboxDoubleDelegate))]
+		[MonoPInvokeCallback(typeof(UnboxDoubleDelegateType))]
 		static double UnboxDouble(int valHandle)
 		{
 			try

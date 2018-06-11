@@ -5951,142 +5951,146 @@ enum class InitMode : uint8_t
 DLLEXPORT void Init(
 	uint8_t* memory,
 	int32_t memorySize,
-	InitMode initMode,
-	void (*releaseObject)(int32_t handle),
-	int32_t (*stringNew)(const char* chars),
-	void (*setException)(int32_t handle),
-	int32_t (*arrayGetLength)(int32_t handle),
-	int32_t (*enumerableGetEnumerator)(int32_t handle),
-	/*BEGIN INIT PARAMS*/
-	int32_t maxManagedObjects,
-	void (*releaseSystemDecimal)(int32_t handle),
-	int32_t (*systemDecimalConstructorSystemDouble)(double value),
-	int32_t (*systemDecimalConstructorSystemUInt64)(uint64_t value),
-	int32_t (*boxDecimal)(int32_t valHandle),
-	int32_t (*unboxDecimal)(int32_t valHandle),
-	UnityEngine::Vector3 (*unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle)(float x, float y, float z),
-	UnityEngine::Vector3 (*unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3)(UnityEngine::Vector3& a, UnityEngine::Vector3& b),
-	int32_t (*boxVector3)(UnityEngine::Vector3& val),
-	UnityEngine::Vector3 (*unboxVector3)(int32_t valHandle),
-	int32_t (*unityEngineObjectPropertyGetName)(int32_t thisHandle),
-	void (*unityEngineObjectPropertySetName)(int32_t thisHandle, int32_t valueHandle),
-	int32_t (*unityEngineComponentPropertyGetTransform)(int32_t thisHandle),
-	UnityEngine::Vector3 (*unityEngineTransformPropertyGetPosition)(int32_t thisHandle),
-	void (*unityEngineTransformPropertySetPosition)(int32_t thisHandle, UnityEngine::Vector3& value),
-	int32_t (*systemCollectionsIEnumeratorPropertyGetCurrent)(int32_t thisHandle),
-	int32_t (*systemCollectionsIEnumeratorMethodMoveNext)(int32_t thisHandle),
-	int32_t (*unityEngineGameObjectMethodAddComponentMyGameBaseBallScript)(int32_t thisHandle),
-	int32_t (*unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType)(UnityEngine::PrimitiveType type),
-	void (*unityEngineDebugMethodLogSystemObject)(int32_t messageHandle),
-	int32_t (*unityEngineMonoBehaviourPropertyGetTransform)(int32_t thisHandle),
-	int32_t (*systemExceptionConstructorSystemString)(int32_t messageHandle),
-	int32_t (*boxPrimitiveType)(UnityEngine::PrimitiveType val),
-	UnityEngine::PrimitiveType (*unboxPrimitiveType)(int32_t valHandle),
-	System::Single (*unityEngineTimePropertyGetDeltaTime)(),
-	void (*releaseBaseBallScript)(int32_t handle),
-	void (*baseBallScriptConstructor)(int32_t cppHandle, int32_t* handle),
-	int32_t (*boxBoolean)(uint32_t val),
-	int32_t (*unboxBoolean)(int32_t valHandle),
-	int32_t (*boxSByte)(int8_t val),
-	System::SByte (*unboxSByte)(int32_t valHandle),
-	int32_t (*boxByte)(uint8_t val),
-	System::Byte (*unboxByte)(int32_t valHandle),
-	int32_t (*boxInt16)(int16_t val),
-	System::Int16 (*unboxInt16)(int32_t valHandle),
-	int32_t (*boxUInt16)(uint16_t val),
-	System::UInt16 (*unboxUInt16)(int32_t valHandle),
-	int32_t (*boxInt32)(int32_t val),
-	System::Int32 (*unboxInt32)(int32_t valHandle),
-	int32_t (*boxUInt32)(uint32_t val),
-	System::UInt32 (*unboxUInt32)(int32_t valHandle),
-	int32_t (*boxInt64)(int64_t val),
-	System::Int64 (*unboxInt64)(int32_t valHandle),
-	int32_t (*boxUInt64)(uint64_t val),
-	System::UInt64 (*unboxUInt64)(int32_t valHandle),
-	int32_t (*boxChar)(uint16_t val),
-	int16_t (*unboxChar)(int32_t valHandle),
-	int32_t (*boxSingle)(float val),
-	System::Single (*unboxSingle)(int32_t valHandle),
-	int32_t (*boxDouble)(double val),
-	System::Double (*unboxDouble)(int32_t valHandle)
-	/*END INIT PARAMS*/)
+	InitMode initMode)
 {
 	uint8_t* curMemory = memory;
+	
+	// Read fixed parameters
+	Plugin::ReleaseObject = *(void (**)(int32_t handle))curMemory;
+	curMemory += sizeof(Plugin::ReleaseObject);
+	Plugin::StringNew = *(int32_t (**)(const char*))curMemory;
+	curMemory += sizeof(Plugin::StringNew);
+	Plugin::SetException = *(void (**)(int32_t))curMemory;
+	curMemory += sizeof(Plugin::SetException);
+	Plugin::ArrayGetLength = *(int32_t (**)(int32_t))curMemory;
+	curMemory += sizeof(Plugin::ArrayGetLength);
+	Plugin::EnumerableGetEnumerator = *(int32_t (**)(int32_t))curMemory;
+	curMemory += sizeof(Plugin::EnumerableGetEnumerator);
+	
+	// Read generated parameters
+	int32_t maxManagedObjects = *(int32_t*)curMemory;
+	curMemory += sizeof(int32_t);
+	/*BEGIN INIT BODY PARAMETER READS*/
+	Plugin::ReleaseSystemDecimal = *(void (**)(int32_t handle))curMemory;
+	curMemory += sizeof(Plugin::ReleaseSystemDecimal);
+	Plugin::SystemDecimalConstructorSystemDouble = *(int32_t (**)(double value))curMemory;
+	curMemory += sizeof(Plugin::SystemDecimalConstructorSystemDouble);
+	Plugin::SystemDecimalConstructorSystemUInt64 = *(int32_t (**)(uint64_t value))curMemory;
+	curMemory += sizeof(Plugin::SystemDecimalConstructorSystemUInt64);
+	Plugin::BoxDecimal = *(int32_t (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::BoxDecimal);
+	Plugin::UnboxDecimal = *(int32_t (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxDecimal);
+	Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = *(UnityEngine::Vector3 (**)(float x, float y, float z))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle);
+	Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3 = *(UnityEngine::Vector3 (**)(UnityEngine::Vector3& a, UnityEngine::Vector3& b))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3);
+	Plugin::BoxVector3 = *(int32_t (**)(UnityEngine::Vector3& val))curMemory;
+	curMemory += sizeof(Plugin::BoxVector3);
+	Plugin::UnboxVector3 = *(UnityEngine::Vector3 (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxVector3);
+	Plugin::UnityEngineObjectPropertyGetName = *(int32_t (**)(int32_t thisHandle))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineObjectPropertyGetName);
+	Plugin::UnityEngineObjectPropertySetName = *(void (**)(int32_t thisHandle, int32_t valueHandle))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineObjectPropertySetName);
+	Plugin::UnityEngineComponentPropertyGetTransform = *(int32_t (**)(int32_t thisHandle))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineComponentPropertyGetTransform);
+	Plugin::UnityEngineTransformPropertyGetPosition = *(UnityEngine::Vector3 (**)(int32_t thisHandle))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineTransformPropertyGetPosition);
+	Plugin::UnityEngineTransformPropertySetPosition = *(void (**)(int32_t thisHandle, UnityEngine::Vector3& value))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineTransformPropertySetPosition);
+	Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent = *(int32_t (**)(int32_t thisHandle))curMemory;
+	curMemory += sizeof(Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent);
+	Plugin::SystemCollectionsIEnumeratorMethodMoveNext = *(int32_t (**)(int32_t thisHandle))curMemory;
+	curMemory += sizeof(Plugin::SystemCollectionsIEnumeratorMethodMoveNext);
+	Plugin::UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript = *(int32_t (**)(int32_t thisHandle))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript);
+	Plugin::UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType = *(int32_t (**)(UnityEngine::PrimitiveType type))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType);
+	Plugin::UnityEngineDebugMethodLogSystemObject = *(void (**)(int32_t messageHandle))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineDebugMethodLogSystemObject);
+	Plugin::UnityEngineMonoBehaviourPropertyGetTransform = *(int32_t (**)(int32_t thisHandle))curMemory;
+	curMemory += sizeof(Plugin::UnityEngineMonoBehaviourPropertyGetTransform);
+	Plugin::SystemExceptionConstructorSystemString = *(int32_t (**)(int32_t messageHandle))curMemory;
+	curMemory += sizeof(Plugin::SystemExceptionConstructorSystemString);
+	Plugin::BoxPrimitiveType = *(int32_t (**)(UnityEngine::PrimitiveType val))curMemory;
+	curMemory += sizeof(Plugin::BoxPrimitiveType);
+	Plugin::UnboxPrimitiveType = *(UnityEngine::PrimitiveType (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxPrimitiveType);
+	Plugin::UnityEngineTimePropertyGetDeltaTime = *(System::Single (**)())curMemory;
+	curMemory += sizeof(Plugin::UnityEngineTimePropertyGetDeltaTime);
+	Plugin::ReleaseBaseBallScript = *(void (**)(int32_t handle))curMemory;
+	curMemory += sizeof(Plugin::ReleaseBaseBallScript);
+	Plugin::BaseBallScriptConstructor = *(void (**)(int32_t cppHandle, int32_t* handle))curMemory;
+	curMemory += sizeof(Plugin::BaseBallScriptConstructor);
+	Plugin::BoxBoolean = *(int32_t (**)(uint32_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxBoolean);
+	Plugin::UnboxBoolean = *(int32_t (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxBoolean);
+	Plugin::BoxSByte = *(int32_t (**)(int8_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxSByte);
+	Plugin::UnboxSByte = *(System::SByte (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxSByte);
+	Plugin::BoxByte = *(int32_t (**)(uint8_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxByte);
+	Plugin::UnboxByte = *(System::Byte (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxByte);
+	Plugin::BoxInt16 = *(int32_t (**)(int16_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxInt16);
+	Plugin::UnboxInt16 = *(System::Int16 (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxInt16);
+	Plugin::BoxUInt16 = *(int32_t (**)(uint16_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxUInt16);
+	Plugin::UnboxUInt16 = *(System::UInt16 (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxUInt16);
+	Plugin::BoxInt32 = *(int32_t (**)(int32_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxInt32);
+	Plugin::UnboxInt32 = *(System::Int32 (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxInt32);
+	Plugin::BoxUInt32 = *(int32_t (**)(uint32_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxUInt32);
+	Plugin::UnboxUInt32 = *(System::UInt32 (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxUInt32);
+	Plugin::BoxInt64 = *(int32_t (**)(int64_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxInt64);
+	Plugin::UnboxInt64 = *(System::Int64 (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxInt64);
+	Plugin::BoxUInt64 = *(int32_t (**)(uint64_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxUInt64);
+	Plugin::UnboxUInt64 = *(System::UInt64 (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxUInt64);
+	Plugin::BoxChar = *(int32_t (**)(uint16_t val))curMemory;
+	curMemory += sizeof(Plugin::BoxChar);
+	Plugin::UnboxChar = *(int16_t (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxChar);
+	Plugin::BoxSingle = *(int32_t (**)(float val))curMemory;
+	curMemory += sizeof(Plugin::BoxSingle);
+	Plugin::UnboxSingle = *(System::Single (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxSingle);
+	Plugin::BoxDouble = *(int32_t (**)(double val))curMemory;
+	curMemory += sizeof(Plugin::BoxDouble);
+	Plugin::UnboxDouble = *(System::Double (**)(int32_t valHandle))curMemory;
+	curMemory += sizeof(Plugin::UnboxDouble);
+	/*END INIT BODY PARAMETER READS*/
 	
 	// Init managed object ref counting
 	Plugin::RefCountsLenClass = maxManagedObjects;
 	Plugin::RefCountsClass = (int32_t*)curMemory;
 	curMemory += maxManagedObjects * sizeof(int32_t);
 	
-	// Init pointers to C# functions
-	Plugin::StringNew = stringNew;
-	Plugin::ReleaseObject = releaseObject;
-	Plugin::SetException = setException;
-	Plugin::ArrayGetLength = arrayGetLength;
-	Plugin::EnumerableGetEnumerator = enumerableGetEnumerator;
-	/*BEGIN INIT BODY*/
-	Plugin::ReleaseSystemDecimal = releaseSystemDecimal;
+	/*BEGIN INIT BODY ARRAYS*/
 	Plugin::RefCountsSystemDecimal = (int32_t*)curMemory;
 	curMemory += 1000 * sizeof(int32_t);
 	Plugin::RefCountsLenSystemDecimal = 1000;
-	Plugin::SystemDecimalConstructorSystemDouble = systemDecimalConstructorSystemDouble;
-	Plugin::SystemDecimalConstructorSystemUInt64 = systemDecimalConstructorSystemUInt64;
-	Plugin::BoxDecimal = boxDecimal;
-	Plugin::UnboxDecimal = unboxDecimal;
-	Plugin::UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle = unityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingle;
-	Plugin::UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3 = unityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3;
-	Plugin::BoxVector3 = boxVector3;
-	Plugin::UnboxVector3 = unboxVector3;
-	Plugin::UnityEngineObjectPropertyGetName = unityEngineObjectPropertyGetName;
-	Plugin::UnityEngineObjectPropertySetName = unityEngineObjectPropertySetName;
-	Plugin::UnityEngineComponentPropertyGetTransform = unityEngineComponentPropertyGetTransform;
-	Plugin::UnityEngineTransformPropertyGetPosition = unityEngineTransformPropertyGetPosition;
-	Plugin::UnityEngineTransformPropertySetPosition = unityEngineTransformPropertySetPosition;
-	Plugin::SystemCollectionsIEnumeratorPropertyGetCurrent = systemCollectionsIEnumeratorPropertyGetCurrent;
-	Plugin::SystemCollectionsIEnumeratorMethodMoveNext = systemCollectionsIEnumeratorMethodMoveNext;
-	Plugin::UnityEngineGameObjectMethodAddComponentMyGameBaseBallScript = unityEngineGameObjectMethodAddComponentMyGameBaseBallScript;
-	Plugin::UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType = unityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveType;
-	Plugin::UnityEngineDebugMethodLogSystemObject = unityEngineDebugMethodLogSystemObject;
-	Plugin::UnityEngineMonoBehaviourPropertyGetTransform = unityEngineMonoBehaviourPropertyGetTransform;
-	Plugin::SystemExceptionConstructorSystemString = systemExceptionConstructorSystemString;
-	Plugin::BoxPrimitiveType = boxPrimitiveType;
-	Plugin::UnboxPrimitiveType = unboxPrimitiveType;
-	Plugin::UnityEngineTimePropertyGetDeltaTime = unityEngineTimePropertyGetDeltaTime;
+	
 	Plugin::BaseBallScriptFreeListSize = 1000;
 	Plugin::BaseBallScriptFreeList = (MyGame::BaseBallScript**)curMemory;
 	curMemory += 1000 * sizeof(MyGame::BaseBallScript*);
 	
-	Plugin::ReleaseBaseBallScript = releaseBaseBallScript;
-	Plugin::BaseBallScriptConstructor = baseBallScriptConstructor;
 	Plugin::BaseBallScriptFreeWholeListSize = 1000;
 	Plugin::BaseBallScriptFreeWholeList = (Plugin::BaseBallScriptFreeWholeListEntry*)curMemory;
 	curMemory += 1000 * sizeof(Plugin::BaseBallScriptFreeWholeListEntry);
-	
-	Plugin::BoxBoolean = boxBoolean;
-	Plugin::UnboxBoolean = unboxBoolean;
-	Plugin::BoxSByte = boxSByte;
-	Plugin::UnboxSByte = unboxSByte;
-	Plugin::BoxByte = boxByte;
-	Plugin::UnboxByte = unboxByte;
-	Plugin::BoxInt16 = boxInt16;
-	Plugin::UnboxInt16 = unboxInt16;
-	Plugin::BoxUInt16 = boxUInt16;
-	Plugin::UnboxUInt16 = unboxUInt16;
-	Plugin::BoxInt32 = boxInt32;
-	Plugin::UnboxInt32 = unboxInt32;
-	Plugin::BoxUInt32 = boxUInt32;
-	Plugin::UnboxUInt32 = unboxUInt32;
-	Plugin::BoxInt64 = boxInt64;
-	Plugin::UnboxInt64 = unboxInt64;
-	Plugin::BoxUInt64 = boxUInt64;
-	Plugin::UnboxUInt64 = unboxUInt64;
-	Plugin::BoxChar = boxChar;
-	Plugin::UnboxChar = unboxChar;
-	Plugin::BoxSingle = boxSingle;
-	Plugin::UnboxSingle = unboxSingle;
-	Plugin::BoxDouble = boxDouble;
-	Plugin::UnboxDouble = unboxDouble;
-	/*END INIT BODY*/
+	/*END INIT BODY ARRAYS*/
 	
 	// Make sure there was enough memory
 	int32_t usedMemory = (int32_t)(curMemory - (uint8_t*)memory);
@@ -6100,6 +6104,7 @@ DLLEXPORT void Init(
 	
 	if (initMode == InitMode::FirstBoot)
 	{
+		// Clear memory
 		memset(memory, 0, memorySize);
 		
 		/*BEGIN INIT BODY FIRST BOOT*/

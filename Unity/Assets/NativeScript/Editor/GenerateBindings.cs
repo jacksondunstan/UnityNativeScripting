@@ -8,7 +8,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace NativeScript
+namespace NativeScript.Editor
 {
 	/// <summary>
 	/// Code generator that reads a JSON file and outputs C# and C++ code
@@ -137,8 +137,6 @@ namespace NativeScript
 		
 		class StringBuilders
 		{
-			public readonly StringBuilder CsharpInitParams =
-				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CsharpDelegateTypes =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CsharpStoreInitCalls =
@@ -149,7 +147,9 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CsharpFunctions =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public readonly StringBuilder CsharpDelegates =
+			public readonly StringBuilder CsharpCppDelegates =
+				new StringBuilder(InitialStringBuilderCapacity);
+			public readonly StringBuilder CsharpCsharpDelegates =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CsharpImports =
 				new StringBuilder(InitialStringBuilderCapacity);
@@ -171,9 +171,9 @@ namespace NativeScript
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppMethodDefinitions =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public readonly StringBuilder CppInitParams =
+			public readonly StringBuilder CppInitBodyParameterReads =
 				new StringBuilder(InitialStringBuilderCapacity);
-			public readonly StringBuilder CppInitBody =
+			public readonly StringBuilder CppInitBodyArrays =
 				new StringBuilder(InitialStringBuilderCapacity);
 			public readonly StringBuilder CppInitBodyFirstBoot =
 				new StringBuilder(InitialStringBuilderCapacity);
@@ -240,11 +240,17 @@ namespace NativeScript
 			{
 				FieldInfo xField = (FieldInfo)x;
 				FieldInfo yField = (FieldInfo)y;
-				return xField.MetadataToken < yField.MetadataToken
-					? -1
-					: xField.MetadataToken > yField.MetadataToken
+				return xField == null
+					? yField == null
+						? 0
+						: -1
+					: yField == null
 						? 1
-						: 0;
+						: xField.MetadataToken < yField.MetadataToken
+							? -1
+							: xField.MetadataToken > yField.MetadataToken
+								? 1
+								: 0;
 			}
 		}
 
@@ -255,10 +261,9 @@ namespace NativeScript
 			public int NumTypeParams;
 		}
 
-		const int DEFAULT_MAX_SIMULTANEOUS = 1000;
-		const int DEFAULT_MAX_SIMULTANEOUS_OBJECTS = 1000;
-
-		static readonly Type[] PRIMITIVE_TYPES = {
+		const int BaseMaxSimultaneous = 1000;
+		
+		static readonly Type[] PrimitiveTypes = {
 			typeof(bool),
 			typeof(sbyte),
 			typeof(byte),
@@ -270,7 +275,7 @@ namespace NativeScript
 			typeof(ulong),
 			typeof(char),
 			typeof(float),
-			typeof(double),
+			typeof(double)
 		};
 		
 		const string PostCompileWorkPref = "NativeScriptGenerateBindingsPostCompileWork";
@@ -282,10 +287,9 @@ namespace NativeScript
 				new Uri(typeof(GameObject).Assembly.CodeBase).LocalPath
 			).DirectoryName;
 		static readonly string AssetsDirPath = Application.dataPath;
-		static readonly string ProjectDirPath =
-			new DirectoryInfo(AssetsDirPath)
-				.Parent
-				.FullName;
+		private static readonly DirectoryInfo ProjectDir =
+			new DirectoryInfo(AssetsDirPath).Parent;
+		static readonly string ProjectDirPath = ProjectDir.FullName;
 		static readonly string CppDirPath =
 			Path.Combine(
 				Path.Combine(
@@ -308,7 +312,7 @@ namespace NativeScript
 		
 		static readonly FieldOrderComparer DefaultFieldOrderComparer
 			= new FieldOrderComparer();
-		
+
 		// Restore unused field types
 		#pragma warning restore 649
 		
@@ -343,7 +347,7 @@ namespace NativeScript
 					}
 				}
 			}
-			determinedNeedStubs:;
+			determinedNeedStubs:
 			
 			if (needStubs)
 			{
@@ -403,10 +407,6 @@ namespace NativeScript
 					}
 				}
 			}
-
-			// Need at least one init param
-			builders.CsharpInitParams.Append("object stub");
-			builders.CsharpInitCall.Append("null // stub");
 		}
 
 		static void AppendStubBaseType(
@@ -448,7 +448,7 @@ namespace NativeScript
 			{
 				output.Append('\n');
 				ConstructorInfo[] constructors = type.GetConstructors();
-				if (constructors != null && constructors.Length > 0)
+				if (constructors.Length > 0)
 				{
 					foreach (ConstructorInfo ctor in constructors)
 					{
@@ -507,14 +507,14 @@ namespace NativeScript
 			// it's not specified for a specific type
 			int defaultMaxSimultaneous = doc.DefaultMaxSimultaneous != 0
 				? doc.DefaultMaxSimultaneous
-				: DEFAULT_MAX_SIMULTANEOUS;
+				: BaseMaxSimultaneous;
 			
 			// Init param for max managed Objects
-			builders.CppInitParams.Append("\tint32_t maxManagedObjects,\n");
-			builders.CsharpInitParams.Append("\t\t\tint maxManagedObjects,\n");
-			builders.CsharpInitCall.Append("\t\t\t\t");
+			builders.CsharpInitCall.Append("\t\t\tMarshal.WriteInt32(memory, curMemory, ");
 			builders.CsharpInitCall.Append(defaultMaxSimultaneous);
-			builders.CsharpInitCall.Append(",\n");
+			builders.CsharpInitCall.Append("); // max managed objects\n");
+			builders.CsharpInitCall.Append("\t\t\tcurMemory += sizeof(int);\n");
+			builders.CsharpInitCall.Append(' ');
 			
 			// C# ObjectStore Init call
 			builders.CsharpStoreInitCalls.Append(
@@ -560,7 +560,7 @@ namespace NativeScript
 			}
 			
 			// Generate boxing and unboxing for primitive types
-			foreach (Type type in PRIMITIVE_TYPES)
+			foreach (Type type in PrimitiveTypes)
 			{
 				string dummyString;
 				ParameterInfo[] dummyParams;
@@ -685,38 +685,38 @@ namespace NativeScript
 			assemblies[8] = typeof(UnityEngine.AI.NavMesh).Assembly; // Unity AI module
 			assemblies[9] = typeof(UnityEngine.Animations.AnimationClipPlayable).Assembly; // Unity animation module
 			assemblies[10] = typeof(UnityEngine.XR.ARRenderMode).Assembly; // Unity AR module
-			assemblies[11] = typeof(UnityEngine.AudioSettings).Assembly; // Unity audio module
-			assemblies[12] = typeof(UnityEngine.Cloth).Assembly; // Unity cloth module
-			assemblies[13] = typeof(UnityEngine.ClusterInput).Assembly; // Unity cluster input module
-			assemblies[14] = typeof(UnityEngine.ClusterNetwork).Assembly; // Unity custer renderer module
+			assemblies[11] = typeof(AudioSettings).Assembly; // Unity audio module
+			assemblies[12] = typeof(Cloth).Assembly; // Unity cloth module
+			assemblies[13] = typeof(ClusterInput).Assembly; // Unity cluster input module
+			assemblies[14] = typeof(ClusterNetwork).Assembly; // Unity custer renderer module
 			assemblies[15] = typeof(UnityEngine.CrashReportHandler.CrashReportHandler).Assembly; // Unity crash reporting module
 			assemblies[16] = typeof(UnityEngine.Playables.PlayableDirector).Assembly; // Unity director module
 			assemblies[17] = typeof(UnityEngine.SocialPlatforms.IAchievement).Assembly; // Unity game center module
-			assemblies[18] = typeof(UnityEngine.ImageConversion).Assembly; // Unity image conversion module
-			assemblies[19] = typeof(UnityEngine.GUI).Assembly; // Unity IMGUI module
-			assemblies[20] = typeof(UnityEngine.JsonUtility).Assembly; // Unity JSON serialize module
-			assemblies[21] = typeof(UnityEngine.ParticleSystem).Assembly; // Unity particle system module
+			assemblies[18] = typeof(ImageConversion).Assembly; // Unity image conversion module
+			assemblies[19] = typeof(GUI).Assembly; // Unity IMGUI module
+			assemblies[20] = typeof(JsonUtility).Assembly; // Unity JSON serialize module
+			assemblies[21] = typeof(ParticleSystem).Assembly; // Unity particle system module
 			assemblies[22] = typeof(UnityEngine.Analytics.PerformanceReporting).Assembly; // Unity performance reporting module
-			assemblies[23] = typeof(UnityEngine.Physics2D).Assembly; // Unity physics 2D module
-			assemblies[24] = typeof(UnityEngine.Physics).Assembly; // Unity physics module
-			assemblies[25] = typeof(UnityEngine.ScreenCapture).Assembly; // Unity screen capture module
-			assemblies[26] = typeof(UnityEngine.Terrain).Assembly; // Unity terrain module
-			assemblies[27] = typeof(UnityEngine.TerrainCollider).Assembly; // Unity terrain physics module
-			assemblies[28] = typeof(UnityEngine.Font).Assembly; // Unity text rendering module
+			assemblies[23] = typeof(Physics2D).Assembly; // Unity physics 2D module
+			assemblies[24] = typeof(Physics).Assembly; // Unity physics module
+			assemblies[25] = typeof(ScreenCapture).Assembly; // Unity screen capture module
+			assemblies[26] = typeof(Terrain).Assembly; // Unity terrain module
+			assemblies[27] = typeof(TerrainCollider).Assembly; // Unity terrain physics module
+			assemblies[28] = typeof(Font).Assembly; // Unity text rendering module
 			assemblies[29] = typeof(UnityEngine.Tilemaps.Tile).Assembly; // Unity tilemap module
 			assemblies[30] = typeof(UnityEngine.Experimental.UIElements.Button).Assembly; // Unity UI elements module
-			assemblies[31] = typeof(UnityEngine.Canvas).Assembly; // Unity UI module
+			assemblies[31] = typeof(Canvas).Assembly; // Unity UI module
 			assemblies[32] = typeof(UnityEngine.Networking.NetworkTransport).Assembly; // Unity cloth module
 			assemblies[33] = typeof(UnityEngine.Analytics.Analytics).Assembly; // Unity analytics module
-			assemblies[34] = typeof(UnityEngine.RemoteSettings).Assembly; // Unity Unity connect module
+			assemblies[34] = typeof(RemoteSettings).Assembly; // Unity Unity connect module
 			assemblies[35] = typeof(UnityEngine.Networking.DownloadHandlerAudioClip).Assembly; // Unity web request audio module
-			assemblies[36] = typeof(UnityEngine.WWWForm).Assembly; // Unity web request module
+			assemblies[36] = typeof(WWWForm).Assembly; // Unity web request module
 			assemblies[37] = typeof(UnityEngine.Networking.DownloadHandlerTexture).Assembly; // Unity web request texture module
-			assemblies[38] = typeof(UnityEngine.WWW).Assembly; // Unity web request WWW module
-			assemblies[39] = typeof(UnityEngine.WheelCollider).Assembly; // Unity vehicles module
+			assemblies[38] = typeof(WWW).Assembly; // Unity web request WWW module
+			assemblies[39] = typeof(WheelCollider).Assembly; // Unity vehicles module
 			assemblies[40] = typeof(UnityEngine.Video.VideoClip).Assembly; // Unity video module
 			assemblies[41] = typeof(UnityEngine.XR.InputTracking).Assembly; // Unity VR module
-			assemblies[42] = typeof(UnityEngine.WindZone).Assembly; // Unity wind module
+			assemblies[42] = typeof(WindZone).Assembly; // Unity wind module
 #endif
 			return assemblies;
 		}
@@ -920,7 +920,11 @@ namespace NativeScript
 					minimalInterfaces.Add(iType);
 				}
 			}
-			minimalInterfaces.Sort((x, y) => x.Name.CompareTo(y.Name));
+			minimalInterfaces.Sort(
+				(x, y) => string.Compare(
+					x.Name,
+					y.Name,
+					StringComparison.InvariantCulture));
 			return minimalInterfaces.ToArray();
 		}
 		
@@ -960,16 +964,11 @@ namespace NativeScript
 			string newline = "\n")
 		{
 			string separator = ": ";
-			for (int i = 0; i < interfaceTypes.Length; ++i)
+			foreach (Type interfaceType in interfaceTypes)
 			{
-				Type interfaceType = interfaceTypes[i];
-				AppendIndent(
-					indent,
-					output);
+				AppendIndent(indent, output);
 				output.Append(separator);
-				AppendCppTypeFullName(
-					interfaceType,
-					output);
+				AppendCppTypeFullName( interfaceType, output);
 				output.Append("(nullptr)");
 				output.Append(newline);
 				separator = ", ";
@@ -1429,7 +1428,7 @@ namespace NativeScript
 			}
 		}
 		
-		static int AppendType(
+		static void AppendType(
 			JsonType jsonType,
 			Type type,
 			TypeKind typeKind,
@@ -1447,11 +1446,9 @@ namespace NativeScript
 					typeKind,
 					null,
 					builders);
-				return 0;
 			}
 			else
 			{
-				int totalMaxSimultaneous = 0;
 				Type[] genericArgTypes = type.GetGenericArguments();
 				if (jsonType.GenericParams != null)
 				{
@@ -1474,7 +1471,6 @@ namespace NativeScript
 							: jsonType.MaxSimultaneous != 0
 								? jsonType.MaxSimultaneous
 								: defaultMaxSimultaneous;
-						totalMaxSimultaneous += maxSimultaneous;
 						AppendType(
 							jsonType,
 							genericArgTypes,
@@ -1499,7 +1495,6 @@ namespace NativeScript
 					int maxSimultaneous = jsonType.MaxSimultaneous != 0
 						? jsonType.MaxSimultaneous
 						: defaultMaxSimultaneous;
-					totalMaxSimultaneous += maxSimultaneous;
 					AppendType(
 						jsonType,
 						genericArgTypes,
@@ -1518,7 +1513,6 @@ namespace NativeScript
 							builders);
 					}
 				}
-				return totalMaxSimultaneous;
 			}
 		}
 		
@@ -1561,11 +1555,6 @@ namespace NativeScript
 					typeParams,
 					builders.TempStrBuilder);
 				string funcName = builders.TempStrBuilder.ToString();
-				
-				// Build lowercase function name
-				builders.TempStrBuilder[0] = char.ToLower(
-					builders.TempStrBuilder[0]);
-				string funcNameLower = builders.TempStrBuilder.ToString();
 				
 				// Build ReleaseX parameters
 				ParameterInfo paramInfo = new ParameterInfo();
@@ -1621,44 +1610,35 @@ namespace NativeScript
 					typeof(void),
 					builders.CppFunctionPointers);
 				
-				// C++ init param for ReleaseX
-				AppendCppInitParam(
-					funcNameLower,
+				// C++ init body for ReleaseX
+				AppendCppInitBodyFunctionPointerParameterRead(
+					funcName,
 					true,
 					default(TypeName),
 					TypeKind.None,
 					parameters,
 					typeof(void),
-					builders.CppInitParams);
-				
-				// C++ init body for ReleaseX
-				AppendCppInitBody(
-					funcName,
-					funcNameLower,
-					builders.CppInitBody);
-				
-				// C# init param for ReleaseX
-				AppendCsharpInitParam(
-					funcNameLower,
-					builders.CsharpInitParams);
+					builders.CppInitBodyParameterReads);
 				
 				// C# init call arg for ReleaseX
-				AppendCsharpInitCallArg(
+				AppendCsharpCsharpDelegate(
 					funcName,
-					builders.CsharpInitCall);
+					builders.CsharpInitCall,
+					builders.CsharpCsharpDelegates);
 				
 				// C++ init body for handle array length
-				builders.CppInitBody.Append("\tPlugin::RefCounts");
-				builders.CppInitBody.Append(funcNameSuffix);
-				builders.CppInitBody.Append(" = (int32_t*)curMemory;\n");
-				builders.CppInitBody.Append("\tcurMemory += ");
-				builders.CppInitBody.Append(maxSimultaneous);
-				builders.CppInitBody.Append(" * sizeof(int32_t);\n");
-				builders.CppInitBody.Append("\tPlugin::RefCountsLen");
-				builders.CppInitBody.Append(funcNameSuffix);
-				builders.CppInitBody.Append(" = ");
-				builders.CppInitBody.Append(maxSimultaneous);
-				builders.CppInitBody.Append(";\n");
+				builders.CppInitBodyArrays.Append("\tPlugin::RefCounts");
+				builders.CppInitBodyArrays.Append(funcNameSuffix);
+				builders.CppInitBodyArrays.Append(" = (int32_t*)curMemory;\n");
+				builders.CppInitBodyArrays.Append("\tcurMemory += ");
+				builders.CppInitBodyArrays.Append(maxSimultaneous);
+				builders.CppInitBodyArrays.Append(" * sizeof(int32_t);\n");
+				builders.CppInitBodyArrays.Append("\tPlugin::RefCountsLen");
+				builders.CppInitBodyArrays.Append(funcNameSuffix);
+				builders.CppInitBodyArrays.Append(" = ");
+				builders.CppInitBodyArrays.Append(maxSimultaneous);
+				builders.CppInitBodyArrays.Append(";\n");
+				builders.CppInitBodyArrays.Append("\t\n");
 				
 				// C++ ref count state and functions
 				builders.CppGlobalStateAndFunctions.Append("\tint32_t RefCountsLen");
@@ -2044,9 +2024,8 @@ namespace NativeScript
 			FieldInfo[] fields = type.GetFields(
 				BindingFlags.Static
 				| BindingFlags.Public);
-			for (int i = 0; i < fields.Length; ++i)
+			foreach (FieldInfo field in fields)
 			{
-				FieldInfo field = fields[i];
 				AppendIndent(
 					indent + 1,
 					builders.CppTypeDefinitions);
@@ -2235,9 +2214,8 @@ namespace NativeScript
 			builders.CppTypeDefinitions.Append('\n');
 			
 			// Static initialization
-			for (int i = 0; i < fields.Length; ++i)
+			foreach (FieldInfo field in fields)
 			{
-				FieldInfo field = fields[i];
 				builders.CppMethodDefinitions.Append("const ");
 				AppendCppTypeFullName(
 					type,
@@ -2345,10 +2323,6 @@ namespace NativeScript
 				builders.TempStrBuilder);
 			boxFuncName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string boxFuncNameLower = builders.TempStrBuilder.ToString();
-			
 			ParameterInfo[] boxParams = {
 				new ParameterInfo
 				{
@@ -2363,11 +2337,6 @@ namespace NativeScript
 			
 			boxCppParams = new ParameterInfo[0];
 			
-			// C# init params
-			AppendCsharpInitParam(
-				boxFuncNameLower,
-				builders.CsharpInitParams);
-			
 			// C# delegate types
 			AppendCsharpDelegateType(
 				boxFuncName,
@@ -2379,9 +2348,10 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# init call args
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				boxFuncName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# box function
 			AppendCsharpFunctionBeginning(
@@ -2412,21 +2382,15 @@ namespace NativeScript
 				typeof(object),
 				builders.CppFunctionPointers);
 			
-			// C++ init params
-			AppendCppInitParam(
-				boxFuncNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				boxFuncName,
 				true,
 				GetTypeName(type),
 				typeKind,
 				boxParams,
 				typeof(object),
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				boxFuncName,
-				boxFuncNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendUnboxing(
@@ -2444,10 +2408,6 @@ namespace NativeScript
 				typeParams,
 				builders.TempStrBuilder);
 			string unboxFuncName = builders.TempStrBuilder.ToString();
-			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string unboxFuncNameLower = builders.TempStrBuilder.ToString();
 			
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append("operator ");
@@ -2476,10 +2436,7 @@ namespace NativeScript
 			ParameterInfo[] unboxCppParams = new ParameterInfo[0];
 			
 			// C# init params
-			AppendCsharpInitParam(
-				unboxFuncNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# delegate types
 			AppendCsharpDelegateType(
 				unboxFuncName,
@@ -2491,9 +2448,10 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# init call args
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				unboxFuncName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# unbox function
 			AppendCsharpFunctionBeginning(
@@ -2603,21 +2561,15 @@ namespace NativeScript
 				indent,
 				builders.CppMethodDefinitions);
 			
-			// C++ init params
-			AppendCppInitParam(
-				unboxFuncNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				unboxFuncName,
 				true,
 				GetTypeName(type),
 				typeKind,
 				unboxParams,
 				type,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				unboxFuncName,
-				unboxFuncNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendCppBoxingMethodNames(
@@ -2830,11 +2782,6 @@ namespace NativeScript
 				builders.TempStrBuilder);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			// Build lowercase function name
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-
 			TypeName enclosingTypeTypeName = GetTypeName(enclosingType);
 
 			// Build C++ constructor method name
@@ -2845,9 +2792,6 @@ namespace NativeScript
 			string cppMethodName = builders.TempStrBuilder.ToString();
 			
 			// C# init param declaration
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
 
 			// C# delegate type
 			Type delegateReturnType;
@@ -2869,7 +2813,10 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 
 			// C# init call param
-			AppendCsharpInitCallArg(funcName, builders.CsharpInitCall);
+			AppendCsharpCsharpDelegate(
+				funcName,
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 
 			// C# function
 			if (enclosingTypeKind == TypeKind.FullStruct)
@@ -3035,22 +2982,16 @@ namespace NativeScript
 				indent,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append('\n');
-
-			// C++ init params
-			AppendCppInitParam(
-				funcNameLower,
+			
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				true,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
 				enclosingType,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendProperty(
@@ -3421,20 +3362,13 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(uppercaseEventName);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append(operation);
 			builders.TempStrBuilder.Append(uppercaseEventName);
 			string methodName = builders.TempStrBuilder.ToString();
 			
 			// C# init param
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# delegate type
 			AppendCsharpDelegateType(
 				funcName,
@@ -3446,9 +3380,10 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# init call arg
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# function
 			AppendCsharpFunctionBeginning(
@@ -3530,21 +3465,15 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("}\n\t\n");
 			
-			// C++ init params
-			AppendCppInitParam(
-				funcNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				methodIsStatic,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				methodParams,
 				typeof(void),
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static MethodInfo GetMethod(
@@ -3847,16 +3776,8 @@ namespace NativeScript
 				builders.TempStrBuilder);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			// Build lowercase function name
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			// C# init param declaration
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# delegate type
 			AppendCsharpDelegateType(
 				funcName,
@@ -3868,9 +3789,10 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# init call param
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# function
 			AppendCsharpFunctionBeginning(
@@ -4247,27 +4169,20 @@ namespace NativeScript
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("}\n\t\n");
 			
-			// C++ init params
-			AppendCppInitParam(
-				funcNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				methodIsStatic,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
 				returnType,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendCSharpTypeParameters(
 			Type[] typeParams,
-			StringBuilder output
-		)
+			StringBuilder output)
 		{
 			if (typeParams != null && typeParams.Length > 0)
 			{
@@ -4514,9 +4429,7 @@ namespace NativeScript
 					GetTypeName(cppArrayTypeName, "System"),
 					false,
 					cppTypeParams,
-					cppTypeParams != null ?
-						builders.CppTemplateSpecializationDeclarations :
-						builders.CppTypeDeclarations);
+					builders.CppTemplateSpecializationDeclarations);
 				
 				// C++ type definition (beginning)
 				Type[] interfaceTypes = GetDirectInterfaces(arrayType);
@@ -4535,6 +4448,7 @@ namespace NativeScript
 				Type[] cppCtorInitTypes = GetCppCtorInitTypes(
 					arrayType,
 					false);
+				int localRank = rank;
 				int cppMethodDefinitionsIndent = AppendCppMethodDefinitionsBegin(
 					GetTypeName(cppArrayTypeName, "System"),
 					TypeKind.Class,
@@ -4548,9 +4462,9 @@ namespace NativeScript
 						builders.CppMethodDefinitions.Append(subject);
 						builders.CppMethodDefinitions.Append(
 							"InternalLength = 0;\n");
-						if (rank > 1)
+						if (localRank > 1)
 						{
-							for (int i = 0; i < rank; ++i)
+							for (int i = 0; i < localRank; ++i)
 							{
 								AppendIndent(
 									extraIndent,
@@ -4573,9 +4487,9 @@ namespace NativeScript
 						builders.CppMethodDefinitions.Append(subject);
 						builders.CppMethodDefinitions.Append(
 							"InternalLength;\n");
-						if (rank > 1)
+						if (localRank > 1)
 						{
-							for (int i = 0; i < rank; ++i)
+							for (int i = 0; i < localRank; ++i)
 							{
 								AppendIndent(
 									extraIndent,
@@ -5538,10 +5452,6 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(rank);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			ParameterInfo[] parameters = new ParameterInfo[rank];
 			for (int i = 0; i < rank; ++i)
 			{
@@ -5570,15 +5480,13 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# Init Call
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# Init Param
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# function
 			AppendCsharpFunctionBeginning(
 				arrayType,
@@ -5624,21 +5532,15 @@ namespace NativeScript
 				arrayType,
 				builders.CppFunctionPointers);
 			
-			// C++ init param
-			AppendCppInitParam(
-				funcNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				true,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
 				arrayType,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 			
 			// C++ method declaration
 			AppendIndent(
@@ -5919,10 +5821,6 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(rank);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			ParameterInfo[] parameters = {
 				new ParameterInfo {
 					Name = "dimension",
@@ -5949,15 +5847,13 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# Init Call
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# Init Param
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# function
 			AppendCsharpFunctionBeginning(
 				arrayType,
@@ -5987,21 +5883,15 @@ namespace NativeScript
 				arrayType,
 				builders.CppFunctionPointers);
 			
-			// C++ init param
-			AppendCppInitParam(
-				funcNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
 				arrayType,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 			
 			// C++ method declaration
 			AppendIndent(
@@ -6106,10 +5996,6 @@ namespace NativeScript
 				builders.TempStrBuilder);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			ParameterInfo[] parameters = BuildArrayGetItemsParams(
 				rank,
 				"index");
@@ -6125,15 +6011,13 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# Init Call
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# Init Param
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# function
 			AppendCsharpFunctionBeginning(
 				arrayType,
@@ -6176,21 +6060,15 @@ namespace NativeScript
 				elementType,
 				builders.CppFunctionPointers);
 			
-			// C++ init param
-			AppendCppInitParam(
-				funcNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
 				elementType,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendArraySetItem(
@@ -6207,10 +6085,6 @@ namespace NativeScript
 				rank,
 				builders.TempStrBuilder);
 			string funcName = builders.TempStrBuilder.ToString();
-			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
 			
 			// Build parameters as indexes then element
 			ParameterInfo[] parameters = BuildArraySetItemsParams(
@@ -6229,15 +6103,13 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# Init Call
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# Init Param
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# function
 			AppendCsharpFunctionBeginning(
 				arrayType,
@@ -6280,21 +6152,15 @@ namespace NativeScript
 				arrayType,
 				builders.CppFunctionPointers);
 			
-			// C++ init param
-			AppendCppInitParam(
-				funcNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				false,
 				cppArrayTypeTypeName,
 				TypeKind.Class,
 				parameters,
 				arrayType,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendDelegate(
@@ -6308,15 +6174,14 @@ namespace NativeScript
 				assemblies);
 			if (jsonDelegate.GenericParams != null)
 			{
-				foreach (JsonGenericParams jsonGenericParams
-					in jsonDelegate.GenericParams)
+				for (int i = 0; i < jsonDelegate.GenericParams.Length; ++i)
 				{
 					// C++ template declaration
 					AppendCppTemplateDeclaration(
 						GetTypeName(type),
 						builders.CppTemplateDeclarations);
 				}
-				
+
 				foreach (JsonGenericParams jsonGenericParams
 					in jsonDelegate.GenericParams)
 				{
@@ -6389,37 +6254,21 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(bindingTypeName);
 			string releaseFuncName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string releaseFuncNameLower = builders.TempStrBuilder.ToString();
-			
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append(bindingTypeName);
 			builders.TempStrBuilder.Append("Constructor");
 			string constructorFuncName = builders.TempStrBuilder.ToString();
-			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string constructorFuncNameLower = builders.TempStrBuilder.ToString();
 			
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append(bindingTypeName);
 			builders.TempStrBuilder.Append("Add");
 			string addFuncName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string addFuncNameLower = builders.TempStrBuilder.ToString();
-			
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append(bindingTypeName);
 			builders.TempStrBuilder.Append("Remove");
 			string removeFuncName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string removeFuncNameLower = builders.TempStrBuilder.ToString();
-
 			TypeName typeTypeName = GetTypeName(type);
 
 			// C++ type declaration
@@ -6503,7 +6352,7 @@ namespace NativeScript
 				GetTypeName(cppTypeName, type.Namespace),
 				maxSimultaneous,
 				bindingTypeName,
-				builders.CppInitBody,
+				builders.CppInitBodyArrays,
 				builders.CppInitBodyFirstBoot);
 
 			// C++ type definition (begin)
@@ -6600,81 +6449,55 @@ namespace NativeScript
 				typeof(void),
 				builders.CppFunctionPointers);
 			
-			// C++ init params
-			AppendCppInitParam(
-				releaseFuncNameLower,
+			// C++ and C# init params
+			AppendCppInitBodyFunctionPointerParameterRead(
+				releaseFuncName,
 				true,
 				default(TypeName),
 				TypeKind.None,
 				releaseParams,
 				typeof(void),
-				builders.CppInitParams);
-			AppendCppInitParam(
-				constructorFuncNameLower,
+				builders.CppInitBodyParameterReads);
+			AppendCppInitBodyFunctionPointerParameterRead(
+				constructorFuncName,
 				true,
 				default(TypeName),
 				TypeKind.None,
 				constructorParams,
 				typeof(void),
-				builders.CppInitParams);
-			AppendCppInitParam(
-				addFuncNameLower,
+				builders.CppInitBodyParameterReads);
+			AppendCppInitBodyFunctionPointerParameterRead(
+				addFuncName,
 				false,
 				default(TypeName),
 				TypeKind.None,
 				addRemoveParams,
 				typeof(void),
-				builders.CppInitParams);
-			AppendCppInitParam(
-				removeFuncNameLower,
+				builders.CppInitBodyParameterReads);
+			AppendCppInitBodyFunctionPointerParameterRead(
+				removeFuncName,
 				false,
 				default(TypeName),
 				TypeKind.None,
 				addRemoveParams,
 				typeof(void),
-				builders.CppInitParams);
-			
-			// C++ and C# init params
-			AppendCppInitBody(
+				builders.CppInitBodyParameterReads);
+			AppendCsharpCsharpDelegate(
 				releaseFuncName,
-				releaseFuncNameLower,
-				builders.CppInitBody);
-			AppendCppInitBody(
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
+			AppendCsharpCsharpDelegate(
 				constructorFuncName,
-				constructorFuncNameLower,
-				builders.CppInitBody);
-			AppendCppInitBody(
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
+			AppendCsharpCsharpDelegate(
 				addFuncName,
-				addFuncNameLower,
-				builders.CppInitBody);
-			AppendCppInitBody(
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
+			AppendCsharpCsharpDelegate(
 				removeFuncName,
-				removeFuncNameLower,
-				builders.CppInitBody);
-			AppendCsharpInitParam(
-				releaseFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitParam(
-				constructorFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitParam(
-				addFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitParam(
-				removeFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitCallArg(
-				releaseFuncName,
-				builders.CsharpInitCall);
-			AppendCsharpInitCallArg(
-				constructorFuncName,
-				builders.CsharpInitCall);
-			AppendCsharpInitCallArg(
-				addFuncName,
-				builders.CsharpInitCall);
-			AppendCsharpInitCallArg(
-				removeFuncName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C++ method definitions (end)
 			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
@@ -7039,10 +6862,6 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(baseTypeTypeName.Name);
 			string releaseFuncName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string releaseFuncNameLower = builders.TempStrBuilder.ToString();
-
 			builders.TempStrBuilder.Length = 0;
 			AppendCppTypeName(
 				baseTypeTypeName,
@@ -7073,7 +6892,7 @@ namespace NativeScript
 					throw new Exception(errorBuilder.ToString());
 				}
 				
-				jsonConstructors = new JsonConstructor[]
+				jsonConstructors = new[]
 				{
 					new JsonConstructor
 					{
@@ -7155,7 +6974,7 @@ namespace NativeScript
 			{
 				cppBaseClass = typeof(object);
 				cppBaseClassTypeParams = null;
-				cppInterfaceTypes = new Type[] { type };
+				cppInterfaceTypes = new [] { type };
 			}
 			else
 			{
@@ -7175,7 +6994,7 @@ namespace NativeScript
 				baseTypeTypeName,
 				maxSimultaneous,
 				baseTypeTypeName.Name,
-				builders.CppInitBody,
+				builders.CppInitBodyArrays,
 				builders.CppInitBodyFirstBoot);
 			
 			// C++ type declaration
@@ -7324,52 +7143,34 @@ namespace NativeScript
 					builders.CppFunctionPointers);
 			}
 			
-			// C++ init params
-			AppendCppInitParam(
-				releaseFuncNameLower,
+			// C++ and C# init params
+			AppendCppInitBodyFunctionPointerParameterRead(
+				releaseFuncName,
 				true,
 				default(TypeName),
 				TypeKind.None,
 				releaseParams,
 				typeof(void),
-				builders.CppInitParams);
+				builders.CppInitBodyParameterReads);
+			AppendCsharpCsharpDelegate(
+				releaseFuncName,
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			for (int i = 0; i < numConstructors; ++i)
 			{
-				AppendCppInitParam(
-					constructorFuncNameLowers[i],
+				string funcName = constructorFuncNames[i];
+				AppendCppInitBodyFunctionPointerParameterRead(
+					funcName,
 					true,
 					default(TypeName),
 					TypeKind.None,
 					constructorParams[i],
 					typeof(void),
-					builders.CppInitParams);
-			}
-			
-			// C++ and C# init params
-			AppendCppInitBody(
-				releaseFuncName,
-				releaseFuncNameLower,
-				builders.CppInitBody);
-			AppendCsharpInitParam(
-				releaseFuncNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitCallArg(
-				releaseFuncName,
-				builders.CsharpInitCall);
-			for (int i = 0; i < numConstructors; ++i)
-			{
-				string funcName = constructorFuncNames[i];
-				string funcNameLower = constructorFuncNameLowers[i];
-				AppendCppInitBody(
+					builders.CppInitBodyParameterReads);
+				AppendCsharpCsharpDelegate(
 					funcName,
-					funcNameLower,
-					builders.CppInitBody);
-				AppendCsharpInitParam(
-					funcNameLower,
-					builders.CsharpInitParams);
-				AppendCsharpInitCallArg(
-					funcName,
-					builders.CsharpInitCall);
+					builders.CsharpInitCall,
+					builders.CsharpCsharpDelegates);
 			}
 			
 			// C++ method definitions (end)
@@ -7489,7 +7290,7 @@ namespace NativeScript
 				AppendCppWholeObjectFreeListInit(
 					maxSimultaneous,
 					baseTypeTypeName.Name,
-					builders.CppInitBody,
+					builders.CppInitBodyArrays,
 					builders.CppInitBodyFirstBoot);
 				
 				// C++ binding function to create the base class
@@ -7538,7 +7339,7 @@ namespace NativeScript
 
 				// C# usage of the C++ binding function to create from C# default constructor
 				ParameterInfo[] cppDefaultConstructorBindingFunctionParams = ConvertParameters(
-					new Type[] { typeof(int) });
+					new[] { typeof(int) });
 				AppendCsharpDelegate(
 					true,
 					GetTypeName(string.Empty, string.Empty),
@@ -7547,7 +7348,7 @@ namespace NativeScript
 					cppDefaultConstructorBindingFunctionParams,
 					typeof(int),
 					TypeKind.None,
-					builders.CsharpDelegates);
+					builders.CsharpCppDelegates);
 				AppendCsharpImport(
 					GetTypeName(string.Empty, string.Empty),
 					null,
@@ -7600,7 +7401,7 @@ namespace NativeScript
 
 				// C# usage of the C++ binding function to destroy from C# default constructor
 				ParameterInfo[] cppDestroyBindingFunctionParams = ConvertParameters(
-					new Type[] { typeof(int) });
+					new [] { typeof(int) });
 				AppendCsharpDelegate(
 					true,
 					GetTypeName(string.Empty, string.Empty),
@@ -7609,7 +7410,7 @@ namespace NativeScript
 					cppDestroyBindingFunctionParams,
 					typeof(void),
 					TypeKind.None,
-					builders.CsharpDelegates);
+					builders.CsharpCppDelegates);
 				ParameterInfo[] cppDestroyImportFunctionParams = ConvertParameters(
 					new Type[0]);
 				AppendCsharpImport(
@@ -8383,10 +8184,6 @@ namespace NativeScript
 			builders.TempStrBuilder.Append(methodName);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			// C++ method declaration for the method
 			ParameterInfo[] invokeParams = ConvertParameters(
 				methodInfo.GetParameters());
@@ -8414,24 +8211,18 @@ namespace NativeScript
 				builders.CppFunctionPointers);
 			
 			// C++ and C# Init parameter and body for the C# binding function
-			AppendCppInitParam(
-				funcNameLower,
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				false,
 				default(TypeName),
 				TypeKind.None,
 				invokeParams,
 				methodInfo.ReturnType,
-				builders.CppInitParams);
-			AppendCppInitBody(
+				builders.CppInitBodyParameterReads);
+			AppendCsharpCsharpDelegate(
 				funcName,
-				funcNameLower,
-				builders.CppInitBody);
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			AppendCsharpInitCallArg(
-				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C++ method definition for the method
 			TypeKind returnTypeKind = GetTypeKind(
@@ -8683,7 +8474,7 @@ namespace NativeScript
 				invokeParams,
 				invokeMethod.ReturnType,
 				invokeReturnTypeKind,
-				builders.CsharpDelegates);
+				builders.CsharpCppDelegates);
 			
 			// C# import for the C++ binding function
 			AppendCsharpImport(
@@ -9040,9 +8831,8 @@ namespace NativeScript
 				indent + 1,
 				output);
 			output.Append("{\n");
-			for (int i = 0; i < methodParams.Length; ++i)
+			foreach (ParameterInfo parameter in methodParams)
 			{
-				ParameterInfo parameter = methodParams[i];
 				if (parameter.Kind == TypeKind.Class ||
 				    parameter.Kind == TypeKind.ManagedStruct)
 				{
@@ -10546,7 +10336,7 @@ namespace NativeScript
 				typeParams,
 				funcName,
 				output);
-			output.Append("Delegate(");
+			output.Append("DelegateType(");
 			if (!isStatic)
 			{
 				output.Append("int thisHandle");
@@ -10586,7 +10376,7 @@ namespace NativeScript
 				typeParams,
 				funcName,
 				output);
-			output.Append("Delegate ");
+			output.Append("DelegateType ");
 			AppendCsharpDelegateName(
 				typeTypeName,
 				typeParams,
@@ -10632,7 +10422,7 @@ namespace NativeScript
 				typeParams,
 				funcName,
 				output);
-			output.Append("Delegate>(libraryHandle, \"");
+			output.Append("DelegateType>(libraryHandle, \"");
 			AppendCsharpDelegateName(
 				typeTypeName,
 				typeParams,
@@ -10880,7 +10670,7 @@ namespace NativeScript
 					parameters,
 					typeof(void),
 					TypeKind.None,
-					builders.CsharpDelegates
+					builders.CsharpCppDelegates
 				);
 				
 				// C# GetDelegate call
@@ -10947,11 +10737,6 @@ namespace NativeScript
 				builders.TempStrBuilder);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			// Build lowercase function name
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			// Build method name
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append("Get");
@@ -10959,9 +10744,6 @@ namespace NativeScript
 			string methodName = builders.TempStrBuilder.ToString();
 			
 			// C# init param declaration
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
 
 			// C# delegate type
 			AppendCsharpDelegateType(
@@ -10974,9 +10756,10 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 
 			// C# init call param
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 
 			// C# function
 			AppendCsharpFunctionBeginning(
@@ -11081,22 +10864,16 @@ namespace NativeScript
 			builders.CppMethodDefinitions.Append("}\n");
 			AppendIndent(indent, builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append('\n');
-
-			// C++ init params
-			AppendCppInitParam(
-				funcNameLower,
+			
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				methodIsStatic,
 				GetTypeName(enclosingType),
 				enclosingTypeKind,
 				parameters,
 				fieldType,
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendSetter(
@@ -11135,11 +10912,6 @@ namespace NativeScript
 				builders.TempStrBuilder);
 			string funcName = builders.TempStrBuilder.ToString();
 			
-			// Build lowercase function name
-			builders.TempStrBuilder[0] = char.ToLower(
-				builders.TempStrBuilder[0]);
-			string funcNameLower = builders.TempStrBuilder.ToString();
-			
 			// Build method name
 			builders.TempStrBuilder.Length = 0;
 			builders.TempStrBuilder.Append("Set");
@@ -11147,10 +10919,7 @@ namespace NativeScript
 			string methodName = builders.TempStrBuilder.ToString();
 			
 			// C# init param declaration
-			AppendCsharpInitParam(
-				funcNameLower,
-				builders.CsharpInitParams);
-			
+
 			// C# delegate type
 			AppendCsharpDelegateType(
 				funcName,
@@ -11162,9 +10931,10 @@ namespace NativeScript
 				builders.CsharpDelegateTypes);
 			
 			// C# init call param
-			AppendCsharpInitCallArg(
+			AppendCsharpCsharpDelegate(
 				funcName,
-				builders.CsharpInitCall);
+				builders.CsharpInitCall,
+				builders.CsharpCsharpDelegates);
 			
 			// C# function
 			AppendCsharpFunctionBeginning(
@@ -11268,21 +11038,15 @@ namespace NativeScript
 			AppendIndent(indent, builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append('\n');
 			
-			// C++ init params
-			AppendCppInitParam(
-				funcNameLower,
+			// C++ init body
+			AppendCppInitBodyFunctionPointerParameterRead(
+				funcName,
 				methodIsStatic,
 				enclosingTypeTypeName,
 				enclosingTypeKind,
 				parameters,
 				typeof(void),
-				builders.CppInitParams);
-			
-			// C++ init body
-			AppendCppInitBody(
-				funcName,
-				funcNameLower,
-				builders.CppInitBody);
+				builders.CppInitBodyParameterReads);
 		}
 		
 		static void AppendFieldPropertyFuncName(
@@ -12175,26 +11939,28 @@ namespace NativeScript
 		{
 			output.Append('\t', indent);
 		}
-		
-		static void AppendCsharpInitParam(
+
+		static void AppendCsharpCsharpDelegate(
 			string funcName,
-			StringBuilder output)
+			StringBuilder initCallOutput,
+			StringBuilder delegateOutput)
 		{
-			output.Append("\t\t\tIntPtr ");
-			output.Append(funcName);
-			output.Append(",\n");
-		}
-		
-		static void AppendCsharpInitCallArg(
-			string funcName,
-			StringBuilder output)
-		{
-			output.Append(
-				"\t\t\t\tMarshal.GetFunctionPointerForDelegate(new ");
-			output.Append(funcName);
-			output.Append("Delegate(");
-			output.Append(funcName);
-			output.Append(")),\n");
+			initCallOutput.Append(
+				"\t\t\tMarshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(");
+			initCallOutput.Append(funcName);
+			initCallOutput.Append("Delegate");
+			initCallOutput.Append("));\n");
+			initCallOutput.Append("\t\t\tcurMemory += IntPtr.Size;\n");
+
+			delegateOutput.Append("\t\tstatic readonly ");
+			delegateOutput.Append(funcName);
+			delegateOutput.Append("DelegateType ");
+			delegateOutput.Append(funcName);
+			delegateOutput.Append("Delegate = new ");
+			delegateOutput.Append(funcName);
+			delegateOutput.Append("DelegateType(");
+			delegateOutput.Append(funcName);
+			delegateOutput.Append(");\n");
 		}
 		
 		static void AppendCsharpDelegateType(
@@ -12222,7 +11988,7 @@ namespace NativeScript
 			
 			output.Append(' ');
 			output.Append(funcName);
-			output.Append("Delegate(");
+			output.Append("DelegateType(");
 			if (!isStatic)
 			{
 				if (enclosingTypeKind == TypeKind.FullStruct)
@@ -12259,7 +12025,7 @@ namespace NativeScript
 		{
 			output.Append("\t\t[MonoPInvokeCallback(typeof(");
 			output.Append(funcName);
-			output.Append("Delegate))]\n\t\tstatic ");
+			output.Append("DelegateType))]\n\t\tstatic ");
 			
 			// Return type
 			if (returnType != null)
@@ -12781,30 +12547,32 @@ namespace NativeScript
 				}
 			}
 		}
-		
-		static void AppendDefaultStringParamName(
-			string str,
-			StringBuilder output)
-		{
-			foreach (char c in str)
-			{
-				if (char.IsLetterOrDigit(c))
-				{
-					output.Append(c);
-				}
-			}
-		}
 
-		static void AppendCppInitBody(
+		static void AppendCppInitBodyFunctionPointerParameterRead(
 			string globalVariableName,
-			string paramName,
+			bool isStatic,
+			TypeName enclosingTypeTypeName,
+			TypeKind enclosingTypeKind,
+			ParameterInfo[] parameters,
+			Type returnType,
 			StringBuilder output)
 		{
 			output.Append("\tPlugin::");
 			output.Append(globalVariableName);
-			output.Append(" = ");
-			output.Append(paramName);
-			output.Append(";\n");
+			output.Append(" = *(");
+			AppendCppFunctionPointer(
+				string.Empty, // function name
+				isStatic,
+				enclosingTypeTypeName,
+				enclosingTypeKind,
+				parameters,
+				returnType,
+				2,
+				output);
+			output.Append(")curMemory;\n");
+			output.Append("\tcurMemory += sizeof(Plugin::");
+			output.Append(globalVariableName);
+			output.Append(");\n");
 		}
 		
 		static void AppendCppMethodDefinitionBegin(
@@ -13029,31 +12797,7 @@ namespace NativeScript
 			AppendIndent(indent, output);
 			output.Append("}\n");
 		}
-		
-		static void AppendCppInitParam(
-			string funcName,
-			bool isStatic,
-			TypeName enclosingTypeTypeName,
-			TypeKind enclosingTypeKind,
-			ParameterInfo[] parameters,
-			Type returnType,
-			StringBuilder output
-		)
-		{
-			output.Append('\t');
-			AppendCppFunctionPointer(
-				funcName,
-				isStatic,
-				enclosingTypeTypeName,
-				enclosingTypeKind,
-				parameters,
-				returnType,
-				',',
-				output
-			);
-			output.Append('\n');
-		}
-		
+
 		static void AppendCppFunctionPointerDefinition(
 			string funcName,
 			bool isStatic,
@@ -13072,9 +12816,10 @@ namespace NativeScript
 				enclosingTypeKind,
 				parameters,
 				returnType,
-				';',
+				1,
 				output
 			);
+			output.Append(';');
 			output.Append('\n');
 		}
 		
@@ -13085,7 +12830,7 @@ namespace NativeScript
 			TypeKind enclosingTypeKind,
 			ParameterInfo[] parameters,
 			Type returnType,
-			char separator,
+			int numIndirectionLevels,
 			StringBuilder output)
 		{
 			// Return type
@@ -13108,7 +12853,8 @@ namespace NativeScript
 				output.Append("int32_t");
 			}
 			
-			output.Append(" (*");
+			output.Append(" (");
+			output.Append('*', numIndirectionLevels);
 			output.Append(funcName);
 			output.Append(")(");
 			if (!isStatic)
@@ -13189,7 +12935,6 @@ namespace NativeScript
 				}
 			}
 			output.Append(')');
-			output.Append(separator);
 		}
 		
 		static void AppendCppTemplateTypenames(
@@ -13568,13 +13313,13 @@ namespace NativeScript
 		static void RemoveTrailingChars(
 			StringBuilders builders)
 		{
-			RemoveTrailingChars(builders.CsharpInitParams);
 			RemoveTrailingChars(builders.CsharpDelegateTypes);
 			RemoveTrailingChars(builders.CsharpStoreInitCalls);
 			RemoveTrailingChars(builders.CsharpInitCall);
 			RemoveTrailingChars(builders.CsharpBaseTypes);
 			RemoveTrailingChars(builders.CsharpFunctions);
-			RemoveTrailingChars(builders.CsharpDelegates);
+			RemoveTrailingChars(builders.CsharpCppDelegates);
+			RemoveTrailingChars(builders.CsharpCsharpDelegates);
 			RemoveTrailingChars(builders.CsharpImports);
 			RemoveTrailingChars(builders.CsharpGetDelegateCalls);
 			RemoveTrailingChars(builders.CsharpDestroyFunctionEnumerators);
@@ -13585,8 +13330,8 @@ namespace NativeScript
 			RemoveTrailingChars(builders.CppTemplateSpecializationDeclarations);
 			RemoveTrailingChars(builders.CppTypeDefinitions);
 			RemoveTrailingChars(builders.CppMethodDefinitions);
-			RemoveTrailingChars(builders.CppInitParams);
-			RemoveTrailingChars(builders.CppInitBody);
+			RemoveTrailingChars(builders.CppInitBodyParameterReads);
+			RemoveTrailingChars(builders.CppInitBodyArrays);
 			RemoveTrailingChars(builders.CppInitBodyFirstBoot);
 			RemoveTrailingChars(builders.CppGlobalStateAndFunctions);
 			RemoveTrailingChars(builders.CppUnboxingMethodDeclarations);
@@ -13629,11 +13374,6 @@ namespace NativeScript
 			string cppSourceContents = File.ReadAllText(CppSourcePath);
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN INIT PARAMS*/\n",
-				"\n\t\t\t/*END INIT PARAMS*/",
-				builders.CsharpInitParams.ToString());
-			csharpContents = InjectIntoString(
-				csharpContents,
 				"/*BEGIN DELEGATE TYPES*/\n",
 				"\n\t\t/*END DELEGATE TYPES*/",
 				builders.CsharpDelegateTypes.ToString());
@@ -13645,7 +13385,7 @@ namespace NativeScript
 			csharpContents = InjectIntoString(
 				csharpContents,
 				"/*BEGIN INIT CALL*/\n",
-				"\n\t\t\t\t/*END INIT CALL*/",
+				"\n\t\t\t/*END INIT CALL*/",
 				builders.CsharpInitCall.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
@@ -13659,9 +13399,14 @@ namespace NativeScript
 				builders.CsharpFunctions.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN DELEGATES*/\n",
-				"\n\t\t/*END DELEGATES*/",
-				builders.CsharpDelegates.ToString());
+				"/*BEGIN CPP DELEGATES*/\n",
+				"\n\t\t/*END CPP DELEGATES*/",
+				builders.CsharpCppDelegates.ToString());
+			csharpContents = InjectIntoString(
+				csharpContents,
+				"/*BEGIN CSHARP DELEGATES*/\n",
+				"\n\t\t/*END CSHARP DELEGATES*/",
+				builders.CsharpCsharpDelegates.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
 				"/*BEGIN IMPORTS*/\n",
@@ -13714,14 +13459,14 @@ namespace NativeScript
 				builders.CppMethodDefinitions.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT PARAMS*/\n",
-				"\n\t/*END INIT PARAMS*/",
-				builders.CppInitParams.ToString());
+				"/*BEGIN INIT BODY PARAMETER READS*/\n",
+				"\n\t/*END INIT BODY PARAMETER READS*/",
+				builders.CppInitBodyParameterReads.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT BODY*/\n",
-				"\n\t/*END INIT BODY*/",
-				builders.CppInitBody.ToString());
+				"/*BEGIN INIT BODY ARRAYS*/\n",
+				"\n\t/*END INIT BODY ARRAYS*/",
+				builders.CppInitBodyArrays.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
 				"/*BEGIN INIT BODY FIRST BOOT*/\n",
