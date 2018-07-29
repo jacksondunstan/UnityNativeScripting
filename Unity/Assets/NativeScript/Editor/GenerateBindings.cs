@@ -10164,7 +10164,7 @@ namespace NativeScript.Editor
 			outputFirstBoot.Append(bindingTypeName);
 			outputFirstBoot.Append("FreeWholeList[i].Next = Plugin::");
 			outputFirstBoot.Append(bindingTypeName);
-			outputFirstBoot.Append("FreeWholeList[i + 1].Next;\n");
+			outputFirstBoot.Append("FreeWholeList + i + 1;\n");
 			outputFirstBoot.Append("\t\t}\n");
 
 			outputFirstBoot.Append("\t\tPlugin::");

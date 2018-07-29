@@ -2492,6 +2492,87 @@ namespace System
 
 namespace System
 {
+	IEquatable_1<UnityEngine::Vector3>::IEquatable_1(decltype(nullptr))
+	{
+	}
+	
+	IEquatable_1<UnityEngine::Vector3>::IEquatable_1(Plugin::InternalUse, int32_t handle)
+	{
+		Handle = handle;
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+		}
+	}
+	
+	IEquatable_1<UnityEngine::Vector3>::IEquatable_1(const IEquatable_1<UnityEngine::Vector3>& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+	}
+	
+	IEquatable_1<UnityEngine::Vector3>::IEquatable_1(IEquatable_1<UnityEngine::Vector3>&& other)
+		: IEquatable_1(Plugin::InternalUse::Only, other.Handle)
+	{
+		other.Handle = 0;
+	}
+	
+	IEquatable_1<UnityEngine::Vector3>::~IEquatable_1<UnityEngine::Vector3>()
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+	}
+	
+	IEquatable_1<UnityEngine::Vector3>& IEquatable_1<UnityEngine::Vector3>::operator=(const IEquatable_1<UnityEngine::Vector3>& other)
+	{
+		if (this->Handle)
+		{
+			Plugin::DereferenceManagedClass(this->Handle);
+		}
+		this->Handle = other.Handle;
+		if (this->Handle)
+		{
+			Plugin::ReferenceManagedClass(this->Handle);
+		}
+		return *this;
+	}
+	
+	IEquatable_1<UnityEngine::Vector3>& IEquatable_1<UnityEngine::Vector3>::operator=(decltype(nullptr))
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+			Handle = 0;
+		}
+		return *this;
+	}
+	
+	IEquatable_1<UnityEngine::Vector3>& IEquatable_1<UnityEngine::Vector3>::operator=(IEquatable_1<UnityEngine::Vector3>&& other)
+	{
+		if (Handle)
+		{
+			Plugin::DereferenceManagedClass(Handle);
+		}
+		Handle = other.Handle;
+		other.Handle = 0;
+		return *this;
+	}
+	
+	bool IEquatable_1<UnityEngine::Vector3>::operator==(const IEquatable_1<UnityEngine::Vector3>& other) const
+	{
+		return Handle == other.Handle;
+	}
+	
+	bool IEquatable_1<UnityEngine::Vector3>::operator!=(const IEquatable_1<UnityEngine::Vector3>& other) const
+	{
+		return Handle != other.Handle;
+	}
+}
+
+namespace System
+{
 	IComparable_1<System::Boolean>::IComparable_1(decltype(nullptr))
 	{
 	}
@@ -3864,6 +3945,24 @@ namespace UnityEngine
 		{
 			Plugin::ReferenceManagedClass(handle);
 			return System::Object(Plugin::InternalUse::Only, handle);
+		}
+		return nullptr;
+	}
+	
+	UnityEngine::Vector3::operator System::IEquatable_1<UnityEngine::Vector3>()
+	{
+		int32_t handle = Plugin::BoxVector3(*this);
+		if (Plugin::unhandledCsharpException)
+		{
+			System::Exception* ex = Plugin::unhandledCsharpException;
+			Plugin::unhandledCsharpException = nullptr;
+			ex->ThrowReferenceToThis();
+			delete ex;
+		}
+		if (handle)
+		{
+			Plugin::ReferenceManagedClass(handle);
+			return System::IEquatable_1<UnityEngine::Vector3>(Plugin::InternalUse::Only, handle);
 		}
 		return nullptr;
 	}
@@ -6117,7 +6216,7 @@ DLLEXPORT void Init(
 		
 		for (int32_t i = 0, end = Plugin::BaseBallScriptFreeWholeListSize - 1; i < end; ++i)
 		{
-			Plugin::BaseBallScriptFreeWholeList[i].Next = Plugin::BaseBallScriptFreeWholeList[i + 1].Next;
+			Plugin::BaseBallScriptFreeWholeList[i].Next = Plugin::BaseBallScriptFreeWholeList + i + 1;
 		}
 		Plugin::BaseBallScriptFreeWholeList[Plugin::BaseBallScriptFreeWholeListSize - 1].Next = nullptr;
 		Plugin::NextFreeWholeBaseBallScript = Plugin::BaseBallScriptFreeWholeList + 1;

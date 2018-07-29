@@ -78,6 +78,11 @@
 					"Types": [
 						"System.Decimal"
 					]
+				},
+				{
+					"Types": [
+						"UnityEngine.Vector3"
+					]
 				}
 			]
 		},

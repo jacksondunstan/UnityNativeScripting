@@ -491,6 +491,11 @@ namespace System
 
 namespace System
 {
+	template<> struct IEquatable_1<UnityEngine::Vector3>;
+}
+
+namespace System
+{
 	template<> struct IComparable_1<System::Boolean>;
 }
 
@@ -936,6 +941,23 @@ namespace System
 
 namespace System
 {
+	template<> struct IEquatable_1<UnityEngine::Vector3> : virtual System::Object
+	{
+		IEquatable_1<UnityEngine::Vector3>(decltype(nullptr));
+		IEquatable_1<UnityEngine::Vector3>(Plugin::InternalUse, int32_t handle);
+		IEquatable_1<UnityEngine::Vector3>(const IEquatable_1<UnityEngine::Vector3>& other);
+		IEquatable_1<UnityEngine::Vector3>(IEquatable_1<UnityEngine::Vector3>&& other);
+		virtual ~IEquatable_1<UnityEngine::Vector3>();
+		IEquatable_1<UnityEngine::Vector3>& operator=(const IEquatable_1<UnityEngine::Vector3>& other);
+		IEquatable_1<UnityEngine::Vector3>& operator=(decltype(nullptr));
+		IEquatable_1<UnityEngine::Vector3>& operator=(IEquatable_1<UnityEngine::Vector3>&& other);
+		bool operator==(const IEquatable_1<UnityEngine::Vector3>& other) const;
+		bool operator!=(const IEquatable_1<UnityEngine::Vector3>& other) const;
+	};
+}
+
+namespace System
+{
 	template<> struct IComparable_1<System::Boolean> : virtual System::Object
 	{
 		IComparable_1<System::Boolean>(decltype(nullptr));
@@ -1193,6 +1215,7 @@ namespace UnityEngine
 		UnityEngine::Vector3 operator+(UnityEngine::Vector3& a);
 		explicit operator System::ValueType();
 		explicit operator System::Object();
+		explicit operator System::IEquatable_1<UnityEngine::Vector3>();
 	};
 }
 
