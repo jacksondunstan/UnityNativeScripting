@@ -6751,7 +6751,7 @@ namespace NativeScript.Editor
 			AppendCsharpBaseTypeConstructorFunction(
 				type,
 				GetTypeName(bindingTypeName, string.Empty),
-				false,
+				true,
 				constructorFuncName,
 				constructorParams,
 				new ParameterInfo[0],
