@@ -704,7 +704,11 @@ namespace NativeScript.Editor
 			assemblies[27] = typeof(TerrainCollider).Assembly; // Unity terrain physics module
 			assemblies[28] = typeof(Font).Assembly; // Unity text rendering module
 			assemblies[29] = typeof(UnityEngine.Tilemaps.Tile).Assembly; // Unity tilemap module
+#if UNITY_2019_1_OR_NEWER
+			assemblies[30] = typeof(UnityEngine.UIElements.Button).Assembly; // Unity UI elements module
+#else
 			assemblies[30] = typeof(UnityEngine.Experimental.UIElements.Button).Assembly; // Unity UI elements module
+#endif
 			assemblies[31] = typeof(Canvas).Assembly; // Unity UI module
 			assemblies[32] = typeof(UnityEngine.Networking.NetworkTransport).Assembly; // Unity cloth module
 			assemblies[33] = typeof(UnityEngine.Analytics.Analytics).Assembly; // Unity analytics module
