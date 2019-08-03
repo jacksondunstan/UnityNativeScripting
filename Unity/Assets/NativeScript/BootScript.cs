@@ -27,7 +27,7 @@ namespace NativeScript
 		private Coroutine autoReloadCoroutine;
 #endif
 		
-		void Awake()
+		void Start()
 		{
 #if UNITY_EDITOR
 			lastAutoReloadPollTime = AutoReloadPollTime;
