@@ -679,7 +679,7 @@ namespace NativeScript
 			string loadPath;
 #if UNITY_EDITOR_WIN
 			// Copy native library to temporary file
-			File.Copy(pluginPath, pluginTempPath);
+			File.Copy(pluginPath, pluginTempPath, true);
 			loadPath = pluginTempPath;
 #else
 			loadPath = pluginPath;

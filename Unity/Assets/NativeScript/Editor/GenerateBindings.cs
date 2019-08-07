@@ -7067,6 +7067,7 @@ namespace NativeScript.Editor
 			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append(derivedTypeTypeName.Name);
 			builders.CppMacros.Append("(Plugin::InternalUse iu, int32_t handle);\n");
+			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append('\n');
 
 			// C++ constructor definition macro
@@ -7094,7 +7095,13 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				baseTypeTypeName,
 				builders.CppMacros);
-			builders.CppMacros.Append("(iu, handle)\n");
+			builders.CppMacros.Append("(iu, handle) \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("{ \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("}\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append('\n');
 
 			// C++ constructor inline definition macro
 			builders.CppMacros.Append("#define ");
@@ -7123,7 +7130,83 @@ namespace NativeScript.Editor
 			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append("{ \\\n");
 			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("}\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append('\n');
+			
+			// C++ default contents declaration macro
+			builders.CppMacros.Append("#define ");
+			AppendUppercaseWithUnderscores(
+				derivedTypeTypeName.Namespace,
+				builders.CppMacros);
+			builders.CppMacros.Append('_');
+			AppendUppercaseWithUnderscores(
+				derivedTypeTypeName.Name,
+				builders.CppMacros);
+			builders.CppMacros.Append("_DEFAULT_CONTENTS_DECLARATION \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("void* operator new(size_t, void* p) noexcept; \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("void operator delete(void*, size_t) noexcept; \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append('\n');
+			
+			// C++ default contents definition macro
+			builders.CppMacros.Append("#define ");
+			AppendUppercaseWithUnderscores(
+				derivedTypeTypeName.Namespace,
+				builders.CppMacros);
+			builders.CppMacros.Append('_');
+			AppendUppercaseWithUnderscores(
+				derivedTypeTypeName.Name,
+				builders.CppMacros);
+			builders.CppMacros.Append("_DEFAULT_CONTENTS_DEFINITION \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("void* ");
+			builders.CppMacros.Append(derivedTypeTypeName.Name);
+			builders.CppMacros.Append("::operator new(size_t, void* p) noexcept\\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("{ \\\n");
+			AppendIndent(indent + 1, builders.CppMacros);
+			builders.CppMacros.Append("return p; \\\n");
+			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append("} \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("void ");
+			builders.CppMacros.Append(derivedTypeTypeName.Name);
+			builders.CppMacros.Append("::operator delete(void*, size_t) noexcept \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("{ \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("}\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append('\n');
+			
+			// C++ default contents inline definition macro
+			builders.CppMacros.Append("#define ");
+			AppendUppercaseWithUnderscores(
+				derivedTypeTypeName.Namespace,
+				builders.CppMacros);
+			builders.CppMacros.Append('_');
+			AppendUppercaseWithUnderscores(
+				derivedTypeTypeName.Name,
+				builders.CppMacros);
+			builders.CppMacros.Append("_DEFAULT_CONTENTS\\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("void* operator new(size_t, void* p) noexcept \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("{ \\\n");
+			AppendIndent(indent + 1, builders.CppMacros);
+			builders.CppMacros.Append("return p; \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("} \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("void operator delete(void*, size_t) noexcept \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("{ \\\n");
+			AppendIndent(indent, builders.CppMacros);
+			builders.CppMacros.Append("}\n");
+			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append('\n');
 
 			// C++ function pointers

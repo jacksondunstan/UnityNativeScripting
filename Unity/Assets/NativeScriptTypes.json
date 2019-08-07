@@ -157,6 +157,9 @@
 			]
 		},
 		{
+			"Name": " System.Runtime.Serialization.IDeserializationCallback"
+		},
+		{
 			"Name": "System.Decimal",
 			"Constructors": [
 				{

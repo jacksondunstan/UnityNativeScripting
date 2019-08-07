@@ -13,6 +13,9 @@
 // For int32_t, etc.
 #include <stdint.h>
 
+// For size_t to support placement new and delete
+#include <stdlib.h>
+
 ////////////////////////////////////////////////////////////////
 // Plugin internals. Do not name these in game code as they may
 // change without warning. For example:
@@ -310,6 +313,17 @@ namespace System
 namespace System
 {
 	struct IComparable;
+}
+
+namespace System
+{
+	namespace Runtime
+	{
+		namespace Serialization
+		{
+			struct IDeserializationCallback;
+		}
+	}
 }
 
 namespace System
@@ -1179,6 +1193,29 @@ namespace System
 
 namespace System
 {
+	namespace Runtime
+	{
+		namespace Serialization
+		{
+			struct IDeserializationCallback : virtual System::Object
+			{
+				IDeserializationCallback(decltype(nullptr));
+				IDeserializationCallback(Plugin::InternalUse, int32_t handle);
+				IDeserializationCallback(const IDeserializationCallback& other);
+				IDeserializationCallback(IDeserializationCallback&& other);
+				virtual ~IDeserializationCallback();
+				IDeserializationCallback& operator=(const IDeserializationCallback& other);
+				IDeserializationCallback& operator=(decltype(nullptr));
+				IDeserializationCallback& operator=(IDeserializationCallback&& other);
+				bool operator==(const IDeserializationCallback& other) const;
+				bool operator!=(const IDeserializationCallback& other) const;
+			};
+		}
+	}
+}
+
+namespace System
+{
 	struct Decimal : Plugin::ManagedType
 	{
 		Decimal(decltype(nullptr));
@@ -1195,11 +1232,12 @@ namespace System
 		Decimal(System::UInt64 value);
 		explicit operator System::ValueType();
 		explicit operator System::Object();
-		explicit operator System::IFormattable();
-		explicit operator System::IConvertible();
 		explicit operator System::IComparable();
 		explicit operator System::IComparable_1<System::Decimal>();
+		explicit operator System::IConvertible();
 		explicit operator System::IEquatable_1<System::Decimal>();
+		explicit operator System::Runtime::Serialization::IDeserializationCallback();
+		explicit operator System::IFormattable();
 	};
 }
 
@@ -1485,9 +1523,9 @@ namespace UnityEngine
 		explicit operator System::Enum();
 		explicit operator System::ValueType();
 		explicit operator System::Object();
-		explicit operator System::IFormattable();
-		explicit operator System::IConvertible();
 		explicit operator System::IComparable();
+		explicit operator System::IConvertible();
+		explicit operator System::IFormattable();
 	};
 }
 
@@ -1550,7 +1588,7 @@ namespace MyGame
 /*BEGIN MACROS*/
 #define MY_GAME_BALL_SCRIPT_DEFAULT_CONSTRUCTOR_DECLARATION \
 	BallScript(Plugin::InternalUse iu, int32_t handle);
-
+	
 #define MY_GAME_BALL_SCRIPT_DEFAULT_CONSTRUCTOR_DEFINITION \
 	BallScript::BallScript(Plugin::InternalUse iu, int32_t handle) \
 		: UnityEngine::Object(nullptr) \
@@ -1558,7 +1596,10 @@ namespace MyGame
 		, UnityEngine::Behaviour(nullptr) \
 		, UnityEngine::MonoBehaviour(nullptr) \
 		, MyGame::AbstractBaseBallScript(nullptr) \
-		, MyGame::BaseBallScript(iu, handle)
+		, MyGame::BaseBallScript(iu, handle) \
+	{ \
+	}
+	
 #define MY_GAME_BALL_SCRIPT_DEFAULT_CONSTRUCTOR \
 	BallScript(Plugin::InternalUse iu, int32_t handle) \
 		: UnityEngine::Object(nullptr) \
@@ -1568,7 +1609,29 @@ namespace MyGame
 		, MyGame::AbstractBaseBallScript(nullptr) \
 		, MyGame::BaseBallScript(iu, handle) \
 	{ \
+	}
+	
+#define MY_GAME_BALL_SCRIPT_DEFAULT_CONTENTS_DECLARATION \
+	void* operator new(size_t, void* p) noexcept; \
+	void operator delete(void*, size_t) noexcept; \
+	
+#define MY_GAME_BALL_SCRIPT_DEFAULT_CONTENTS_DEFINITION \
+	void* BallScript::operator new(size_t, void* p) noexcept\
+	{ \
+		return p; \
 	} \
+	void BallScript::operator delete(void*, size_t) noexcept \
+	{ \
+	}
+	
+#define MY_GAME_BALL_SCRIPT_DEFAULT_CONTENTS\
+	void* operator new(size_t, void* p) noexcept \
+	{ \
+		return p; \
+	} \
+	void operator delete(void*, size_t) noexcept \
+	{ \
+	}
 /*END MACROS*/
 
 ////////////////////////////////////////////////////////////////

@@ -16,6 +16,7 @@ namespace MyGame
 {
 	struct BallScript : MyGame::BaseBallScript
 	{
+		MY_GAME_BALL_SCRIPT_DEFAULT_CONTENTS
 		MY_GAME_BALL_SCRIPT_DEFAULT_CONSTRUCTOR
 		void Update() override;
 	};
