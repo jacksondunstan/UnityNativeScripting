@@ -597,7 +597,7 @@ PlayerSettings:
     iPhone: 0
   scriptingBackend:
     Android: 1
-    Standalone: 0
+    Standalone: 1
     WebGL: 1
     iPhone: 1
   il2cppCompilerConfiguration: {}
