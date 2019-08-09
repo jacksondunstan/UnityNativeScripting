@@ -736,11 +736,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Boolean> : virtual System::Object
 	{
-		IEquatable_1<System::Boolean>(decltype(nullptr));
-		IEquatable_1<System::Boolean>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Boolean>(const IEquatable_1<System::Boolean>& other);
-		IEquatable_1<System::Boolean>(IEquatable_1<System::Boolean>&& other);
-		virtual ~IEquatable_1<System::Boolean>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Boolean>& other);
+		IEquatable_1(IEquatable_1<System::Boolean>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Boolean>& operator=(const IEquatable_1<System::Boolean>& other);
 		IEquatable_1<System::Boolean>& operator=(decltype(nullptr));
 		IEquatable_1<System::Boolean>& operator=(IEquatable_1<System::Boolean>&& other);
@@ -753,11 +753,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Char> : virtual System::Object
 	{
-		IEquatable_1<System::Char>(decltype(nullptr));
-		IEquatable_1<System::Char>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Char>(const IEquatable_1<System::Char>& other);
-		IEquatable_1<System::Char>(IEquatable_1<System::Char>&& other);
-		virtual ~IEquatable_1<System::Char>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Char>& other);
+		IEquatable_1(IEquatable_1<System::Char>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Char>& operator=(const IEquatable_1<System::Char>& other);
 		IEquatable_1<System::Char>& operator=(decltype(nullptr));
 		IEquatable_1<System::Char>& operator=(IEquatable_1<System::Char>&& other);
@@ -770,11 +770,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::SByte> : virtual System::Object
 	{
-		IEquatable_1<System::SByte>(decltype(nullptr));
-		IEquatable_1<System::SByte>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::SByte>(const IEquatable_1<System::SByte>& other);
-		IEquatable_1<System::SByte>(IEquatable_1<System::SByte>&& other);
-		virtual ~IEquatable_1<System::SByte>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::SByte>& other);
+		IEquatable_1(IEquatable_1<System::SByte>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::SByte>& operator=(const IEquatable_1<System::SByte>& other);
 		IEquatable_1<System::SByte>& operator=(decltype(nullptr));
 		IEquatable_1<System::SByte>& operator=(IEquatable_1<System::SByte>&& other);
@@ -787,11 +787,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Byte> : virtual System::Object
 	{
-		IEquatable_1<System::Byte>(decltype(nullptr));
-		IEquatable_1<System::Byte>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Byte>(const IEquatable_1<System::Byte>& other);
-		IEquatable_1<System::Byte>(IEquatable_1<System::Byte>&& other);
-		virtual ~IEquatable_1<System::Byte>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Byte>& other);
+		IEquatable_1(IEquatable_1<System::Byte>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Byte>& operator=(const IEquatable_1<System::Byte>& other);
 		IEquatable_1<System::Byte>& operator=(decltype(nullptr));
 		IEquatable_1<System::Byte>& operator=(IEquatable_1<System::Byte>&& other);
@@ -804,11 +804,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Int16> : virtual System::Object
 	{
-		IEquatable_1<System::Int16>(decltype(nullptr));
-		IEquatable_1<System::Int16>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Int16>(const IEquatable_1<System::Int16>& other);
-		IEquatable_1<System::Int16>(IEquatable_1<System::Int16>&& other);
-		virtual ~IEquatable_1<System::Int16>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Int16>& other);
+		IEquatable_1(IEquatable_1<System::Int16>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Int16>& operator=(const IEquatable_1<System::Int16>& other);
 		IEquatable_1<System::Int16>& operator=(decltype(nullptr));
 		IEquatable_1<System::Int16>& operator=(IEquatable_1<System::Int16>&& other);
@@ -821,11 +821,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::UInt16> : virtual System::Object
 	{
-		IEquatable_1<System::UInt16>(decltype(nullptr));
-		IEquatable_1<System::UInt16>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::UInt16>(const IEquatable_1<System::UInt16>& other);
-		IEquatable_1<System::UInt16>(IEquatable_1<System::UInt16>&& other);
-		virtual ~IEquatable_1<System::UInt16>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::UInt16>& other);
+		IEquatable_1(IEquatable_1<System::UInt16>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::UInt16>& operator=(const IEquatable_1<System::UInt16>& other);
 		IEquatable_1<System::UInt16>& operator=(decltype(nullptr));
 		IEquatable_1<System::UInt16>& operator=(IEquatable_1<System::UInt16>&& other);
@@ -838,11 +838,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Int32> : virtual System::Object
 	{
-		IEquatable_1<System::Int32>(decltype(nullptr));
-		IEquatable_1<System::Int32>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Int32>(const IEquatable_1<System::Int32>& other);
-		IEquatable_1<System::Int32>(IEquatable_1<System::Int32>&& other);
-		virtual ~IEquatable_1<System::Int32>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Int32>& other);
+		IEquatable_1(IEquatable_1<System::Int32>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Int32>& operator=(const IEquatable_1<System::Int32>& other);
 		IEquatable_1<System::Int32>& operator=(decltype(nullptr));
 		IEquatable_1<System::Int32>& operator=(IEquatable_1<System::Int32>&& other);
@@ -855,11 +855,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::UInt32> : virtual System::Object
 	{
-		IEquatable_1<System::UInt32>(decltype(nullptr));
-		IEquatable_1<System::UInt32>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::UInt32>(const IEquatable_1<System::UInt32>& other);
-		IEquatable_1<System::UInt32>(IEquatable_1<System::UInt32>&& other);
-		virtual ~IEquatable_1<System::UInt32>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::UInt32>& other);
+		IEquatable_1(IEquatable_1<System::UInt32>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::UInt32>& operator=(const IEquatable_1<System::UInt32>& other);
 		IEquatable_1<System::UInt32>& operator=(decltype(nullptr));
 		IEquatable_1<System::UInt32>& operator=(IEquatable_1<System::UInt32>&& other);
@@ -872,11 +872,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Int64> : virtual System::Object
 	{
-		IEquatable_1<System::Int64>(decltype(nullptr));
-		IEquatable_1<System::Int64>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Int64>(const IEquatable_1<System::Int64>& other);
-		IEquatable_1<System::Int64>(IEquatable_1<System::Int64>&& other);
-		virtual ~IEquatable_1<System::Int64>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Int64>& other);
+		IEquatable_1(IEquatable_1<System::Int64>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Int64>& operator=(const IEquatable_1<System::Int64>& other);
 		IEquatable_1<System::Int64>& operator=(decltype(nullptr));
 		IEquatable_1<System::Int64>& operator=(IEquatable_1<System::Int64>&& other);
@@ -889,11 +889,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::UInt64> : virtual System::Object
 	{
-		IEquatable_1<System::UInt64>(decltype(nullptr));
-		IEquatable_1<System::UInt64>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::UInt64>(const IEquatable_1<System::UInt64>& other);
-		IEquatable_1<System::UInt64>(IEquatable_1<System::UInt64>&& other);
-		virtual ~IEquatable_1<System::UInt64>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::UInt64>& other);
+		IEquatable_1(IEquatable_1<System::UInt64>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::UInt64>& operator=(const IEquatable_1<System::UInt64>& other);
 		IEquatable_1<System::UInt64>& operator=(decltype(nullptr));
 		IEquatable_1<System::UInt64>& operator=(IEquatable_1<System::UInt64>&& other);
@@ -906,11 +906,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Single> : virtual System::Object
 	{
-		IEquatable_1<System::Single>(decltype(nullptr));
-		IEquatable_1<System::Single>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Single>(const IEquatable_1<System::Single>& other);
-		IEquatable_1<System::Single>(IEquatable_1<System::Single>&& other);
-		virtual ~IEquatable_1<System::Single>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Single>& other);
+		IEquatable_1(IEquatable_1<System::Single>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Single>& operator=(const IEquatable_1<System::Single>& other);
 		IEquatable_1<System::Single>& operator=(decltype(nullptr));
 		IEquatable_1<System::Single>& operator=(IEquatable_1<System::Single>&& other);
@@ -923,11 +923,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Double> : virtual System::Object
 	{
-		IEquatable_1<System::Double>(decltype(nullptr));
-		IEquatable_1<System::Double>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Double>(const IEquatable_1<System::Double>& other);
-		IEquatable_1<System::Double>(IEquatable_1<System::Double>&& other);
-		virtual ~IEquatable_1<System::Double>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Double>& other);
+		IEquatable_1(IEquatable_1<System::Double>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Double>& operator=(const IEquatable_1<System::Double>& other);
 		IEquatable_1<System::Double>& operator=(decltype(nullptr));
 		IEquatable_1<System::Double>& operator=(IEquatable_1<System::Double>&& other);
@@ -940,11 +940,11 @@ namespace System
 {
 	template<> struct IEquatable_1<System::Decimal> : virtual System::Object
 	{
-		IEquatable_1<System::Decimal>(decltype(nullptr));
-		IEquatable_1<System::Decimal>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<System::Decimal>(const IEquatable_1<System::Decimal>& other);
-		IEquatable_1<System::Decimal>(IEquatable_1<System::Decimal>&& other);
-		virtual ~IEquatable_1<System::Decimal>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<System::Decimal>& other);
+		IEquatable_1(IEquatable_1<System::Decimal>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<System::Decimal>& operator=(const IEquatable_1<System::Decimal>& other);
 		IEquatable_1<System::Decimal>& operator=(decltype(nullptr));
 		IEquatable_1<System::Decimal>& operator=(IEquatable_1<System::Decimal>&& other);
@@ -957,11 +957,11 @@ namespace System
 {
 	template<> struct IEquatable_1<UnityEngine::Vector3> : virtual System::Object
 	{
-		IEquatable_1<UnityEngine::Vector3>(decltype(nullptr));
-		IEquatable_1<UnityEngine::Vector3>(Plugin::InternalUse, int32_t handle);
-		IEquatable_1<UnityEngine::Vector3>(const IEquatable_1<UnityEngine::Vector3>& other);
-		IEquatable_1<UnityEngine::Vector3>(IEquatable_1<UnityEngine::Vector3>&& other);
-		virtual ~IEquatable_1<UnityEngine::Vector3>();
+		IEquatable_1(decltype(nullptr));
+		IEquatable_1(Plugin::InternalUse, int32_t handle);
+		IEquatable_1(const IEquatable_1<UnityEngine::Vector3>& other);
+		IEquatable_1(IEquatable_1<UnityEngine::Vector3>&& other);
+		virtual ~IEquatable_1();
 		IEquatable_1<UnityEngine::Vector3>& operator=(const IEquatable_1<UnityEngine::Vector3>& other);
 		IEquatable_1<UnityEngine::Vector3>& operator=(decltype(nullptr));
 		IEquatable_1<UnityEngine::Vector3>& operator=(IEquatable_1<UnityEngine::Vector3>&& other);
@@ -974,11 +974,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Boolean> : virtual System::Object
 	{
-		IComparable_1<System::Boolean>(decltype(nullptr));
-		IComparable_1<System::Boolean>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Boolean>(const IComparable_1<System::Boolean>& other);
-		IComparable_1<System::Boolean>(IComparable_1<System::Boolean>&& other);
-		virtual ~IComparable_1<System::Boolean>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Boolean>& other);
+		IComparable_1(IComparable_1<System::Boolean>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Boolean>& operator=(const IComparable_1<System::Boolean>& other);
 		IComparable_1<System::Boolean>& operator=(decltype(nullptr));
 		IComparable_1<System::Boolean>& operator=(IComparable_1<System::Boolean>&& other);
@@ -991,11 +991,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Char> : virtual System::Object
 	{
-		IComparable_1<System::Char>(decltype(nullptr));
-		IComparable_1<System::Char>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Char>(const IComparable_1<System::Char>& other);
-		IComparable_1<System::Char>(IComparable_1<System::Char>&& other);
-		virtual ~IComparable_1<System::Char>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Char>& other);
+		IComparable_1(IComparable_1<System::Char>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Char>& operator=(const IComparable_1<System::Char>& other);
 		IComparable_1<System::Char>& operator=(decltype(nullptr));
 		IComparable_1<System::Char>& operator=(IComparable_1<System::Char>&& other);
@@ -1008,11 +1008,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::SByte> : virtual System::Object
 	{
-		IComparable_1<System::SByte>(decltype(nullptr));
-		IComparable_1<System::SByte>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::SByte>(const IComparable_1<System::SByte>& other);
-		IComparable_1<System::SByte>(IComparable_1<System::SByte>&& other);
-		virtual ~IComparable_1<System::SByte>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::SByte>& other);
+		IComparable_1(IComparable_1<System::SByte>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::SByte>& operator=(const IComparable_1<System::SByte>& other);
 		IComparable_1<System::SByte>& operator=(decltype(nullptr));
 		IComparable_1<System::SByte>& operator=(IComparable_1<System::SByte>&& other);
@@ -1025,11 +1025,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Byte> : virtual System::Object
 	{
-		IComparable_1<System::Byte>(decltype(nullptr));
-		IComparable_1<System::Byte>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Byte>(const IComparable_1<System::Byte>& other);
-		IComparable_1<System::Byte>(IComparable_1<System::Byte>&& other);
-		virtual ~IComparable_1<System::Byte>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Byte>& other);
+		IComparable_1(IComparable_1<System::Byte>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Byte>& operator=(const IComparable_1<System::Byte>& other);
 		IComparable_1<System::Byte>& operator=(decltype(nullptr));
 		IComparable_1<System::Byte>& operator=(IComparable_1<System::Byte>&& other);
@@ -1042,11 +1042,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Int16> : virtual System::Object
 	{
-		IComparable_1<System::Int16>(decltype(nullptr));
-		IComparable_1<System::Int16>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Int16>(const IComparable_1<System::Int16>& other);
-		IComparable_1<System::Int16>(IComparable_1<System::Int16>&& other);
-		virtual ~IComparable_1<System::Int16>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Int16>& other);
+		IComparable_1(IComparable_1<System::Int16>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Int16>& operator=(const IComparable_1<System::Int16>& other);
 		IComparable_1<System::Int16>& operator=(decltype(nullptr));
 		IComparable_1<System::Int16>& operator=(IComparable_1<System::Int16>&& other);
@@ -1059,11 +1059,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::UInt16> : virtual System::Object
 	{
-		IComparable_1<System::UInt16>(decltype(nullptr));
-		IComparable_1<System::UInt16>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::UInt16>(const IComparable_1<System::UInt16>& other);
-		IComparable_1<System::UInt16>(IComparable_1<System::UInt16>&& other);
-		virtual ~IComparable_1<System::UInt16>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::UInt16>& other);
+		IComparable_1(IComparable_1<System::UInt16>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::UInt16>& operator=(const IComparable_1<System::UInt16>& other);
 		IComparable_1<System::UInt16>& operator=(decltype(nullptr));
 		IComparable_1<System::UInt16>& operator=(IComparable_1<System::UInt16>&& other);
@@ -1076,11 +1076,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Int32> : virtual System::Object
 	{
-		IComparable_1<System::Int32>(decltype(nullptr));
-		IComparable_1<System::Int32>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Int32>(const IComparable_1<System::Int32>& other);
-		IComparable_1<System::Int32>(IComparable_1<System::Int32>&& other);
-		virtual ~IComparable_1<System::Int32>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Int32>& other);
+		IComparable_1(IComparable_1<System::Int32>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Int32>& operator=(const IComparable_1<System::Int32>& other);
 		IComparable_1<System::Int32>& operator=(decltype(nullptr));
 		IComparable_1<System::Int32>& operator=(IComparable_1<System::Int32>&& other);
@@ -1093,11 +1093,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::UInt32> : virtual System::Object
 	{
-		IComparable_1<System::UInt32>(decltype(nullptr));
-		IComparable_1<System::UInt32>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::UInt32>(const IComparable_1<System::UInt32>& other);
-		IComparable_1<System::UInt32>(IComparable_1<System::UInt32>&& other);
-		virtual ~IComparable_1<System::UInt32>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::UInt32>& other);
+		IComparable_1(IComparable_1<System::UInt32>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::UInt32>& operator=(const IComparable_1<System::UInt32>& other);
 		IComparable_1<System::UInt32>& operator=(decltype(nullptr));
 		IComparable_1<System::UInt32>& operator=(IComparable_1<System::UInt32>&& other);
@@ -1110,11 +1110,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Int64> : virtual System::Object
 	{
-		IComparable_1<System::Int64>(decltype(nullptr));
-		IComparable_1<System::Int64>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Int64>(const IComparable_1<System::Int64>& other);
-		IComparable_1<System::Int64>(IComparable_1<System::Int64>&& other);
-		virtual ~IComparable_1<System::Int64>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Int64>& other);
+		IComparable_1(IComparable_1<System::Int64>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Int64>& operator=(const IComparable_1<System::Int64>& other);
 		IComparable_1<System::Int64>& operator=(decltype(nullptr));
 		IComparable_1<System::Int64>& operator=(IComparable_1<System::Int64>&& other);
@@ -1127,11 +1127,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::UInt64> : virtual System::Object
 	{
-		IComparable_1<System::UInt64>(decltype(nullptr));
-		IComparable_1<System::UInt64>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::UInt64>(const IComparable_1<System::UInt64>& other);
-		IComparable_1<System::UInt64>(IComparable_1<System::UInt64>&& other);
-		virtual ~IComparable_1<System::UInt64>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::UInt64>& other);
+		IComparable_1(IComparable_1<System::UInt64>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::UInt64>& operator=(const IComparable_1<System::UInt64>& other);
 		IComparable_1<System::UInt64>& operator=(decltype(nullptr));
 		IComparable_1<System::UInt64>& operator=(IComparable_1<System::UInt64>&& other);
@@ -1144,11 +1144,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Single> : virtual System::Object
 	{
-		IComparable_1<System::Single>(decltype(nullptr));
-		IComparable_1<System::Single>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Single>(const IComparable_1<System::Single>& other);
-		IComparable_1<System::Single>(IComparable_1<System::Single>&& other);
-		virtual ~IComparable_1<System::Single>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Single>& other);
+		IComparable_1(IComparable_1<System::Single>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Single>& operator=(const IComparable_1<System::Single>& other);
 		IComparable_1<System::Single>& operator=(decltype(nullptr));
 		IComparable_1<System::Single>& operator=(IComparable_1<System::Single>&& other);
@@ -1161,11 +1161,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Double> : virtual System::Object
 	{
-		IComparable_1<System::Double>(decltype(nullptr));
-		IComparable_1<System::Double>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Double>(const IComparable_1<System::Double>& other);
-		IComparable_1<System::Double>(IComparable_1<System::Double>&& other);
-		virtual ~IComparable_1<System::Double>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Double>& other);
+		IComparable_1(IComparable_1<System::Double>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Double>& operator=(const IComparable_1<System::Double>& other);
 		IComparable_1<System::Double>& operator=(decltype(nullptr));
 		IComparable_1<System::Double>& operator=(IComparable_1<System::Double>&& other);
@@ -1178,11 +1178,11 @@ namespace System
 {
 	template<> struct IComparable_1<System::Decimal> : virtual System::Object
 	{
-		IComparable_1<System::Decimal>(decltype(nullptr));
-		IComparable_1<System::Decimal>(Plugin::InternalUse, int32_t handle);
-		IComparable_1<System::Decimal>(const IComparable_1<System::Decimal>& other);
-		IComparable_1<System::Decimal>(IComparable_1<System::Decimal>&& other);
-		virtual ~IComparable_1<System::Decimal>();
+		IComparable_1(decltype(nullptr));
+		IComparable_1(Plugin::InternalUse, int32_t handle);
+		IComparable_1(const IComparable_1<System::Decimal>& other);
+		IComparable_1(IComparable_1<System::Decimal>&& other);
+		virtual ~IComparable_1();
 		IComparable_1<System::Decimal>& operator=(const IComparable_1<System::Decimal>& other);
 		IComparable_1<System::Decimal>& operator=(decltype(nullptr));
 		IComparable_1<System::Decimal>& operator=(IComparable_1<System::Decimal>&& other);

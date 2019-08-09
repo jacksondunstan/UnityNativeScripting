@@ -11327,18 +11327,12 @@ namespace NativeScript.Editor
 						AppendCppTypeName(
 							typeTypeName,
 							output);
-						AppendCppTypeParameters(
-							typeParams,
-							output);
 						output.Append("(decltype(nullptr));\n");
 						
 						// Constructor from handle
 						AppendIndent(indent + 1, output);
 						AppendCppTypeName(
 							typeTypeName,
-							output);
-						AppendCppTypeParameters(
-							typeParams,
 							output);
 						output.Append(
 							"(Plugin::InternalUse, int32_t handle);\n");
@@ -11347,9 +11341,6 @@ namespace NativeScript.Editor
 						AppendIndent(indent + 1, output);
 						AppendCppTypeName(
 							typeTypeName,
-							output);
-						AppendCppTypeParameters(
-							typeParams,
 							output);
 						output.Append("(const ");
 						AppendCppTypeName(
@@ -11365,9 +11356,6 @@ namespace NativeScript.Editor
 						AppendCppTypeName(
 							typeTypeName,
 							output);
-						AppendCppTypeParameters(
-							typeParams,
-							output);
 						output.Append('(');
 						AppendCppTypeName(
 							typeTypeName,
@@ -11382,9 +11370,6 @@ namespace NativeScript.Editor
 						output.Append("virtual ~");
 						AppendCppTypeName(
 							typeTypeName,
-							output);
-						AppendCppTypeParameters(
-							typeParams,
 							output);
 						output.Append("();\n");
 						
