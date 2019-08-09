@@ -327,40 +327,46 @@ namespace NativeScript
 		// Handle to the C++ DLL
 		static IntPtr libraryHandle;
 		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void InitDelegate(
 			IntPtr memory,
 			int memorySize,
 			InitMode initMode);
 		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate void SetCsharpExceptionDelegate(int handle);
 		
 		/*BEGIN CPP DELEGATES*/
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate int NewBaseBallScriptDelegateType(int param0);
 		public static NewBaseBallScriptDelegateType NewBaseBallScript;
 		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate void DestroyBaseBallScriptDelegateType(int param0);
 		public static DestroyBaseBallScriptDelegateType DestroyBaseBallScript;
 		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate void MyGameAbstractBaseBallScriptUpdateDelegateType(int thisHandle);
 		public static MyGameAbstractBaseBallScriptUpdateDelegateType MyGameAbstractBaseBallScriptUpdate;
 		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate void SetCsharpExceptionSystemNullReferenceExceptionDelegateType(int param0);
 		public static SetCsharpExceptionSystemNullReferenceExceptionDelegateType SetCsharpExceptionSystemNullReferenceException;
 		/*END CPP DELEGATES*/
 #endif
 
 #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-		[DllImport("__Internal")]
+		[DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr dlopen(
 			string path,
 			int flag);
 
-		[DllImport("__Internal")]
+		[DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr dlsym(
 			IntPtr handle,
 			string symbolName);
 
-		[DllImport("__Internal")]
+		[DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
 		static extern int dlclose(
 			IntPtr handle);
 
@@ -395,16 +401,16 @@ namespace NativeScript
 				typeof(T)) as T;
 		}
 #elif UNITY_EDITOR_WIN
-		[DllImport("kernel32")]
+		[DllImport("kernel32", SetLastError=true, CharSet = CharSet.Ansi)]
 		static extern IntPtr LoadLibrary(
 			string path);
 		
-		[DllImport("kernel32")]
+		[DllImport("kernel32", CharSet=CharSet.Ansi, ExactSpelling=true, SetLastError=true)]
 		static extern IntPtr GetProcAddress(
 			IntPtr libraryHandle,
 			string symbolName);
 		
-		[DllImport("kernel32")]
+		[DllImport("kernel32.dll", SetLastError=true)]
 		static extern bool FreeLibrary(
 			IntPtr libraryHandle);
 		
@@ -437,86 +443,145 @@ namespace NativeScript
 				typeof(T)) as T;
 		}
 #else
-		[DllImport(PLUGIN_NAME)]
+		[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]
 		static extern void Init(
 			IntPtr memory,
 			int memorySize,
 			InitMode initMode);
 		
-		[DllImport(PLUGIN_NAME)]
+		[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]
 		static extern void SetCsharpException(int handle);
 		
 		/*BEGIN IMPORTS*/
-		[DllImport(PLUGIN_NAME)]
+		[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int NewBaseBallScript(int thisHandle);
 		
-		[DllImport(PLUGIN_NAME)]
+		[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void DestroyBaseBallScript(int thisHandle);
 		
-		[DllImport(PLUGIN_NAME)]
+		[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void MyGameAbstractBaseBallScriptUpdate(int thisHandle);
 		
-		[DllImport(PLUGIN_NAME)]
+		[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SetCsharpExceptionSystemNullReferenceException(int thisHandle);
 		/*END IMPORTS*/
 #endif
 		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void ReleaseObjectDelegateType(int handle);
+		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int StringNewDelegateType(string chars);
+		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void SetExceptionDelegateType(int handle);
+		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int ArrayGetLengthDelegateType(int handle);
+		
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int EnumerableGetEnumeratorDelegateType(int handle);
 		
 		/*BEGIN DELEGATE TYPES*/
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void ReleaseSystemDecimalDelegateType(int handle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int SystemDecimalConstructorSystemDoubleDelegateType(double value);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int SystemDecimalConstructorSystemUInt64DelegateType(ulong value);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxDecimalDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int UnboxDecimalDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate UnityEngine.Vector3 UnityEngineVector3ConstructorSystemSingle_SystemSingle_SystemSingleDelegateType(float x, float y, float z);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate UnityEngine.Vector3 UnityEngineVector3Methodop_AdditionUnityEngineVector3_UnityEngineVector3DelegateType(ref UnityEngine.Vector3 a, ref UnityEngine.Vector3 b);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxVector3DelegateType(ref UnityEngine.Vector3 val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate UnityEngine.Vector3 UnboxVector3DelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int UnityEngineObjectPropertyGetNameDelegateType(int thisHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void UnityEngineObjectPropertySetNameDelegateType(int thisHandle, int valueHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int UnityEngineComponentPropertyGetTransformDelegateType(int thisHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate UnityEngine.Vector3 UnityEngineTransformPropertyGetPositionDelegateType(int thisHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void UnityEngineTransformPropertySetPositionDelegateType(int thisHandle, ref UnityEngine.Vector3 value);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int SystemCollectionsIEnumeratorPropertyGetCurrentDelegateType(int thisHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate bool SystemCollectionsIEnumeratorMethodMoveNextDelegateType(int thisHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int UnityEngineGameObjectMethodAddComponentMyGameBaseBallScriptDelegateType(int thisHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int UnityEngineGameObjectMethodCreatePrimitiveUnityEnginePrimitiveTypeDelegateType(UnityEngine.PrimitiveType type);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void UnityEngineDebugMethodLogSystemObjectDelegateType(int messageHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int UnityEngineMonoBehaviourPropertyGetTransformDelegateType(int thisHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int SystemExceptionConstructorSystemStringDelegateType(int messageHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxPrimitiveTypeDelegateType(UnityEngine.PrimitiveType val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate UnityEngine.PrimitiveType UnboxPrimitiveTypeDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate float UnityEngineTimePropertyGetDeltaTimeDelegateType();
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void BaseBallScriptConstructorDelegateType(int cppHandle, ref int handle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate void ReleaseBaseBallScriptDelegateType(int handle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxBooleanDelegateType(bool val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate bool UnboxBooleanDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxSByteDelegateType(sbyte val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate sbyte UnboxSByteDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxByteDelegateType(byte val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate byte UnboxByteDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxInt16DelegateType(short val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate short UnboxInt16DelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxUInt16DelegateType(ushort val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate ushort UnboxUInt16DelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxInt32DelegateType(int val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int UnboxInt32DelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxUInt32DelegateType(uint val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate uint UnboxUInt32DelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxInt64DelegateType(long val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate long UnboxInt64DelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxUInt64DelegateType(ulong val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate ulong UnboxUInt64DelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxCharDelegateType(char val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate char UnboxCharDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxSingleDelegateType(float val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate float UnboxSingleDelegateType(int valHandle);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate int BoxDoubleDelegateType(double val);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		delegate double UnboxDoubleDelegateType(int valHandle);
 		/*END DELEGATE TYPES*/
 

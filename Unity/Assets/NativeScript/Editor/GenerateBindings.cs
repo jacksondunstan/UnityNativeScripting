@@ -10397,6 +10397,7 @@ namespace NativeScript.Editor
 			TypeKind returnTypeKind,
 			StringBuilder output)
 		{
+			output.Append("\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl)]\n");
 			output.Append("\t\tpublic delegate ");
 			if (returnType == typeof(void))
 			{
@@ -10527,7 +10528,7 @@ namespace NativeScript.Editor
 			StringBuilder output
 		)
 		{
-			output.Append("\t\t[DllImport(PLUGIN_NAME)]\n");
+			output.Append("\t\t[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]\n");
 			output.Append("\t\tpublic static extern ");
 			AppendCsharpTypeFullName(returnType, output);
 			output.Append(' ');
@@ -12044,6 +12045,7 @@ namespace NativeScript.Editor
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
+			output.Append("\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl)]\n");
 			output.Append("\t\tdelegate ");
 			
 			// Return type
