@@ -1,3 +1,5 @@
+using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace NativeScript
@@ -25,6 +27,7 @@ namespace NativeScript
 		public float AutoReloadPollTime = 1.0f;
 		private float lastAutoReloadPollTime;
 		private Coroutine autoReloadCoroutine;
+		private Action<PlayModeStateChange> onPlayModeStateChange;
 #endif
 		
 		void Start()
@@ -34,6 +37,10 @@ namespace NativeScript
 #endif
 			DontDestroyOnLoad(gameObject);
 			Bindings.Open(MemorySize);
+#if UNITY_EDITOR
+			onPlayModeStateChange = OnEditorStateChanged;
+			EditorApplication.playModeStateChanged += onPlayModeStateChange;
+#endif
 		}
 		
 #if UNITY_EDITOR
@@ -74,11 +81,15 @@ namespace NativeScript
 				}
 			}
 		}
-#endif
-		
-		void OnApplicationQuit()
+
+		private void OnEditorStateChanged(PlayModeStateChange state)
 		{
-			Bindings.Close();
+			if (state == PlayModeStateChange.EnteredEditMode)
+			{
+				EditorApplication.playModeStateChanged -= onPlayModeStateChange;
+				Bindings.Close();
+			}
 		}
+#endif
 	}
 }
