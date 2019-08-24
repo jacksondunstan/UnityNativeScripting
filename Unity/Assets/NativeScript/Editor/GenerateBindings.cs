@@ -12918,6 +12918,10 @@ namespace NativeScript.Editor
 				// C linkage requires us to use primitive types
 				output.Append("int16_t");
 			}
+			else if (returnType.IsPrimitive)
+			{
+				AppendCppPrimitiveTypeName(returnType, output);
+			}
 			else if (IsFullValueType(returnType))
 			{
 				AppendCppTypeFullName(returnType, output);
