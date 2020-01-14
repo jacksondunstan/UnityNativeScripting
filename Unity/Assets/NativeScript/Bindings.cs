@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -24,18 +25,12 @@ namespace NativeScript
 		// Holds objects and provides handles to them in the form of ints
 		public static class ObjectStore
 		{
+			static Dictionary<uint, int> handleLookupByHash;
+			static Dictionary<int, uint> hashLookupByHandle;
+			static Stack<int> freeHandleStack;
+			
 			// Stored objects. The first is never used so 0 can be "null".
 			static object[] objects;
-			
-			// Stack of available handles
-			static int[] handles;
-			
-			// Hash table of stored objects to their handles.
-			static object[] keys;
-			static int[] values;
-			
-			// Index of the next available handle
-			static int nextHandleIndex;
 			
 			// The maximum number of objects to store. Must be positive.
 			static int maxObjects;
@@ -49,19 +44,13 @@ namespace NativeScript
 				objects = new object[maxObjects + 1];
 
 				// Initialize the handles stack as 1, 2, 3, ...
-				handles = new int[maxObjects];
 				for (
 					int i = 0, handle = maxObjects;
 					i < maxObjects;
 					++i, --handle)
 				{
-					handles[i] = handle;
+					freeHandleStack.Push(handle);
 				}
-				nextHandleIndex = maxObjects - 1;
-				
-				// Initialize the hash table
-				keys = new object[maxObjects];
-				values = new int[maxObjects];
 			}
 			
 			public static int Store(object obj)
@@ -75,27 +64,15 @@ namespace NativeScript
 				lock (objects)
 				{
 					// Pop a handle off the stack
-					int handle = handles[nextHandleIndex];
-					nextHandleIndex--;
+					int handle = freeHandleStack.Pop();
 					
 					// Store the object
 					objects[handle] = obj;
 					
 					// Insert into the hash table
-					int initialIndex = (int)(
-						((uint)obj.GetHashCode()) % maxObjects);
-					int index = initialIndex;
-					do
-					{
-						if (object.ReferenceEquals(keys[index], null))
-						{
-							keys[index] = obj;
-							values[index] = handle;
-							break;
-						}
-						index = (index + 1) % maxObjects;
-					}
-					while (index != initialIndex);
+					uint hash = (uint)obj.GetHashCode();
+					handleLookupByHash.Add(hash, handle);
+					hashLookupByHandle.Add(handle, hash);
 					
 					return handle;
 				}
@@ -108,6 +85,7 @@ namespace NativeScript
 			
 			public static int GetHandle(object obj)
 			{
+				
 				// Null is always zero
 				if (object.ReferenceEquals(obj, null))
 				{
@@ -116,19 +94,12 @@ namespace NativeScript
 				
 				lock (objects)
 				{
-					// Look up the object in the hash table
-					int initialIndex = (int)(
-						((uint)obj.GetHashCode()) % maxObjects);
-					int index = initialIndex;
-					do
+					// Look up the handle in the hash table
+					uint hash = (uint)obj.GetHashCode();
+					if (handleLookupByHash.ContainsKey(hash))
 					{
-						if (object.ReferenceEquals(keys[index], obj))
-						{
-							return values[index];
-						}
-						index = (index + 1) % maxObjects;
+						return handleLookupByHash[hash];
 					}
-					while (index != initialIndex);
 				}
 				
 				// Object not found
@@ -150,28 +121,12 @@ namespace NativeScript
 					objects[handle] = null;
 					
 					// Push the handle onto the stack
-					nextHandleIndex++;
-					handles[nextHandleIndex] = handle;
+					freeHandleStack.Push(handle);
 					
-					// Remove the object from the hash table
-					int initialIndex = (int)(
-						((uint)obj.GetHashCode()) % maxObjects);
-					int index = initialIndex;
-					do
-					{
-						if (object.ReferenceEquals(keys[index], obj))
-						{
-							// Only the key needs to be removed (set to null)
-							// because values corresponding to null will never
-							// be read and the values are just integers, so
-							// we're not holding on to a managed reference that
-							// will prevent GC.
-							keys[index] = null;
-							break;
-						}
-						index = (index + 1) % maxObjects;
-					}
-					while (index != initialIndex);
+					// Remove the object from the hash dictionary's
+					var hash = hashLookupByHandle[handle];
+					handleLookupByHash.Remove(hash);
+					hashLookupByHandle.Remove(handle);
 					
 					return obj;
 				}
