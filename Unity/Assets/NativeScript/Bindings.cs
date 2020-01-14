@@ -38,6 +38,9 @@ namespace NativeScript
 			public static void Init(int maxObjects)
 			{
 				ObjectStore.maxObjects = maxObjects;
+				handleLookupByHash = new Dictionary<uint, int> ();
+				hashLookupByHandle = new Dictionary<int, uint> ();
+				freeHandleStack = new Stack<int> ();
 				
 				// Initialize the objects as all null plus room for the
 				// first to always be null.
