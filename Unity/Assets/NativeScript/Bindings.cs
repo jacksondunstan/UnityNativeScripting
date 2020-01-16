@@ -25,9 +25,10 @@ namespace NativeScript
 		// Holds objects and provides handles to them in the form of ints
 		public static class ObjectStore
 		{
-			static Dictionary<uint, List<int>> handleBucketByHash;
-			static Dictionary<int, uint> hashLookupByHandle;
-			static HashSet<int> hash;
+			// Lookup handles by object.
+			static Dictionary<object, int> objectHandleCache;
+
+			// Stack of available handles.
 			static Stack<int> handles;
 			
 			// Stored objects. The first is never used so 0 can be "null".
@@ -39,9 +40,8 @@ namespace NativeScript
 			public static void Init(int maxObjects)
 			{
 				ObjectStore.maxObjects = maxObjects;
-				handleBucketByHash = new Dictionary<uint, List<int>> ();
-				hashLookupByHandle = new Dictionary<int, uint> ();
-				handles = new Stack<int> ();
+				objectHandleCache = new Dictionary<object, int> (maxObjects);	
+				handles = new Stack<int> (maxObjects);
 				
 				// Initialize the objects as all null plus room for the
 				// first to always be null.
@@ -67,28 +67,12 @@ namespace NativeScript
 				
 				lock (objects)
 				{
-					// Get the hash of the object
-					uint hash = (uint)obj.GetHashCode();
-
 					// Pop a handle off the stack
 					int handle = handles.Pop();
 					
 					// Store the object
 					objects[handle] = obj;
-
-					List<int> handleBucket = null;
-
-					// Create new handle bucket if it does not exist
-					if (!handleBucketByHash.TryGetValue(hash, out handleBucket))
-					{
-						handleBucket = new List<int> ();
-						handleBucketByHash[hash] = handleBucket;
-					}
-
-					// Insert into hash table
-					handleBucket.Add(handle);
-
-					hashLookupByHandle[handle] = hash;
+					objectHandleCache.Add(obj, handle);
 					
 					return handle;
 				}
@@ -109,22 +93,13 @@ namespace NativeScript
 				
 				lock (objects)
 				{
-					// Look up the handle in the hash table
-					uint hash = (uint)obj.GetHashCode();
-					List<int> handleBucket = null;
+					// A handle with a value of 0 is NULL
+					int handle = 0;
 
-					if (handleBucketByHash.TryGetValue(hash, out handleBucket))
+					// Get handle from object cache
+					if (objectHandleCache.TryGetValue(obj, out handle))
 					{
-						for (int i = 0; i < handleBucket.Count; i++)
-						{
-							int handleInBucket = handleBucket[i];
-							object objectInBucket = objects[handleInBucket];
-							
-							if (object.ReferenceEquals(objectInBucket, obj))
-							{
-								return handleInBucket;
-							}
-						}
+						return handle;
 					}
 				}
 				
@@ -149,22 +124,8 @@ namespace NativeScript
 					// Push the handle onto the stack
 					handles.Push(handle);
 
-					uint hash = hashLookupByHandle[handle];
-					List<int> handleBucket = null;
-
-					// Remove the object from the hash dictionary's
-					if (handleBucketByHash.TryGetValue(hash, out handleBucket))
-					{
-						for (int i = 0; i < handleBucket.Count; i++)
-						{
-							int handleInBucket = handleBucket[i];
-							if (handleInBucket == handle)
-							{
-								handleBucket.RemoveAt(i);
-								break;
-							}
-						}
-					}
+					// Remove the object from the cache
+					objectHandleCache.Remove(obj);
 					
 					return obj;
 				}
