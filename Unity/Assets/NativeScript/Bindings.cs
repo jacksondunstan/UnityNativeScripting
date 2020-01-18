@@ -36,7 +36,7 @@ namespace NativeScript
 
 			// Index of the next available handle
 			static int nextHandleIndex;
-			
+
 			// The maximum number of objects to store. Must be positive.
 			static int maxObjects;
 			
