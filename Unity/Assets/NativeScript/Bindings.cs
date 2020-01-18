@@ -28,11 +28,14 @@ namespace NativeScript
 			// Lookup handles by object.
 			static Dictionary<object, int> objectHandleCache;
 
-			// Stack of available handles.
-			static Stack<int> handles;
-			
 			// Stored objects. The first is never used so 0 can be "null".
 			static object[] objects;
+
+			// Stack of available handles.
+			static int[] handles;
+
+			// Index of the next available handle
+			static int nextHandleIndex;
 			
 			// The maximum number of objects to store. Must be positive.
 			static int maxObjects;
@@ -41,20 +44,21 @@ namespace NativeScript
 			{
 				ObjectStore.maxObjects = maxObjects;
 				objectHandleCache = new Dictionary<object, int>(maxObjects);	
-				handles = new Stack<int> (maxObjects);
 				
 				// Initialize the objects as all null plus room for the
 				// first to always be null.
 				objects = new object[maxObjects + 1];
 
 				// Initialize the handles stack as 1, 2, 3, ...
+				handles = new int[maxObjects];
 				for (
 					int i = 0, handle = maxObjects;
 					i < maxObjects;
 					++i, --handle)
 				{
-					handles.Push(handle);
+					handles[i] = handle;
 				}
+				nextHandleIndex = maxObjects - 1;
 			}
 			
 			public static int Store(object obj)
@@ -68,7 +72,8 @@ namespace NativeScript
 				lock (objects)
 				{
 					// Pop a handle off the stack
-					int handle = handles.Pop();
+					int handle = handles[nextHandleIndex];
+					nextHandleIndex--;
 					
 					// Store the object
 					objects[handle] = obj;
@@ -121,7 +126,8 @@ namespace NativeScript
 					objects[handle] = null;
 					
 					// Push the handle onto the stack
-					handles.Push(handle);
+					nextHandleIndex++;
+					handles[nextHandleIndex] = handle;
 
 					// Remove the object from the cache
 					objectHandleCache.Remove(obj);
