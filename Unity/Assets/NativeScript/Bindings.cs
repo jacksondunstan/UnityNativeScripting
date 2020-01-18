@@ -40,7 +40,7 @@ namespace NativeScript
 			public static void Init(int maxObjects)
 			{
 				ObjectStore.maxObjects = maxObjects;
-				objectHandleCache = new Dictionary<object, int> (maxObjects);	
+				objectHandleCache = new Dictionary<object, int>(maxObjects);	
 				handles = new Stack<int> (maxObjects);
 				
 				// Initialize the objects as all null plus room for the
@@ -93,8 +93,7 @@ namespace NativeScript
 				
 				lock (objects)
 				{
-					// A handle with a value of 0 is NULL
-					int handle = 0;
+					int handle;
 
 					// Get handle from object cache
 					if (objectHandleCache.TryGetValue(obj, out handle))
