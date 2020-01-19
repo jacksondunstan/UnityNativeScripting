@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -24,25 +25,25 @@ namespace NativeScript
 		// Holds objects and provides handles to them in the form of ints
 		public static class ObjectStore
 		{
+			// Lookup handles by object.
+			static Dictionary<object, int> objectHandleCache;
+
 			// Stored objects. The first is never used so 0 can be "null".
 			static object[] objects;
-			
-			// Stack of available handles
+
+			// Stack of available handles.
 			static int[] handles;
-			
-			// Hash table of stored objects to their handles.
-			static object[] keys;
-			static int[] values;
-			
+
 			// Index of the next available handle
 			static int nextHandleIndex;
-			
+
 			// The maximum number of objects to store. Must be positive.
 			static int maxObjects;
 			
 			public static void Init(int maxObjects)
 			{
 				ObjectStore.maxObjects = maxObjects;
+				objectHandleCache = new Dictionary<object, int>(maxObjects);	
 				
 				// Initialize the objects as all null plus room for the
 				// first to always be null.
@@ -58,10 +59,6 @@ namespace NativeScript
 					handles[i] = handle;
 				}
 				nextHandleIndex = maxObjects - 1;
-				
-				// Initialize the hash table
-				keys = new object[maxObjects];
-				values = new int[maxObjects];
 			}
 			
 			public static int Store(object obj)
@@ -80,22 +77,7 @@ namespace NativeScript
 					
 					// Store the object
 					objects[handle] = obj;
-					
-					// Insert into the hash table
-					int initialIndex = (int)(
-						((uint)obj.GetHashCode()) % maxObjects);
-					int index = initialIndex;
-					do
-					{
-						if (object.ReferenceEquals(keys[index], null))
-						{
-							keys[index] = obj;
-							values[index] = handle;
-							break;
-						}
-						index = (index + 1) % maxObjects;
-					}
-					while (index != initialIndex);
+					objectHandleCache.Add(obj, handle);
 					
 					return handle;
 				}
@@ -116,19 +98,13 @@ namespace NativeScript
 				
 				lock (objects)
 				{
-					// Look up the object in the hash table
-					int initialIndex = (int)(
-						((uint)obj.GetHashCode()) % maxObjects);
-					int index = initialIndex;
-					do
+					int handle;
+
+					// Get handle from object cache
+					if (objectHandleCache.TryGetValue(obj, out handle))
 					{
-						if (object.ReferenceEquals(keys[index], obj))
-						{
-							return values[index];
-						}
-						index = (index + 1) % maxObjects;
+						return handle;
 					}
-					while (index != initialIndex);
 				}
 				
 				// Object not found
@@ -152,26 +128,9 @@ namespace NativeScript
 					// Push the handle onto the stack
 					nextHandleIndex++;
 					handles[nextHandleIndex] = handle;
-					
-					// Remove the object from the hash table
-					int initialIndex = (int)(
-						((uint)obj.GetHashCode()) % maxObjects);
-					int index = initialIndex;
-					do
-					{
-						if (object.ReferenceEquals(keys[index], obj))
-						{
-							// Only the key needs to be removed (set to null)
-							// because values corresponding to null will never
-							// be read and the values are just integers, so
-							// we're not holding on to a managed reference that
-							// will prevent GC.
-							keys[index] = null;
-							break;
-						}
-						index = (index + 1) % maxObjects;
-					}
-					while (index != initialIndex);
+
+					// Remove the object from the cache
+					objectHandleCache.Remove(obj);
 					
 					return obj;
 				}
