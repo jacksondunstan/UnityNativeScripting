@@ -332,7 +332,7 @@ namespace NativeScript
 		static IntPtr OpenLibrary(
 			string path)
 		{
-			IntPtr handle = dlopen(path, 0);
+			IntPtr handle = dlopen(path, 1); // 1 = lazy, 2 = now
 			if (handle == IntPtr.Zero)
 			{
 				throw new Exception("Couldn't open native library: " + path);
