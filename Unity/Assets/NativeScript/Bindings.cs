@@ -281,7 +281,7 @@ namespace NativeScript
 			FirstBoot,
 			Reload
 		}
-		
+
 #if UNITY_EDITOR
 		// Handle to the C++ DLL
 		static IntPtr libraryHandle;
@@ -329,13 +329,16 @@ namespace NativeScript
 		static extern int dlclose(
 			IntPtr handle);
 
+		[DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+		static extern int dlerror();
+
 		static IntPtr OpenLibrary(
 			string path)
 		{
 			IntPtr handle = dlopen(path, 1); // 1 = lazy, 2 = now
 			if (handle == IntPtr.Zero)
 			{
-				throw new Exception("Couldn't open native library: " + path);
+				throw new Exception("Couldn't open native library: " + path + " because of this error : " + dlerror());
 			}
 			return handle;
 		}
@@ -378,7 +381,7 @@ namespace NativeScript
 			IntPtr handle = LoadLibrary(path);
 			if (handle == IntPtr.Zero)
 			{
-				throw new Exception("Couldn't open native library: " + path);
+				throw new Exception("Couldn't open native library: " + path + " because of this error : " + Marshal.GetLastWin32Error());
 			}
 			return handle;
 		}

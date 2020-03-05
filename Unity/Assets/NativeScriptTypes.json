@@ -1,6 +1,5 @@
 {
-	"Assemblies": [
-	],
+	"Assemblies": [],
 	"Types": [
 		{
 			"Name": " System.IFormattable"
@@ -253,6 +252,11 @@
 		{
 			"Name": "UnityEngine.GameObject",
 			"Constructors": [
+				{
+					"ParamTypes": [
+						"System.String"
+					]
+				}
 			],
 			"Methods": [
 				{
@@ -337,8 +341,6 @@
 			]
 		}
 	],
-	"Arrays": [
-	],
-	"Delegates": [
-	]
+	"Arrays": [],
+	"Delegates": []
 }
