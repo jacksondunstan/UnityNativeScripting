@@ -13267,16 +13267,9 @@ namespace NativeScript.Editor
 				output.Append(rank);
 				output.Append('<');
 				Type elementType = type.GetElementType();
-				for (int i = 0; i < rank; ++i)
-				{
-					AppendCppTypeFullName(
-						elementType,
-						output);
-					if (i != rank -1)
-					{
-						output.Append(", ");
-					}
-				}
+				AppendCppTypeFullName(
+					elementType,
+					output);
 				output.Append('>');
 			}
 			else if (IsDelegate(type))
