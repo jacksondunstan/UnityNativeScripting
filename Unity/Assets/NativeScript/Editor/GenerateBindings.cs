@@ -684,7 +684,12 @@ namespace NativeScript.Editor
 			assemblies[7] = typeof(UnityEngine.Accessibility.VisionUtility).Assembly; // Unity accessibility module
 			assemblies[8] = typeof(UnityEngine.AI.NavMesh).Assembly; // Unity AI module
 			assemblies[9] = typeof(UnityEngine.Animations.AnimationClipPlayable).Assembly; // Unity animation module
+#if !UNITY_2020_1_OR_NEWER //This class migrate to package 
 			assemblies[10] = typeof(UnityEngine.XR.ARRenderMode).Assembly; // Unity AR module
+#else
+			assemblies[10] = typeof(UnityEngine.XR.InputDevices).Assembly; // Unity AR module without package
+#endif
+			
 			assemblies[11] = typeof(AudioSettings).Assembly; // Unity audio module
 			assemblies[12] = typeof(Cloth).Assembly; // Unity cloth module
 			assemblies[13] = typeof(ClusterInput).Assembly; // Unity cluster input module
@@ -710,13 +715,21 @@ namespace NativeScript.Editor
 			assemblies[30] = typeof(UnityEngine.Experimental.UIElements.Button).Assembly; // Unity UI elements module
 #endif
 			assemblies[31] = typeof(Canvas).Assembly; // Unity UI module
-			assemblies[32] = typeof(UnityEngine.Networking.NetworkTransport).Assembly; // Unity cloth module
+#if UNITY_2020_1_OR_NEWER
+			assemblies[32] = typeof(UnityEngine.Networking.Utility).Assembly; // Unity network module
+#else
+			assemblies[32] = typeof(UnityEngine.Networking.NetworkTransport).Assembly; // Unity network module
+#endif
 			assemblies[33] = typeof(UnityEngine.Analytics.Analytics).Assembly; // Unity analytics module
 			assemblies[34] = typeof(RemoteSettings).Assembly; // Unity Unity connect module
 			assemblies[35] = typeof(UnityEngine.Networking.DownloadHandlerAudioClip).Assembly; // Unity web request audio module
 			assemblies[36] = typeof(WWWForm).Assembly; // Unity web request module
 			assemblies[37] = typeof(UnityEngine.Networking.DownloadHandlerTexture).Assembly; // Unity web request texture module
+#if !UNITY_2020_1_OR_NEWER
 			assemblies[38] = typeof(WWW).Assembly; // Unity web request WWW module
+#else
+			assemblies[38] = typeof(UnityEngine.Networking.UnityWebRequest).Assembly;
+#endif
 			assemblies[39] = typeof(WheelCollider).Assembly; // Unity vehicles module
 			assemblies[40] = typeof(UnityEngine.Video.VideoClip).Assembly; // Unity video module
 			assemblies[41] = typeof(UnityEngine.XR.InputTracking).Assembly; // Unity VR module
@@ -13445,123 +13458,123 @@ namespace NativeScript.Editor
 			string cppSourceContents = File.ReadAllText(CppSourcePath);
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN DELEGATE TYPES*/\n",
-				"\n\t\t/*END DELEGATE TYPES*/",
+				"/*BEGIN DELEGATE TYPES*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t/*END DELEGATE TYPES*/",
 				builders.CsharpDelegateTypes.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN STORE INIT CALLS*/\n",
-				"\n\t\t\t/*END STORE INIT CALLS*/",
+				"/*BEGIN STORE INIT CALLS*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t\t/*END STORE INIT CALLS*/",
 				builders.CsharpStoreInitCalls.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN INIT CALL*/\n",
-				"\n\t\t\t/*END INIT CALL*/",
+				"/*BEGIN INIT CALL*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t\t/*END INIT CALL*/",
 				builders.CsharpInitCall.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN BASE TYPES*/\n",
-				"\n/*END BASE TYPES*/",
+				"/*BEGIN BASE TYPES*/"+Environment.NewLine,
+				Environment.NewLine+"/*END BASE TYPES*/",
 				builders.CsharpBaseTypes.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN FUNCTIONS*/\n",
-				"\n\t\t/*END FUNCTIONS*/",
+				"/*BEGIN FUNCTIONS*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t/*END FUNCTIONS*/",
 				builders.CsharpFunctions.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN CPP DELEGATES*/\n",
-				"\n\t\t/*END CPP DELEGATES*/",
+				"/*BEGIN CPP DELEGATES*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t/*END CPP DELEGATES*/",
 				builders.CsharpCppDelegates.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN CSHARP DELEGATES*/\n",
-				"\n\t\t/*END CSHARP DELEGATES*/",
+				"/*BEGIN CSHARP DELEGATES*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t/*END CSHARP DELEGATES*/",
 				builders.CsharpCsharpDelegates.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN IMPORTS*/\n",
-				"\n\t\t/*END IMPORTS*/",
+				"/*BEGIN IMPORTS*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t/*END IMPORTS*/",
 				builders.CsharpImports.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN GETDELEGATE CALLS*/\n",
-				"\n\t\t\t/*END GETDELEGATE CALLS*/",
+				"/*BEGIN GETDELEGATE CALLS*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t\t/*END GETDELEGATE CALLS*/",
 				builders.CsharpGetDelegateCalls.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN DESTROY FUNCTION ENUMERATORS*/\n",
-				"\n\t\t\t/*END DESTROY FUNCTION ENUMERATORS*/",
+				"/*BEGIN DESTROY FUNCTION ENUMERATORS*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t\t/*END DESTROY FUNCTION ENUMERATORS*/",
 				builders.CsharpDestroyFunctionEnumerators.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN DESTROY QUEUE CASES*/\n",
-				"\n\t\t\t\t\t\t/*END DESTROY QUEUE CASES*/",
+				"/*BEGIN DESTROY QUEUE CASES*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t\t\t\t\t/*END DESTROY QUEUE CASES*/",
 				builders.CsharpDestroyQueueCases.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN FUNCTION POINTERS*/\n",
-				"\n\t/*END FUNCTION POINTERS*/",
+				"/*BEGIN FUNCTION POINTERS*/"+Environment.NewLine,
+				Environment.NewLine+"\t/*END FUNCTION POINTERS*/",
 				builders.CppFunctionPointers.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TYPE DECLARATIONS*/\n",
-				"\n/*END TYPE DECLARATIONS*/",
+				"/*BEGIN TYPE DECLARATIONS*/"+Environment.NewLine,
+				Environment.NewLine+"/*END TYPE DECLARATIONS*/",
 				builders.CppTypeDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TEMPLATE DECLARATIONS*/\n",
-				"\n/*END TEMPLATE DECLARATIONS*/",
+				"/*BEGIN TEMPLATE DECLARATIONS*/"+Environment.NewLine,
+				Environment.NewLine+"/*END TEMPLATE DECLARATIONS*/",
 				builders.CppTemplateDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TEMPLATE SPECIALIZATION DECLARATIONS*/\n",
-				"\n/*END TEMPLATE SPECIALIZATION DECLARATIONS*/",
+				"/*BEGIN TEMPLATE SPECIALIZATION DECLARATIONS*/"+Environment.NewLine,
+				Environment.NewLine+"/*END TEMPLATE SPECIALIZATION DECLARATIONS*/",
 				builders.CppTemplateSpecializationDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TYPE DEFINITIONS*/\n",
-				"\n/*END TYPE DEFINITIONS*/",
+				"/*BEGIN TYPE DEFINITIONS*/"+Environment.NewLine,
+				Environment.NewLine+"/*END TYPE DEFINITIONS*/",
 				builders.CppTypeDefinitions.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN METHOD DEFINITIONS*/\n",
-				"\n/*END METHOD DEFINITIONS*/",
+				"/*BEGIN METHOD DEFINITIONS*/"+Environment.NewLine,
+				Environment.NewLine+"/*END METHOD DEFINITIONS*/",
 				builders.CppMethodDefinitions.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT BODY PARAMETER READS*/\n",
-				"\n\t/*END INIT BODY PARAMETER READS*/",
+				"/*BEGIN INIT BODY PARAMETER READS*/"+Environment.NewLine,
+				Environment.NewLine+"\t/*END INIT BODY PARAMETER READS*/",
 				builders.CppInitBodyParameterReads.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT BODY ARRAYS*/\n",
-				"\n\t/*END INIT BODY ARRAYS*/",
+				"/*BEGIN INIT BODY ARRAYS*/"+Environment.NewLine,
+				Environment.NewLine+"\t/*END INIT BODY ARRAYS*/",
 				builders.CppInitBodyArrays.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT BODY FIRST BOOT*/\n",
-				"\n\t\t/*END INIT BODY FIRST BOOT*/",
+				"/*BEGIN INIT BODY FIRST BOOT*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t/*END INIT BODY FIRST BOOT*/",
 				builders.CppInitBodyFirstBoot.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN GLOBAL STATE AND FUNCTIONS*/\n",
-				"\n\t/*END GLOBAL STATE AND FUNCTIONS*/",
+				"/*BEGIN GLOBAL STATE AND FUNCTIONS*/"+Environment.NewLine,
+				Environment.NewLine+"\t/*END GLOBAL STATE AND FUNCTIONS*/",
 				builders.CppGlobalStateAndFunctions.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN UNBOXING METHOD DECLARATIONS*/\n",
-				"\n\t\t/*END UNBOXING METHOD DECLARATIONS*/",
+				"/*BEGIN UNBOXING METHOD DECLARATIONS*/"+Environment.NewLine,
+				Environment.NewLine+"\t\t/*END UNBOXING METHOD DECLARATIONS*/",
 				builders.CppUnboxingMethodDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN STRING DEFAULT PARAMETERS*/\n",
-				"\n\t/*END STRING DEFAULT PARAMETERS*/",
+				"/*BEGIN STRING DEFAULT PARAMETERS*/"+Environment.NewLine,
+				Environment.NewLine+"\t/*END STRING DEFAULT PARAMETERS*/",
 				builders.CppStringDefaultParams.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN MACROS*/\n",
-				"\n/*END MACROS*/",
+				"/*BEGIN MACROS*/"+Environment.NewLine,
+				Environment.NewLine+"/*END MACROS*/",
 				builders.CppMacros.ToString());
 			
 			File.WriteAllText(CsharpPath, csharpContents);
@@ -13577,13 +13590,13 @@ namespace NativeScript.Editor
 		{
 			for (int startIndex = 0; ; )
 			{
-				int beginIndex = contents.IndexOf(beginMarker, startIndex);
+				int beginIndex = contents.IndexOf(beginMarker, startIndex, StringComparison.OrdinalIgnoreCase);
 				if (beginIndex < 0)
 				{
 					return contents;
 				}
 				int afterBeginIndex = beginIndex + beginMarker.Length;
-				int endIndex = contents.IndexOf(endMarker, afterBeginIndex);
+				int endIndex = contents.IndexOf(endMarker, afterBeginIndex, StringComparison.OrdinalIgnoreCase);
 				if (endIndex < 0)
 				{
 					throw new Exception(
