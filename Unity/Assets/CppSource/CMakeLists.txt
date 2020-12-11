@@ -79,5 +79,9 @@ if (IOS)
 	set_xcode_property(${PROJECT_NAME} ENABLE_BITCODE "NO")
 endif()
 
+if(WIN32 AND MINGW)
+	set_property(TARGET ${PROJECT_NAME} PROPERTY PREFIX "")
+endif()
+
 # Enable C++11
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
