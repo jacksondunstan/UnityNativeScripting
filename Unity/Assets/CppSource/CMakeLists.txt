@@ -33,6 +33,7 @@ if (ANDROID_NDK)
 	set(ANDROID_ABI armeabi-v7a)
 	set(CMAKE_TOOLCHAIN_FILE ${ANDROID_NDK}/build/cmake/android.toolchain.cmake)
 endif()
+
 # Set output path
 if (ANDROID_NDK)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Plugins/Android)
@@ -78,6 +79,9 @@ if (IOS)
 	set_xcode_property(${PROJECT_NAME} ENABLE_BITCODE "NO")
 endif()
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY PREFIX "")
+if(WIN32 AND MINGW)
+	set_property(TARGET ${PROJECT_NAME} PROPERTY PREFIX "")
+endif()
+
 # Enable C++11
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
