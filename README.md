@@ -192,7 +192,7 @@ With C++, the workflow looks like this:
 2. Create a directory for build files. Anywhere is fine.
 3. Open a Command Prompt by clicking the Start button, typing "Command Prompt", then clicking the app
 4. Execute `cd /path/to/your/build/directory`
-5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" -DEDITOR=TRUE /path/to/your/project/CppSource`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"Visual Studio 15 2017 Win64"` for Visual Studio 2017. Any version, including Community, works just fine. Remove `-DEDITOR=TRUE` for standalone builds.
+5. Execute `cmake -G "Visual Studio VERSION YEAR Win64" -DEDITOR=TRUE /path/to/your/project/CppSource`. Replace `VERSION` and `YEAR` with the version of Visual Studio you want to use. To see the options, execute `cmake --help` and look at the list at the bottom. For example, use `"Visual Studio 15 2017 Win64"` for Visual Studio 2017. Any version, including Community, works just fine. Remove `-DEDITOR=TRUE` for standalone builds. If you are using Visual Studio 2019, execute `cmake -G "Visual Studio 16" -A "x64" -DEDITOR=TRUE /path/to/your/project/CppSource` instead.
 6. The project files are now generated in your build directory
 7. Open `NativeScript.sln` and click `Build > Build Solution`.
 
