@@ -966,6 +966,10 @@ namespace System
 		: ManagedType(nullptr)
 	{
 	}
+
+	Object::~Object()
+	{
+	}
 	
 	bool Object::operator==(decltype(nullptr)) const
 	{

@@ -585,7 +585,7 @@ namespace System
 		Object();
 		Object(Plugin::InternalUse iu, int32_t handle);
 		Object(decltype(nullptr));
-		virtual ~Object() = default;
+		virtual ~Object();
 		bool operator==(decltype(nullptr)) const;
 		bool operator!=(decltype(nullptr)) const;
 		virtual void ThrowReferenceToThis();
