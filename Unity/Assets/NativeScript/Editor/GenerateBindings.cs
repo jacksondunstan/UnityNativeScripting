@@ -437,16 +437,16 @@ namespace NativeScript.Editor
 			AppendCSharpTypeParameters(
 				typeParams,
 				output);
-			output.Append('\n');
+			output.AppendLine();
 			AppendIndent(indent, output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(indent + 1, output);
 			output.Append("// Stub version. GenerateBindings is still in progress. ");
 			output.Append(timestamp);
-			output.Append('\n');
+			output.AppendLine();
 			if (type.IsClass)
 			{
-				output.Append('\n');
+				output.AppendLine();
 				ConstructorInfo[] constructors = type.GetConstructors();
 				if (constructors.Length > 0)
 				{
@@ -463,22 +463,22 @@ namespace NativeScript.Editor
 							AppendCsharpParams(
 								ctorParams,
 								output);
-							output.Append(")\n");
+							output.AppendLine(")");
 							output.Append("\t\t\t: base(");
 							AppendCsharpFunctionCallParameters(
 								ctorParams,
 								output);
-							output.Append(")\n");
-							output.Append("\t\t{\n");
-							output.Append("\t\t}\n");
-							output.Append("\t\t\n");
+							output.AppendLine(")");
+							output.AppendLine("\t\t{");
+							output.AppendLine("\t\t}");
+							output.AppendLine("\t\t");
 							break;
 						}
 					}
 				}
 			}
 			AppendIndent(indent, output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendNamespaceEnding(indent, output);
 		}
 		
@@ -512,15 +512,15 @@ namespace NativeScript.Editor
 			// Init param for max managed Objects
 			builders.CsharpInitCall.Append("\t\t\tMarshal.WriteInt32(memory, curMemory, ");
 			builders.CsharpInitCall.Append(defaultMaxSimultaneous);
-			builders.CsharpInitCall.Append("); // max managed objects\n");
-			builders.CsharpInitCall.Append("\t\t\tcurMemory += sizeof(int);\n");
+			builders.CsharpInitCall.AppendLine("); // max managed objects");
+			builders.CsharpInitCall.AppendLine("\t\t\tcurMemory += sizeof(int);");
 			builders.CsharpInitCall.Append(' ');
 			
 			// C# ObjectStore Init call
 			builders.CsharpStoreInitCalls.Append(
 				"\t\t\tNativeScript.Bindings.ObjectStore.Init(");
 			builders.CsharpStoreInitCalls.Append(defaultMaxSimultaneous);
-			builders.CsharpStoreInitCalls.Append(");\n");
+			builders.CsharpStoreInitCalls.AppendLine(");");
 			
 			// Generate types
 			if (doc.Types != null)
@@ -684,7 +684,12 @@ namespace NativeScript.Editor
 			assemblies[7] = typeof(UnityEngine.Accessibility.VisionUtility).Assembly; // Unity accessibility module
 			assemblies[8] = typeof(UnityEngine.AI.NavMesh).Assembly; // Unity AI module
 			assemblies[9] = typeof(UnityEngine.Animations.AnimationClipPlayable).Assembly; // Unity animation module
+#if !UNITY_2020_1_OR_NEWER //This class migrate to package 
 			assemblies[10] = typeof(UnityEngine.XR.ARRenderMode).Assembly; // Unity AR module
+#else
+			assemblies[10] = typeof(UnityEngine.XR.InputDevices).Assembly; // Unity AR module without package
+#endif
+			
 			assemblies[11] = typeof(AudioSettings).Assembly; // Unity audio module
 			assemblies[12] = typeof(Cloth).Assembly; // Unity cloth module
 			assemblies[13] = typeof(ClusterInput).Assembly; // Unity cluster input module
@@ -710,13 +715,21 @@ namespace NativeScript.Editor
 			assemblies[30] = typeof(UnityEngine.Experimental.UIElements.Button).Assembly; // Unity UI elements module
 #endif
 			assemblies[31] = typeof(Canvas).Assembly; // Unity UI module
-			assemblies[32] = typeof(UnityEngine.Networking.NetworkTransport).Assembly; // Unity cloth module
+#if UNITY_2020_1_OR_NEWER
+			assemblies[32] = typeof(UnityEngine.Networking.Utility).Assembly; // Unity network module
+#else
+			assemblies[32] = typeof(UnityEngine.Networking.NetworkTransport).Assembly; // Unity network module
+#endif
 			assemblies[33] = typeof(UnityEngine.Analytics.Analytics).Assembly; // Unity analytics module
 			assemblies[34] = typeof(RemoteSettings).Assembly; // Unity Unity connect module
 			assemblies[35] = typeof(UnityEngine.Networking.DownloadHandlerAudioClip).Assembly; // Unity web request audio module
 			assemblies[36] = typeof(WWWForm).Assembly; // Unity web request module
 			assemblies[37] = typeof(UnityEngine.Networking.DownloadHandlerTexture).Assembly; // Unity web request texture module
+#if !UNITY_2020_1_OR_NEWER
 			assemblies[38] = typeof(WWW).Assembly; // Unity web request WWW module
+#else
+			assemblies[38] = typeof(UnityEngine.Networking.UnityWebRequest).Assembly;
+#endif
 			assemblies[39] = typeof(WheelCollider).Assembly; // Unity vehicles module
 			assemblies[40] = typeof(UnityEngine.Video.VideoClip).Assembly; // Unity video module
 			assemblies[41] = typeof(UnityEngine.XR.InputTracking).Assembly; // Unity VR module
@@ -965,8 +978,13 @@ namespace NativeScript.Editor
 			Type[] interfaceTypes,
 			int indent,
 			StringBuilder output,
-			string newline = "\n")
+			string newline = null)
 		{
+			if (string.IsNullOrWhiteSpace(newline))
+			{
+				newline = Environment.NewLine;
+			}
+			
 			string separator = ": ";
 			foreach (Type interfaceType in interfaceTypes)
 			{
@@ -1541,7 +1559,7 @@ namespace NativeScript.Editor
 					builders.CsharpStoreInitCalls);
 				builders.CsharpStoreInitCalls.Append(">.Init(");
 				builders.CsharpStoreInitCalls.Append(maxSimultaneous);
-				builders.CsharpStoreInitCalls.Append(");\n");
+				builders.CsharpStoreInitCalls.AppendLine(");");
 				
 				// Build function name suffix
 				builders.TempStrBuilder.Length = 0;
@@ -1589,15 +1607,15 @@ namespace NativeScript.Editor
 					typeof(void),
 					parameters,
 					builders.CsharpFunctions);
-				builders.CsharpFunctions.Append(
-					"if (handle != 0)\n\t\t\t{\n");
+				builders.CsharpFunctions.AppendLine("if (handle != 0)");
+				builders.CsharpFunctions.AppendLine("\t\t\t{");
 				builders.CsharpFunctions.Append(
 					"\t\t\t\tNativeScript.Bindings.StructStore<");
 				AppendCsharpTypeFullName(
 					type,
 					builders.CsharpFunctions);
-				builders.CsharpFunctions.Append(
-					">.Remove(handle);\n\t\t\t}");
+				builders.CsharpFunctions.AppendLine(">.Remove(handle);");
+				builders.CsharpFunctions.Append("\t\t\t}");
 				AppendCsharpFunctionEnd(
 					typeof(void),
 					new Type[0],
@@ -1633,57 +1651,61 @@ namespace NativeScript.Editor
 				// C++ init body for handle array length
 				builders.CppInitBodyArrays.Append("\tPlugin::RefCounts");
 				builders.CppInitBodyArrays.Append(funcNameSuffix);
-				builders.CppInitBodyArrays.Append(" = (int32_t*)curMemory;\n");
+				builders.CppInitBodyArrays.AppendLine(" = (int32_t*)curMemory;");
 				builders.CppInitBodyArrays.Append("\tcurMemory += ");
 				builders.CppInitBodyArrays.Append(maxSimultaneous);
-				builders.CppInitBodyArrays.Append(" * sizeof(int32_t);\n");
+				builders.CppInitBodyArrays.AppendLine(" * sizeof(int32_t);");
 				builders.CppInitBodyArrays.Append("\tPlugin::RefCountsLen");
 				builders.CppInitBodyArrays.Append(funcNameSuffix);
 				builders.CppInitBodyArrays.Append(" = ");
 				builders.CppInitBodyArrays.Append(maxSimultaneous);
-				builders.CppInitBodyArrays.Append(";\n");
-				builders.CppInitBodyArrays.Append("\t\n");
+				builders.CppInitBodyArrays.AppendLine(";");
+				builders.CppInitBodyArrays.AppendLine("\t");
 				
 				// C++ ref count state and functions
 				builders.CppGlobalStateAndFunctions.Append("\tint32_t RefCountsLen");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append(";\n\tint32_t* RefCounts");
+				builders.CppGlobalStateAndFunctions.AppendLine(";");
+				builders.CppGlobalStateAndFunctions.Append("\tint32_t* RefCounts");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append(";\n\t\n\tvoid ReferenceManaged");
+				builders.CppGlobalStateAndFunctions.AppendLine(";");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t");
+				builders.CppGlobalStateAndFunctions.Append("\tvoid ReferenceManaged");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append("(int32_t handle)\n");
-				builders.CppGlobalStateAndFunctions.Append("\t{\n");
+				builders.CppGlobalStateAndFunctions.AppendLine("(int32_t handle)");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t{");
 				builders.CppGlobalStateAndFunctions.Append("\t\tassert(handle >= 0 && handle < RefCountsLen");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append(");\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\tif (handle != 0)\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\t{\n");
+				builders.CppGlobalStateAndFunctions.AppendLine(");");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\tif (handle != 0)");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\t{");
 				builders.CppGlobalStateAndFunctions.Append("\t\t\tRefCounts");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append("[handle]++;\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\t}\n");
-				builders.CppGlobalStateAndFunctions.Append("\t}\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\n");
+				builders.CppGlobalStateAndFunctions.AppendLine("[handle]++;");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\t}");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t}");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t");
 				builders.CppGlobalStateAndFunctions.Append("\tvoid DereferenceManaged");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append("(int32_t handle)\n");
-				builders.CppGlobalStateAndFunctions.Append("\t{\n");
+				builders.CppGlobalStateAndFunctions.AppendLine("(int32_t handle)");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t{");
 				builders.CppGlobalStateAndFunctions.Append("\t\tassert(handle >= 0 && handle < RefCountsLen");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append(");\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\tif (handle != 0)\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\t{\n");
+				builders.CppGlobalStateAndFunctions.AppendLine(");");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\tif (handle != 0)");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\t{");
 				builders.CppGlobalStateAndFunctions.Append("\t\t\tint32_t numRemain = --RefCounts");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append("[handle];\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\t\tif (numRemain == 0)\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\t\t{\n");
+				builders.CppGlobalStateAndFunctions.AppendLine("[handle];");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\t\tif (numRemain == 0)");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\t\t{");
 				builders.CppGlobalStateAndFunctions.Append("\t\t\t\tRelease");
 				builders.CppGlobalStateAndFunctions.Append(funcNameSuffix);
-				builders.CppGlobalStateAndFunctions.Append("(handle);\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\t\t}\n");
-				builders.CppGlobalStateAndFunctions.Append("\t\t}\n");
-				builders.CppGlobalStateAndFunctions.Append("\t}\n\t\n");
+				builders.CppGlobalStateAndFunctions.AppendLine("(handle);");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\t\t}");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t\t}");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t}");
+				builders.CppGlobalStateAndFunctions.AppendLine("\t");
 			}
 			
 			// C++ type declaration
@@ -2022,7 +2044,7 @@ namespace NativeScript.Editor
 			AppendCppPrimitiveTypeName(
 				underlyingType,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append(" Value;\n");
+			builders.CppTypeDefinitions.AppendLine(" Value;");
 			
 			// Enumerator fields
 			FieldInfo[] fields = type.GetFields(
@@ -2039,7 +2061,7 @@ namespace NativeScript.Editor
 					builders.CppTypeDefinitions);
 				builders.CppTypeDefinitions.Append(' ');
 				builders.CppTypeDefinitions.Append(field.Name);
-				builders.CppTypeDefinitions.Append(";\n");
+				builders.CppTypeDefinitions.AppendLine(";");
 			}
 			
 			// Constructor from primitive type
@@ -2052,7 +2074,7 @@ namespace NativeScript.Editor
 			AppendCppPrimitiveTypeName(
 				underlyingType,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append(" value);\n");
+			builders.CppTypeDefinitions.AppendLine(" value);");
 			
 			// Conversion operator to primitive type
 			AppendIndent(
@@ -2062,7 +2084,7 @@ namespace NativeScript.Editor
 			AppendCppPrimitiveTypeName(
 				underlyingType,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("() const;\n");
+			builders.CppTypeDefinitions.AppendLine("() const;");
 			
 			// Equality operator
 			AppendIndent(
@@ -2070,7 +2092,7 @@ namespace NativeScript.Editor
 				builders.CppTypeDefinitions);
 			builders.CppTypeDefinitions.Append("bool operator==(");
 			builders.CppTypeDefinitions.Append(type.Name);
-			builders.CppTypeDefinitions.Append(" other);\n");
+			builders.CppTypeDefinitions.AppendLine(" other);");
 			
 			// Inequality operator
 			AppendIndent(
@@ -2078,7 +2100,7 @@ namespace NativeScript.Editor
 				builders.CppTypeDefinitions);
 			builders.CppTypeDefinitions.Append("bool operator!=(");
 			builders.CppTypeDefinitions.Append(type.Name);
-			builders.CppTypeDefinitions.Append(" other);\n");
+			builders.CppTypeDefinitions.AppendLine(" other);");
 			
 			AppendNamespaceBeginning(
 				type.Namespace,
@@ -2095,23 +2117,23 @@ namespace NativeScript.Editor
 			AppendCppPrimitiveTypeName(
 				underlyingType,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(" value)\n");
+			builders.CppMethodDefinitions.AppendLine(" value)");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(": Value(value)\n");
+			builders.CppMethodDefinitions.AppendLine(": Value(value)");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();
 			
 			// Conversion operator to primitive type
 			AppendIndent(
@@ -2124,23 +2146,23 @@ namespace NativeScript.Editor
 			AppendCppPrimitiveTypeName(
 				underlyingType,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("() const\n");
+			builders.CppMethodDefinitions.AppendLine("() const");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return Value;\n");
+			builders.CppMethodDefinitions.AppendLine("return Value;");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// Equality operator
 			AppendIndent(
@@ -2152,23 +2174,23 @@ namespace NativeScript.Editor
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("::operator==(");
 			builders.CppMethodDefinitions.Append(type.Name);
-			builders.CppMethodDefinitions.Append(" other)\n");
+			builders.CppMethodDefinitions.AppendLine(" other)");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return Value == other.Value;\n");
+			builders.CppMethodDefinitions.AppendLine("return Value == other.Value;");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// Inequality operator
 			AppendIndent(
@@ -2180,23 +2202,23 @@ namespace NativeScript.Editor
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("::operator!=(");
 			builders.CppMethodDefinitions.Append(type.Name);
-			builders.CppMethodDefinitions.Append(" other)\n");
+			builders.CppMethodDefinitions.AppendLine(" other)");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return Value != other.Value;\n");
+			builders.CppMethodDefinitions.AppendLine("return Value != other.Value;");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			AppendBoxing(
 				type,
@@ -2211,11 +2233,11 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("};\n");
+			builders.CppTypeDefinitions.AppendLine("};");
 			AppendNamespaceEnding(
 				indent,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append('\n');
+			builders.CppTypeDefinitions.AppendLine();;
 			
 			// Static initialization
 			foreach (FieldInfo field in fields)
@@ -2233,9 +2255,9 @@ namespace NativeScript.Editor
 				builders.CppMethodDefinitions.Append('(');
 				builders.CppMethodDefinitions.Append(
 					field.GetRawConstantValue());
-				builders.CppMethodDefinitions.Append(");\n");
+				builders.CppMethodDefinitions.AppendLine(");");
 			}
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendBoxing(
@@ -2533,7 +2555,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
@@ -2547,18 +2569,19 @@ namespace NativeScript.Editor
 			}
 			builders.CppMethodDefinitions.Append("Plugin::");
 			builders.CppMethodDefinitions.Append(unboxFuncName);
-			builders.CppMethodDefinitions.Append("(Handle));\n");
+			builders.CppMethodDefinitions.AppendLine("(Handle));");
 			AppendCppUnhandledExceptionHandling(
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return returnVal;\n");
+			builders.CppMethodDefinitions.AppendLine("return returnVal;");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n\t\n");
+			builders.CppMethodDefinitions.AppendLine("}");
+			builders.CppMethodDefinitions.AppendLine("\t");
 			
 			// C++ method definitions (end)
 			AppendCppMethodDefinitionsEnd(
@@ -2638,7 +2661,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				output);
@@ -2653,20 +2676,20 @@ namespace NativeScript.Editor
 			{
 				output.Append("*this");
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			AppendCppUnhandledExceptionHandling(
 				indent + 1,
 				output);
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append(
-				"if (handle)\n");
+			output.AppendLine(
+				"if (handle)");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append(
-				"{\n");
+			output.AppendLine(
+				"{");
 			AppendIndent(
 				indent + 2,
 				output);
@@ -2676,7 +2699,7 @@ namespace NativeScript.Editor
 				null,
 				"handle",
 				output);
-			output.Append(";\n");
+			output.AppendLine(";");
 			AppendIndent(
 				indent + 2,
 				output);
@@ -2684,24 +2707,24 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				boxedType,
 				output);
-			output.Append("(Plugin::InternalUse::Only, handle);\n");
+			output.AppendLine("(Plugin::InternalUse::Only, handle);");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append(
-				"}\n");
+			output.AppendLine(
+				"}");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("return nullptr;\n");
+			output.AppendLine("return nullptr;");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				indent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 		
 		static void AppendHandleStoreTypeName(
@@ -2926,7 +2949,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendCppPluginFunctionCall(
 				true,
 				GetTypeName(enclosingType),
@@ -2942,26 +2965,26 @@ namespace NativeScript.Editor
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"*this = returnValue;\n");
+				builders.CppMethodDefinitions.AppendLine(
+					"*this = returnValue;");
 			}
 			else
 			{
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"Handle = returnValue;\n");
+				builders.CppMethodDefinitions.AppendLine(
+					"Handle = returnValue;");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"if (returnValue)\n");
+				builders.CppMethodDefinitions.AppendLine(
+					"if (returnValue)");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"{\n");
+				builders.CppMethodDefinitions.AppendLine(
+					"{");
 				AppendIndent(
 					indent + 2,
 					builders.CppMethodDefinitions);
@@ -2971,21 +2994,21 @@ namespace NativeScript.Editor
 					enclosingTypeParams,
 					"returnValue",
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(";\n");
+				builders.CppMethodDefinitions.AppendLine(";");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"}\n");
+				builders.CppMethodDefinitions.AppendLine(
+					"}");
 			}
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// C++ init body
 			AppendCppInitBodyFunctionPointerParameterRead(
@@ -3176,7 +3199,7 @@ namespace NativeScript.Editor
 			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("();\n");
+			builders.CppTypeDefinitions.AppendLine("();");
 			
 			AppendIndent(
 				indent,
@@ -3188,19 +3211,19 @@ namespace NativeScript.Editor
 			AppendTypeNameWithoutGenericSuffix(
 				enclosingType.Name,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("()\n");
+			builders.CppMethodDefinitions.AppendLine("()");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendFullValueTypeFields(
@@ -3223,7 +3246,7 @@ namespace NativeScript.Editor
 					builders.CppTypeDefinitions);
 				builders.CppTypeDefinitions.Append(' ');
 				builders.CppTypeDefinitions.Append(field.Name);
-				builders.CppTypeDefinitions.Append(";\n");
+				builders.CppTypeDefinitions.AppendLine(";");
 			}
 		}
 		
@@ -3453,7 +3476,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
 				GetTypeName(enclosingType),
@@ -3467,7 +3490,8 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n\t\n");
+			builders.CppMethodDefinitions.AppendLine("}");
+			builders.CppMethodDefinitions.AppendLine("\t");
 			
 			// C++ init body
 			AppendCppInitBodyFunctionPointerParameterRead(
@@ -4152,7 +4176,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
 				GetTypeName(enclosingType),
@@ -4171,7 +4195,8 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n\t\n");
+			builders.CppMethodDefinitions.AppendLine("}");
+			builders.CppMethodDefinitions.AppendLine("\t");
 			
 			// C++ init body
 			AppendCppInitBodyFunctionPointerParameterRead(
@@ -4257,7 +4282,7 @@ namespace NativeScript.Editor
 					}
 					output.Append('(');
 					output.Append(param.Name);
-					output.Append(");\n");
+					output.AppendLine(");");
 				}
 			}
 			if (!enclosingTypeIsStatic)
@@ -4265,8 +4290,8 @@ namespace NativeScript.Editor
 				AppendIndent(
 					indent,
 					output);
-				output.Append(
-					"int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);\n");
+				output.AppendLine(
+					"int thisHandle = NativeScript.Bindings.ObjectStore.GetHandle(this);");
 			}
 			AppendIndent(
 				indent,
@@ -4300,31 +4325,31 @@ namespace NativeScript.Editor
 					output.Append(", ");
 				}
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("if (NativeScript.Bindings.UnhandledCppException != null)\n");
+			output.AppendLine("if (NativeScript.Bindings.UnhandledCppException != null)");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("Exception ex = NativeScript.Bindings.UnhandledCppException;\n");
+			output.AppendLine("Exception ex = NativeScript.Bindings.UnhandledCppException;");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("NativeScript.Bindings.UnhandledCppException = null;\n");
+			output.AppendLine("NativeScript.Bindings.UnhandledCppException = null;");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("throw ex;\n");
+			output.AppendLine("throw ex;");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 		}
 		
 		static void AppendArray(
@@ -4464,8 +4489,8 @@ namespace NativeScript.Editor
 							extraIndent,
 							builders.CppMethodDefinitions);
 						builders.CppMethodDefinitions.Append(subject);
-						builders.CppMethodDefinitions.Append(
-							"InternalLength = 0;\n");
+						builders.CppMethodDefinitions.AppendLine(
+							"InternalLength = 0;");
 						if (localRank > 1)
 						{
 							for (int i = 0; i < localRank; ++i)
@@ -4477,8 +4502,8 @@ namespace NativeScript.Editor
 								builders.CppMethodDefinitions.Append(
 									"InternalLengths[");
 								builders.CppMethodDefinitions.Append(i);
-								builders.CppMethodDefinitions.Append(
-									"] = 0;\n");
+								builders.CppMethodDefinitions.AppendLine(
+									"] = 0;");
 							}
 						}
 					},
@@ -4489,8 +4514,8 @@ namespace NativeScript.Editor
 						builders.CppMethodDefinitions.Append(
 							"InternalLength = ");
 						builders.CppMethodDefinitions.Append(subject);
-						builders.CppMethodDefinitions.Append(
-							"InternalLength;\n");
+						builders.CppMethodDefinitions.AppendLine(
+							"InternalLength;");
 						if (localRank > 1)
 						{
 							for (int i = 0; i < localRank; ++i)
@@ -4507,8 +4532,8 @@ namespace NativeScript.Editor
 								builders.CppMethodDefinitions.Append(
 									"InternalLengths[");
 								builders.CppMethodDefinitions.Append(i);
-								builders.CppMethodDefinitions.Append(
-									"];\n");
+								builders.CppMethodDefinitions.AppendLine(
+									"];");
 							}
 						}
 					},
@@ -4519,8 +4544,8 @@ namespace NativeScript.Editor
 				AppendIndent(
 					indent + 1,
 					builders.CppTypeDefinitions);
-				builders.CppTypeDefinitions.Append(
-					"int32_t InternalLength;\n");
+				builders.CppTypeDefinitions.AppendLine(
+					"int32_t InternalLength;");
 				if (rank > 1)
 				{
 					AppendIndent(
@@ -4529,7 +4554,7 @@ namespace NativeScript.Editor
 					builders.CppTypeDefinitions.Append(
 						"int32_t InternalLengths[");
 					builders.CppTypeDefinitions.Append(rank);
-					builders.CppTypeDefinitions.Append("];\n");
+					builders.CppTypeDefinitions.AppendLine("];");
 				}
 				
 				AppendArrayConstructor(
@@ -4598,7 +4623,7 @@ namespace NativeScript.Editor
 				AppendTypeNameWithoutGenericSuffix(
 					"operator[]",
 					builders.CppTypeDefinitions);
-				builders.CppTypeDefinitions.Append("(int32_t index);\n");
+				builders.CppTypeDefinitions.AppendLine("(int32_t index);");
 				
 				// C++ operator[] method definition
 				AppendCppArrayIndexOperatorMethodDefinition(
@@ -4639,88 +4664,88 @@ namespace NativeScript.Editor
 			StringBuilder cppMethodDefinitions)
 		{
 			// Iterator type definition
-			cppTypeDefinitions.Append("namespace Plugin\n");
-			cppTypeDefinitions.Append("{\n");
+			cppTypeDefinitions.AppendLine("namespace Plugin");
+			cppTypeDefinitions.AppendLine("{");
 			cppTypeDefinitions.Append("\tstruct ");
 			cppTypeDefinitions.Append(bindingArrayTypeName);
-			cppTypeDefinitions.Append("Iterator\n");
-			cppTypeDefinitions.Append("\t{\n");
+			cppTypeDefinitions.AppendLine("Iterator");
+			cppTypeDefinitions.AppendLine("\t{");
 			cppTypeDefinitions.Append("\t\tSystem::");
 			cppTypeDefinitions.Append(cppGenericArrayTypeName);
-			cppTypeDefinitions.Append("& array;\n");
-			cppTypeDefinitions.Append("\t\tint index;\n");
+			cppTypeDefinitions.AppendLine("& array;");
+			cppTypeDefinitions.AppendLine("\t\tint index;");
 			cppTypeDefinitions.Append("\t\t");
 			cppTypeDefinitions.Append(bindingArrayTypeName);
 			cppTypeDefinitions.Append("Iterator(System::");
 			cppTypeDefinitions.Append(cppGenericArrayTypeName);
-			cppTypeDefinitions.Append("& array, int32_t index);\n");
+			cppTypeDefinitions.AppendLine("& array, int32_t index);");
 			cppTypeDefinitions.Append("\t\t");
 			cppTypeDefinitions.Append(bindingArrayTypeName);
-			cppTypeDefinitions.Append("Iterator& operator++();\n");
+			cppTypeDefinitions.AppendLine("Iterator& operator++();");
 			cppTypeDefinitions.Append("\t\tbool operator!=(const ");
 			cppTypeDefinitions.Append(bindingArrayTypeName);
-			cppTypeDefinitions.Append("Iterator& other);\n");
+			cppTypeDefinitions.AppendLine("Iterator& other);");
 			cppTypeDefinitions.Append("\t\t");
 			AppendCppTypeFullName(
 				elementType,
 				cppTypeDefinitions);
-			cppTypeDefinitions.Append(" operator*();\n");
-			cppTypeDefinitions.Append("\t};\n");
-			cppTypeDefinitions.Append("}\n");
-			cppTypeDefinitions.Append('\n');
+			cppTypeDefinitions.AppendLine(" operator*();");
+			cppTypeDefinitions.AppendLine("\t};");
+			cppTypeDefinitions.AppendLine("}");
+			cppTypeDefinitions.AppendLine();;
 			
 			// begin() and end() declarations
-			cppTypeDefinitions.Append("namespace System\n");
-			cppTypeDefinitions.Append("{\n");
+			cppTypeDefinitions.AppendLine("namespace System");
+			cppTypeDefinitions.AppendLine("{");
 			cppTypeDefinitions.Append("\tPlugin::");
 			cppTypeDefinitions.Append(bindingArrayTypeName);
 			cppTypeDefinitions.Append("Iterator begin(System::");
 			cppTypeDefinitions.Append(cppGenericArrayTypeName);
-			cppTypeDefinitions.Append("& array);\n");
+			cppTypeDefinitions.AppendLine("& array);");
 			cppTypeDefinitions.Append("\tPlugin::");
 			cppTypeDefinitions.Append(bindingArrayTypeName);
 			cppTypeDefinitions.Append("Iterator end(System::");
 			cppTypeDefinitions.Append(cppGenericArrayTypeName);
-			cppTypeDefinitions.Append("& array);\n");
-			cppTypeDefinitions.Append("}\n");
-			cppTypeDefinitions.Append('\n');
+			cppTypeDefinitions.AppendLine("& array);");
+			cppTypeDefinitions.AppendLine("}");
+			cppTypeDefinitions.AppendLine();;
 			
 			// Iterator method definitions
-			cppMethodDefinitions.Append("namespace Plugin\n");
-			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.AppendLine("namespace Plugin");
+			cppMethodDefinitions.AppendLine("{");
 			cppMethodDefinitions.Append('\t');
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator::");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator(System::");
 			cppMethodDefinitions.Append(cppGenericArrayTypeName);
-			cppMethodDefinitions.Append("& array, int32_t index)\n");
-			cppMethodDefinitions.Append("\t\t: array(array)\n");
-			cppMethodDefinitions.Append("\t\t, index(index)\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("& array, int32_t index)");
+			cppMethodDefinitions.AppendLine("\t\t: array(array)");
+			cppMethodDefinitions.AppendLine("\t\t, index(index)");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append('\t');
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator& ");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator::");
-			cppMethodDefinitions.Append("operator++()\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\tindex++;\n");
-			cppMethodDefinitions.Append("\t\treturn *this;\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("operator++()");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\tindex++;");
+			cppMethodDefinitions.AppendLine("\t\treturn *this;");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append("\tbool ");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator::");
 			cppMethodDefinitions.Append("operator!=(const ");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
-			cppMethodDefinitions.Append("Iterator& other)\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\treturn index != other.index;\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("Iterator& other)");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\treturn index != other.index;");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append('\t');
 			AppendCppTypeFullName(
 				elementType,
@@ -4728,39 +4753,39 @@ namespace NativeScript.Editor
 			cppMethodDefinitions.Append(' ');
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator::");
-			cppMethodDefinitions.Append("operator*()\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\treturn array[index];\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("}\n");
-			cppMethodDefinitions.Append('\n');
+			cppMethodDefinitions.AppendLine("operator*()");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\treturn array[index];");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("}");
+			cppMethodDefinitions.AppendLine();;
 			
 			// begin() and end() definitions
-			cppMethodDefinitions.Append("namespace System\n");
-			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.AppendLine("namespace System");
+			cppMethodDefinitions.AppendLine("{");
 			cppMethodDefinitions.Append("\tPlugin::");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator begin(System::");
 			cppMethodDefinitions.Append(cppGenericArrayTypeName);
-			cppMethodDefinitions.Append("& array)\n");
-			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.AppendLine("& array)");
+			cppMethodDefinitions.AppendLine("\t{");
 			cppMethodDefinitions.Append("\t\treturn Plugin::");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
-			cppMethodDefinitions.Append("Iterator(array, 0);\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("Iterator(array, 0);");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append("\tPlugin::");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
 			cppMethodDefinitions.Append("Iterator end(System::");
 			cppMethodDefinitions.Append(cppGenericArrayTypeName);
-			cppMethodDefinitions.Append("& array)\n");
-			cppMethodDefinitions.Append("\t{\n");
+			cppMethodDefinitions.AppendLine("& array)");
+			cppMethodDefinitions.AppendLine("\t{");
 			cppMethodDefinitions.Append("\t\treturn Plugin::");
 			cppMethodDefinitions.Append(bindingArrayTypeName);
-			cppMethodDefinitions.Append("Iterator(array, array.GetLength() - 1);\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("}\n");
-			cppMethodDefinitions.Append('\n');
+			cppMethodDefinitions.AppendLine("Iterator(array, array.GetLength() - 1);");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("}");
+			cppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendGenericEnumerableIterator(
@@ -4772,45 +4797,45 @@ namespace NativeScript.Editor
 			StringBuilder cppMethodDefinitions)
 		{
 			// Iterator type definition
-			cppTypeDefinitions.Append("namespace Plugin\n");
-			cppTypeDefinitions.Append("{\n");
+			cppTypeDefinitions.AppendLine("namespace Plugin");
+			cppTypeDefinitions.AppendLine("{");
 			cppTypeDefinitions.Append("\tstruct ");
 			cppTypeDefinitions.Append(bindingEnumerableTypeName);
-			cppTypeDefinitions.Append("Iterator\n");
-			cppTypeDefinitions.Append("\t{\n");
+			cppTypeDefinitions.AppendLine("Iterator");
+			cppTypeDefinitions.AppendLine("\t{");
 			cppTypeDefinitions.Append("\t\t");
 			AppendCppTypeFullName(
 				enumeratorType,
 				cppTypeDefinitions);
-			cppTypeDefinitions.Append(" enumerator;\n");
-			cppTypeDefinitions.Append("\t\tbool hasMore;\n");
+			cppTypeDefinitions.AppendLine(" enumerator;");
+			cppTypeDefinitions.AppendLine("\t\tbool hasMore;");
 			cppTypeDefinitions.Append("\t\t");
 			cppTypeDefinitions.Append(bindingEnumerableTypeName);
-			cppTypeDefinitions.Append("Iterator(decltype(nullptr));\n");
+			cppTypeDefinitions.AppendLine("Iterator(decltype(nullptr));");
 			cppTypeDefinitions.Append("\t\t");
 			cppTypeDefinitions.Append(bindingEnumerableTypeName);
 			cppTypeDefinitions.Append("Iterator(");
 			AppendCppTypeFullName(
 				enumerableType,
 				cppTypeDefinitions);
-			cppTypeDefinitions.Append("& enumerable);\n");
+			cppTypeDefinitions.AppendLine("& enumerable);");
 			cppTypeDefinitions.Append("\t\t~");
 			cppTypeDefinitions.Append(bindingEnumerableTypeName);
-			cppTypeDefinitions.Append("Iterator();\n");
+			cppTypeDefinitions.AppendLine("Iterator();");
 			cppTypeDefinitions.Append("\t\t");
 			cppTypeDefinitions.Append(bindingEnumerableTypeName);
-			cppTypeDefinitions.Append("Iterator& operator++();\n");
+			cppTypeDefinitions.AppendLine("Iterator& operator++();");
 			cppTypeDefinitions.Append("\t\tbool operator!=(const ");
 			cppTypeDefinitions.Append(bindingEnumerableTypeName);
-			cppTypeDefinitions.Append("Iterator& other);\n");
+			cppTypeDefinitions.AppendLine("Iterator& other);");
 			cppTypeDefinitions.Append("\t\t");
 			AppendCppTypeFullName(
 				elementType,
 				cppTypeDefinitions);
-			cppTypeDefinitions.Append(" operator*();\n");
-			cppTypeDefinitions.Append("\t};\n");
-			cppTypeDefinitions.Append("}\n");
-			cppTypeDefinitions.Append('\n');
+			cppTypeDefinitions.AppendLine(" operator*();");
+			cppTypeDefinitions.AppendLine("\t};");
+			cppTypeDefinitions.AppendLine("}");
+			cppTypeDefinitions.AppendLine();;
 			
 			// begin() and end() declarations
 			int indent = AppendNamespaceBeginning(
@@ -4825,7 +4850,7 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				enumerableType,
 				cppTypeDefinitions);
-			cppTypeDefinitions.Append("& enumerable);\n");
+			cppTypeDefinitions.AppendLine("& enumerable);");
 			AppendIndent(
 				indent,
 				cppTypeDefinitions);
@@ -4835,25 +4860,25 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				enumerableType,
 				cppTypeDefinitions);
-			cppTypeDefinitions.Append("& enumerable);\n");
+			cppTypeDefinitions.AppendLine("& enumerable);");
 			AppendNamespaceEnding(
 				indent,
 				cppTypeDefinitions);
-			cppTypeDefinitions.Append('\n');
+			cppTypeDefinitions.AppendLine();;
 			
 			// Iterator method definitions
-			cppMethodDefinitions.Append("namespace Plugin\n");
-			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.AppendLine("namespace Plugin");
+			cppMethodDefinitions.AppendLine("{");
 			cppMethodDefinitions.Append('\t');
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
 			cppMethodDefinitions.Append("Iterator::");
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
-			cppMethodDefinitions.Append("Iterator(decltype(nullptr))\n");
-			cppMethodDefinitions.Append("\t\t: enumerator(nullptr)\n");
-			cppMethodDefinitions.Append("\t\t, hasMore(false)\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("Iterator(decltype(nullptr))");
+			cppMethodDefinitions.AppendLine("\t\t: enumerator(nullptr)");
+			cppMethodDefinitions.AppendLine("\t\t, hasMore(false)");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append('\t');
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
 			cppMethodDefinitions.Append("Iterator::");
@@ -4862,45 +4887,45 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				enumerableType,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append("& enumerable)\n");
-			cppMethodDefinitions.Append("\t\t: enumerator(enumerable.GetEnumerator())\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\thasMore = enumerator.MoveNext();\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("& enumerable)");
+			cppMethodDefinitions.AppendLine("\t\t: enumerator(enumerable.GetEnumerator())");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\thasMore = enumerator.MoveNext();");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append('\t');
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
 			cppMethodDefinitions.Append("Iterator::~");
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
-			cppMethodDefinitions.Append("Iterator()\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\tif (enumerator != nullptr)\n");
-			cppMethodDefinitions.Append("\t\t{\n");
-			cppMethodDefinitions.Append("\t\t\tenumerator.Dispose();\n");
-			cppMethodDefinitions.Append("\t\t}\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("Iterator()");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\tif (enumerator != nullptr)");
+			cppMethodDefinitions.AppendLine("\t\t{");
+			cppMethodDefinitions.AppendLine("\t\t\tenumerator.Dispose();");
+			cppMethodDefinitions.AppendLine("\t\t}");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append('\t');
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
 			cppMethodDefinitions.Append("Iterator& ");
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
 			cppMethodDefinitions.Append("Iterator::");
-			cppMethodDefinitions.Append("operator++()\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\thasMore = enumerator.MoveNext();\n");
-			cppMethodDefinitions.Append("\t\treturn *this;\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("operator++()");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\thasMore = enumerator.MoveNext();");
+			cppMethodDefinitions.AppendLine("\t\treturn *this;");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append("\tbool ");
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
 			cppMethodDefinitions.Append("Iterator::");
 			cppMethodDefinitions.Append("operator!=(const ");
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
-			cppMethodDefinitions.Append("Iterator& other)\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\treturn hasMore;\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("\t\n");
+			cppMethodDefinitions.AppendLine("Iterator& other)");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\treturn hasMore;");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("\t");
 			cppMethodDefinitions.Append('\t');
 			AppendCppTypeFullName(
 				elementType,
@@ -4908,12 +4933,12 @@ namespace NativeScript.Editor
 			cppMethodDefinitions.Append(' ');
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
 			cppMethodDefinitions.Append("Iterator::");
-			cppMethodDefinitions.Append("operator*()\n");
-			cppMethodDefinitions.Append("\t{\n");
-			cppMethodDefinitions.Append("\t\treturn enumerator.GetCurrent();\n");
-			cppMethodDefinitions.Append("\t}\n");
-			cppMethodDefinitions.Append("}\n");
-			cppMethodDefinitions.Append('\n');
+			cppMethodDefinitions.AppendLine("operator*()");
+			cppMethodDefinitions.AppendLine("\t{");
+			cppMethodDefinitions.AppendLine("\t\treturn enumerator.GetCurrent();");
+			cppMethodDefinitions.AppendLine("\t}");
+			cppMethodDefinitions.AppendLine("}");
+			cppMethodDefinitions.AppendLine();;
 			
 			// begin() and end() definitions
 			indent = AppendNamespaceBeginning(
@@ -4928,25 +4953,25 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				enumerableType,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append("& enumerable)\n");
+			cppMethodDefinitions.AppendLine("& enumerable)");
 			AppendIndent(
 				indent,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				cppMethodDefinitions);
 			cppMethodDefinitions.Append("return Plugin::");
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
-			cppMethodDefinitions.Append("Iterator(enumerable);\n");
+			cppMethodDefinitions.AppendLine("Iterator(enumerable);");
 			AppendIndent(
 				indent,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append("}\n");
+			cppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append('\n');
+			cppMethodDefinitions.AppendLine();;
 			AppendIndent(
 				indent,
 				cppMethodDefinitions);
@@ -4956,25 +4981,25 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				enumerableType,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append("& enumerable)\n");
+			cppMethodDefinitions.AppendLine("& enumerable)");
 			AppendIndent(
 				indent,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append("{\n");
+			cppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				cppMethodDefinitions);
 			cppMethodDefinitions.Append("return Plugin::");
 			cppMethodDefinitions.Append(bindingEnumerableTypeName);
-			cppMethodDefinitions.Append("Iterator(nullptr);\n");
+			cppMethodDefinitions.AppendLine("Iterator(nullptr);");
 			AppendIndent(
 				indent,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append("}\n");
+			cppMethodDefinitions.AppendLine("}");
 			AppendNamespaceEnding(
 				indent,
 				cppMethodDefinitions);
-			cppMethodDefinitions.Append('\n');
+			cppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendCppArrayIndexOperatorMethodDefinition(
@@ -4996,11 +5021,11 @@ namespace NativeScript.Editor
 			AppendTypeNameWithoutGenericSuffix(
 				enclosingTypeTypeName.Name,
 				output);
-			output.Append("::operator[](int32_t index)\n");
+			output.AppendLine("::operator[](int32_t index)");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				output);
@@ -5013,15 +5038,15 @@ namespace NativeScript.Editor
 				output.Append(i);
 				output.Append(", ");
 			}
-			output.Append("index);\n");
+			output.AppendLine("index);");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				indent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 		
 		static void AppendCppArrayTypeName(
@@ -5202,11 +5227,11 @@ namespace NativeScript.Editor
 			AppendTypeNameWithoutGenericSuffix(
 				cppElementProxyTypeName,
 				builders.CppTemplateSpecializationDeclarations);
-			builders.CppTemplateSpecializationDeclarations.Append(";\n");
+			builders.CppTemplateSpecializationDeclarations.AppendLine(";");
 			AppendNamespaceEnding(
 				indent,
 				builders.CppTemplateSpecializationDeclarations);
-			builders.CppTemplateSpecializationDeclarations.Append('\n');
+			builders.CppTemplateSpecializationDeclarations.AppendLine();;
 			
 			// C++ element proxy type definition
 			AppendNamespaceBeginning(
@@ -5217,15 +5242,15 @@ namespace NativeScript.Editor
 				builders.CppTypeDefinitions);
 			builders.CppTypeDefinitions.Append("template<> struct ");
 			builders.CppTypeDefinitions.Append(cppElementProxyTypeName);
-			builders.CppTypeDefinitions.Append('\n');
+			builders.CppTypeDefinitions.AppendLine();;
 			AppendIndent(
 				indent,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("{\n");
+			builders.CppTypeDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("int32_t Handle;\n");
+			builders.CppTypeDefinitions.AppendLine("int32_t Handle;");
 			for (int i = 0; i < rank; ++i)
 			{
 				AppendIndent(
@@ -5233,7 +5258,7 @@ namespace NativeScript.Editor
 					builders.CppTypeDefinitions);
 				builders.CppTypeDefinitions.Append("int32_t Index");
 				builders.CppTypeDefinitions.Append(i);
-				builders.CppTypeDefinitions.Append(";\n");
+				builders.CppTypeDefinitions.AppendLine(";");
 			}
 			AppendIndent(
 				indent + 1,
@@ -5250,7 +5275,7 @@ namespace NativeScript.Editor
 					builders.CppTypeDefinitions.Append(", ");
 				}
 			}
-			builders.CppTypeDefinitions.Append(");\n");
+			builders.CppTypeDefinitions.AppendLine(");");
 			if (rank == maxRank)
 			{
 				AppendIndent(
@@ -5260,7 +5285,7 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					elementType,
 					builders.CppTypeDefinitions);
-				builders.CppTypeDefinitions.Append(" item);\n");
+				builders.CppTypeDefinitions.AppendLine(" item);");
 				AppendIndent(
 					indent + 1,
 					builders.CppTypeDefinitions);
@@ -5268,7 +5293,7 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					elementType,
 					builders.CppTypeDefinitions);
-				builders.CppTypeDefinitions.Append("();\n");
+				builders.CppTypeDefinitions.AppendLine("();");
 			}
 			else
 			{
@@ -5282,14 +5307,14 @@ namespace NativeScript.Editor
 					elementType,
 					builders.CppTypeDefinitions);
 				builders.CppTypeDefinitions.Append(" operator[](");
-				builders.CppTypeDefinitions.Append("int32_t index);\n");
+				builders.CppTypeDefinitions.AppendLine("int32_t index);");
 			}
 			AppendIndent(
 				indent,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("};\n");
-			builders.CppTypeDefinitions.Append("}\n");
-			builders.CppTypeDefinitions.Append('\n');
+			builders.CppTypeDefinitions.AppendLine("};");
+			builders.CppTypeDefinitions.AppendLine("}");
+			builders.CppTypeDefinitions.AppendLine();;
 			
 			// C++ element proxy method definitions (beginning)
 			int cppMethodDefinitionsIndent = AppendNamespaceBeginning(
@@ -5317,15 +5342,15 @@ namespace NativeScript.Editor
 					builders.CppMethodDefinitions.Append(", ");
 				}
 			}
-			builders.CppMethodDefinitions.Append(")\n");
+			builders.CppMethodDefinitions.AppendLine(")");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("Handle = handle;\n");
+			builders.CppMethodDefinitions.AppendLine("Handle = handle;");
 			for (int i = 0; i < rank; ++i)
 			{
 				AppendIndent(
@@ -5335,16 +5360,16 @@ namespace NativeScript.Editor
 				builders.CppMethodDefinitions.Append(i);
 				builders.CppMethodDefinitions.Append(" = index");
 				builders.CppMethodDefinitions.Append(i);
-				builders.CppMethodDefinitions.Append(";\n");
+				builders.CppMethodDefinitions.AppendLine(";");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			if (rank == maxRank)
 			{
@@ -5359,11 +5384,11 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					elementType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(" item)\n");
+				builders.CppMethodDefinitions.AppendLine(" item)");
 				AppendIndent(
 					cppMethodDefinitionsIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.AppendLine("{");
 				AppendCppPluginFunctionCall(
 					false,
 					GetTypeName(cppArrayTypeName, "System"),
@@ -5377,11 +5402,11 @@ namespace NativeScript.Editor
 				AppendIndent(
 					cppMethodDefinitionsIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("}\n");
+				builders.CppMethodDefinitions.AppendLine("}");
 				AppendIndent(
 					cppMethodDefinitionsIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append('\n');
+				builders.CppMethodDefinitions.AppendLine();;
 				
 				// C++ element proxy type conversion operator definition
 				AppendIndent(
@@ -5393,11 +5418,11 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					elementType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("()\n");
+				builders.CppMethodDefinitions.AppendLine("()");
 				AppendIndent(
 					cppMethodDefinitionsIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.AppendLine("{");
 				AppendCppPluginFunctionCall(
 					false,
 					GetTypeName(cppArrayTypeName, "System"),
@@ -5416,7 +5441,7 @@ namespace NativeScript.Editor
 				AppendIndent(
 					cppMethodDefinitionsIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("}\n");
+				builders.CppMethodDefinitions.AppendLine("}");
 			}
 			else
 			{
@@ -5581,13 +5606,13 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					interfaceType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("(nullptr)\n");
+				builders.CppMethodDefinitions.AppendLine("(nullptr)");
 				separator = ", ";
 			}
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendCppPluginFunctionCall(
 				true,
 				cppArrayTypeTypeName,
@@ -5601,18 +5626,18 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"Handle = returnValue;\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"Handle = returnValue;");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"if (returnValue)\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"if (returnValue)");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"{\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"{");
 			AppendIndent(
 				indent + 2,
 				builders.CppMethodDefinitions);
@@ -5622,7 +5647,7 @@ namespace NativeScript.Editor
 				cppTypeParams,
 				"returnValue",
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(";\n");
+			builders.CppMethodDefinitions.AppendLine(";");
 			if (rank > 1)
 			{
 				AppendIndent(
@@ -5638,7 +5663,7 @@ namespace NativeScript.Editor
 						builders.CppMethodDefinitions.Append(" * ");
 					}
 				}
-				builders.CppMethodDefinitions.Append(";\n");
+				builders.CppMethodDefinitions.AppendLine(";");
 				for (int i = 0; i < rank; ++i)
 				{
 					AppendIndent(
@@ -5648,7 +5673,7 @@ namespace NativeScript.Editor
 					builders.CppMethodDefinitions.Append(i);
 					builders.CppMethodDefinitions.Append("] = length");
 					builders.CppMethodDefinitions.Append(i);
-					builders.CppMethodDefinitions.Append(";\n");
+					builders.CppMethodDefinitions.AppendLine(";");
 				}
 			}
 			else
@@ -5656,22 +5681,22 @@ namespace NativeScript.Editor
 				AppendIndent(
 					indent + 2,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(
-					"InternalLength = length0;\n");
+				builders.CppMethodDefinitions.AppendLine(
+					"InternalLength = length0;");
 			}
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"}\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendArrayCppGetLengthFunction(
@@ -5709,46 +5734,46 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"int32_t returnVal = InternalLength;\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"int32_t returnVal = InternalLength;");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (returnVal == 0)\n");
+			builders.CppMethodDefinitions.AppendLine("if (returnVal == 0)");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 2,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"returnVal = Array::GetLength();\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"returnVal = Array::GetLength();");
 			AppendIndent(
 				indent + 2,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"InternalLength = returnVal;\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"InternalLength = returnVal;");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("};\n");
+			builders.CppMethodDefinitions.AppendLine("};");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return returnVal;\n");
+			builders.CppMethodDefinitions.AppendLine("return returnVal;");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendArrayCppGetRankFunction(
@@ -5787,21 +5812,21 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("return ");
 			builders.CppMethodDefinitions.Append(rank);
-			builders.CppMethodDefinitions.Append(";\n");
+			builders.CppMethodDefinitions.AppendLine(";");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendArrayMultidimensionalGetLength(
@@ -5925,35 +5950,35 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append(
 				"assert(dimension >= 0 && dimension < ");
 			builders.CppMethodDefinitions.Append(rank);
-			builders.CppMethodDefinitions.Append(");\n");
+			builders.CppMethodDefinitions.AppendLine(");");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"int32_t length = InternalLengths[dimension];\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"int32_t length = InternalLengths[dimension];");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("if (length)\n");
+			builders.CppMethodDefinitions.AppendLine("if (length)");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 2,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("return length;\n");
+			builders.CppMethodDefinitions.AppendLine("return length;");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendCppPluginFunctionCall(
 				false,
 				GetTypeName(cppArrayTypeName, "System"),
@@ -5967,8 +5992,8 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append(
-				"InternalLengths[dimension] = returnValue;\n");
+			builders.CppMethodDefinitions.AppendLine(
+				"InternalLengths[dimension] = returnValue;");
 			AppendCppMethodReturn(
 				typeof(int),
 				TypeKind.Primitive,
@@ -5977,11 +6002,11 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 		}
 		
 		static void AppendArrayGetItem(
@@ -6375,11 +6400,11 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent + 1,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("int32_t CppHandle;\n");
+			builders.CppTypeDefinitions.AppendLine("int32_t CppHandle;");
 			AppendIndent(
 				indent + 1,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("int32_t ClassHandle;\n");
+			builders.CppTypeDefinitions.AppendLine("int32_t ClassHandle;");
 			
 			// C++ method declarations
 			AppendIndent(
@@ -6619,24 +6644,24 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("Plugin::");
 			builders.CppMethodDefinitions.Append(addFuncName);
-			builders.CppMethodDefinitions.Append("(Handle, del.Handle);\n");
+			builders.CppMethodDefinitions.AppendLine("(Handle, del.Handle);");
 			AppendCppUnhandledExceptionHandling(
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// C++ remove
 			AppendCppMethodDefinitionBegin(
@@ -6651,24 +6676,24 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				builders.CppMethodDefinitions);
 			builders.CppMethodDefinitions.Append("Plugin::");
 			builders.CppMethodDefinitions.Append(removeFuncName);
-			builders.CppMethodDefinitions.Append("(Handle, del.Handle);\n");
+			builders.CppMethodDefinitions.AppendLine("(Handle, del.Handle);");
 			AppendCppUnhandledExceptionHandling(
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// C# GetDelegate call
 			AppendCsharpGetDelegateCall(
@@ -6680,27 +6705,27 @@ namespace NativeScript.Editor
 			// C# class (beginning)
 			builders.CsharpBaseTypes.Append("class ");
 			builders.CsharpBaseTypes.Append(bindingTypeName);
-			builders.CsharpBaseTypes.Append('\n');
-			builders.CsharpBaseTypes.Append("{\n");
+			builders.CsharpBaseTypes.AppendLine();;
+			builders.CsharpBaseTypes.AppendLine("{");
 			
 			// C# class fields
-			builders.CsharpBaseTypes.Append("\tpublic int CppHandle;\n");
+			builders.CsharpBaseTypes.AppendLine("\tpublic int CppHandle;");
 			builders.CsharpBaseTypes.Append("\tpublic ");
 			AppendCsharpTypeFullName(
 				type,
 				builders.CsharpBaseTypes);
-			builders.CsharpBaseTypes.Append(" Delegate;\n");
-			builders.CsharpBaseTypes.Append("\t\n");
+			builders.CsharpBaseTypes.AppendLine(" Delegate;");
+			builders.CsharpBaseTypes.AppendLine("\t");
 			
 			// C# class constructor
 			builders.CsharpBaseTypes.Append("\tpublic ");
 			builders.CsharpBaseTypes.Append(bindingTypeName);
-			builders.CsharpBaseTypes.Append("(int cppHandle)\n");
-			builders.CsharpBaseTypes.Append("\t{\n");
-			builders.CsharpBaseTypes.Append("\t\tCppHandle = cppHandle;\n");
-			builders.CsharpBaseTypes.Append("\t\tDelegate = NativeInvoke;\n");
-			builders.CsharpBaseTypes.Append("\t}\n");
-			builders.CsharpBaseTypes.Append("\t\n");
+			builders.CsharpBaseTypes.AppendLine("(int cppHandle)");
+			builders.CsharpBaseTypes.AppendLine("\t{");
+			builders.CsharpBaseTypes.AppendLine("\t\tCppHandle = cppHandle;");
+			builders.CsharpBaseTypes.AppendLine("\t\tDelegate = NativeInvoke;");
+			builders.CsharpBaseTypes.AppendLine("\t}");
+			builders.CsharpBaseTypes.AppendLine("\t");
 			
 			// Build the name of the C++ binding function that C# calls
 			builders.TempStrBuilder.Length = 0;
@@ -6728,8 +6753,8 @@ namespace NativeScript.Editor
 				builders);
 			
 			// C# class (ending)
-			builders.CsharpBaseTypes.Append("}\n");
-			builders.CsharpBaseTypes.Append('\n');
+			builders.CsharpBaseTypes.AppendLine("}");
+			builders.CsharpBaseTypes.AppendLine();;
 			
 			// Invoke() is how C++ invokes the delegate
 			AppendBaseTypeMethodCallsCsharpMethod(
@@ -7035,7 +7060,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent + 1,
 				builders.CppTypeDefinitions);
-			builders.CppTypeDefinitions.Append("int32_t CppHandle;\n");
+			builders.CppTypeDefinitions.AppendLine("int32_t CppHandle;");
 			
 			// C++ constructor declarations
 			for (int i = 0; i < numConstructors; ++i)
@@ -7063,12 +7088,12 @@ namespace NativeScript.Editor
 			AppendUppercaseWithUnderscores(
 				derivedTypeTypeName.Name,
 				builders.CppMacros);
-			builders.CppMacros.Append("_DEFAULT_CONSTRUCTOR_DECLARATION \\\n");
+			builders.CppMacros.AppendLine("_DEFAULT_CONSTRUCTOR_DECLARATION \\");
 			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append(derivedTypeTypeName.Name);
-			builders.CppMacros.Append("(Plugin::InternalUse iu, int32_t handle);\n");
+			builders.CppMacros.AppendLine("(Plugin::InternalUse iu, int32_t handle);");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append('\n');
+			builders.CppMacros.AppendLine();;
 
 			// C++ constructor definition macro
 			builders.CppMacros.Append("#define ");
@@ -7079,12 +7104,12 @@ namespace NativeScript.Editor
 			AppendUppercaseWithUnderscores(
 				derivedTypeTypeName.Name,
 				builders.CppMacros);
-			builders.CppMacros.Append("_DEFAULT_CONSTRUCTOR_DEFINITION \\\n");
+			builders.CppMacros.AppendLine("_DEFAULT_CONSTRUCTOR_DEFINITION \\");
 			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append(derivedTypeTypeName.Name);
 			builders.CppMacros.Append("::");
 			builders.CppMacros.Append(derivedTypeTypeName.Name);
-			builders.CppMacros.Append("(Plugin::InternalUse iu, int32_t handle) \\\n");
+			builders.CppMacros.AppendLine("(Plugin::InternalUse iu, int32_t handle) \\");
 			AppendCppConstructorInitializerList(
 				cppCtorInitTypes,
 				indent + 1,
@@ -7095,13 +7120,13 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				baseTypeTypeName,
 				builders.CppMacros);
-			builders.CppMacros.Append("(iu, handle) \\\n");
+			builders.CppMacros.AppendLine("(iu, handle) \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("{ \\\n");
+			builders.CppMacros.AppendLine("{ \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("}\n");
+			builders.CppMacros.AppendLine("}");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append('\n');
+			builders.CppMacros.AppendLine();;
 
 			// C++ constructor inline definition macro
 			builders.CppMacros.Append("#define ");
@@ -7112,10 +7137,10 @@ namespace NativeScript.Editor
 			AppendUppercaseWithUnderscores(
 				derivedTypeTypeName.Name,
 				builders.CppMacros);
-			builders.CppMacros.Append("_DEFAULT_CONSTRUCTOR \\\n");
+			builders.CppMacros.AppendLine("_DEFAULT_CONSTRUCTOR \\");
 			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append(derivedTypeTypeName.Name);
-			builders.CppMacros.Append("(Plugin::InternalUse iu, int32_t handle) \\\n");
+			builders.CppMacros.AppendLine("(Plugin::InternalUse iu, int32_t handle) \\");
 			AppendCppConstructorInitializerList(
 				cppCtorInitTypes,
 				indent + 1,
@@ -7126,13 +7151,13 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				baseTypeTypeName,
 				builders.CppMacros);
-			builders.CppMacros.Append("(iu, handle) \\\n");
+			builders.CppMacros.AppendLine("(iu, handle) \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("{ \\\n");
+			builders.CppMacros.AppendLine("{ \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("}\n");
+			builders.CppMacros.AppendLine("}");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append('\n');
+			builders.CppMacros.AppendLine();;
 			
 			// C++ default contents declaration macro
 			builders.CppMacros.Append("#define ");
@@ -7143,13 +7168,13 @@ namespace NativeScript.Editor
 			AppendUppercaseWithUnderscores(
 				derivedTypeTypeName.Name,
 				builders.CppMacros);
-			builders.CppMacros.Append("_DEFAULT_CONTENTS_DECLARATION \\\n");
+			builders.CppMacros.AppendLine("_DEFAULT_CONTENTS_DECLARATION \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("void* operator new(size_t, void* p) noexcept; \\\n");
+			builders.CppMacros.AppendLine("void* operator new(size_t, void* p) noexcept; \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("void operator delete(void*, size_t) noexcept; \\\n");
+			builders.CppMacros.AppendLine("void operator delete(void*, size_t) noexcept; \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append('\n');
+			builders.CppMacros.AppendLine();;
 			
 			// C++ default contents definition macro
 			builders.CppMacros.Append("#define ");
@@ -7160,27 +7185,27 @@ namespace NativeScript.Editor
 			AppendUppercaseWithUnderscores(
 				derivedTypeTypeName.Name,
 				builders.CppMacros);
-			builders.CppMacros.Append("_DEFAULT_CONTENTS_DEFINITION \\\n");
+			builders.CppMacros.AppendLine("_DEFAULT_CONTENTS_DEFINITION \\");
 			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append("void* ");
 			builders.CppMacros.Append(derivedTypeTypeName.Name);
-			builders.CppMacros.Append("::operator new(size_t, void* p) noexcept\\\n");
+			builders.CppMacros.AppendLine("::operator new(size_t, void* p) noexcept\\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("{ \\\n");
+			builders.CppMacros.AppendLine("{ \\");
 			AppendIndent(indent + 1, builders.CppMacros);
-			builders.CppMacros.Append("return p; \\\n");
+			builders.CppMacros.AppendLine("return p; \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("} \\\n");
+			builders.CppMacros.AppendLine("} \\");
 			AppendIndent(indent, builders.CppMacros);
 			builders.CppMacros.Append("void ");
 			builders.CppMacros.Append(derivedTypeTypeName.Name);
-			builders.CppMacros.Append("::operator delete(void*, size_t) noexcept \\\n");
+			builders.CppMacros.AppendLine("::operator delete(void*, size_t) noexcept \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("{ \\\n");
+			builders.CppMacros.AppendLine("{ \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("}\n");
+			builders.CppMacros.AppendLine("}");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append('\n');
+			builders.CppMacros.AppendLine();;
 			
 			// C++ default contents inline definition macro
 			builders.CppMacros.Append("#define ");
@@ -7191,23 +7216,23 @@ namespace NativeScript.Editor
 			AppendUppercaseWithUnderscores(
 				derivedTypeTypeName.Name,
 				builders.CppMacros);
-			builders.CppMacros.Append("_DEFAULT_CONTENTS\\\n");
+			builders.CppMacros.AppendLine("_DEFAULT_CONTENTS\\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("void* operator new(size_t, void* p) noexcept \\\n");
+			builders.CppMacros.AppendLine("void* operator new(size_t, void* p) noexcept \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("{ \\\n");
+			builders.CppMacros.AppendLine("{ \\");
 			AppendIndent(indent + 1, builders.CppMacros);
-			builders.CppMacros.Append("return p; \\\n");
+			builders.CppMacros.AppendLine("return p; \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("} \\\n");
+			builders.CppMacros.AppendLine("} \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("void operator delete(void*, size_t) noexcept \\\n");
+			builders.CppMacros.AppendLine("void operator delete(void*, size_t) noexcept \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("{ \\\n");
+			builders.CppMacros.AppendLine("{ \\");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append("}\n");
+			builders.CppMacros.AppendLine("}");
 			AppendIndent(indent, builders.CppMacros);
-			builders.CppMacros.Append('\n');
+			builders.CppMacros.AppendLine();;
 
 			// C++ function pointers
 			AppendCppFunctionPointerDefinition(
@@ -7390,11 +7415,11 @@ namespace NativeScript.Editor
 					builders.CppMethodDefinitions);
 				builders.CppMethodDefinitions.Append("DLLEXPORT int32_t ");
 				builders.CppMethodDefinitions.Append(cppDefaultConstructorBindingFunctionName);
-				builders.CppMethodDefinitions.Append("(int32_t handle)\n");
+				builders.CppMethodDefinitions.AppendLine("(int32_t handle)");
 				AppendIndent(
 					indent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.AppendLine("{");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
@@ -7403,7 +7428,7 @@ namespace NativeScript.Editor
 					builders.CppMethodDefinitions);
 				builders.CppMethodDefinitions.Append("* memory = Plugin::StoreWhole");
 				builders.CppMethodDefinitions.Append(baseTypeTypeName.Name);
-				builders.CppMethodDefinitions.Append("();\n");
+				builders.CppMethodDefinitions.AppendLine("();");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
@@ -7414,15 +7439,16 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					derivedTypeTypeName,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("(Plugin::InternalUse::Only, handle);\n");
+				builders.CppMethodDefinitions.AppendLine("(Plugin::InternalUse::Only, handle);");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("return thiz->CppHandle;\n");
+				builders.CppMethodDefinitions.AppendLine("return thiz->CppHandle;");
 				AppendIndent(
 					indent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("}\n\n");
+				builders.CppMethodDefinitions.AppendLine("}");
+				builders.CppMethodDefinitions.AppendLine();
 
 				// C# usage of the C++ binding function to create from C# default constructor
 				ParameterInfo[] cppDefaultConstructorBindingFunctionParams = ConvertParameters(
@@ -7459,11 +7485,11 @@ namespace NativeScript.Editor
 					builders.CppMethodDefinitions);
 				builders.CppMethodDefinitions.Append("DLLEXPORT void ");
 				builders.CppMethodDefinitions.Append(cppDestroyBindingFunctionName);
-				builders.CppMethodDefinitions.Append("(int32_t cppHandle)\n");
+				builders.CppMethodDefinitions.AppendLine("(int32_t cppHandle)");
 				AppendIndent(
 					indent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.AppendLine("{");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
@@ -7472,7 +7498,7 @@ namespace NativeScript.Editor
 					builders.CppMethodDefinitions);
 				builders.CppMethodDefinitions.Append("* instance = Plugin::Get");
 				builders.CppMethodDefinitions.Append(baseTypeTypeName.Name);
-				builders.CppMethodDefinitions.Append("(cppHandle);\n");
+				builders.CppMethodDefinitions.AppendLine("(cppHandle);");
 				AppendIndent(
 					indent + 1,
 					builders.CppMethodDefinitions);
@@ -7480,11 +7506,12 @@ namespace NativeScript.Editor
 				AppendCppTypeName(
 					baseTypeTypeName,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("();\n");
+				builders.CppMethodDefinitions.AppendLine("();");
 				AppendIndent(
 					indent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("}\n\n");
+				builders.CppMethodDefinitions.AppendLine("}");
+				builders.CppMethodDefinitions.AppendLine();
 
 				// C# usage of the C++ binding function to destroy from C# default constructor
 				ParameterInfo[] cppDestroyBindingFunctionParams = ConvertParameters(
@@ -7516,23 +7543,23 @@ namespace NativeScript.Editor
 				// C# DestroyFunction enumerator
 				builders.CsharpDestroyFunctionEnumerators.Append("\t\t\t");
 				builders.CsharpDestroyFunctionEnumerators.Append(baseTypeTypeName.Name);
-				builders.CsharpDestroyFunctionEnumerators.Append(",\n");
+				builders.CsharpDestroyFunctionEnumerators.AppendLine(",");
 
 				// C# Destroy queue cases
 				builders.CsharpDestroyQueueCases.Append("\t\t\t\t\t\tcase DestroyFunction.");
 				builders.CsharpDestroyQueueCases.Append(baseTypeTypeName.Name);
-				builders.CsharpDestroyQueueCases.Append(":\n");
+				builders.CsharpDestroyQueueCases.AppendLine(":");
 				builders.CsharpDestroyQueueCases.Append("\t\t\t\t\t\t\t");
 				builders.CsharpDestroyQueueCases.Append(cppDestroyBindingFunctionName);
-				builders.CsharpDestroyQueueCases.Append("(entry.CppHandle);\n");
-				builders.CsharpDestroyQueueCases.Append("\t\t\t\t\t\t\tbreak;\n");
+				builders.CsharpDestroyQueueCases.AppendLine("(entry.CppHandle);");
+				builders.CsharpDestroyQueueCases.AppendLine("\t\t\t\t\t\t\tbreak;");
 			}
 
 			// C# class (beginning)
 			builders.CsharpBaseTypes.Append("namespace ");
 			builders.CsharpBaseTypes.Append(baseTypeTypeName.Namespace);
-			builders.CsharpBaseTypes.Append('\n');
-			builders.CsharpBaseTypes.Append("{\n");
+			builders.CsharpBaseTypes.AppendLine();;
+			builders.CsharpBaseTypes.AppendLine("{");
 			builders.CsharpBaseTypes.Append("\tclass ");
 			builders.CsharpBaseTypes.Append(baseTypeTypeName.Name);
 			if (jsonBaseType != null)
@@ -7542,12 +7569,12 @@ namespace NativeScript.Editor
 					type,
 					builders.CsharpBaseTypes);
 			}
-			builders.CsharpBaseTypes.Append('\n');
-			builders.CsharpBaseTypes.Append("\t{\n");
+			builders.CsharpBaseTypes.AppendLine();;
+			builders.CsharpBaseTypes.AppendLine("\t{");
 			
 			// C# class fields
-			builders.CsharpBaseTypes.Append("\t\tpublic int CppHandle;\n");
-			builders.CsharpBaseTypes.Append("\t\t\n");
+			builders.CsharpBaseTypes.AppendLine("\t\tpublic int CppHandle;");
+			builders.CsharpBaseTypes.AppendLine("\t\t");
 
 			if (derivedTypeTypeName.Name != null)
 			{
@@ -7556,33 +7583,33 @@ namespace NativeScript.Editor
 				{
 					builders.CsharpBaseTypes.Append("\t\tpublic ");
 					builders.CsharpBaseTypes.Append(baseTypeTypeName.Name);
-					builders.CsharpBaseTypes.Append("()\n");
-					builders.CsharpBaseTypes.Append("\t\t{\n");
-					builders.CsharpBaseTypes.Append(
-						"\t\t\tint handle = NativeScript.Bindings.ObjectStore.Store(this);\n");
+					builders.CsharpBaseTypes.AppendLine("()");
+					builders.CsharpBaseTypes.AppendLine("\t\t{");
+					builders.CsharpBaseTypes.AppendLine(
+						"\t\t\tint handle = NativeScript.Bindings.ObjectStore.Store(this);");
 					builders.CsharpBaseTypes.Append(
 						"\t\t\tCppHandle = NativeScript.Bindings.New");
 					builders.CsharpBaseTypes.Append(baseTypeTypeName.Name);
-					builders.CsharpBaseTypes.Append("(handle);\n");
-					builders.CsharpBaseTypes.Append("\t\t}\n");
-					builders.CsharpBaseTypes.Append("\t\t\n");
+					builders.CsharpBaseTypes.AppendLine("(handle);");
+					builders.CsharpBaseTypes.AppendLine("\t\t}");
+					builders.CsharpBaseTypes.AppendLine("\t\t");
 				}
 
 				// C# finalizer/destructor
 				builders.CsharpBaseTypes.Append("\t\t~");
 				builders.CsharpBaseTypes.Append(baseTypeTypeName.Name);
-				builders.CsharpBaseTypes.Append("()\n");
-				builders.CsharpBaseTypes.Append("\t\t{\n");
-				builders.CsharpBaseTypes.Append("\t\t\tif (CppHandle != 0)\n");
-				builders.CsharpBaseTypes.Append("\t\t\t{\n");
+				builders.CsharpBaseTypes.AppendLine("()");
+				builders.CsharpBaseTypes.AppendLine("\t\t{");
+				builders.CsharpBaseTypes.AppendLine("\t\t\tif (CppHandle != 0)");
+				builders.CsharpBaseTypes.AppendLine("\t\t\t{");
 				builders.CsharpBaseTypes.Append(
 					"\t\t\t\tNativeScript.Bindings.QueueDestroy(NativeScript.Bindings.DestroyFunction.");
 				builders.CsharpBaseTypes.Append(baseTypeTypeName.Name);
-				builders.CsharpBaseTypes.Append(", CppHandle);\n");
-				builders.CsharpBaseTypes.Append("\t\t\t\tCppHandle = 0;\n");
-				builders.CsharpBaseTypes.Append("\t\t\t}\n");
-				builders.CsharpBaseTypes.Append("\t\t}\n");
-				builders.CsharpBaseTypes.Append("\t\t\n");
+				builders.CsharpBaseTypes.AppendLine(", CppHandle);");
+				builders.CsharpBaseTypes.AppendLine("\t\t\t\tCppHandle = 0;");
+				builders.CsharpBaseTypes.AppendLine("\t\t\t}");
+				builders.CsharpBaseTypes.AppendLine("\t\t}");
+				builders.CsharpBaseTypes.AppendLine("\t\t");
 			}
 
 			// C# class constructors
@@ -7599,16 +7626,16 @@ namespace NativeScript.Editor
 						parameters,
 						builders.CsharpBaseTypes);
 				}
-				builders.CsharpBaseTypes.Append(")\n");
+				builders.CsharpBaseTypes.AppendLine(")");
 				builders.CsharpBaseTypes.Append("\t\t\t: base(");
 				AppendCsharpFunctionCallParameters(
 					parameters,
 					builders.CsharpBaseTypes);
-				builders.CsharpBaseTypes.Append(")\n");
-				builders.CsharpBaseTypes.Append("\t\t{\n");
-				builders.CsharpBaseTypes.Append("\t\t\tCppHandle = cppHandle;\n");
-				builders.CsharpBaseTypes.Append("\t\t}\n");
-				builders.CsharpBaseTypes.Append("\t\t\n");
+				builders.CsharpBaseTypes.AppendLine(")");
+				builders.CsharpBaseTypes.AppendLine("\t\t{");
+				builders.CsharpBaseTypes.AppendLine("\t\t\tCppHandle = cppHandle;");
+				builders.CsharpBaseTypes.AppendLine("\t\t}");
+				builders.CsharpBaseTypes.AppendLine("\t\t");
 			}
 			
 			// C# constructor delegate type
@@ -7962,9 +7989,9 @@ namespace NativeScript.Editor
 			}
 			
 			// C# class (ending)
-			builders.CsharpBaseTypes.Append("\t}\n");
-			builders.CsharpBaseTypes.Append("}\n");
-			builders.CsharpBaseTypes.Append("\n");
+			builders.CsharpBaseTypes.AppendLine("\t}");
+			builders.CsharpBaseTypes.AppendLine("}");
+			builders.CsharpBaseTypes.AppendLine();
 			
 			// C++ method definitions (end)
 			AppendCppMethodDefinitionsEnd(
@@ -8064,8 +8091,8 @@ namespace NativeScript.Editor
 					builders.CsharpBaseTypes);
 				builders.CsharpBaseTypes.Append(']');
 			}
-			builders.CsharpBaseTypes.Append('\n');
-			builders.CsharpBaseTypes.Append("\t\t{\n");
+			builders.CsharpBaseTypes.AppendLine();;
+			builders.CsharpBaseTypes.AppendLine("\t\t{");
 			
 			TypeKind propertyTypeKind = GetTypeKind(
 				propertyInfo.PropertyType);
@@ -8102,8 +8129,8 @@ namespace NativeScript.Editor
 					builders);
 			}
 			
-			builders.CsharpBaseTypes.Append("\t\t}\n");
-			builders.CsharpBaseTypes.Append("\t\t\n");
+			builders.CsharpBaseTypes.AppendLine("\t\t}");
+			builders.CsharpBaseTypes.AppendLine("\t\t");
 		}
 		
 		static void AppendBaseTypeEvent(
@@ -8129,8 +8156,8 @@ namespace NativeScript.Editor
 				builders.CsharpBaseTypes);
 			builders.CsharpBaseTypes.Append(' ');
 			builders.CsharpBaseTypes.Append(eventInfo.Name);
-			builders.CsharpBaseTypes.Append('\n');
-			builders.CsharpBaseTypes.Append("\t\t{\n");
+			builders.CsharpBaseTypes.AppendLine();;
+			builders.CsharpBaseTypes.AppendLine("\t\t{");
 			
 			TypeKind eventHandlerTypeKind = GetTypeKind(
 				eventInfo.EventHandlerType);
@@ -8167,8 +8194,8 @@ namespace NativeScript.Editor
 					builders);
 			}
 			
-			builders.CsharpBaseTypes.Append("\t\t\t}\n");
-			builders.CsharpBaseTypes.Append("\t\t\t\n");
+			builders.CsharpBaseTypes.AppendLine("\t\t\t}");
+			builders.CsharpBaseTypes.AppendLine("\t\t\t");
 		}
 		
 		static void AppendBaseTypeNativePropertyOrEvent(
@@ -8225,8 +8252,8 @@ namespace NativeScript.Editor
 				operationType,
 				1,
 				operationType.Length - 1);
-			builders.CsharpBaseTypes.Append('\n');
-			builders.CsharpBaseTypes.Append("\t\t\t{\n");
+			builders.CsharpBaseTypes.AppendLine();;
+			builders.CsharpBaseTypes.AppendLine("\t\t\t{");
 			AppendCsharpBaseTypeCppMethodCallMethodBody(
 				methodInfo,
 				nativeInvokeFuncName,
@@ -8234,7 +8261,7 @@ namespace NativeScript.Editor
 				propertyOrEventTypeKind,
 				4,
 				builders.CsharpBaseTypes);
-			builders.CsharpBaseTypes.Append("\t\t\t}\n");
+			builders.CsharpBaseTypes.AppendLine("\t\t\t}");
 		}
 		
 		static void AppendCsharpParams(
@@ -8326,7 +8353,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendCppPluginFunctionCall(
 				false,
 				GetTypeName(type),
@@ -8345,11 +8372,11 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// C# delegate type for the binding function that C++ calls
 			ParameterInfo[] invokeParamsWithThis = new ParameterInfo[
@@ -8511,7 +8538,7 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			if (invokeMethod.ReturnType != typeof(void))
 			{
 				TypeKind returnTypeKind = GetTypeKind(invokeMethod.ReturnType);
@@ -8521,21 +8548,21 @@ namespace NativeScript.Editor
 				if (returnTypeKind == TypeKind.Class ||
 					returnTypeKind == TypeKind.ManagedStruct)
 				{
-					builders.CppMethodDefinitions.Append("return nullptr;\n");
+					builders.CppMethodDefinitions.AppendLine("return nullptr;");
 				}
 				else
 				{
-					builders.CppMethodDefinitions.Append("return {};\n");
+					builders.CppMethodDefinitions.AppendLine("return {};");
 				}
 			}
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(
 				indent,
 				builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// C++ binding function that C# calls. Calls the C++ method.
 			TypeKind invokeReturnTypeKind = GetTypeKind(
@@ -8617,20 +8644,20 @@ namespace NativeScript.Editor
 				AppendCsharpTypeFullName(
 					bindingTypeTypeName,
 					output);
-				output.Append(" thiz;\n");
+				output.AppendLine(" thiz;");
 			}
 			if (typeIsDelegate)
 			{
-				output.Append("\t\t\t\tif (classHandle != 0)\n");
-				output.Append("\t\t\t\t{\n");
+				output.AppendLine("\t\t\t\tif (classHandle != 0)");
+				output.AppendLine("\t\t\t\t{");
 				output.Append("\t\t\t\t\tthiz = (");
 				AppendCsharpTypeFullName(
 					bindingTypeTypeName,
 					output);
-				output.Append(")ObjectStore.Remove(classHandle);\n");
-				output.Append("\t\t\t\t\tthiz.CppHandle = 0;\n");
-				output.Append("\t\t\t\t}\n");
-				output.Append("\t\t\t\t\n");
+				output.AppendLine(")ObjectStore.Remove(classHandle);");
+				output.AppendLine("\t\t\t\t\tthiz.CppHandle = 0;");
+				output.AppendLine("\t\t\t\t}");
+				output.AppendLine("\t\t\t\t");
 			}
 			if (derivedName != null)
 			{
@@ -8638,12 +8665,12 @@ namespace NativeScript.Editor
 				AppendCsharpTypeFullName(
 					bindingTypeTypeName,
 					output);
-				output.Append(")ObjectStore.Get(handle);\n");
-				output.Append("\t\t\t\tint cppHandle = thiz.CppHandle;\n");
-				output.Append("\t\t\t\tthiz.CppHandle = 0;\n");
+				output.AppendLine(")ObjectStore.Get(handle);");
+				output.AppendLine("\t\t\t\tint cppHandle = thiz.CppHandle;");
+				output.AppendLine("\t\t\t\tthiz.CppHandle = 0;");
 				output.Append("\t\t\t\tQueueDestroy(DestroyFunction.");
 				output.Append(bindingTypeTypeName.Name);
-				output.Append(", cppHandle);\n");
+				output.AppendLine(", cppHandle);");
 			}
 			output.Append("\t\t\t\tObjectStore.Remove(handle);");
 			AppendCsharpFunctionReturn(
@@ -8679,8 +8706,8 @@ namespace NativeScript.Editor
 			AppendCsharpParams(
 				invokeParams,
 				output);
-			output.Append(")\n");
-			output.Append("\t\t{\n");
+			output.AppendLine(")");
+			output.AppendLine("\t\t{");
 			AppendCsharpBaseTypeCppMethodCallMethodBody(
 				invokeMethod,
 				nativeInvokeFuncName,
@@ -8688,8 +8715,8 @@ namespace NativeScript.Editor
 				invokeReturnTypeKind,
 				3,
 				output);
-			output.Append("\t\t}\n");
-			output.Append("\t\n");
+			output.AppendLine("\t\t}");
+			output.AppendLine("\t");
 		}
 		
 		static void AppendCsharpBaseTypeCppMethodCallMethodBody(
@@ -8703,15 +8730,15 @@ namespace NativeScript.Editor
 			AppendIndent(
 				indent,
 				output);
-			output.Append("if (CppHandle != 0)\n");
+			output.AppendLine("if (CppHandle != 0)");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("int thisHandle = CppHandle;\n");
+			output.AppendLine("int thisHandle = CppHandle;");
 			AppendCppFunctionCall(
 				nativeInvokeFuncName,
 				invokeParamsWithThis,
@@ -8740,17 +8767,17 @@ namespace NativeScript.Editor
 						AppendHandleStoreTypeName(
 							invokeMethod.ReturnType,
 							output);
-						output.Append(".Get(returnVal);\n");
+						output.AppendLine(".Get(returnVal);");
 						break;
 					default:
-						output.Append("returnVal;\n");
+						output.AppendLine("returnVal;");
 						break;
 				}
 			}
 			AppendIndent(
 				indent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			if (invokeMethod.ReturnType != typeof(void))
 			{
 				AppendIndent(
@@ -8760,7 +8787,7 @@ namespace NativeScript.Editor
 				AppendCsharpTypeFullName(
 					invokeMethod.ReturnType,
 					output);
-				output.Append(");\n");
+				output.AppendLine(");");
 			}
 		}
 
@@ -8791,11 +8818,11 @@ namespace NativeScript.Editor
 					cppConstructorParams,
 					output);
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			if (typeIsDelegate)
 			{
-				output.Append(
-					"\t\t\t\tclassHandle = NativeScript.Bindings.ObjectStore.Store(thiz);\n");
+				output.AppendLine(
+					"\t\t\t\tclassHandle = NativeScript.Bindings.ObjectStore.Store(thiz);");
 				output.Append(
 					"\t\t\t\thandle = NativeScript.Bindings.ObjectStore.Store(thiz.Delegate);");
 			}
@@ -8905,19 +8932,19 @@ namespace NativeScript.Editor
 					output.Append(", ");
 				}
 			}
-			output.Append(")\n");
+			output.AppendLine(")");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("try\n");
+			output.AppendLine("try");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			foreach (ParameterInfo parameter in methodParams)
 			{
 				if (parameter.Kind == TypeKind.Class ||
@@ -8934,7 +8961,7 @@ namespace NativeScript.Editor
 						output);
 					output.Append("(Plugin::InternalUse::Only, ");
 					output.Append(parameter.Name);
-					output.Append("Handle);\n");
+					output.AppendLine("Handle);");
 				}
 			}
 			AppendIndent(
@@ -8974,45 +9001,45 @@ namespace NativeScript.Editor
 			{
 				output.Append(".Handle");
 			}
-			output.Append(";\n");
+			output.AppendLine(";");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append(
-				"catch (System::Exception ex)\n");
+			output.AppendLine(
+				"catch (System::Exception ex)");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				indent + 2,
 				output);
-			output.Append(
-				"Plugin::SetException(ex.Handle);\n");
+			output.AppendLine(
+				"Plugin::SetException(ex.Handle);");
 			if (method.ReturnType != typeof(void))
 			{
 				AppendIndent(
 					indent + 2,
 					output);
-				output.Append(
-					"return {};\n");
+				output.AppendLine(
+					"return {};");
 			}
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("catch (...)\n");
+			output.AppendLine("catch (...)");
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				indent + 2,
 				output);
@@ -9021,37 +9048,37 @@ namespace NativeScript.Editor
 			AppendCppTypeFullName(
 				type,
 				output);
-			output.Append("\";\n");
+			output.AppendLine("\";");
 			AppendIndent(
 				indent + 2,
 				output);
-			output.Append(
-				"System::Exception ex(msg);\n");
+			output.AppendLine(
+				"System::Exception ex(msg);");
 			AppendIndent(
 				indent + 2,
 				output);
-			output.Append(
-				"Plugin::SetException(ex.Handle);\n");
+			output.AppendLine(
+				"Plugin::SetException(ex.Handle);");
 			if (method.ReturnType != typeof(void))
 			{
 				AppendIndent(
 					indent + 2,
 					output);
-				output.Append(
-					"return {};\n");
+				output.AppendLine(
+					"return {};");
 			}
 			AppendIndent(
 				indent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				indent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				indent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeInequalityOperator(
@@ -9078,24 +9105,24 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append("& other) const\n");
+			output.AppendLine("& other) const");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append(
-				"return Handle != other.Handle;\n");
+			output.AppendLine(
+				"return Handle != other.Handle;");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeEqualityOperator(
@@ -9122,24 +9149,24 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append("& other) const\n");
+			output.AppendLine("& other) const");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append(
-				"return Handle == other.Handle;\n");
+			output.AppendLine(
+				"return Handle == other.Handle;");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeMoveAssignmentOperator(
@@ -9174,60 +9201,60 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append("&& other)\n");
+			output.AppendLine("&& other)");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
 			output.Append("Plugin::Remove");
 			output.Append(bindingTypeName);
-			output.Append("(CppHandle);\n");
+			output.AppendLine("(CppHandle);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("CppHandle = 0;\n");
+			output.AppendLine("CppHandle = 0;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("if (Handle)\n");
+			output.AppendLine("if (Handle)");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("int32_t handle = Handle;\n");
+			output.AppendLine("int32_t handle = Handle;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 2,
 					output);
-				output.Append("int32_t classHandle = ClassHandle;\n");
+				output.AppendLine("int32_t classHandle = ClassHandle;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("Handle = 0;\n");
+			output.AppendLine("Handle = 0;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 2,
 					output);
-				output.Append("ClassHandle = 0;\n");
+				output.AppendLine("ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append(
-				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
+			output.AppendLine(
+				"if (Plugin::DereferenceManagedClassNoRelease(handle))");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 3,
 				output);
@@ -9238,50 +9265,50 @@ namespace NativeScript.Editor
 			{
 				output.Append(", classHandle");
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			AppendCppUnhandledExceptionHandling(
 				cppMethodDefinitionsIndent + 3,
 				output);
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append(
-					"ClassHandle = other.ClassHandle;\n");
+				output.AppendLine(
+					"ClassHandle = other.ClassHandle;");
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append("other.ClassHandle = 0;\n");
+				output.AppendLine("other.ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("Handle = other.Handle;\n");
+			output.AppendLine("Handle = other.Handle;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("other.Handle = 0;\n");
+			output.AppendLine("other.Handle = 0;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("return *this;\n");
+			output.AppendLine("return *this;");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeAssignmentOperatorNullptr(
@@ -9308,51 +9335,51 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append(
-				"::operator=(decltype(nullptr))\n");
+			output.AppendLine(
+				"::operator=(decltype(nullptr))");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("if (Handle)\n");
+			output.AppendLine("if (Handle)");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("int32_t handle = Handle;\n");
+			output.AppendLine("int32_t handle = Handle;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 2,
 					output);
-				output.Append("int32_t classHandle = ClassHandle;\n");
+				output.AppendLine("int32_t classHandle = ClassHandle;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("Handle = 0;\n");
+			output.AppendLine("Handle = 0;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 2,
 					output);
-				output.Append("ClassHandle = 0;\n");
+				output.AppendLine("ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append(
-				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
+			output.AppendLine(
+				"if (Plugin::DereferenceManagedClassNoRelease(handle))");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 3,
 				output);
@@ -9363,41 +9390,41 @@ namespace NativeScript.Editor
 			{
 				output.Append(", classHandle");
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			AppendCppUnhandledExceptionHandling(
 				cppMethodDefinitionsIndent + 3,
 				output);
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append("ClassHandle = 0;\n");
+				output.AppendLine("ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("Handle = 0;\n");
+			output.AppendLine("Handle = 0;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("return *this;\n");
+			output.AppendLine("return *this;");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeAssignmentOperatorSameType(
@@ -9430,11 +9457,11 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append("& other)\n");
+			output.AppendLine("& other)");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendSetHandle(
 				typeTypeName,
 				TypeKind.Class,
@@ -9448,21 +9475,21 @@ namespace NativeScript.Editor
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append(
-					"ClassHandle = other.ClassHandle;\n");
+				output.AppendLine(
+					"ClassHandle = other.ClassHandle;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("return *this;\n");
+			output.AppendLine("return *this;");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeDestructor(
@@ -9492,11 +9519,11 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append("()\n");
+			output.AppendLine("()");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			if (!string.IsNullOrEmpty(derivedTypeName))
 			{
 				AppendIndent(
@@ -9504,57 +9531,57 @@ namespace NativeScript.Editor
 					output);
 				output.Append("Plugin::RemoveWhole");
 				output.Append(bindingTypeName);
-				output.Append("(this);\n");
+				output.AppendLine("(this);");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
 			output.Append("Plugin::Remove");
 			output.Append(typeName);
-			output.Append("(CppHandle);\n");
+			output.AppendLine("(CppHandle);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("CppHandle = 0;\n");
+			output.AppendLine("CppHandle = 0;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("if (Handle)\n");
+			output.AppendLine("if (Handle)");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("int32_t handle = Handle;\n");
+			output.AppendLine("int32_t handle = Handle;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 2,
 					output);
-				output.Append("int32_t classHandle = ClassHandle;\n");
+				output.AppendLine("int32_t classHandle = ClassHandle;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("Handle = 0;\n");
+			output.AppendLine("Handle = 0;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 2,
 					output);
-				output.Append("ClassHandle = 0;\n");
+				output.AppendLine("ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append(
-				"if (Plugin::DereferenceManagedClassNoRelease(handle))\n");
+			output.AppendLine(
+				"if (Plugin::DereferenceManagedClassNoRelease(handle))");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 3,
 				output);
@@ -9565,26 +9592,26 @@ namespace NativeScript.Editor
 			{
 				output.Append(", classHandle");
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			AppendCppUnhandledExceptionHandling(
 				cppMethodDefinitionsIndent + 3,
 				output);
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeHandleConstructor(
@@ -9609,8 +9636,8 @@ namespace NativeScript.Editor
 			AppendCppTypeName(
 				typeTypeName,
 				output);
-			output.Append(
-				"(Plugin::InternalUse, int32_t handle)\n");
+			output.AppendLine(
+				"(Plugin::InternalUse, int32_t handle)");
 			AppendCppConstructorInitializerList(
 				interfaceTypes,
 				cppMethodDefinitionsIndent + 1,
@@ -9618,50 +9645,50 @@ namespace NativeScript.Editor
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("Handle = handle;\n");
+			output.AppendLine("Handle = handle;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
 			output.Append("CppHandle = Plugin::Store");
 			output.Append(bindingTypeName);
-			output.Append("(this);\n");
+			output.AppendLine("(this);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("if (Handle)\n");
+			output.AppendLine("if (Handle)");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append(
-				"Plugin::ReferenceManagedClass(Handle);\n");
+			output.AppendLine(
+				"Plugin::ReferenceManagedClass(Handle);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append(
-					"ClassHandle = 0;\n");
+				output.AppendLine(
+					"ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 		
 		static void AppendCppBaseTypeMoveConstructor(
@@ -9692,7 +9719,7 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append("&& other)\n");
+			output.AppendLine("&& other)");
 			AppendCppConstructorInitializerList(
 				interfaceTypes,
 				cppMethodDefinitionsIndent + 1,
@@ -9700,48 +9727,48 @@ namespace NativeScript.Editor
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append(
-				"Handle = other.Handle;\n");
+			output.AppendLine(
+				"Handle = other.Handle;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append(
-				"CppHandle = other.CppHandle;\n");
+			output.AppendLine(
+				"CppHandle = other.CppHandle;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append(
-					"ClassHandle = other.ClassHandle;\n");
+				output.AppendLine(
+					"ClassHandle = other.ClassHandle;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("other.Handle = 0;\n");
+			output.AppendLine("other.Handle = 0;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("other.CppHandle = 0;\n");
+			output.AppendLine("other.CppHandle = 0;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append("other.ClassHandle = 0;\n");
+				output.AppendLine("other.ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeCopyConstructor(
@@ -9773,7 +9800,7 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeIsDelegate ? typeParams : null,
 				output);
-			output.Append("& other)\n");
+			output.AppendLine("& other)");
 			AppendCppConstructorInitializerList(
 				interfaceTypes,
 				cppMethodDefinitionsIndent + 1,
@@ -9781,51 +9808,51 @@ namespace NativeScript.Editor
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append(
-				"Handle = other.Handle;\n");
+			output.AppendLine(
+				"Handle = other.Handle;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
 			output.Append("CppHandle = Plugin::Store");
 			output.Append(typeName);
-			output.Append("(this);\n");
+			output.AppendLine("(this);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("if (Handle)\n");
+			output.AppendLine("if (Handle)");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append(
-				"Plugin::ReferenceManagedClass(Handle);\n");
+			output.AppendLine(
+				"Plugin::ReferenceManagedClass(Handle);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append(
-					"ClassHandle = other.ClassHandle;\n");
+				output.AppendLine(
+					"ClassHandle = other.ClassHandle;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeNullptrConstructor(
@@ -9850,7 +9877,7 @@ namespace NativeScript.Editor
 			AppendCppTypeName(
 				cppTypeTypeName,
 				output);
-			output.Append("(decltype(nullptr))\n");
+			output.AppendLine("(decltype(nullptr))");
 			AppendCppConstructorInitializerList(
 				interfaceTypes,
 				cppMethodDefinitionsIndent + 1,
@@ -9858,28 +9885,28 @@ namespace NativeScript.Editor
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
 			output.Append("CppHandle = Plugin::Store");
 			output.Append(typeName);
-			output.Append("(this);\n");
+			output.AppendLine("(this);");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append("ClassHandle = 0;\n");
+				output.AppendLine("ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppBaseTypeConstructor(
@@ -9912,27 +9939,27 @@ namespace NativeScript.Editor
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
 			output.Append("CppHandle = Plugin::Store");
 			output.Append(bindingTypeName);
-			output.Append("(this);\n");
+			output.AppendLine("(this);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("System::Int32* handle = (System::Int32*)&Handle;\n");
+			output.AppendLine("System::Int32* handle = (System::Int32*)&Handle;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("int32_t cppHandle = CppHandle;\n");
+			output.AppendLine("int32_t cppHandle = CppHandle;");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 1,
 					output);
-				output.Append("System::Int32* classHandle = (System::Int32*)&ClassHandle;\n");
+				output.AppendLine("System::Int32* classHandle = (System::Int32*)&ClassHandle;");
 			}
 			AppendCppPluginFunctionCall(
 				true,
@@ -9947,60 +9974,60 @@ namespace NativeScript.Editor
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("if (Handle)\n");
+			output.AppendLine("if (Handle)");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append(
-				"Plugin::ReferenceManagedClass(Handle);\n");
+			output.AppendLine(
+				"Plugin::ReferenceManagedClass(Handle);");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("else\n");
+			output.AppendLine("else");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
 			output.Append("Plugin::Remove");
 			output.Append(bindingTypeName);
-			output.Append("(CppHandle);\n");
+			output.AppendLine("(CppHandle);");
 			if (typeIsDelegate)
 			{
 				AppendIndent(
 					cppMethodDefinitionsIndent + 2,
 					output);
-				output.Append("ClassHandle = 0;\n");
+				output.AppendLine("ClassHandle = 0;");
 			}
 			AppendIndent(
 				cppMethodDefinitionsIndent + 2,
 				output);
-			output.Append("CppHandle = 0;\n");
+			output.AppendLine("CppHandle = 0;");
 			AppendIndent(
 				cppMethodDefinitionsIndent + 1,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendCppUnhandledExceptionHandling(
 				cppMethodDefinitionsIndent + 1,
 				output);
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(
 				cppMethodDefinitionsIndent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 
 		static void AppendCppPointerFreeListInit(
@@ -10015,7 +10042,7 @@ namespace NativeScript.Editor
 			output.Append(typeName);
 			output.Append("FreeListSize = ");
 			output.Append(maxSimultaneous);
-			output.Append(";\n");
+			output.AppendLine(";");
 			
 			output.Append("\tPlugin::");
 			output.Append(typeName);
@@ -10026,7 +10053,7 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append("**)curMemory;\n");
+			output.AppendLine("**)curMemory;");
 			
 			output.Append("\tcurMemory += ");
 			output.Append(maxSimultaneous);
@@ -10037,14 +10064,14 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append("*);\n");
+			output.AppendLine("*);");
 			
-			output.Append("\t\n");
+			output.AppendLine("\t");
 			
 			outputFirstBoot.Append("\t\tfor (int32_t i = 0, end = Plugin::");
 			outputFirstBoot.Append(typeName);
-			outputFirstBoot.Append("FreeListSize - 1; i < end; ++i)\n");
-			outputFirstBoot.Append("\t\t{\n");
+			outputFirstBoot.AppendLine("FreeListSize - 1; i < end; ++i)");
+			outputFirstBoot.AppendLine("\t\t{");
 			outputFirstBoot.Append("\t\t\tPlugin::");
 			outputFirstBoot.Append(typeName);
 			outputFirstBoot.Append("FreeList[i] = (");
@@ -10056,22 +10083,22 @@ namespace NativeScript.Editor
 				outputFirstBoot);
 			outputFirstBoot.Append("*)(Plugin::");
 			outputFirstBoot.Append(typeName);
-			outputFirstBoot.Append("FreeList + i + 1);\n");
-			outputFirstBoot.Append("\t\t}\n");
+			outputFirstBoot.AppendLine("FreeList + i + 1);");
+			outputFirstBoot.AppendLine("\t\t}");
 			
 			outputFirstBoot.Append("\t\tPlugin::");
 			outputFirstBoot.Append(typeName);
 			outputFirstBoot.Append("FreeList[Plugin::");
 			outputFirstBoot.Append(typeName);
-			outputFirstBoot.Append("FreeListSize - 1] = nullptr;\n");
+			outputFirstBoot.AppendLine("FreeListSize - 1] = nullptr;");
 			
 			outputFirstBoot.Append("\t\tPlugin::NextFree");
 			outputFirstBoot.Append(typeName);
 			outputFirstBoot.Append(" = Plugin::");
 			outputFirstBoot.Append(typeName);
-			outputFirstBoot.Append("FreeList + 1;\n");
+			outputFirstBoot.AppendLine("FreeList + 1;");
 			
-			outputFirstBoot.Append("\t\t\n");
+			outputFirstBoot.AppendLine("\t\t");
 		}
 
 		static void AppendCppPointerFreeListStateAndFunctions(
@@ -10088,13 +10115,13 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append(" pointers\n");
-			output.Append("\t\n");
+			output.AppendLine(" pointers");
+			output.AppendLine("\t");
 
 			// Size variable
 			output.Append("\tint32_t ");
 			output.Append(bindingTypeName);
-			output.Append("FreeListSize;\n");
+			output.AppendLine("FreeListSize;");
 
 			// Free list variable
 			output.Append('\t');
@@ -10106,7 +10133,7 @@ namespace NativeScript.Editor
 				output);
 			output.Append("** ");
 			output.Append(bindingTypeName);
-			output.Append("FreeList;\n");
+			output.AppendLine("FreeList;");
 
 			// Next free variable
 			output.Append('\t');
@@ -10118,8 +10145,8 @@ namespace NativeScript.Editor
 				output);
 			output.Append("** NextFree");
 			output.Append(bindingTypeName);
-			output.Append(";\n");
-			output.Append("\t\n");
+			output.AppendLine(";");
+			output.AppendLine("\t");
 
 			// Store function
 			output.Append("\tint32_t Store");
@@ -10131,11 +10158,11 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append("* del)\n");
-			output.Append("\t{\n");
+			output.AppendLine("* del)");
+			output.AppendLine("\t{");
 			output.Append("\t\tassert(NextFree");
 			output.Append(bindingTypeName);
-			output.Append(" != nullptr);\n");
+			output.AppendLine(" != nullptr);");
 			output.Append("\t\t");
 			AppendCppTypeFullName(
 				cppTypeTypeName,
@@ -10145,7 +10172,7 @@ namespace NativeScript.Editor
 				output);
 			output.Append("** pNext = NextFree");
 			output.Append(bindingTypeName);
-			output.Append(";\n");
+			output.AppendLine(";");
 			output.Append("\t\tNextFree");
 			output.Append(bindingTypeName);
 			output.Append(" = (");
@@ -10155,13 +10182,13 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append("**)*pNext;\n");
-			output.Append("\t\t*pNext = del;\n");
+			output.AppendLine("**)*pNext;");
+			output.AppendLine("\t\t*pNext = del;");
 			output.Append("\t\treturn (int32_t)(pNext - ");
 			output.Append(bindingTypeName);
-			output.Append("FreeList);\n");
-			output.Append("\t}\n");
-			output.Append("\t\n");
+			output.AppendLine("FreeList);");
+			output.AppendLine("\t}");
+			output.AppendLine("\t");
 
 			// Get function
 			output.Append('\t');
@@ -10173,23 +10200,23 @@ namespace NativeScript.Editor
 				output);
 			output.Append("* Get");
 			output.Append(bindingTypeName);
-			output.Append("(int32_t handle)\n");
-			output.Append("\t{\n");
+			output.AppendLine("(int32_t handle)");
+			output.AppendLine("\t{");
 			output.Append(
 				"\t\tassert(handle >= 0 && handle < ");
 			output.Append(bindingTypeName);
-			output.Append("FreeListSize);\n");
+			output.AppendLine("FreeListSize);");
 			output.Append("\t\treturn ");
 			output.Append(bindingTypeName);
-			output.Append("FreeList[handle];\n");
-			output.Append("\t}\n");
-			output.Append("\t\n");
+			output.AppendLine("FreeList[handle];");
+			output.AppendLine("\t}");
+			output.AppendLine("\t");
 
 			// Remove function
 			output.Append("\tvoid Remove");
 			output.Append(bindingTypeName);
-			output.Append("(int32_t handle)\n");
-			output.Append("\t{\n");
+			output.AppendLine("(int32_t handle)");
+			output.AppendLine("\t{");
 			output.Append("\t\t");
 			AppendCppTypeFullName(
 				cppTypeTypeName,
@@ -10199,7 +10226,7 @@ namespace NativeScript.Editor
 				output);
 			output.Append("** pRelease = ");
 			output.Append(bindingTypeName);
-			output.Append("FreeList + handle;\n");
+			output.AppendLine("FreeList + handle;");
 			output.Append("\t\t*pRelease = (");
 			AppendCppTypeFullName(
 				cppTypeTypeName,
@@ -10209,12 +10236,12 @@ namespace NativeScript.Editor
 				output);
 			output.Append("*)NextFree");
 			output.Append(bindingTypeName);
-			output.Append(";\n");
+			output.AppendLine(";");
 			output.Append("\t\tNextFree");
 			output.Append(bindingTypeName);
-			output.Append(" = pRelease;\n");
-			output.Append("\t}\n");
-			output.Append("\t\n");
+			output.AppendLine(" = pRelease;");
+			output.AppendLine("\t}");
+			output.AppendLine("\t");
 		}
 
 		static void AppendCppWholeObjectFreeListInit(
@@ -10227,46 +10254,46 @@ namespace NativeScript.Editor
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeListSize = ");
 			output.Append(maxSimultaneous);
-			output.Append(";\n");
+			output.AppendLine(";");
 
 			output.Append("\tPlugin::");
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeList = (Plugin::");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeListEntry*)curMemory;\n");
+			output.AppendLine("FreeWholeListEntry*)curMemory;");
 
 			output.Append("\tcurMemory += ");
 			output.Append(maxSimultaneous);
 			output.Append(" * sizeof(Plugin::");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeListEntry);\n");
+			output.AppendLine("FreeWholeListEntry);");
 
-			output.Append("\t\n");
+			output.AppendLine("\t");
 
 			outputFirstBoot.Append("\t\tfor (int32_t i = 0, end = Plugin::");
 			outputFirstBoot.Append(bindingTypeName);
-			outputFirstBoot.Append("FreeWholeListSize - 1; i < end; ++i)\n");
-			outputFirstBoot.Append("\t\t{\n");
+			outputFirstBoot.AppendLine("FreeWholeListSize - 1; i < end; ++i)");
+			outputFirstBoot.AppendLine("\t\t{");
 			outputFirstBoot.Append("\t\t\tPlugin::");
 			outputFirstBoot.Append(bindingTypeName);
 			outputFirstBoot.Append("FreeWholeList[i].Next = Plugin::");
 			outputFirstBoot.Append(bindingTypeName);
-			outputFirstBoot.Append("FreeWholeList + i + 1;\n");
-			outputFirstBoot.Append("\t\t}\n");
+			outputFirstBoot.AppendLine("FreeWholeList + i + 1;");
+			outputFirstBoot.AppendLine("\t\t}");
 
 			outputFirstBoot.Append("\t\tPlugin::");
 			outputFirstBoot.Append(bindingTypeName);
 			outputFirstBoot.Append("FreeWholeList[Plugin::");
 			outputFirstBoot.Append(bindingTypeName);
-			outputFirstBoot.Append("FreeWholeListSize - 1].Next = nullptr;\n");
+			outputFirstBoot.AppendLine("FreeWholeListSize - 1].Next = nullptr;");
 
 			outputFirstBoot.Append("\t\tPlugin::NextFreeWhole");
 			outputFirstBoot.Append(bindingTypeName);
 			outputFirstBoot.Append(" = Plugin::");
 			outputFirstBoot.Append(bindingTypeName);
-			outputFirstBoot.Append("FreeWholeList + 1;\n");
+			outputFirstBoot.AppendLine("FreeWholeList + 1;");
 
-			outputFirstBoot.Append("\t\t\n");
+			outputFirstBoot.AppendLine("\t\t");
 		}
 
 		static void AppendCppWholeObjectFreeListStateAndFunctions(
@@ -10283,17 +10310,17 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append(" objects\n");
-			output.Append("\t\n");
+			output.AppendLine(" objects");
+			output.AppendLine("\t");
 
 			// Union with a pointer and a whole object
 			output.Append("\tunion ");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeListEntry\n");
-			output.Append("\t{\n");
+			output.AppendLine("FreeWholeListEntry");
+			output.AppendLine("\t{");
 			output.Append("\t\t");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeListEntry* Next;\n");
+			output.AppendLine("FreeWholeListEntry* Next;");
 			output.Append("\t\t");
 			AppendCppTypeFullName(
 				cppTypeTypeName,
@@ -10301,28 +10328,28 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append(" Value;\n");
-			output.Append("\t};\n");
+			output.AppendLine(" Value;");
+			output.AppendLine("\t};");
 
 			// Size
 			output.Append("\tint32_t ");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeListSize;\n");
+			output.AppendLine("FreeWholeListSize;");
 
 			// Free list entries
 			output.Append('\t');
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeListEntry* ");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeList;\n");
+			output.AppendLine("FreeWholeList;");
 
 			// Pointer to next free entry
 			output.Append('\t');
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeListEntry* NextFreeWhole");
 			output.Append(bindingTypeName);
-			output.Append(";\n");
-			output.Append("\t\n");
+			output.AppendLine(";");
+			output.AppendLine("\t");
 
 			// Store function
 			output.Append('\t');
@@ -10334,22 +10361,22 @@ namespace NativeScript.Editor
 				output);
 			output.Append("* StoreWhole");
 			output.Append(bindingTypeName);
-			output.Append("()\n");
-			output.Append("\t{\n");
+			output.AppendLine("()");
+			output.AppendLine("\t{");
 			output.Append("\t\tassert(NextFreeWhole");
 			output.Append(bindingTypeName);
-			output.Append(" != nullptr);\n");
+			output.AppendLine(" != nullptr);");
 			output.Append("\t\t");
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeListEntry* pNext = NextFreeWhole");
 			output.Append(bindingTypeName);
-			output.Append(";\n");
+			output.AppendLine(";");
 			output.Append("\t\tNextFreeWhole");
 			output.Append(bindingTypeName);
-			output.Append(" = pNext->Next;\n");
-			output.Append("\t\treturn &pNext->Value;\n");
-			output.Append("\t}\n");
-			output.Append("\t\n");
+			output.AppendLine(" = pNext->Next;");
+			output.AppendLine("\t\treturn &pNext->Value;");
+			output.AppendLine("\t}");
+			output.AppendLine("\t");
 
 			// Remove function
 			output.Append("\tvoid RemoveWhole");
@@ -10361,30 +10388,30 @@ namespace NativeScript.Editor
 			AppendCppTypeParameters(
 				typeParams,
 				output);
-			output.Append("* instance)\n");
-			output.Append("\t{\n");
+			output.AppendLine("* instance)");
+			output.AppendLine("\t{");
 			output.Append("\t\t");
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeListEntry* pRelease = (");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeListEntry*)instance;\n");
+			output.AppendLine("FreeWholeListEntry*)instance;");
 			output.Append("\t\tif (pRelease >= ");
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeList && pRelease < ");
 			output.Append(bindingTypeName);
 			output.Append("FreeWholeList + (");
 			output.Append(bindingTypeName);
-			output.Append("FreeWholeListSize - 1))\n");
-			output.Append("\t\t{\n");
+			output.AppendLine("FreeWholeListSize - 1))");
+			output.AppendLine("\t\t{");
 			output.Append("\t\t\tpRelease->Next = NextFreeWhole");
 			output.Append(bindingTypeName);
-			output.Append(";\n");
+			output.AppendLine(";");
 			output.Append("\t\t\tNextFreeWhole");
 			output.Append(bindingTypeName);
-			output.Append(" = pRelease->Next;\n");
-			output.Append("\t\t}\n");
-			output.Append("\t}\n");
-			output.Append("\t\n");
+			output.AppendLine(" = pRelease->Next;");
+			output.AppendLine("\t\t}");
+			output.AppendLine("\t}");
+			output.AppendLine("\t");
 		}
 
 		static void AppendCsharpDelegate(
@@ -10397,7 +10424,7 @@ namespace NativeScript.Editor
 			TypeKind returnTypeKind,
 			StringBuilder output)
 		{
-			output.Append("\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl)]\n");
+			output.AppendLine("\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl)]");
 			output.Append("\t\tpublic delegate ");
 			if (returnType == typeof(void))
 			{
@@ -10457,7 +10484,7 @@ namespace NativeScript.Editor
 					output.Append(", ");
 				}
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			output.Append("\t\tpublic static ");
 			AppendCsharpDelegateName(
 				typeTypeName,
@@ -10470,7 +10497,8 @@ namespace NativeScript.Editor
 				typeParams,
 				funcName,
 				output);
-			output.Append(";\n\t\t\n");
+			output.AppendLine(";");
+			output.AppendLine("\t\t");
 		}
 		
 		static void AppendCsharpDelegateName(
@@ -10516,7 +10544,7 @@ namespace NativeScript.Editor
 				typeParams,
 				funcName,
 				output);
-			output.Append("\");\n");
+			output.AppendLine("\");");
 		}
 		
 		static void AppendCsharpImport(
@@ -10528,7 +10556,7 @@ namespace NativeScript.Editor
 			StringBuilder output
 		)
 		{
-			output.Append("\t\t[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]\n");
+			output.AppendLine("\t\t[DllImport(PLUGIN_NAME, CallingConvention = CallingConvention.Cdecl)]");
 			output.Append("\t\tpublic static extern ");
 			AppendCsharpTypeFullName(returnType, output);
 			output.Append(' ');
@@ -10563,7 +10591,8 @@ namespace NativeScript.Editor
 					output.Append(", ");
 				}
 			}
-			output.Append(");\n\t\t\n");
+			output.AppendLine(");");
+			output.AppendLine("\t\t");
 		}
 		
 		static void AppendExceptions(
@@ -10652,32 +10681,32 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					exceptionType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append('\n');
+				builders.CppMethodDefinitions.AppendLine();;
 				AppendIndent(
 					throwerIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.AppendLine("{");
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
 				builders.CppMethodDefinitions.Append(exceptionType.Name);
-				builders.CppMethodDefinitions.Append("Thrower(int32_t handle)\n");
+				builders.CppMethodDefinitions.AppendLine("Thrower(int32_t handle)");
 				AppendIndent(
 					throwerIndent + 2,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(": System::Runtime::InteropServices::_Exception(nullptr)\n");
+				builders.CppMethodDefinitions.AppendLine(": System::Runtime::InteropServices::_Exception(nullptr)");
 				AppendIndent(
 					throwerIndent + 2,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(", System::Runtime::Serialization::ISerializable(nullptr)\n");
+				builders.CppMethodDefinitions.AppendLine(", System::Runtime::Serialization::ISerializable(nullptr)");
 				AppendIndent(
 					throwerIndent + 2,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(", System::Exception(nullptr)\n");
+				builders.CppMethodDefinitions.AppendLine(", System::Exception(nullptr)");
 				AppendIndent(
 					throwerIndent + 2,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append(", System::SystemException(nullptr)\n");
+				builders.CppMethodDefinitions.AppendLine(", System::SystemException(nullptr)");
 				AppendIndent(
 					throwerIndent + 2,
 					builders.CppMethodDefinitions);
@@ -10685,56 +10714,57 @@ namespace NativeScript.Editor
 				AppendCppTypeFullName(
 					exceptionType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("(Plugin::InternalUse::Only, handle)\n");
+				builders.CppMethodDefinitions.AppendLine("(Plugin::InternalUse::Only, handle)");
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.AppendLine("{");
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("}\n");
+				builders.CppMethodDefinitions.AppendLine("}");
 				AppendIndent(
 					throwerIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append('\n');
+				builders.CppMethodDefinitions.AppendLine();;
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("virtual void ThrowReferenceToThis()\n");
+				builders.CppMethodDefinitions.AppendLine("virtual void ThrowReferenceToThis()");
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("{\n");
+				builders.CppMethodDefinitions.AppendLine("{");
 				AppendIndent(
 					throwerIndent + 2,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("throw *this;\n");
+				builders.CppMethodDefinitions.AppendLine("throw *this;");
 				AppendIndent(
 					throwerIndent + 1,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("}\n");
+				builders.CppMethodDefinitions.AppendLine("}");
 				AppendIndent(
 					throwerIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("};\n");
+				builders.CppMethodDefinitions.AppendLine("};");
 				AppendNamespaceEnding(
 					throwerIndent,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append('\n');
+				builders.CppMethodDefinitions.AppendLine();;
 				
 				// C++ function
 				builders.CppMethodDefinitions.Append("DLLEXPORT void ");
 				builders.CppMethodDefinitions.Append(funcName);
-				builders.CppMethodDefinitions.Append("(int32_t handle)\n");
-				builders.CppMethodDefinitions.Append("{\n");
-				builders.CppMethodDefinitions.Append("\tdelete Plugin::unhandledCsharpException;\n");
+				builders.CppMethodDefinitions.AppendLine("(int32_t handle)");
+				builders.CppMethodDefinitions.AppendLine("{");
+				builders.CppMethodDefinitions.AppendLine("\tdelete Plugin::unhandledCsharpException;");
 				builders.CppMethodDefinitions.Append("\tPlugin::unhandledCsharpException = new ");
 				AppendCppTypeFullName(
 					exceptionType,
 					builders.CppMethodDefinitions);
-				builders.CppMethodDefinitions.Append("Thrower(handle);\n");
-				builders.CppMethodDefinitions.Append("}\n\n");
+				builders.CppMethodDefinitions.AppendLine("Thrower(handle);");
+				builders.CppMethodDefinitions.AppendLine("}");
+				builders.CppMethodDefinitions.AppendLine();
 				
 				// Build parameters
 				ParameterInfo[] parameters = ConvertParameters(
@@ -10932,7 +10962,7 @@ namespace NativeScript.Editor
 				indent,
 				builders.CppMethodDefinitions);
 			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
 				GetTypeName(enclosingType),
@@ -10949,9 +10979,9 @@ namespace NativeScript.Editor
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// C++ init body
 			AppendCppInitBodyFunctionPointerParameterRead(
@@ -11110,7 +11140,7 @@ namespace NativeScript.Editor
 				indent,
 				builders.CppMethodDefinitions);
 			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("{\n");
+			builders.CppMethodDefinitions.AppendLine("{");
 			AppendCppPluginFunctionCall(
 				methodIsStatic,
 				enclosingTypeTypeName,
@@ -11122,9 +11152,9 @@ namespace NativeScript.Editor
 				indent + 1,
 				builders.CppMethodDefinitions);
 			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append("}\n");
+			builders.CppMethodDefinitions.AppendLine("}");
 			AppendIndent(indent, builders.CppMethodDefinitions);
-			builders.CppMethodDefinitions.Append('\n');
+			builders.CppMethodDefinitions.AppendLine();;
 			
 			// C++ init body
 			AppendCppInitBodyFunctionPointerParameterRead(
@@ -11180,11 +11210,11 @@ namespace NativeScript.Editor
 				typeTypeName,
 				output);
 			output.Append(";");
-			output.Append('\n');
+			output.AppendLine();;
 			AppendNamespaceEnding(
 				indent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 		
 		static int AppendCppTypeDeclaration(
@@ -11203,9 +11233,9 @@ namespace NativeScript.Editor
 				AppendTypeNameWithoutGenericSuffix(
 					typeTypeName.Name,
 					output);
-				output.Append('\n');
+				output.AppendLine();;
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent, output);
 				output.Append('}');
 			}
@@ -11224,11 +11254,11 @@ namespace NativeScript.Editor
 					output);
 				output.Append(";");
 			}
-			output.Append('\n');
+			output.AppendLine();;
 			AppendNamespaceEnding(
 				indent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 			return indent;
 		}
 		
@@ -11312,11 +11342,11 @@ namespace NativeScript.Editor
 						break;
 				}
 			}
-			output.Append('\n');
+			output.AppendLine();;
 			AppendIndent(
 				indent,
 				output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			if (!isStatic)
 			{
 				switch (typeKind)
@@ -11328,15 +11358,15 @@ namespace NativeScript.Editor
 						AppendCppTypeName(
 							typeTypeName,
 							output);
-						output.Append("(decltype(nullptr));\n");
+						output.AppendLine("(decltype(nullptr));");
 						
 						// Constructor from handle
 						AppendIndent(indent + 1, output);
 						AppendCppTypeName(
 							typeTypeName,
 							output);
-						output.Append(
-							"(Plugin::InternalUse, int32_t handle);\n");
+						output.AppendLine(
+							"(Plugin::InternalUse, int32_t handle);");
 						
 						// Copy constructor
 						AppendIndent(indent + 1, output);
@@ -11350,7 +11380,7 @@ namespace NativeScript.Editor
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("& other);\n");
+						output.AppendLine("& other);");
 						
 						// Move constructor
 						AppendIndent(indent + 1, output);
@@ -11364,7 +11394,7 @@ namespace NativeScript.Editor
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("&& other);\n");
+						output.AppendLine("&& other);");
 						
 						// Destructor
 						AppendIndent(indent + 1, output);
@@ -11372,7 +11402,7 @@ namespace NativeScript.Editor
 						AppendCppTypeName(
 							typeTypeName,
 							output);
-						output.Append("();\n");
+						output.AppendLine("();");
 						
 						// Assignment operator to same type
 						AppendIndent(indent + 1, output);
@@ -11389,7 +11419,7 @@ namespace NativeScript.Editor
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("& other);\n");
+						output.AppendLine("& other);");
 						
 						// Assignment operator to nullptr
 						AppendIndent(indent + 1, output);
@@ -11399,7 +11429,7 @@ namespace NativeScript.Editor
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("& operator=(decltype(nullptr));\n");
+						output.AppendLine("& operator=(decltype(nullptr));");
 						
 						// Move assignment operator to same type
 						AppendIndent(indent + 1, output);
@@ -11416,7 +11446,7 @@ namespace NativeScript.Editor
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("&& other);\n");
+						output.AppendLine("&& other);");
 						
 						// Equality operator with same type
 						AppendIndent(indent + 1, output);
@@ -11427,7 +11457,7 @@ namespace NativeScript.Editor
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("& other) const;\n");
+						output.AppendLine("& other) const;");
 						
 						// Inequality operator with same type
 						AppendIndent(indent + 1, output);
@@ -11438,7 +11468,7 @@ namespace NativeScript.Editor
 						AppendCppTypeParameters(
 							typeParams,
 							output);
-						output.Append("& other) const;\n");
+						output.AppendLine("& other) const;");
 						break;
 				}
 			}
@@ -11457,11 +11487,11 @@ namespace NativeScript.Editor
 			{
 				output.Append(';');
 			}
-			output.Append('\n');
+			output.AppendLine();;
 			AppendNamespaceEnding(
 				indent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 		
 		static int AppendCppMethodDefinitionsBegin(
@@ -11494,7 +11524,7 @@ namespace NativeScript.Editor
 				AppendCppTypeName(
 					enclosingTypeTypeName,
 					output);
-				output.Append("(decltype(nullptr))\n");
+				output.AppendLine("(decltype(nullptr))");
 				if (enclosingTypeKind == TypeKind.Class)
 				{
 					AppendCppConstructorInitializerList(
@@ -11503,12 +11533,12 @@ namespace NativeScript.Editor
 						output);
 				}
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				extraDefault(indent + 1, "this->");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Handle constructor
 				AppendIndent(indent, output);
@@ -11522,7 +11552,7 @@ namespace NativeScript.Editor
 				AppendCppTypeName(
 					enclosingTypeTypeName,
 					output);
-				output.Append("(Plugin::InternalUse, int32_t handle)\n");
+				output.AppendLine("(Plugin::InternalUse, int32_t handle)");
 				if (enclosingTypeKind == TypeKind.Class)
 				{
 					AppendCppConstructorInitializerList(
@@ -11531,13 +11561,13 @@ namespace NativeScript.Editor
 						output);
 				}
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 1, output);
-				output.Append("Handle = handle;\n");
+				output.AppendLine("Handle = handle;");
 				AppendIndent(indent + 1, output);
-				output.Append("if (handle)\n");
+				output.AppendLine("if (handle)");
 				AppendIndent(indent + 1, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 2, output);
 				AppendReferenceManagedHandleFunctionCall(
 					enclosingTypeTypeName,
@@ -11545,14 +11575,14 @@ namespace NativeScript.Editor
 					enclosingTypeParams,
 					"handle",
 					output);
-				output.Append(";\n");
+				output.AppendLine(";");
 				AppendIndent(indent + 1, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				extraDefault(indent + 1, "this->");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Copy constructor
 				AppendIndent(indent, output);
@@ -11573,20 +11603,20 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("& other)\n");
+				output.AppendLine("& other)");
 				AppendIndent(indent + 1, output);
 				output.Append(": ");
 				AppendCppTypeName(
 					enclosingTypeTypeName,
 					output);
-				output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
+				output.AppendLine("(Plugin::InternalUse::Only, other.Handle)");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				extraCopy(indent + 1, "other.");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Move constructor
 				AppendIndent(indent, output);
@@ -11607,23 +11637,23 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("&& other)\n");
+				output.AppendLine("&& other)");
 				AppendIndent(indent, output);
 				output.Append("\t: ");
 				AppendCppTypeName(
 					enclosingTypeTypeName,
 					output);
-				output.Append("(Plugin::InternalUse::Only, other.Handle)\n");
+				output.AppendLine("(Plugin::InternalUse::Only, other.Handle)");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 1, output);
-				output.Append("other.Handle = 0;\n");
+				output.AppendLine("other.Handle = 0;");
 				extraCopy(indent + 1, "other.");
 				extraDefault(indent + 1, "other.");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 
 				// Destructor
 				AppendIndent(indent, output);
@@ -11640,13 +11670,13 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("()\n");
+				output.AppendLine("()");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 1, output);
-				output.Append("if (Handle)\n");
+				output.AppendLine("if (Handle)");
 				AppendIndent(indent + 1, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 2, output);
 				AppendDereferenceManagedHandleFunctionCall(
 					enclosingTypeTypeName,
@@ -11654,15 +11684,15 @@ namespace NativeScript.Editor
 					enclosingTypeParams,
 					"Handle",
 					output);
-				output.Append(";\n");
+				output.AppendLine(";");
 				AppendIndent(indent + 2, output);
-				output.Append("Handle = 0;\n");
+				output.AppendLine("Handle = 0;");
 				AppendIndent(indent + 1, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Assignment operator to same type
 				AppendIndent(indent, output);
@@ -11686,9 +11716,9 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("& other)\n");
+				output.AppendLine("& other)");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendSetHandle(
 					enclosingTypeTypeName,
 					enclosingTypeKind,
@@ -11699,11 +11729,11 @@ namespace NativeScript.Editor
 					output);
 				extraCopy(indent + 1, "other.");
 				AppendIndent(indent + 1, output);
-				output.Append("return *this;\n");
+				output.AppendLine("return *this;");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Assignment operator to nullptr
 				AppendIndent(indent, output);
@@ -11720,13 +11750,13 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("::operator=(decltype(nullptr))\n");
+				output.AppendLine("::operator=(decltype(nullptr))");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 1, output);
-				output.Append("if (Handle)\n");
+				output.AppendLine("if (Handle)");
 				AppendIndent(indent + 1, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 2, output);
 				AppendDereferenceManagedHandleFunctionCall(
 					enclosingTypeTypeName,
@@ -11734,17 +11764,17 @@ namespace NativeScript.Editor
 					enclosingTypeParams,
 					"Handle",
 					output);
-				output.Append(";\n");
+				output.AppendLine(";");
 				AppendIndent(indent + 2, output);
-				output.Append("Handle = 0;\n");
+				output.AppendLine("Handle = 0;");
 				AppendIndent(indent + 1, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent + 1, output);
-				output.Append("return *this;\n");
+				output.AppendLine("return *this;");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Move assignment operator to same type
 				AppendIndent(indent, output);
@@ -11768,13 +11798,13 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("&& other)\n");
+				output.AppendLine("&& other)");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 1, output);
-				output.Append("if (Handle)\n");
+				output.AppendLine("if (Handle)");
 				AppendIndent(indent + 1, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 2, output);
 				AppendDereferenceManagedHandleFunctionCall(
 					enclosingTypeTypeName,
@@ -11782,21 +11812,21 @@ namespace NativeScript.Editor
 					enclosingTypeParams,
 					"Handle",
 					output);
-				output.Append(";\n");
+				output.AppendLine(";");
 				AppendIndent(indent + 1, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent + 1, output);
-				output.Append("Handle = other.Handle;\n");
+				output.AppendLine("Handle = other.Handle;");
 				extraCopy(indent + 1, "other.");
 				AppendIndent(indent + 1, output);
-				output.Append("other.Handle = 0;\n");
+				output.AppendLine("other.Handle = 0;");
 				extraDefault(indent + 1, "other.");
 				AppendIndent(indent + 1, output);
-				output.Append("return *this;\n");
+				output.AppendLine("return *this;");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Equality operator with same type
 				AppendIndent(indent, output);
@@ -11814,15 +11844,15 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("& other) const\n");
+				output.AppendLine("& other) const");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 1, output);
-				output.Append("return Handle == other.Handle;\n");
+				output.AppendLine("return Handle == other.Handle;");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 				
 				// Inequality operator with same type
 				AppendIndent(indent, output);
@@ -11840,15 +11870,15 @@ namespace NativeScript.Editor
 				AppendCppTypeParameters(
 					enclosingTypeParams,
 					output);
-				output.Append("& other) const\n");
+				output.AppendLine("& other) const");
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				AppendIndent(indent + 1, output);
-				output.Append("return Handle != other.Handle;\n");
+				output.AppendLine("return Handle != other.Handle;");
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 				AppendIndent(indent, output);
-				output.Append('\n');
+				output.AppendLine();;
 			}
 			return cppMethodDefinitionsIndent;
 		}
@@ -11866,9 +11896,9 @@ namespace NativeScript.Editor
 			AppendIndent(indent, output);
 			output.Append("if (");
 			output.Append(thisHandleExpression);
-			output.Append(")\n");
+			output.AppendLine(")");
 			AppendIndent(indent, output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(indent + 1, output);
 			AppendDereferenceManagedHandleFunctionCall(
 				enclosingTypeTypeName,
@@ -11876,20 +11906,20 @@ namespace NativeScript.Editor
 				enclosingTypeParams,
 				thisHandleExpression,
 				output);
-			output.Append(";\n");
+			output.AppendLine(";");
 			AppendIndent(indent, output);
-			output.Append("}\n");
+			output.AppendLine("}");
 			AppendIndent(indent, output);
 			output.Append(thisHandleExpression);
 			output.Append(" = ");
 			output.Append(otherHandleExpression);
-			output.Append(";\n");
+			output.AppendLine(";");
 			AppendIndent(indent, output);
 			output.Append("if (");
 			output.Append(thisHandleExpression);
-			output.Append(")\n");
+			output.AppendLine(")");
 			AppendIndent(indent, output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(indent + 1, output);
 			AppendReferenceManagedHandleFunctionCall(
 				enclosingTypeTypeName,
@@ -11897,9 +11927,9 @@ namespace NativeScript.Editor
 				enclosingTypeParams,
 				thisHandleExpression,
 				output);
-			output.Append(";\n");
+			output.AppendLine(";");
 			AppendIndent(indent, output);
-			output.Append("}\n");
+			output.AppendLine("}");
 		}
 		
 		static void AppendReferenceManagedHandleFunctionCall(
@@ -11955,11 +11985,11 @@ namespace NativeScript.Editor
 			StringBuilder output)
 		{
 			RemoveTrailingChars(output);
-			output.Append('\n');
+			output.AppendLine();;
 			AppendNamespaceEnding(
 				indent,
 				output);
-			output.Append('\n');
+			output.AppendLine();;
 		}
 		
 		static int AppendNamespaceBeginning(
@@ -11980,9 +12010,9 @@ namespace NativeScript.Editor
 				AppendIndent(indent, output);
 				output.Append("namespace ");
 				output.Append(namespaceName, startIndex, len);
-				output.Append('\n');
+				output.AppendLine();;
 				AppendIndent(indent, output);
-				output.Append("{\n");
+				output.AppendLine("{");
 				if (separatorIndex < 0)
 				{
 					break;
@@ -12002,7 +12032,7 @@ namespace NativeScript.Editor
 			for (; indent >= 0; --indent)
 			{
 				AppendIndent(indent, output);
-				output.Append("}\n");
+				output.AppendLine("}");
 			}
 		}
 		
@@ -12022,8 +12052,8 @@ namespace NativeScript.Editor
 				"\t\t\tMarshal.WriteIntPtr(memory, curMemory, Marshal.GetFunctionPointerForDelegate(");
 			initCallOutput.Append(funcName);
 			initCallOutput.Append("Delegate");
-			initCallOutput.Append("));\n");
-			initCallOutput.Append("\t\t\tcurMemory += IntPtr.Size;\n");
+			initCallOutput.AppendLine("));");
+			initCallOutput.AppendLine("\t\t\tcurMemory += IntPtr.Size;");
 
 			delegateOutput.Append("\t\tstatic readonly ");
 			delegateOutput.Append(funcName);
@@ -12033,7 +12063,7 @@ namespace NativeScript.Editor
 			delegateOutput.Append(funcName);
 			delegateOutput.Append("DelegateType(");
 			delegateOutput.Append(funcName);
-			delegateOutput.Append(");\n");
+			delegateOutput.AppendLine(");");
 		}
 		
 		static void AppendCsharpDelegateType(
@@ -12045,7 +12075,7 @@ namespace NativeScript.Editor
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
-			output.Append("\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl)]\n");
+			output.AppendLine("\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl)]");
 			output.Append("\t\tdelegate ");
 			
 			// Return type
@@ -12085,7 +12115,7 @@ namespace NativeScript.Editor
 			AppendCsharpBindingParameterDeclaration(
 				parameters,
 				output);
-			output.Append(");\n");
+			output.AppendLine(");");
 		}
 		
 		static void AppendCsharpFunctionBeginning(
@@ -12099,7 +12129,8 @@ namespace NativeScript.Editor
 		{
 			output.Append("\t\t[MonoPInvokeCallback(typeof(");
 			output.Append(funcName);
-			output.Append("DelegateType))]\n\t\tstatic ");
+			output.AppendLine("DelegateType))]");
+			output.Append("\t\tstatic ");
 			
 			// Return type
 			if (returnType != null)
@@ -12144,10 +12175,14 @@ namespace NativeScript.Editor
 			AppendCsharpBindingParameterDeclaration(
 				parameters,
 				output);
-			output.Append(")\n\t\t{\n\t\t\t");
+			output.AppendLine(")");
+			output.AppendLine("\t\t{");
+			output.Append("\t\t\t");
 			
 			// Start try/catch block
-			output.Append("try\n\t\t\t{\n\t\t\t\t");
+			output.AppendLine("try");
+			output.AppendLine("\t\t\t{");
+			output.Append("\t\t\t\t");
 			
 			// Get "this"
 			if (!isStatic
@@ -12161,8 +12196,10 @@ namespace NativeScript.Editor
 				AppendHandleStoreTypeName(
 					enclosingType,
 					output);
+				output.AppendLine(
+					".Get(thisHandle);");
 				output.Append(
-					".Get(thisHandle);\n\t\t\t\t");
+					"\t\t\t\t");
 			}
 			
 			// Get managed type params from ObjectStore
@@ -12184,7 +12221,8 @@ namespace NativeScript.Editor
 					AppendHandleStoreTypeName(paramType, output);
 					output.Append(".Get(");
 					output.Append(param.Name);
-					output.Append("Handle);\n\t\t\t\t");
+					output.AppendLine("Handle);");
+					output.Append("\t\t\t\t");
 				}
 			}
 			
@@ -12241,7 +12279,8 @@ namespace NativeScript.Editor
 			string structVariable,
 			StringBuilder output)
 		{
-			output.Append("\n\t\t\t\t");
+			output.AppendLine();
+			output.Append("\t\t\t\t");
 			AppendHandleStoreTypeName(
 				enclosingType,
 				output);
@@ -12267,7 +12306,8 @@ namespace NativeScript.Editor
 					|| param.Kind == TypeKind.ManagedStruct)
 					&& (param.IsOut || param.IsRef))
 				{
-					output.Append("\n\t\t\t\tint ");
+					output.AppendLine();
+					output.Append("\t\t\t\tint ");
 					output.Append(param.Name);
 					output.Append("HandleNew = ");
 					AppendHandleStoreTypeName(
@@ -12284,7 +12324,8 @@ namespace NativeScript.Editor
 					}
 					output.Append('(');
 					output.Append(param.Name);
-					output.Append(");\n\t\t\t\t");
+					output.AppendLine(");");
+					output.Append("\t\t\t\t");
 					output.Append(param.Name);
 					output.Append("Handle = ");
 					output.Append(param.Name);
@@ -12295,7 +12336,8 @@ namespace NativeScript.Editor
 			// Return
 			if (returnType != typeof(void))
 			{
-				output.Append("\n\t\t\t\treturn ");
+				output.AppendLine();
+				output.Append("\t\t\t\treturn ");
 				if (
 					forceReturnReturnValue
 					|| returnTypeKind == TypeKind.Enum
@@ -12337,8 +12379,8 @@ namespace NativeScript.Editor
 			ParameterInfo[] parameters,
 			StringBuilder output)
 		{
-			output.Append('\n');
-			output.Append("\t\t\t}\n");
+			output.AppendLine();;
+			output.AppendLine("\t\t\t}");
 			if (exceptionTypes == null
 				|| Array.IndexOf(
 				exceptionTypes,
@@ -12366,8 +12408,8 @@ namespace NativeScript.Editor
 				returnType,
 				parameters,
 				output);
-			output.Append("\t\t}\n");
-			output.Append("\t\t\n");
+			output.AppendLine("\t\t}");
+			output.AppendLine("\t\t");
 		}
 		
 		static void AppendCsharpCatchException(
@@ -12380,14 +12422,14 @@ namespace NativeScript.Editor
 			AppendCsharpTypeFullName(
 				exceptionType,
 				output);
-			output.Append(" ex)\n");
-			output.Append("\t\t\t{\n");
-			output.Append("\t\t\t\tUnityEngine.Debug.LogException(ex);\n");
+			output.AppendLine(" ex)");
+			output.AppendLine("\t\t\t{");
+			output.AppendLine("\t\t\t\tUnityEngine.Debug.LogException(ex);");
 			output.Append("\t\t\t\tNativeScript.Bindings.");
 			AppendCsharpSetCsharpExceptionFunctionName(
 				exceptionType,
 				output);
-			output.Append("(NativeScript.Bindings.ObjectStore.Store(ex));\n");
+			output.AppendLine("(NativeScript.Bindings.ObjectStore.Store(ex));");
 			foreach (ParameterInfo param in parameters)
 			{
 				if (param.IsOut)
@@ -12397,7 +12439,7 @@ namespace NativeScript.Editor
 					if (param.Kind == TypeKind.Class
 						|| param.Kind == TypeKind.ManagedStruct)
 					{
-						output.Append("Handle = default(int);\n");
+						output.AppendLine("Handle = default(int);");
 					}
 					else
 					{
@@ -12405,7 +12447,7 @@ namespace NativeScript.Editor
 						AppendCsharpTypeFullName(
 							param.DereferencedParameterType,
 							output);
-						output.Append(");\n");
+						output.AppendLine(");");
 					}
 				}
 			}
@@ -12422,9 +12464,9 @@ namespace NativeScript.Editor
 				{
 					output.Append("int");
 				}
-				output.Append(");\n");
+				output.AppendLine(");");
 			}
-			output.Append("\t\t\t}\n");
+			output.AppendLine("\t\t\t}");
 		}
 		
 		static void AppendCsharpSetCsharpExceptionFunctionName(
@@ -12643,10 +12685,10 @@ namespace NativeScript.Editor
 				returnType,
 				2,
 				output);
-			output.Append(")curMemory;\n");
+			output.AppendLine(")curMemory;");
 			output.Append("\tcurMemory += sizeof(Plugin::");
 			output.Append(globalVariableName);
-			output.Append(");\n");
+			output.AppendLine(");");
 		}
 		
 		static void AppendCppMethodDefinitionBegin(
@@ -12705,7 +12747,7 @@ namespace NativeScript.Editor
 				null, // don't substitute method type params
 				false,
 				output);
-			output.Append(")\n");
+			output.AppendLine(")");
 		}
 		
 		static void AppendCppMethodReturn(
@@ -12732,7 +12774,7 @@ namespace NativeScript.Editor
 						output.Append("(Plugin::InternalUse::Only, returnValue)");
 						break;
 				}
-				output.Append(";\n");
+				output.AppendLine(";");
 			}
 		}
 		
@@ -12759,7 +12801,7 @@ namespace NativeScript.Editor
 					output.Append(param.Name);
 					output.Append("Handle = ");
 					output.Append(param.Name);
-					output.Append("->Handle;\n");
+					output.AppendLine("->Handle;");
 				}
 			}
 			
@@ -12827,7 +12869,7 @@ namespace NativeScript.Editor
 					output.Append(", ");
 				}
 			}
-			output.Append(");\n");
+			output.AppendLine(");");
 			
 			AppendCppUnhandledExceptionHandling(
 				indent,
@@ -12857,19 +12899,19 @@ namespace NativeScript.Editor
 			StringBuilder output)
 		{
 			AppendIndent(indent, output);
-			output.Append("if (Plugin::unhandledCsharpException)\n");
+			output.AppendLine("if (Plugin::unhandledCsharpException)");
 			AppendIndent(indent, output);
-			output.Append("{\n");
+			output.AppendLine("{");
 			AppendIndent(indent + 1, output);
-			output.Append("System::Exception* ex = Plugin::unhandledCsharpException;\n");
+			output.AppendLine("System::Exception* ex = Plugin::unhandledCsharpException;");
 			AppendIndent(indent + 1, output);
-			output.Append("Plugin::unhandledCsharpException = nullptr;\n");
+			output.AppendLine("Plugin::unhandledCsharpException = nullptr;");
 			AppendIndent(indent + 1, output);
-			output.Append("ex->ThrowReferenceToThis();\n");
+			output.AppendLine("ex->ThrowReferenceToThis();");
 			AppendIndent(indent + 1, output);
-			output.Append("delete ex;\n");
+			output.AppendLine("delete ex;");
 			AppendIndent(indent, output);
-			output.Append("}\n");
+			output.AppendLine("}");
 		}
 
 		static void AppendCppFunctionPointerDefinition(
@@ -12894,7 +12936,7 @@ namespace NativeScript.Editor
 				output
 			);
 			output.Append(';');
-			output.Append('\n');
+			output.AppendLine();;
 		}
 		
 		static void AppendCppFunctionPointer(
@@ -13098,7 +13140,7 @@ namespace NativeScript.Editor
 				output);
 			output.Append(')');
 			
-			output.Append(";\n");
+			output.AppendLine(";");
 		}
 		
 		static void AppendCsharpTypeFullName(
@@ -13419,17 +13461,12 @@ namespace NativeScript.Editor
 			for (i = len - 1; i >= 0; --i)
 			{
 				char cur = builder[i];
-				switch (cur)
+				if (!char.IsWhiteSpace(cur) && cur != ',')
 				{
-					case '\n':
-					case '\t':
-					case ',':
-						break;
-					default:
-						goto after;
+					break;
 				}
 			}
-			after:
+			
 			if (i < len - 1)
 			{
 				builder.Remove(i + 1, len - i - 1);
@@ -13445,123 +13482,123 @@ namespace NativeScript.Editor
 			string cppSourceContents = File.ReadAllText(CppSourcePath);
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN DELEGATE TYPES*/\n",
-				"\n\t\t/*END DELEGATE TYPES*/",
+				"/*BEGIN DELEGATE TYPES*/",
+				"\t\t/*END DELEGATE TYPES*/",
 				builders.CsharpDelegateTypes.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN STORE INIT CALLS*/\n",
-				"\n\t\t\t/*END STORE INIT CALLS*/",
+				"/*BEGIN STORE INIT CALLS*/",
+				"\t\t\t/*END STORE INIT CALLS*/",
 				builders.CsharpStoreInitCalls.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN INIT CALL*/\n",
-				"\n\t\t\t/*END INIT CALL*/",
+				"/*BEGIN INIT CALL*/",
+				"\t\t\t/*END INIT CALL*/",
 				builders.CsharpInitCall.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN BASE TYPES*/\n",
-				"\n/*END BASE TYPES*/",
+				"/*BEGIN BASE TYPES*/",
+				"/*END BASE TYPES*/",
 				builders.CsharpBaseTypes.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN FUNCTIONS*/\n",
-				"\n\t\t/*END FUNCTIONS*/",
+				"/*BEGIN FUNCTIONS*/",
+				"\t\t/*END FUNCTIONS*/",
 				builders.CsharpFunctions.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN CPP DELEGATES*/\n",
-				"\n\t\t/*END CPP DELEGATES*/",
+				"/*BEGIN CPP DELEGATES*/",
+				"\t\t/*END CPP DELEGATES*/",
 				builders.CsharpCppDelegates.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN CSHARP DELEGATES*/\n",
-				"\n\t\t/*END CSHARP DELEGATES*/",
+				"/*BEGIN CSHARP DELEGATES*/",
+				"\t\t/*END CSHARP DELEGATES*/",
 				builders.CsharpCsharpDelegates.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN IMPORTS*/\n",
-				"\n\t\t/*END IMPORTS*/",
+				"/*BEGIN IMPORTS*/",
+				"\t\t/*END IMPORTS*/",
 				builders.CsharpImports.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN GETDELEGATE CALLS*/\n",
-				"\n\t\t\t/*END GETDELEGATE CALLS*/",
+				"/*BEGIN GETDELEGATE CALLS*/",
+				"\t\t\t/*END GETDELEGATE CALLS*/",
 				builders.CsharpGetDelegateCalls.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN DESTROY FUNCTION ENUMERATORS*/\n",
-				"\n\t\t\t/*END DESTROY FUNCTION ENUMERATORS*/",
+				"/*BEGIN DESTROY FUNCTION ENUMERATORS*/",
+				"\t\t\t/*END DESTROY FUNCTION ENUMERATORS*/",
 				builders.CsharpDestroyFunctionEnumerators.ToString());
 			csharpContents = InjectIntoString(
 				csharpContents,
-				"/*BEGIN DESTROY QUEUE CASES*/\n",
-				"\n\t\t\t\t\t\t/*END DESTROY QUEUE CASES*/",
+				"/*BEGIN DESTROY QUEUE CASES*/",
+				"\t\t\t\t\t\t/*END DESTROY QUEUE CASES*/",
 				builders.CsharpDestroyQueueCases.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN FUNCTION POINTERS*/\n",
-				"\n\t/*END FUNCTION POINTERS*/",
+				"/*BEGIN FUNCTION POINTERS*/",
+				"\t/*END FUNCTION POINTERS*/",
 				builders.CppFunctionPointers.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TYPE DECLARATIONS*/\n",
-				"\n/*END TYPE DECLARATIONS*/",
+				"/*BEGIN TYPE DECLARATIONS*/",
+				"/*END TYPE DECLARATIONS*/",
 				builders.CppTypeDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TEMPLATE DECLARATIONS*/\n",
-				"\n/*END TEMPLATE DECLARATIONS*/",
+				"/*BEGIN TEMPLATE DECLARATIONS*/",
+				"/*END TEMPLATE DECLARATIONS*/",
 				builders.CppTemplateDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TEMPLATE SPECIALIZATION DECLARATIONS*/\n",
-				"\n/*END TEMPLATE SPECIALIZATION DECLARATIONS*/",
+				"/*BEGIN TEMPLATE SPECIALIZATION DECLARATIONS*/",
+				"/*END TEMPLATE SPECIALIZATION DECLARATIONS*/",
 				builders.CppTemplateSpecializationDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN TYPE DEFINITIONS*/\n",
-				"\n/*END TYPE DEFINITIONS*/",
+				"/*BEGIN TYPE DEFINITIONS*/",
+				"/*END TYPE DEFINITIONS*/",
 				builders.CppTypeDefinitions.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN METHOD DEFINITIONS*/\n",
-				"\n/*END METHOD DEFINITIONS*/",
+				"/*BEGIN METHOD DEFINITIONS*/",
+				"/*END METHOD DEFINITIONS*/",
 				builders.CppMethodDefinitions.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT BODY PARAMETER READS*/\n",
-				"\n\t/*END INIT BODY PARAMETER READS*/",
+				"/*BEGIN INIT BODY PARAMETER READS*/",
+				"\t/*END INIT BODY PARAMETER READS*/",
 				builders.CppInitBodyParameterReads.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT BODY ARRAYS*/\n",
-				"\n\t/*END INIT BODY ARRAYS*/",
+				"/*BEGIN INIT BODY ARRAYS*/",
+				"\t/*END INIT BODY ARRAYS*/",
 				builders.CppInitBodyArrays.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN INIT BODY FIRST BOOT*/\n",
-				"\n\t\t/*END INIT BODY FIRST BOOT*/",
+				"/*BEGIN INIT BODY FIRST BOOT*/",
+				"\t\t/*END INIT BODY FIRST BOOT*/",
 				builders.CppInitBodyFirstBoot.ToString());
 			cppSourceContents = InjectIntoString(
 				cppSourceContents,
-				"/*BEGIN GLOBAL STATE AND FUNCTIONS*/\n",
-				"\n\t/*END GLOBAL STATE AND FUNCTIONS*/",
+				"/*BEGIN GLOBAL STATE AND FUNCTIONS*/",
+				"\t/*END GLOBAL STATE AND FUNCTIONS*/",
 				builders.CppGlobalStateAndFunctions.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN UNBOXING METHOD DECLARATIONS*/\n",
-				"\n\t\t/*END UNBOXING METHOD DECLARATIONS*/",
+				"/*BEGIN UNBOXING METHOD DECLARATIONS*/",
+				"\t\t/*END UNBOXING METHOD DECLARATIONS*/",
 				builders.CppUnboxingMethodDeclarations.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN STRING DEFAULT PARAMETERS*/\n",
-				"\n\t/*END STRING DEFAULT PARAMETERS*/",
+				"/*BEGIN STRING DEFAULT PARAMETERS*/",
+				"\t/*END STRING DEFAULT PARAMETERS*/",
 				builders.CppStringDefaultParams.ToString());
 			cppHeaderContents = InjectIntoString(
 				cppHeaderContents,
-				"/*BEGIN MACROS*/\n",
-				"\n/*END MACROS*/",
+				"/*BEGIN MACROS*/",
+				"/*END MACROS*/",
 				builders.CppMacros.ToString());
 			
 			File.WriteAllText(CsharpPath, csharpContents);
@@ -13575,15 +13612,16 @@ namespace NativeScript.Editor
 			string endMarker,
 			string text)
 		{
-			for (int startIndex = 0; ; )
+			int startIndex = 0;
+			while(true)
 			{
-				int beginIndex = contents.IndexOf(beginMarker, startIndex);
+				int beginIndex = contents.IndexOf(beginMarker, startIndex, StringComparison.OrdinalIgnoreCase);
 				if (beginIndex < 0)
 				{
 					return contents;
 				}
 				int afterBeginIndex = beginIndex + beginMarker.Length;
-				int endIndex = contents.IndexOf(endMarker, afterBeginIndex);
+				int endIndex = contents.IndexOf(endMarker, afterBeginIndex, StringComparison.OrdinalIgnoreCase);
 				if (endIndex < 0)
 				{
 					throw new Exception(
@@ -13596,7 +13634,7 @@ namespace NativeScript.Editor
 				}
 				string begin = contents.Substring(0, afterBeginIndex);
 				string end = contents.Substring(endIndex);
-				contents = begin + text + end;
+				contents = begin + Environment.NewLine + text + Environment.NewLine + end;
 				startIndex = beginIndex + 1;
 			}
 		}
