@@ -10573,18 +10573,21 @@ namespace NativeScript.Editor
 			for (int i = 0; i < parameters.Length; ++i)
 			{
 				ParameterInfo param = parameters[i];
-				if (param.Kind == TypeKind.FullStruct)
+				switch (param.Kind)
 				{
-					AppendCsharpTypeFullName(
-						param.ParameterType,
-						output);
-					output.Append(" param");
-					output.Append(i);
-				}
-				else
-				{
-					output.Append("int param");
-					output.Append(i);
+					case TypeKind.FullStruct:
+					case TypeKind.Primitive:
+					case TypeKind.Enum:
+						AppendCsharpTypeFullName(
+							param.ParameterType,
+							output);
+						output.Append(" param");
+						output.Append(i);
+						break;
+					default:
+						output.Append("int param");
+						output.Append(i);
+						break;
 				}
 				if (i != parameters.Length-1)
 				{
