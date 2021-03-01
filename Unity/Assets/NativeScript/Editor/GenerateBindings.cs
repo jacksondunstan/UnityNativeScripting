@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -4155,7 +4155,8 @@ namespace NativeScript.Editor
 				AppendCppMethodDeclaration(
 					cppMethodName,
 					enclosingTypeIsStatic,
-					false,
+					// Mark as virtual if method/class is not static or generic
+					cppMethodIsStatic || enclosingTypeIsStatic || methodTypeParams != null? false : true,
 					cppMethodIsStatic,
 					cppReturnType,
 					methodTypeParams,
