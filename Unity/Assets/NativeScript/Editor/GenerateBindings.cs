@@ -3427,7 +3427,15 @@ namespace NativeScript.Editor
 				builders.CsharpFunctions);
 			builders.CsharpFunctions.Append('.');
 			builders.CsharpFunctions.Append(eventName);
-			builders.CsharpFunctions.Append(" += del;");
+			// TODO: More safely differenciate between add/removing event delegates
+			if (funcName.Contains("RemoveEvent"))
+			{
+				builders.CsharpFunctions.Append(" -= del;");
+			}
+			else
+			{
+				builders.CsharpFunctions.Append(" += del;");
+			}
 			AppendCsharpFunctionEnd(
 				typeof(void),
 				null,
@@ -4155,7 +4163,8 @@ namespace NativeScript.Editor
 				AppendCppMethodDeclaration(
 					cppMethodName,
 					enclosingTypeIsStatic,
-					false,
+					// Mark as virtual if method/class is not static or generic
+					cppMethodIsStatic || enclosingTypeIsStatic || methodTypeParams != null? false : true,
 					cppMethodIsStatic,
 					cppReturnType,
 					methodTypeParams,
